@@ -17,9 +17,7 @@ reportlab = "*"
 django-money = "*"
 docutils = "*"
 django-session-timeout = "*"
-gunicorn = "*"
-whitenoise = "*"
-psycopg2-binary = "*"
+django-on-heroku = "*"
 
 [requires]
 python_version = "3.8"
