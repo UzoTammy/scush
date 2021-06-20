@@ -20,7 +20,6 @@ django-session-timeout = "*"
 gunicorn = "*"
 whitenoise = "*"
 psycopg2-binary = "*"
-django-heroku = "*"
 
 [requires]
 python_version = "3.8"

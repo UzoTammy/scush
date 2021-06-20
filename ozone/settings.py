@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 import os
-import django_heroku
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -176,4 +175,3 @@ SESSION_TIMEOUT_REDIRECT = 'login'
 # General settings
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 CURRENCIES = ('NGN',)
-django_heroku.settings(locals())
