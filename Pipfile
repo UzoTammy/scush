@@ -18,6 +18,7 @@ django-money = "*"
 docutils = "*"
 django-session-timeout = "*"
 django-on-heroku = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"
