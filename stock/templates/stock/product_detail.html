@@ -1,0 +1,77 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container mt-3">
+    <h2 class="text-secondary text-center bg-light">Product Detail Page</h2>
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="media">
+              <img src="{{object.image.url}}"
+                   width="150px"
+                   height="150px"
+                   class="rounded mr-3"
+                   alt="...">
+              <div class="media-body">
+                <h5 class="text-info mt-0">{{object}}</h5>
+                <p class="text-success">Product Id: {{object.id|zeropadding:3}}</p>
+              </div>
+            </div>
+            <div class="row p-2">
+                <div class="col-6">
+                    <button type="button"
+                    class="list-group-item list-group-item-action bg-light"
+                    aria-current="true">
+                <b class="text-center">{{object.name}} {{object.unit_type}} {{object.parameter}}</b>
+            </button>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">Name: {{object.name}} </li>
+                        <li class="list-group-item">Source: {{object.source}}</li>
+                        <li class="list-group-item">Category: {{object.category}}</li>
+                        <li class="list-group-item">Unit Price: {{object.unit_price}}</li>
+                        <li class="list-group-item">Cost Price: {{object.cost_price}}</li>
+                        <li class="list-group-item">Pack Type: {{object.pack_type}}</li>
+                        <li class="list-group-item">Quantity Per Pack: {{object.quantity_per_pack}}</li>
+                        <li class="list-group-item">Unit Type: {{object.unit_type}}</li>
+                        <li class="list-group-item">Product State: {{object.product_state }}</li>
+                        <li class="list-group-item">Size Value: {{object.size_value}}{{object.size_value_unit}}</li>
+                        <li class="list-group-item">Alcoholic Content: {{object.alcohol_content}}</li>
+                        <li class="list-group-item">VAT (in %): {{object.vat}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="row">
+                <div class="col">
+                    <button type="button"
+                    class="list-group-item list-group-item-action bg-light text-center"
+                    aria-current="true">
+                <b>Derived Data Section</b>
+            </button>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item text-info">Sourced: Quantity Value</li>
+                        <li class="list-group-item text-success">Sold: Quantity Value</li>
+                        <li class="list-group-item">C</li>
+                        <li class="list-group-item">D</li>
+                        <li class="list-group-item text-danger">E</li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col mb-3">
+                    <a class="btn btn-info" href="{% url 'product-update' object.pk %}">Update</a>
+                </div>
+                <div class="col mb-3">
+                    <a class="btn btn-danger" href="{% url 'product-delete' object.pk %}">Delete</a>
+                </div>
+                <div class="col">
+                     <a class="btn btn-dark" href="{% url 'product-list' %}"><i class="fa fa-reply text-danger"></i> Return</a>
+                </div>
+           </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

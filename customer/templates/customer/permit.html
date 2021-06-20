@@ -1,0 +1,41 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-5"><h2>You have to be permitted to Register</h2></div>
+    <div class="row text-danger"><p>Obtain token from the Administrator if you do not have</p></div>
+    <div class="row">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                Token: <input
+                    class="form-control"
+                    type="password"
+                    id="token_id"
+                    name="token"
+                    placeholder="enter your secret token here!"
+                    value="">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-outline-primary btn-sm mb-3">Confirm Token</button>
+            </div>
+        </form>
+        <div class="row">
+            {% if result == 'passed' %}
+                {% for token in token_list %}
+                    <p> Your token
+                        <span class="text-success">{{result}}</span>
+                        <a href="{% url 'register' token %}">Continue to Register</a>
+                    </p>
+                {% endfor %}
+            {% elif result == 'failed' %}
+                <p> Your token
+                    <span class="text-danger">{{result}}</span>.
+                    Check your token and try again or contact the admin <a href="{% url 'index' %}">Home</a></p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row"></div>
+</div>
+{% endblock %}

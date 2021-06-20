@@ -1,0 +1,61 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row">
+        <div class="col">
+            <h1>Welcome to Ozone F & L</h1>
+            <h3>You got this mail because you applied to us.</h3>
+            <p>Your application has been received by us and we will
+            start processing soon. Kindly check your mail always to ensure
+            you promptly receive mails from us.
+            </p>
+            <p>You applied as {{count}}</p>
+<!--            <legend>Send Mail Standard</legend>-->
+<!--            <form action="" method="POST">-->
+<!--                {% csrf_token %}-->
+<!--                <fieldset>-->
+<!--                    <div class="form-group mb-3">-->
+<!--                        <label for="addressInput"-->
+<!--                               class="form-label">-->
+<!--                            Send To-->
+<!--                        </label>-->
+<!--                        <input type="email"-->
+<!--                               class="form-control"-->
+<!--                               id="addressInput"-->
+<!--                               name="address"-->
+<!--                               placeholder="name@example.com"-->
+<!--                               required>-->
+<!--                    </div>-->
+<!--                    <div class="form-group mb-3">-->
+<!--                        <label for="subjectInput"-->
+<!--                               class="form-label">-->
+<!--                            Subject-->
+<!--                        </label>-->
+<!--                        <input class="form-control"-->
+<!--                               id="subjectInput"-->
+<!--                               name="subject"-->
+<!--                               required>-->
+<!--                    </div>-->
+<!--                    <div class="form-group mb-3">-->
+<!--                        <label for="msgInput" class="form-label">Message</label>-->
+<!--                        <textarea class="form-control"-->
+<!--                                  id="msgInput"-->
+<!--                                  name="message"-->
+<!--                                  rows="6">-->
+<!--                        </textarea>-->
+<!--                    </div>-->
+<!--                </fieldset>-->
+<!--                <div class="form-group float-right">-->
+<!--                <button type="submit" class="btn btn-outline-info">-->
+<!--                    send mail-->
+<!--                </button>-->
+<!--                <button type="reset" class="btn btn-outline-secondary">-->
+<!--                    Reset-->
+<!--                </button>-->
+<!--            </div>-->
+<!--            </form>-->
+        </div>
+    </div>
+</div>
+{% endblock content %}

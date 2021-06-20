@@ -1,0 +1,213 @@
+{% extends 'users/base.html' %}
+{% load static %}
+
+{% block head %}
+    <style>
+    #navmain {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container p-4">
+    <div class="row">
+        <img src="{% static 'customer/background/aboutus.jpg' %}"
+             class="card-img-top"
+             style="max-width:300px"
+             alt="...">
+    </div>
+    <div class="row">
+        <p>
+            Ozone F & L Trading Company Limited is a registered company in Nigeria, currently operating in Lagos state.
+            Founded in 2009 by Uzo Tammy Nwokoro, it has been operating as a distribution
+            company with the major brewery companies in Nigeria. We also distribute for a hygiene
+            company Hayat Kimya.
+        </p>
+        <p>
+            Our partnership with
+        <ul>
+            <li>Nigerian Brewery(subsidiary of Heineken)</li>
+            <li>Guinness Nigeria Plc(subsidiary of Diageo)</li>
+            <li>International Brewery(subsidiary of AB-Inbev)</li>
+            <li>Hayat Kimya Nigeria Plc(Subsidiary of Hayat Kimya International</li>
+        </ul>
+           forms the trade arm of our business while other investments in banks and start-up companies compliment
+        our business.
+        </p>
+        <p>
+            Our staff strength hovers between 35 and 40, with customer base of about 1500. We are committed to developing
+            whole sale businesses in Lagos and beyond. We operate from six of our branches located in
+            <ul>
+                <li>Vino, Genesis and Front Gate all in Trade Fair</li>
+                <li>Lagos, Lagos Island</li>
+                <li>Stardom, Iju</li>
+                <li>Badagry, Badagry Town</li>
+            </ul>
+        </p>
+
+        <p>
+            Operating in a harsh and unpredictable environment, we still seek to transform into
+            a cooperate, online company with the hope of trading evenly across Nigeria and beyond. With passionate and committed
+            staff we are able to get along. Meet some of the staff
+            <a href="{% url 'company' %}">here</a>.
+        </p>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a href="{% url 'index' %}">
+            <i class="fa fa-home text-info"></i>Home</a>
+        </div>
+<!--        modals-->
+        <div class="col">
+            <a
+                href="model-link"
+                class="text-primary"
+                data-toggle="modal"
+                data-target="#ppModal">
+            Policies & Procedures
+            </a>
+        </div>
+        <div class="col">
+            <a
+                href="model-link"
+                class="text-primary"
+                data-toggle="modal"
+                data-target="#tcModal">
+            Terms & Conditions
+            </a>
+        </div>
+        <div class="col">
+            <a
+                href="model-link"
+                class="text-primary"
+                data-toggle="modal"
+                data-target="#ppdModal">
+            Privacy Policy & Disclaimer
+            </a>
+        </div>
+<!--        template form for application-->
+        <div class="col">
+            <a href="{% url 'apply-create' %}">Apply</a>
+        </div>
+    </div>
+</div>
+<!-- Button trigger modal -->
+
+<!-- Modal -->
+<!--Policies and Procedures-->
+<div class="modal fade"
+     id="ppModal"
+     tabindex="-1"
+     aria-labelledby="ppModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"
+            id="ppModalLabel">
+            Policies and Procedures
+        </h5>
+        <button
+                type="button"
+                class="btn-close"
+                data-dismiss="modal"
+                aria-label="Close">
+            <i class="fa fa-close"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+            <h5 class="text-info">
+                <i class="fa fa-info-circle text-warning"></i>
+                coming soon in few days
+                <i class="fa fa-exclamation text-danger"></i>
+            </h5>
+      </div>
+      <div class="modal-footer">
+        <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal">Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Terms and Conditions-->
+<div class="modal fade"
+     id="tcModal"
+     tabindex="-1"
+     aria-labelledby="tcModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"
+            id="tcModalLabel">
+            Terms and Conditions
+        </h5>
+        <button
+                type="button"
+                class="btn-close"
+                data-dismiss="modal"
+                aria-label="Close">
+            <i class="fa fa-close"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+            <h5 class="text-info">
+                <i class="fa fa-info-circle text-warning"></i>
+                coming soon in few days
+                <i class="fa fa-exclamation text-danger"></i>
+            </h5>
+      </div>
+      <div class="modal-footer">
+        <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal">Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Terms and Conditions-->
+<div class="modal fade"
+     id="ppdModal"
+     tabindex="-1"
+     aria-labelledby="ppdModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"
+            id="ppdModalLabel">
+            Privacy Policy and Disclaimer
+        </h5>
+        <button
+                type="button"
+                class="btn-close"
+                data-dismiss="modal"
+                aria-label="Close">
+            <i class="fa fa-close"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+            <h5 class="text-info">
+                <i class="fa fa-info-circle text-warning"></i>
+                coming soon in few days
+                <i class="fa fa-exclamation text-danger"></i>
+            </h5>
+      </div>
+      <div class="modal-footer">
+        <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal">Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container mt-3">
+    <h2 class="text-secondary text-center bg-light">Comprehensive Data Page</h2>
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="media">
+              <img src="{{object.image.url}}"
+                   width="150px"
+                   height="150px"
+                   class="rounded mr-3"
+                   alt="...">
+              <div class="media-body">
+                <h5 class="text-info mt-0">{{object}}</h5>
+                <p class="text-success">Employee ID: {{object.id|zeropadding:3}}</p>
+              </div>
+            </div>
+            <div class="row p-2">
+                <div class="col-6">
+                    <p>First Name: {{object.staff.first_name}}</p>
+                    <p>Second Name: {{object.staff.second_name}}</p>
+                    <p>Last Name: {{object.staff.last_name}}</p>
+                    <p>Date of Birth: {{object.staff.birth_date}}</p>
+                    <p>Gender: {{object.staff.gender}}</p>
+                    <p>Marital Status: {{object.staff.marital_status}}</p>
+                    <p>Qualification: {{object.staff.qualification}}</p>
+                    <p>Course: {{object.staff.course }}</p>
+                    <p>Personal Mobile:
+                        {% if object.staff.mobile is None %}
+                        {{object.staff.mobile}}</p>
+                        {% else %}
+                        {{object.staff.mobile|addsep}}</p>
+                        {% endif %}
+                    <p>Personal Email: {{object.staff.email}}</p>
+                    <p>Application Date: {{object.staff.apply_date}}</p>
+                    <p>Data Modified Time: {{object.staff.modified_date}}</p>
+                    <p>Residential Address: {{object.staff.address}}</p>
+                </div>
+                <div class="col-6">
+                    <p>Date Employed: {{object.date_employed}}</p>
+                    <p>Official Email: {{object.official_email}}</p>
+                    <p>Official Mobile:
+                        {% if object.official_mobile is None %}
+                        {{object.official_mobile}}
+                        {% else %}
+                        {{object.official_mobile|addsep}}
+                        {% endif %}
+                    </p>
+                    <p>Management Staff?:
+                        <span>{{ object.is_management|yesno|upper }}</span>
+                    </p>
+                    <p>Duty Status: {{object.status|yesno:'Active, Terminated, Passive'}}</p>
+                    <p>Status:
+                        {{object.is_confirmed|yesno:'CONFIRMED, PROBATION'}}
+                    </p>
+                    <p>Position: {{object.position}}</p>
+                    <p>Department: {{object.department}}</p>
+                    <p>Outlet: {{object.branch}}</p>
+                    <p>Banker: {{object.banker}}</p>
+                    <p>Account Number: {{object.account_number|addsep}}</p>
+                    <p>Basic Salary: {{object.basic_salary}} | Allowance: {{object.allowance}}</p>
+                    <p>Tax Payable:{{object.tax_amount}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="row">
+                <div class="col">
+                    <button type="button"
+                    class="list-group-item list-group-item-action bg-light"
+                    aria-current="true">
+                <b class="text-center">Derived Data Section</b>
+            </button>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item text-info">Fullname: {{object.fullname}}</li>
+                        <li class="list-group-item text-success">Full Salary: {{object.salary}}</li>
+                        <li class="list-group-item text-success">Balance (B/F): {{object.balance}}</li>
+                        <li class="list-group-item">Age: {{object.staff.birth_date|timesince}}</li>
+                        <li class="list-group-item">Worked For: {{object.date_employed|timesince}}</li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col mb-3">
+                    <a class="btn btn-info btn-sm" href="{% url 'employee-update' object.pk %}">Update</a>
+                </div>
+                <div class="col mb-3">
+                    <a class="btn btn-primary btn-sm" href="{% url 'payroll-statement' object.pk %}">Statement</a>
+                </div>
+
+                <div class="col">
+                     <a class="btn btn-dark btn-sm" href="{% url 'staff-list' %}"><i class="fa fa-reply text-danger"></i></a>
+                </div>
+           </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

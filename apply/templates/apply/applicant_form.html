@@ -1,0 +1,176 @@
+{% extends 'users/base.html' %}
+{% block head %}
+{% load static  %}
+
+    <style>
+    #navmain {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row p-4">
+            <div class="col-sm-3 ml-2">
+            <img src="{% static 'customer/logo.png' %}"
+                 class="rounded-circle shadow"
+                 width="70px"
+                 alt="">
+                <br><br>
+                <i class="fa fa-info-circle text-info"></i>
+                <p class="text-primary">
+                    You will receive a confirmation email with the email address
+                    provided to us on this form. kindly ensure a valid email address
+                    is provided and do check your inbox soon after submission
+                </p>
+            </div>
+            <div class="col-sm-8 shadow">
+                <div class="row">
+                    <div class="col-auto">
+                        <div class="card bg-warning">
+                            <div class="card-body shadow">
+                                <h5 class="card-title">
+                                    <i class="fa fa-warning text-danger"></i>Take Note
+                                </h5>
+                                <p class="card-text">
+                                    Ensure that the information provided by
+                                    you is correct. Any confirmation to the
+                                    contrary will result in termination
+                                    of contract with you if any.
+                                </p>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <p class="text-muted text-center">Information provided to use is for employment
+                                    purposes only
+                                </p>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form method="POST">{% csrf_token %}
+                    <fieldset class="form-group bg-light">
+                        <legend class="text-info p-3">{{ title }} Application Form</legend>
+                        <div class="row">
+                            <div class="col-auto">
+                                <span class="">First Name </span>
+                                <span class="text-danger">*</span>
+                                {{form.first_name}}
+                            </div>
+                            <div class="col-auto">
+                                <span>Second Name </span>{{form.second_name}}
+                            </div>
+                            <div class="col-auto">
+                                <span>
+                                    Last Name
+                                    <span class="text-danger">*</span>
+                                </span>{{form.last_name}}
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                                <div class="col-auto">
+                                    <div class="form-label">Gender
+                                    <span class="text-danger">*</span>
+                                    </div>
+                                    <div class="form-check">{{form.gender}}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-label">
+                                        Marital Status<span class="text-danger">*</span>
+                                    </div>
+                                    <div class="form-check">{{form.marital_status}}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-label">
+                                        Qualification<span class="text-danger">*</span>
+                                    </div>
+                                    <div class="mb-2">{{form.qualification}}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="form-label">
+                                        Date of Birth<span class="text-danger">*</span>
+                                    </div>
+                                    <div class="form-select">{{ form.birth_date }}</div>
+                                </div>
+                            </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-auto">
+                                <div class="form-label">Course</div>
+                                <div>{{ form.course }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="form-label">
+                                    Mobile<span class="text-danger">*</span>
+                                </div>
+                                <div>{{ form.mobile }}</div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-label">Email
+<!--                                <span class="text-danger">*</span>-->
+                                </div>
+                                <div>{{ form.email }}</div>
+                            </div>
+
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-auto">
+                                <div class="form-label">
+                                    Address<span class="text-danger">*</span>
+                                </div>
+                                <div class="">{{ form.address }}</div>
+                            </div>
+                            {% if title == 'Update' %}
+                            <div class="col-auto">
+                                <div class="form-label text-secondary">
+                                    <b>Application Date</b>
+                                    <small class="text-danger">(readonly)</small>
+                                </div>
+                                <div class="bg-dark text-white text-center shadow">
+                                    {{ application_date }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <hr>
+                    </fieldset>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-7">
+                            <button class="btn btn-outline-info"
+                                    type="submit">
+                                <small>Submit
+                                    {%  if title == 'Update' %}
+                                        {{ title }}d
+                                    {% else %}
+                                        {{ title }}
+                                    {% endif %}
+                                Form</small>
+                            </button>
+                        </div>
+                            <div class="col d-flex justify-content-end">
+                                {% if title == 'Update' %}
+                                <a class="btn btn-outline-secondary"
+                               type="button" href="{% url 'apply-pending' %}">
+                            <i class="fa fa-reply text-danger"></i> Return</a>
+                                {% else %}
+                            <a class="btn btn-outline-secondary"
+                               type="button" href="{% url 'about' %}">
+                            <i class="fa fa-reply text-danger"></i> Return</a>
+                                {% endif %}
+                        </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

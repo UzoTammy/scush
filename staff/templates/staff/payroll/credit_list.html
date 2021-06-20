@@ -1,0 +1,50 @@
+{% extends 'users/base.html' %}
+<head>
+    <style>
+    body {
+        background-color: blue;
+    }
+    </style>
+</head>
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <table data-toggle="table"
+                   data-pagination="true"
+                   data-search="true"
+                   class="table table-bordered table-sm">
+                <caption>Credit Note List</caption>
+                <thead class="bg-success text-white">
+                    <tr>
+                        <th scope="col">S/N</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Staff</th>
+                        <th scope="col">Remark</th>
+                        <th scope="col">Value</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for object in object_list %}
+                    <tr>
+                        <td scope="col">{{ forloop.counter}}</td>
+                        <td scope="col">{{object.credit_date|date:'d-m-Y'}}</td>
+                        <td scope="col"><a href="#">{{object}}</a></td>
+                        <td scope="col">{{object.remark}}</td>
+                        <td scope="col">{{object.value}}</td>
+                        <td scope="col">{{object.status|yesno:'Taken, Pending'}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+<!--                        <td colspan="2">hi</td>-->
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

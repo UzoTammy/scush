@@ -1,0 +1,35 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load djmoney %}
+{% load custom_templates %}
+
+{% block head %}
+
+{% endblock head %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row p-3">
+    <h2 class="text-secondary">Customer Details</h2>
+    </div>
+    <div class="row">
+    <div class="col-sm-6">
+        <h5 class="text-info">{{object.business}}
+        <span>(ID: {{object.id|zeropadding:3}})</span>
+        </h5>
+        <p>Owner: {{object.owner}}</p>
+        <p>Mobile: {{object.mobile|addsep}}</p>
+        <p>Email: {{object.email}}</p>
+        <p>Address: {{object.address}}</p>
+        <p>Region: {{object.region}}</p>
+        <p>Cluster: {{object.cluster}}</p>
+        <p>Type: {{object.type}}</p>
+        <p>Sales: {% money_localize object.sales 'NGN' %}</p>
+        <p>Frequency: {{object.freq}}</p>
+        <button class="btn btn-outline-primary" type="submit">Submit</button>
+        <a class="btn btn-dark float-right" href="{% url 'csv-customers' %}">Cancel</a>
+    </div>
+    </div>
+</div>
+{% endblock %}

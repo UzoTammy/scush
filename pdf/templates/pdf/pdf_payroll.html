@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ozone-Payroll</title>
+    <style type="text/css">
+            body {
+                font-weight: 100;
+                font-size: 14px;
+            }
+            .header {
+                font-size: 20px;
+                font-weight: 100;
+                text-align: center;
+                color: #007cae;
+            }
+            .title {
+                font-size: 22px;
+                font-weight: 100;
+               /* text-align: right;*/
+               padding: 10px 20px 0px 20px;
+            }
+            .title span {
+                color: #007cae;
+            }
+            .details {
+                padding: 10px 20px 0px 20px;
+                text-align: left !important;
+                /*margin-left: 40%;*/
+            }
+            .hrItem {
+                border: none;
+                height: 1px;
+                /* Set the hr color */
+                color: #333; /* old IE */
+                background-color: #fff; /* Modern Browsers */
+            }
+            small {
+                color: #e7aaad;
+            }
+            table, th, td {
+                border: 1px solid #d6d7ce;
+                padding: 3px;
+            }
+            table {
+                width: 100%;
+            }
+            img {
+
+            }
+        </style>
+</head>
+<body>
+<div class='wrapper'>
+    <div class='header'>
+        <p class='title'>Payroll</p>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class='details'>
+            For: {% for user in users %}
+            {{user}}, {% endfor %}
+            <br/>
+            Total: {{employees.count}}
+            <br/>
+            Screen Time: {{today}} WAT
+            <br>
+            Source: {{ host }}
+            <br>
+            </div>
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col">
+        <table class="table caption-top">
+            <thead>
+            <tr>
+                <th width="50px" scope="col">S/N</th>
+                <th scope="col">Staff</th>
+                <th scope="col">Salary</th>
+                <th scope="col">Bonus</th>
+                <th scope="col" style="color: #007cae">Pay</th>
+                <th scope="col">Tax</th>
+                <th scope="col" style="color: #007cae;">Gross pay</th>
+                <th scope="col">Debit</th>
+                <th scope="col">Credit</th>
+                <th scope="col" style="color: #007cae;">NetPay</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for employee in employees %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{employee}}</td>
+                <td>{{employee.basic_salary.amount|floatformat:"2g"}}</td>
+                <td>{{employee.allowance.amount|floatformat:"2g"}}</td>
+                <td>{{employee.salary.amount|floatformat:"2g" }}</td>
+                <td>{{employee.tax_amount.amount|floatformat:"2g"}}</td>
+                <td>{{employee.gross_pay.amount|floatformat:"2g"}}</td>
+                <td>{{employee.debit.amount|floatformat:"2g"}}</td>
+                <td>{{employee.credit.amount|floatformat:"2g"}}</td>
+                <td>{{employee.netpay.amount|floatformat:"2g"}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="col" colspan="2">Total</th>
+                    {% for value in totals %}
+                        {% if forloop.counter == 6 or forloop.counter == 7 %}
+                            <th scope="col"
+                                style="color:blue;">
+                                {{ value.sum|floatformat:"2g" }}</th>
+                        {% else %}
+                            <th scope="col">{{ value.sum|floatformat:"2g" }}</th>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+<!--        footnote-->
+<div class="row">
+    <br>
+    <div class="col">
+        <small>note: WAT -> West African Time (GMT+1)
+        <br>
+        total column that is blue are fixed values. requires modifications</small>
+    </div>
+</div>
+
+</body>
+</html>

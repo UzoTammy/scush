@@ -1,0 +1,135 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+{% load djmoney %}
+
+{% block content %}
+<section class="p-5">
+    <div class="row">
+        <div class="col">
+            <table data-toggle="table"
+                   data-show-footer="true"
+                   data-pagination="true"
+                   data-search="true"
+                   data-show-columns="true"
+                   class="table table-bordered caption-top table-sm"
+                   width="40px" bgcolor="#e7efef">
+                <caption>Generated Payroll for the period {{period}}
+                    <span class="text-success float-right">{{month}}, {{year}}</span>
+                </caption>
+            <thead class="bg-secondary text-white text-center">
+                    <tr>
+              <th scope="col">#</th>
+              <th scope="col">Staff</th>
+              <th scope="col">Salary</th>
+              <th scope="col">Tax</th>
+              <th scope="col">Salary Due</th>
+              <th scope="col">Balance</th>
+              <th scope="col">Credit Amount</th>
+              <th scope="col">Debit Amount</th>
+              <th scope="col" class="bg-success">Net Pay</th>
+              <th scope="col">Deduction</th>
+              <th scope="col">Outstanding</th>
+            </tr>
+                </thead>
+        <tbody>
+      {% for record, credit, debit, netPay, in, out in records  %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td><a href="#">{{record.fullname}}</a></td>
+            <td class="text-right">{{record.salary}}</td>
+            <td class="text-right">{{record.tax_amount}}</td>
+            <td class="text-right">{{record.gross_pay}}</td>
+            {% if record.balance.amount >= 0 %}
+            <td class="text-right">{{record.balance}}</td>
+            {% else %}
+            <td class="text-right text-danger">{{record.balance|abs}}</td>
+            {% endif %}
+            <td class="text-right">{{credit}}</td>
+            <td class="text-right text-danger">{{debit}}</td>
+            <td class="bg-success text-white text-right">
+                <b>{{netPay}}</b></td>
+            <td class="text-right">{{in}}</td>
+            {% if out.amount >= 0 %}
+            <td class="text-right">{{out}}</td>
+            {% else %}
+            <td class="text-right text-danger">{{out|abs}}</td>
+            {% endif %}
+        </tr>
+      {% endfor %}
+  </tbody>
+    <tfoot>
+        <tr class="bg-dark text-white">
+        <th colspan="2">Total</th>
+        <th scope="col" class="text-right">1</th>
+        <th scope="col" class="text-right">2</th>
+        <th scope="col" class="text-right">3</th>
+        <th scope="col" class="text-right">4</th>
+        <th scope="col" class="text-right">5</th>
+        <th scope="col" class="text-right">6</th>
+        <th scope="col" class="text-right">7</th>
+        <th scope="col" class="text-right">8</th>
+        <th scope="col" class="text-right">9</th>
+    </tr>
+    </tfoot>
+</table>
+        </div>
+    </div>
+    <!--        payroll totals-->
+    <div class="row p-2">
+        <div class="col">
+                <ul class="list-group">
+                    <li class="list-group-item active">Payroll Totals</li>
+                    <li class="list-group-item">
+                        <div class="row">
+                        <div class="col">Salary: {% money_localize salary 'NGN' %}</div>
+                        <div class="col">Balance:
+                            {% if balance < 0 %}
+                            <span class="text-danger">{% money_localize balance|abs 'NGN' %}</span>
+                            {% else %}
+                            <span>{% money_localize balance 'NGN' %}</span>
+                            {% endif %}
+                        </div>
+                        <div class="col">Net Pay: {% money_localize net_pay 'NGN' %}</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row">
+                        <div class="col">Tax Due: {% money_localize tax 'NGN' %}</div>
+                        <div class="col">Credit: {% money_localize credit 'NGN' %}</div>
+                        <div class="col">Deduction: {% money_localize deduction 'NGN' %}</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row">
+                        <div class="col">Salary Due: {% money_localize salary_due 'NGN' %}</div>
+                        <div class="col">Debit: {% money_localize debit 'NGN' %}</div>
+                        <div class="col">
+                            Outstanding:
+                            {% if outstanding < 0 %}
+                            <span class="text-danger">{% money_localize outstanding|abs 'NGN' %}</span>
+                            {% else %}
+                            <span>{% money_localize outstanding 'NGN' %}</span>
+                            {% endif %}
+                        </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+    </div>
+
+<!--    The form save that moves data into payroll-->
+    <form class="p-2"
+          action=""
+          method="post">
+                {% csrf_token %}
+        <div class="row">
+            <div class="col">
+                <button type="submit" class="btn btn-success">Save</button>
+                <a href="{% url 'salary' %}" class="btn btn-dark float-right">
+                    <i class="fa fa-reply"></i>
+                </a>
+            </div>
+        </div>
+        </form>
+</section>
+{% endblock content %}

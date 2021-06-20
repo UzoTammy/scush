@@ -1,0 +1,149 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+{% load djmoney %}
+
+{% block content %}
+<section>
+    <div class="table-responsive p-3">
+        <div class="row mt-3">
+            <div class="col">
+                <table data-toggle="table"
+                   data-pagination="true"
+                   data-show-columns="true"
+                   data-show-footer="true"
+                   data-search="true"
+                   class="table table-stripped table-bordered table-sm"
+                   id="myDataTable">
+                <caption>Payroll already exist for this period: {{period}}</caption>
+                <thead class="bg-secondary text-white text-center">
+            <tr>
+              <th scope="col">#</th>
+                <th scope="col">ID</th>
+              <th scope="col">Staff</th>
+              <th scope="col">Salary</th>
+              <th scope="col">Tax</th>
+              <th scope="col">Salary Due</th>
+              <th scope="col">Balance</th>
+              <th scope="col">Credit Amount</th>
+              <th scope="col">Debit Amount</th>
+              <th scope="col" class="bg-success">Net Pay</th>
+              <th scope="col">Deduction</th>
+              <th scope="col">Outstanding</th>
+              <th scope="col">Status</th>
+            </tr>
+        </thead>
+            <tbody>
+            {% for record in object  %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{record.staff.id|zeropadding:3}}</td>
+                    <td><a href="#">{{record.staff}}</a></td>
+                    <td class="text-right">{{record.staff.salary}}</td>
+                    <td class="text-right">{{record.staff.tax_amount}}</td>
+                    <td class="text-right">{{record.staff.gross_pay}}</td>
+                    {% if record.staff.balance.amount >= 0 %}
+                    <td class="text-right">{{record.staff.balance}}</td>
+                    {% else %}
+                    <td class="text-right text-danger">{{record.staff.balance|abs}}</td>
+                    {% endif %}
+                    <td class="text-right">{{record.credit_amount}}</td>
+                    <td class="text-right text-danger">{{record.debit_amount}}</td>
+                    <td class="bg-success text-white text-right">
+                        <b>{{record.net_pay}}</b></td>
+                    <td class="text-right">{{record.deduction}}</td>
+                    {% if record.outstanding.amount >= 0 %}
+                    <td class="text-right">{{record.outstanding}}</td>
+                    {% else %}
+                    <td class="text-right text-danger">{{record.outstanding|abs}}</td>
+                    {% endif %}
+                    <td>{{record.status|yesno:'Paid, Pay'}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+            <tfoot>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">ID</th>
+                  <th scope="col">Staff</th>
+                  <th scope="col">Salary</th>
+                  <th scope="col">Tax</th>
+                  <th scope="col">Salary Due</th>
+                  <th scope="col">Balance</th>
+                  <th scope="col">Credit Amount</th>
+                  <th scope="col">Debit Amount</th>
+                  <th scope="col" class="bg-success">Net Pay</th>
+                  <th scope="col">Deduction</th>
+                  <th scope="col">Outstanding</th>
+                  <th scope="col">Status</th>
+                </tr>
+            </tfoot>
+            </table>
+        </div>
+    </div>
+<!--        payroll totals-->
+        <div class="row p-2">
+            <div class="col">
+                <ul class="list-group">
+                    <li class="list-group-item active">Payroll Totals</li>
+                    <li class="list-group-item">
+                        <div class="row">
+                        <div class="col">Salary: {% money_localize salary 'NGN' %}</div>
+                        <div class="col">Balance:
+                            {% if balance < 0 %}
+                            <span class="text-danger">{% money_localize balance|abs 'NGN' %}</span>
+                            {% else %}
+                            <span>{% money_localize balance 'NGN' %}</span>
+                            {% endif %}
+                        </div>
+                        <div class="col">Net Pay: {% money_localize net_pay 'NGN' %}</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row">
+                        <div class="col">Tax Due: {% money_localize tax 'NGN' %}</div>
+                        <div class="col">Credit: {% money_localize credit 'NGN' %}</div>
+                        <div class="col">Deduction: {% money_localize deduction 'NGN' %}</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row">
+                        <div class="col">Salary Due: {% money_localize salary_due 'NGN' %}</div>
+                        <div class="col">Debit: {% money_localize debit 'NGN' %}</div>
+                        <div class="col">
+                            Outstanding:
+                            {% if outstanding < 0 %}
+                            <span class="text-danger">{% money_localize outstanding|abs 'NGN' %}</span>
+                            {% else %}
+                            <span>{% money_localize outstanding 'NGN' %}</span>
+                            {% endif %}
+                        </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col">
+                <h6 class="text-muted">
+                    <ol>
+                        <li class="text-danger">You attempted to generate already generated payroll
+                        as shown above</li>
+                        <li>If this payroll is OK, return</li>
+                        <li>if this payroll needs adjustment, then return and <span class="text-success">regenerate</span></li>
+                    </ol>
+                </h6>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-outline-dark float-right">
+                    <a href="{% url 'salary' %}"><i class="fa fa-reply"></i></a>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    $('myDataTable').DataTable();
+</script>
+{% endblock content %}

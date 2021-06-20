@@ -1,0 +1,32 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row p-3">
+        <div class="col-sm-8 bg-secondary shadow">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <legend class="text-warning">{{ title }} Customer Data</legend>
+                <fieldset class="bg-light">
+                    <div class="ml-2">{{ form|crispy }}</div>
+                </fieldset>
+                <div class="form-group p-2">
+                    <button class="btn btn-outline-warning" type="submit">Submit</button>
+                    {% if title == "Update" %}
+                    <a class="btn btn-outline-light float-right"
+                       href="{% url 'customer-detail' object.pk %}">
+                        <i class="fa fa-reply text-danger"></i> Return</a>
+                    {% else %}
+                    <a class="btn btn-outline-light float-right"
+                       href="{% url 'customer-list' %}">
+                        <i class="fa fa-reply text-danger"></i> Return</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

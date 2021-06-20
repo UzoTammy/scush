@@ -1,0 +1,21 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+
+<div class="container p-3">
+    {% for field in form %}
+        <div class="row">
+            {{field.errors }}
+            {{field.label_tag}} {{ field.value }}
+            {% if field.help_text %}
+            <p class="help text-danger">({{field.help_text|safe}})</p>
+            {% endif %}
+            {% if field.field.max_length %}
+            ml: {{field.field.max_length}}
+            {% endif %}
+
+        </div>
+    {% endfor %}
+    {{form.cleaned.data}}
+</div>
+{% endblock %}

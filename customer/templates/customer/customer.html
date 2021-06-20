@@ -1,0 +1,100 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="row m-2">
+    <div class="col-sm-8">
+<!--            The table list of customers-->
+            <div class="row">
+                <div class="col">
+                    <table data-toggle="table"
+                           data-search="true"
+                           data-pagination="true"
+                           class="table caption-top table-sm">
+                        <caption>
+                            <div class="row">
+                                <div class="col">
+                                Customers List
+                            </div>
+                                <div class="col text-right">
+                        <a class="btn btn-dark btn-sm" href="{% url 'pdf-customers-list' %}">
+                            <i class="fa fa-file-pdf-o text-danger"></i>
+                            <i class="fa fa-print text-white"></i>
+                        </a>
+                        <a href="{% url 'customer-create' %}"
+                           class="btn btn-dark btn-sm text-right">
+                            <i class="fa fa-plus text-success"></i>
+                            New Customer
+                        </a>
+                    </div>
+                            </div>
+                        </caption>
+                        <thead class="text-white bg-primary">
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Business Name</th>
+                            <th scope="col">Business Owner</th>
+                            <th scope="col">Cluster</th>
+                            <th scope="col">Mobile</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for customer in customers %}
+                            <tr>
+                            <th scope="row">{{ customer.id|zeropadding:3 }}</th>
+                            <td><a href="{% url 'customer-detail' customer.id %}">{{customer.business_name}}</a></td>
+                            <td>{{customer.business_owner}}</td>
+                            <td>{{customer.cluster}}</td>
+                            <td>{{customer.mobile|addsep}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>
+                    <p>Last Modified: {{ last_modified_object }} on
+                            {{ last_time_modified }} by
+                            {{ last_modified_object.creator }}</p>
+                </div>
+<!--                pagination-->
+                <div class="container text-center">
+                    {% if is_paginated %}
+                        {% if page_obj.has_previous %}
+                        <a href="?page=1" class="btn btn-outline-info btn-sm mb-4">
+                            <i class="fa fa-backward"></i>
+                        </a>
+                        <a href="?page={{ page_obj.previous_page_number }}"
+                           class="btn btn-outline-info btn-sm mb-4">
+                            <i class="fa fa-step-backward"></i>
+                        </a>
+                        {% endif %}
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <a href="?page={{num}}" class="btn btn-info btn-sm mb-4">{{num}}</a>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{num}}" class="btn btn-outline-info btn-sm mb-4">{{num}}</a>
+                            {% endif %}
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}"
+                           class="btn btn-outline-info btn-sm mb-4">
+                            <i class="fa fa-step-forward"></i>
+                        </a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}"
+                           class="btn btn-outline-info btn-sm mb-4">
+                            <i class="fa fa-forward"></i>
+                        </a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    <div class="col-sm-4">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-success">Last Modified</li>
+                <li class="list-group-item text-danger">Most Frequent</li>
+                <li class="list-group-item text-success">Biggest Customer</li>
+                <li class="list-group-item text-danger">Most Recent</li>
+                <li class="list-group-item text-warning">Most Profitable</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

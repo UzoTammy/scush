@@ -1,0 +1,179 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row p-3">
+        <div class="col">
+            <h3>Generate Payroll Process</h3>
+            <p>This process is best carried out between the 25th of the present month and before the end of the month.
+                However there is room to generate immediate past month and the next month.
+            </p>
+            <p>The previous month and next month are allowed in the case of delay or need
+            for regeneration of payroll.</p>
+            <p class="text-danger">Current Date: {% now 'jS \o\f M, Y' %}</p>
+            <p>Last Period Generated: {{last_period_generated}} | {{messenger}}</p>
+            <p>Other vital information</p>
+        </div>
+    </div>
+    <div class="row p-2">
+        <div class="col-sm-4">
+            <a class="btn"
+               href="#"
+               data-toggle="modal"
+               data-target="#firstModal">
+                <div class="jumbotron bg-dark text-white">
+                    <div class="container">
+                        <h4 class="display-5">
+                            Generate payroll for {{last_month}}
+                        </h4>
+                        <p class="text-danger">(Period: {{last_period}})</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-sm-4">
+            <a class="btn"
+               href="#"
+               data-toggle="modal"
+               data-target="#secondModal">
+                <div class="jumbotron bg-success text-white">
+                    <div class="container">
+                        <h4 class="display-5">
+                            Generate Payroll for {{this_month}}
+                        </h4>
+                        <p class="text-danger">(Period: {{current_period}})</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-sm-4">
+            <a class="btn"
+               href="#"
+               data-target="#thirdModal"
+               data-toggle="modal">
+                <div class="jumbotron bg-warning text-white">
+                    <div class="container">
+                        <h4 class="display-5">
+                            Generate payroll for {{next_month}}
+                        </h4>
+                        <p class="text-danger">(Period: {{next_period}})</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<!--Last month-->
+<div class="modal fade"
+     id="firstModal"
+     tabindex="-1"
+     aria-labelledby="firstModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title"
+            id="firstModalLabel">
+            Payroll for {{last_month}}
+        </h5>
+        <button type="button"
+                class="btn-close"
+                data-dismiss="modal"
+                aria-label="Close">
+            <i class="fa fa-close"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        You are about to generate payroll for the period {{last_period}}
+      </div>
+      <div class="modal-footer">
+        <a href="{% url 'generate_payroll' last_period %}"
+           class="btn btn-danger">
+            Proceed
+        </a>
+        <button type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal">
+            Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--This month-->
+<div class="modal fade"
+     id="secondModal"
+     tabindex="-1"
+     aria-labelledby="secondModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title"
+            id="secondModalLabel">
+            Payroll for {{this_month}}
+        </h5>
+        <button type="button"
+                class="btn-close"
+                data-dismiss="modal"
+                aria-label="Close">
+            <i class="fa fa-close"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        You are about to generate payroll for the period {{current_period}}
+      </div>
+      <div class="modal-footer">
+        <a href="{% url 'generate_payroll' current_period %}"
+           class="btn btn-danger">
+            Proceed
+        </a>
+        <button type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal">
+            Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--Next Month-->
+<div class="modal fade"
+     id="thirdModal"
+     tabindex="-1"
+     aria-labelledby="thirdModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title"
+            id="thirdModalLabel">
+            Payroll for {{next_month}}
+        </h5>
+        <button type="button"
+                class="btn-close"
+                data-dismiss="modal"
+                aria-label="Close">
+            <i class="fa fa-close"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        You are about to generate payroll for the period {{next_period}}
+      </div>
+      <div class="modal-footer">
+        <a href="{% url 'generate_payroll' next_period %}"
+           class="btn btn-danger">
+            Proceed
+        </a>
+        <button type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal">
+            Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

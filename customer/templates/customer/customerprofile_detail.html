@@ -1,0 +1,82 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load custom_templates %}
+
+{% block head %}
+
+{% endblock head %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row p-3">
+    <h2 class="text-secondary">Customer Details</h2>
+</div>
+<div class="row">
+    <div class="col-sm-2 bg-secondary">
+        <div class="container text-center">
+            <img
+                src="{% static 'customer/logo.png' %}"
+                width="70px"
+                class="rounded-circle p-1 shadow"
+                alt="">
+        </div>
+
+    </div>
+    <div class="col-sm-6">
+        <h5 class="text-info">{{object.business_name}}</h5>
+        <p>Owner: {{object.business_owner}}</p>
+        <p>Mobile: {{object.mobile|addsep}}</p>
+        <p>Address: {{object.address}}</p>
+        <p>Region: {{object.region}}</p>
+        <p>Cluster: {{object.cluster}}</p>
+        <p>Category: {{object.category}}</p>
+        <p>Date Created: {{object.date_created|date:'d-M-Y'}}</p>
+        <p>Time Modified: {{object.date_modified}}</p>
+        <small class="text-muted">Created by: {{object.creator}}</small>
+        {% if user.is_superuser %}
+        <div class="row mt-3">
+            <div class="col">
+                <a href="{% url 'customer-update' object.id %}" class="btn btn-info btn-sm">Update</a>
+            </div>
+            <div class="col">
+                <a href="{% url 'customer-delete' object.id %}" class="btn btn-danger btn-sm">Delete</a>
+            </div>
+            <div class="col">
+                <a href="{% url 'customer-list' %}" class="btn btn-secondary btn-sm">
+                    <i class="fa fa-reply text-danger"></i> Return</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="row mt-3">
+            <div class="col">
+                <a href="{% url 'customer-list' %}" class="btn btn-secondary btn-sm">
+                    <i class="fa fa-reply text-danger"></i> Return</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-sm-4">
+        <div class="row mt-3">
+                <div class="col">
+                    <button type="button"
+                    class="list-group-item list-group-item-action bg-light"
+                    aria-current="true">
+                <b class="text-center">Derived Data Section</b>
+            </button>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item text-info">present account officer</li>
+                        <li class="list-group-item text-success">Total purchase value</li>
+                        <li class="list-group-item">The last day we sold to you</li>
+                        <li class="list-group-item">Incomplete Transaction quantity</li>
+                        <li class="list-group-item text-danger">Complete Transaction quantity</li>
+                        <li class="list-group-item text-danger">Account balance and statement</li>
+                        <li class="list-group-item text-danger">Rankings (sales, frequency,..)</li>
+                    </ul>
+                </div>
+            </div>
+    </div>
+</div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends 'users/base.html' %}
+{% load static %}
+
+{% block head %}
+    <style>
+        #navmain {
+            display: none;
+        }
+        body {
+            background-color: #8c8e8c;
+        },
+        div {
+            background-color: red;
+        },
+    </style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            {% for key, value in company.items %}
+            {% if key == 'Motto' %}
+            <div class="container">
+                <div class="row">
+                    <div class="col-4">
+                        <h4><font face="cursive">Company Logo</font></h4>
+                    </div>
+                    <div class="col-3">
+                        <img
+                                class="rounded-circle shadow"
+                                src="{% static 'customer/logo.png' %}"
+                                width="70px"
+                                alt="">
+
+                    </div>
+
+                </div>
+
+            </div>
+            <p>Our {{key}}: "<span class="text-danger">{{value}}</span>"</p>
+            {% elif key == 'Core Values' %}
+            <h2>{{key}}</h2>
+            <ul>
+                {% for core in value %}
+                <li>
+                    <b class="text-danger">{{ core|first }}</b><span>{{ core|slice:"1:"}}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <h2>{{key}}</h2>
+            <p><font face="cursive">{{value}}</font></p>
+            {% endif %}
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h1 style="color: #ffffff;">
+                <font face="cursive">Our Team</font>
+            </h1>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <div class="card mb-3 shadow"
+             style="max-width: 540px; background-color: #ffffff">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="{{ leader.image.url }}"
+                         class="rounded-circle p-1 shadow"
+                         alt="...">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{leader.fullname}}</h5>
+                        <h6 class="card-title">position</h6>
+                        <p class="card-text">{{ leader.bio }}</p>
+                        <p class="card-text"><small class="text-muted">uzo.nwokoro@ozonefl.com</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        {% for member in members %}
+        <div class="col-md-3 mt-2">
+            <div class="card" style="background-color: #ffffff">
+                <img src="{{ member.image.url }}"
+                     class="card-img-top rounded-circle p-1 shadow"
+                     style="max-width: 140px;"
+                     alt="...">
+                <div class="card-body">
+                    <p class="card-text text-center"><a href="#">{{member.fullname}}</a></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="row">
+        <div class="col-md-3 mt-2">
+            <div class="card shadow" style="background-color: #ffffff">
+                <img src="{% static 'customer/management_pics/blessing.jpg' %}"
+                     class="card-img-top rounded-circle p-1 shadow"
+                     style="max-width: 140px;"
+                     alt="...">
+                <div class="card-body">
+                    <p class="card-text text-center"><a href="#">Blessing</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mt-2">
+            <div class="card shadow" style="background-color: #ffffff">
+                <img src="{% static 'customer/management_pics/beauty.jpg' %}"
+                     class="card-img-top rounded-circle p-1 shadow"
+                     style="max-width: 140px;"
+                     alt="...">
+                <div class="card-body">
+                    <p class="card-text text-center"><a href="#">Beauty Sargin</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mt-2">
+            <div class="card shadow" style="background-color: #ffffff">
+                <img src="{% static 'customer/management_pics/nonso.jpg' %}"
+                     class="card-img-top rounded-circle p-1 shadow"
+                     style="max-width: 140px;"
+                     alt="...">
+                <div class="card-body">
+                    <p class="card-text text-center"><a href="#">Nonso Frank Ofoekwe</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mt-2">
+            <div class="card shadow" style="background-color: #ffffff">
+                <img src="{% static 'customer/management_pics/dickson.jpg' %}"
+                     class="card-img-top rounded-circle p-1 shadow"
+                     style="max-width: 140px;"
+                     alt="...">
+                <div class="card-body">
+                    <p class="card-text text-center"><a href="#">Dickson</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row bg-light p-2 mb-5">
+        <div class="col">
+            <a href="{% url 'about' %}">Go back to about Page</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

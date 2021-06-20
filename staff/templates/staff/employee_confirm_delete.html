@@ -1,0 +1,22 @@
+{% extends 'users/base.html' %}
+
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col">
+            <h5><i class="fa fa-warning text-warning"></i>
+                You are about to tamper with the database, be careful ‼️</h5>
+            <h4 class="text-dark">
+                    <i class="fa fa-info-circle text-info"></i>
+                     {{ object }} will be deleted permanently, proceed?</h4>
+            <form method="post">{% csrf_token %}
+                <button class="btn btn-danger" type="submit">Yes, Delete</button>
+            <a class="btn btn-secondary" href="{% url 'employee-detail' object.pk %}">
+                <i class="fa fa-reply text-danger"></i> No, Return</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

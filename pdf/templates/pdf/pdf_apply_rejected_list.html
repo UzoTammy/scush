@@ -1,0 +1,115 @@
+<!--<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">-->
+<!doctype html>
+{% load custom_templates %}
+<html>
+    <head>
+        <title>SCUSH-Applicants</title>
+        <style type="text/css">
+            body {
+                font-weight: 100;
+                font-size: 14px;
+            }
+            .header {
+                font-size: 20px;
+                font-weight: 100;
+                text-align: center;
+                color: #007cae;
+            }
+            .title {
+                font-size: 22px;
+                font-weight: 100;
+               /* text-align: right;*/
+               padding: 10px 20px 0px 20px;
+            }
+            .title span {
+                color: #007cae;
+            }
+            .details {
+                padding: 10px 20px 0px 20px;
+                text-align: left !important;
+                /*margin-left: 40%;*/
+            }
+            .hrItem {
+                border: none;
+                height: 1px;
+                /* Set the hr color */
+                color: #333; /* old IE */
+                background-color: #fff; /* Modern Browsers */
+            }
+            small {
+                color: #e7aaad;
+            }
+            table, th, td {
+                border: 1px solid #d6d7ce;
+                padding: 3px;
+            }
+            table {
+                width: 100%;
+            }
+            img {
+
+            }
+        </style>
+    </head>
+    <body>
+        <div class='wrapper'>
+            <div class='header'>
+                <p class='title'>List Of Rejected Applicants</p>
+            </div>
+        </div>
+        {% if applicants.count == 0 %}
+        <p>No Rejected Applicant</p>
+        {% else %}
+        <div class="row">
+            <div class="col">
+                <div class='details'>
+                    Total:  {{applicants.count}}
+                    <br/>
+                    Print Time: {% now "jS \o\f F Y \@ H:i" %} WAT
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col">
+                <table class="table caption-top">
+                    <thead>
+                    <tr>
+                        <th width="50px" scope="col">S/N</th>
+                        <th scope="col">Applicants</th>
+                        <th scope="col">Apply Date</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Qualification</th>
+                        <th scope="col">Course</th>
+                        <th scope="col">Mobile Number</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for applicant in applicants %}
+                        <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{applicant}}</td>
+                        <td>{{applicant.apply_date}}</td>
+                        <td>{{applicant.status|yesno:'Employed, Rejected, Pending'}}</td>
+                        <td>{{applicant.qualification}}</td>
+                        <td>{{applicant.course}}</td>
+                        <td>{{applicant.mobile|addsep}}</td>
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+<!--        footnote-->
+        <div class="row">
+            <br>
+        <div class="col">
+            <small>
+                note: WAT -> West African Time (GMT+1)
+            </small>
+        </div>
+    </div>
+        {% endif %}
+</body>
+</html>

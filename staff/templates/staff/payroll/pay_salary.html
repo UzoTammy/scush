@@ -1,0 +1,79 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row p-3">
+        <div class="col-3">
+            <img src="{{object.staff.image.url}}"
+                 class="rounded-circle"
+                 width="70%"
+                 alt="">
+            <div class="row mt-5 ml-2">
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit"
+                            name="pk"
+                            value="{{object.pk}}"
+                            class="btn btn-sm btn-outline-primary">
+                    Pay Now
+                </button>
+                </form>
+            </div>
+            <div class="row mt-5 ml-2">
+                <a href="{% url 'start-pay' %}"
+                   class="btn btn-sm btn-outline-dark float-right">
+                    Don't pay
+                </a>
+            </div>
+        </div>
+        <div class="col-6">
+            <h3>{{object}}</h3>
+            <p class="text-info">Pay Code: {{object.id|zeropadding:3}}-{{object.period}}</p>
+            <h5>Staff ID: {{object.staff.id|zeropadding:3}}</h5>
+            <p>Salary for Period: {{object.period}}</p>
+            <p>Date Generated: {{object.date_paid}}</p>
+            <p>Banker: {{object.staff.banker}}</p>
+            <p>Account Number: {{object.staff.account_number|addsep}}</p>
+            <hr>
+            <div class="row">
+            <div class="col-sm-6">
+            <p>Balance (B/F):
+                {% if object.staff.balance.amount < 0 %}
+                <span class="text-danger">{{object.staff.balance|abs}}</span>
+                {% else %}
+                <span class="text-dark">{{object.staff.balance}}</span>
+                {% endif %}
+            </p>
+            <p>Deduction: {{object.deduction}}</p>
+            <p>Outstanding (B/D):
+                {% if object.outstanding.amount < 0 %}
+                <span class="text-danger">{{object.outstanding|abs}}</span>
+                {% else %}
+                <span class="text-dark">{{object.outstanding}}</span>
+                {% endif %}
+            </p>
+                <hr>
+                <p>Credit: {{object.credit_amount}}</p>
+                <p>Debit: {{object.debit_amount}}</p>
+
+            </div>
+            <div class="col-sm-6">
+            <p>Basic Salary: {{object.staff.basic_salary}}</p>
+            <p>Allowance: {{object.staff.allowance}}</p>
+            <p>Salary: {{object.staff.salary}}</p>
+                <hr>
+            <p>Tax Payable: {{object.staff.tax_amount}}</p>
+            <p>Gross Pay: {{object.staff.gross_pay}}</p>
+            </div>
+            </div>
+                <hr>
+
+            <h3 class="text-success">Net Pay: {{object.net_pay}}</h3>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load  custom_templates %}
+
+
+{% block content %}
+
+<div class="container mt-3">
+<!--    The detailed view-->
+    <div class="row">
+        <div class="col">
+            <div class="card mb-3" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4 text-center">
+                        <img src="{% static 'customer/logo.png' %}"
+                        class="rounded-circle p-2"
+                             height="50px"
+                         alt="...">
+                        <div class="col">
+                            <p class="text-primary">Applied since {{ object.get_apply_age_string}} ago</p>
+                            <p class="text-danger">Status: {{object.status|yesno:'Employed, Rejected, Pending'}}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title text-info">
+                                Application Data for {{ object }}</h5>
+                            <p class="card-text">Full Name: {{ object.last_name|upper}},
+                                {{ object.first_name}} {{ object.second_name}}</p>
+                            <p class="card-text">Date of Birth: {{ object.birth_date}}</p>
+                            <p class="card-text">Gender: {{ object.gender}}</p>
+                            <p class="card-text">Marital Status: {{object.marital_status}}</p>
+                            <p class="card-text">Date Applied: {{ object.apply_date}}</p>
+                            <p class="card-text">Qualification: {{ object.qualification}}</p>
+                            <p class="card-text">Course of Study: {{ object.course}}</p>
+                            <p class="card-text">Last Modified on: {{ object.modified_date}}</p>
+                            <p class="card-text">Mobile Number: {{ object.mobile|addsep}}</p>
+                            <p class="card-text">Email: {{ object.email}}</p>
+                            <p class="card-text">Address: {{ object.address}}</p>
+<!--                            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>-->
+                        </div>
+                    </div>
+                </div>
+
+                <!--The buttons-->
+                <div class="row ml-2 mb-2">
+                    <!--        update-->
+                    <div class="col">
+                        <a href="{% url 'apply-update' object.id %}" class="btn btn-info btn-sm">Update</a>
+                    </div>
+                    <!--       Delete -->
+                    <!-- Button trigger modal -->
+                    {% if user.is_superuser %}
+                    <div class="col">
+                        <button type="button"
+                                class="btn btn-danger btn-sm"
+                                data-toggle="modal"
+                                data-target="#deleteModal">
+                            Delete
+                        </button>
+                    </div>
+                    {% endif %}
+                    <!--        return-->
+                    <div class="col">
+                        <a href="{% url 'apply' %}" class="btn btn-secondary btn-sm">
+                            <i class="fa fa-reply text-danger"></i></a>
+                    </div>
+                    <!--        Employ-->
+                    <div class="col">
+                        {% if object.status is None %}
+                            <a href="{% url 'employee-create' object.pk %}" class="btn btn-success btn-sm">
+                                Employ</a>
+                        {% else %}
+                            <a href="{% url 'employee-create' object.pk %}" class="btn btn-secondary btn-sm"
+                               style="pointer-events: none;">
+                                Employ</a>
+                        {% endif %}
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--    Modals-->
+<div class="modal fade"
+     id="deleteModal"
+     tabindex="-1"
+     aria-labelledby="deleteModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">Delete - {{object}}</h5>
+        <button type="button"
+                class="btn-close"
+                data-dismiss="modal"
+                aria-label="Close">
+            <i class="fa fa-close text-danger"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        This Applicant will be deleted permanently, proceed?
+      </div>
+        <form action="{% url 'apply-delete' object.id %}" method="post">{% csrf_token %}
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <button
+           type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+{% load djmoney %}
+
+
+{% block content %}
+<div class="section">
+    <div class="row p-3">
+        <div class="col">
+            <table class="table table-bordered caption-top"
+                   data-toggle="table"
+                   data-search="true"
+                   data-show-footer="true"
+                   data-show-columns="true"
+                   bgcolor="#e7efef">
+                <caption>Payroll Statement for {{objects.first.staff }}</caption>
+        <thead class="bg-secondary text-white text-center">
+            <tr>
+              <th scope="col">Pay ID</th>
+              <th scope="col">Date</th>
+              <th scope="col">Period</th>
+              <th scope="col">Balance</th>
+              <th scope="col">Salary Due</th>
+              <th scope="col">Credit</th>
+              <th scope="col">Debit</th>
+              <th scope="col">Deduction</th>
+              <th scope="col">Outstanding</th>
+              <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for object in objects %}
+                <tr>
+                    <th scope="row">{{ object.id|zeropadding:3 }}-{{object.period}}</th>
+                    <td>{{object.date_paid|date:'d-m-Y'}}</td>
+                    <td>{{object.period}}</td>
+                    <td class="text-right">{{object.staff.balance}}</td>
+                    <td class="text-right">{{object.net_pay}}</td>
+                    <td class="text-right">{{object.credit_amount}}</td>
+                    <td class="text-right">{{object.debit_amount}}</td>
+                    <td class="text-right">{{object.deduction}}</td>
+                    <td class="text-right">{{object.outstanding}}</td>
+                    <td>{{object.status|yesno:'paid, pending'}}</td>
+
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3" class="text-right">Total</th>
+                <th scope="col" class="text-right"></th>
+                <th scope="col" class="text-right"></th>
+                <th scope="col" class="text-right"></th>
+                <th scope="col" class="text-right"></th>
+                <th scope="col" class="text-right"></th>
+                <th scope="col" class="text-right"></th>
+                <th scope="col" class="text-right"></th>
+            </tr>
+        </tfoot>
+</table>
+        </div>
+    </div>
+    <div class="row p-3">
+        <div class="col">
+            <a href="{% url 'employee-detail' code %}"
+               class="btn btn-outline-dark">
+                <i class="fa fa-reply"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
