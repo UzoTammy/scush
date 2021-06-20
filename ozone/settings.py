@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG_VALUE', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['scushapp.herokuapp.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['scush.herokuapp.com', '127.0.0.1', 'localhost']
 
 # Application definition
 INSTALLED_APPS = [
