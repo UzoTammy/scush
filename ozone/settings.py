@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG_VALUE', default=False, cast=bool)
 # DEBUG = True
 
-ALLOWED_HOSTS = ['scush.herokuapp.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['scush.herokuapp.com', '127.0.0.1', '.localhost']
 
 # Application definition
 INSTALLED_APPS = [
@@ -56,7 +56,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django_session_timeout.middleware.SessionTimeoutMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -163,6 +162,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
+EMAIL_SUBJECT_PREFIX = 'Ozone'
 
 EMAIL_HOST_USER = config('EMAIL_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_PASS')

@@ -8,6 +8,7 @@ pytext.txt
 customer/static/customers.csv
 customer/static/customer/csv_sqlite3_apply.csv
 ozone-files.txt
+/staticfiles
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
