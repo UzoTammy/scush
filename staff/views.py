@@ -79,19 +79,22 @@ class StaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        """requires if data exist for query"""
         data = {}
-        for obj in self.queryset:
-            countdown = mytools.DatePeriod.countdown(obj.staff.birth_date.strftime('%d-%m-%Y'), 10)
-            if countdown >= 0:
-                data[obj.staff.first_name] = countdown
-        context['countdown'] = sorted(data.items(), key=lambda x: x[-1])
-        employees = self.queryset.exclude(position='MD')
-        context['earliest_employee'] = employees.earliest('date_employed')
-        context['latest_employee'] = employees.latest('date_employed')
-        context['youngest_employee'] = employees.earliest('staff__birth_date')
-        context['oldest_employee'] = employees.latest('staff__birth_date')
-        context['highest_paid'] = employees.latest('basic_salary').basic_salary
-        context['lowest_paid'] = employees.earliest('basic_salary').basic_salary
+        if self.queryset:
+            for obj in self.queryset:
+                countdown = mytools.DatePeriod.countdown(obj.staff.birth_date.strftime('%d-%m-%Y'), 10)
+                if countdown >= 0:
+                    data[obj.staff.first_name] = countdown
+            context['countdown'] = sorted(data.items(), key=lambda x: x[-1])
+            employees = self.queryset.exclude(position='MD')
+            context['earliest_employee'] = employees.earliest('date_employed')
+            context['latest_employee'] = employees.latest('date_employed')
+            context['youngest_employee'] = employees.earliest('staff__birth_date')
+            context['oldest_employee'] = employees.latest('staff__birth_date')
+            context['highest_paid'] = employees.latest('basic_salary').basic_salary
+            context['lowest_paid'] = employees.earliest('basic_salary').basic_salary
         return context
 
 

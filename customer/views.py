@@ -10,17 +10,12 @@ from django.views.generic import (CreateView,
                                   DeleteView,
                                   View,
                                   TemplateView)
-# from django.views.generic.base import T
-from django.core.paginator import Paginator
 from django.conf import settings
 import os
 import json
 import secrets
 import datetime
 from ozone.mytools import CSVtoTuple
-from django.http import HttpResponse, HttpRequest, HttpResponseRedirect
-from django.core.mail import send_mail
-from django.template import loader
 
 
 class CSVPart(View):
@@ -174,9 +169,10 @@ class CustomerListView(LoginRequiredMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=None, **kwargs)
         context['title'] = 'home'
-        context['total'] = CustomerProfile.objects.filter(cluster='TRADE FAIR').count
-        context['last_modified_object'] = self.get_queryset().latest('date_modified')
-        context['last_time_modified'] = context['last_modified_object'].date_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        if self.get_queryset():
+            context['total'] = CustomerProfile.objects.filter(cluster='TRADE FAIR').count
+            context['last_modified_object'] = self.get_queryset().latest('date_modified')
+            context['last_time_modified'] = context['last_modified_object'].date_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
         return context
 
 
