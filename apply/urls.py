@@ -14,7 +14,7 @@ from pdf.views import ApplicantListView
 
 urlpatterns = [
     # list views
-    path('apply/list/pending/', ApplyListViewPending.as_view(), name='apply-pending'),
+    path('apply/list/pending', ApplyListViewPending.as_view(), name='apply-pending'),
     path('apply/list/employed/', ApplyListViewEmployed.as_view(), name='apply-employed'),
     path('apply/list/rejected/', ApplyListViewRejected.as_view(), name='apply-rejected'),
     path('apply/list/all/', ApplyListView.as_view(), name='apply'),

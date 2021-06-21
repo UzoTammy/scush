@@ -11,8 +11,8 @@ from .views import (CustomerListView,
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('home/', views.home, name='home'),
-    path('about/', views.about, name='about'),
+    path('home', views.home, name='home'),
+    path('about', views.about, name='about'),
     path('company/', views.company, name='company'),
     path('customer/', CustomerListView.as_view(), name='customer-list'),
     path('customer/<int:pk>/', CustomerDetailView.as_view(), name='customer-detail'),
