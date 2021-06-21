@@ -177,6 +177,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 CURRENCIES = ('NGN',)
 django_on_heroku.settings(locals())
 
+# HTTPS Settings
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = True
+
+# HSTS Settings
+SECURE_HSTS_SECONDS = 60
+SECURE_HSTS_PRELOAD = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
