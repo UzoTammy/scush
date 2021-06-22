@@ -180,3 +180,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 CURRENCIES = ('NGN',)
 django_on_heroku.settings(locals())
 
+del STATICFILES_STORAGE
