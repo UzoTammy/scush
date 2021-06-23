@@ -9,6 +9,7 @@ customer/static/customers.csv
 customer/static/customer/csv_sqlite3_apply.csv
 ozone-files.txt
 /staticfiles
+historyCLI.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

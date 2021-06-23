@@ -116,8 +116,8 @@ class ApplyCreateView(CreateView):
     def form_valid(self, form):
         if form.instance.email:
             send_mail(subject='Application Submitted Successfully',
-                      message="""We at Ozone F & L are pleased to receive your application.
-                      We will get back to you on our decision. Thank you.""",
+                      message="""We are pleased to receive your application at Ozone.
+                      We will commence processing it and revert to you. Thank you.""",
                       from_email=None,
                       html_message="",
                       recipient_list=[form.instance.email],

@@ -29,7 +29,7 @@ class Employee(models.Model):
              ('First Bank', 'First Bank'),
              ('Union Bank', 'Union Bank'), ('Access', 'Access'), ('Sterling', 'Sterling'), ('Polaris', 'Polaris'),
              ('Heritage', 'Heritage'), ('Stanbic', 'Stanbic'), ('Fidelity', 'Fidelity'), ('Ecobank', 'Ecobank'),
-             ('Zenith', 'Zenith')
+             ('Zenith', 'Zenith'), ('Unity', 'Unity'), ('Wema', 'Wema')
              ]
     POSITIONS = [("Cashier", "Cashier"),
                  ("Store-Keeper", "Store-Keeper"),
@@ -44,8 +44,11 @@ class Employee(models.Model):
                  ("Analyst", "Analyst"),
                  ("Sales Rep", "Sales Rep"),
                  ("Marketing Manager", "Marketing Manager"),
+                 ('Driver', 'Driver')
                  ]
-    BRANCHES = [("HQ", "HQ"), ("FG", "FG"), ("Genesis", "Genesis")]
+    BRANCHES = [("HQ", "HQ"), ("FG", "FG"), ("Genesis", "Genesis"),
+                ('Stardom', 'Stardom'), ('Vino', 'Vino'), ('Island', 'Island'),
+                ('Badagry', 'Badagry')]
     DEPARTMENTS = [("Sales", "Sales"),
                    ('Marketing', 'Marketing'),
                    ('Admin', 'Admin'),
