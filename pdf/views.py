@@ -82,7 +82,11 @@ class EmployeeListView(LoginRequiredMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         context = {
-            'employees': self.get_queryset().order_by('staff')
+            'employees': self.get_queryset().order_by('id'),
+            'num_male': Employee.active.filter(staff__gender='MALE'),
+            'num_female': Employee.active.filter(staff__gender='FEMALE'),
+            'num_single': Employee.active.filter(staff__marital_status='SINGLE'),
+            'num_married': Employee.active.filter(staff__marital_status='MARRIED')
         }
         return render_to_pdf(self.template_name, context_dict=context)
 

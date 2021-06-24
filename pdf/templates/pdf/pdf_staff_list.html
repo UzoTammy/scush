@@ -1,9 +1,10 @@
 <!DOCTYPE html>
+{% load custom_templates %}
 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ozone-Payroll</title>
+    <title>Scush-Staff</title>
     <style type="text/css">
             body {
                 font-weight: 100;
@@ -52,19 +53,19 @@
         </style>
 </head>
 <body>
+<small>Scush Web App </small>
 <div class='wrapper'>
     <div class='header'>
-        <p class='title'>List Of Employees
-        </p>
-
+        <p class='title'>Ozone: List Of Employees</p>
     </div>
 </div>
 <div class="row">
     <div class="col">
         <div class='details'>
-            Total Employed: {{employees.count}}
-            <br/>
-            Print Time: {% now "d-m-Y H:i" %} WAT
+            <p>Workforce: {{employees.count}}</p>
+            <p>Males: {{num_male.count}} | <span>Females: {{num_female.count}}</span></p>
+            <p>Single: {{num_single.count}} | <span>Married: {{num_married.count}}</span></p>
+            As At: {% now "d-m-Y H:i" %} WAT
             <br>
         </div>
     </div>
@@ -72,145 +73,33 @@
 <br>
 <div class="row">
     <div class="col">
-        Part 1: Bio-Data
+        <h2 style="color:blue">Staff-Data Part 1</h2>
     </div>
     <div class="col">
         <table class="table caption-top">
             <thead>
             <tr>
-                <th width="40px" scope="col">S/N</th>
+                <th width="40px" scope="col">ID</th>
                 <th scope="col">Staff</th>
-                <th scope="col">Date of Birth</th>
+                <th scope="col">DOB</th>
                 <th scope="col">Gender</th>
-                <th scope="col">Marital Status</th>
+                <th scope="col">MS</th>
                 <th scope="col">Address</th>
                 <th scope="col">Qualification</th>
-                <th scope="col">Mobile</th>
+                <th scope="col">Course</th>
             </tr>
             </thead>
             <tbody>
             {% for employee in employees %}
             <tr>
-                <th scope="row">{{ forloop.counter }}</th>
+                <th scope="row">{{ employee.id|zeropadding:3 }}</th>
                 <td>{{employee}}</td>
-                <td>{{employee.staff.birth_date}}</td>
-                <td>{{employee.staff.gender }}</td>
+                <td>{{employee.staff.birth_date|date:'d M, Y'}}</td>
+                <td>{{employee.staff.gender}}</td>
                 <td>{{employee.staff.marital_status}}</td>
                 <td>{{employee.staff.address}}</td>
                 <td>{{employee.staff.qualification}}</td>
-                <td>{{employee.staff.mobile}}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-<!--            <tfoot>-->
-<!--                <tr>-->
-
-<!--                </tr>-->
-<!--            </tfoot>-->
-        </table>
-    </div>
-</div>
-<br><br>
-<div class="row">
-    <div class="col">
-        Part 2: Staff Data
-    </div>
-    <div class="col">
-        <table class="table caption-top">
-            <thead>
-            <tr>
-                <th width="50px" scope="col">S/N</th>
-                <th scope="col">Staff</th>
-                <th scope="col">Date Employed</th>
-                <th scope="col">Official Mobile</th>
-                <th scope="col">Position</th>
-                <th scope="col">Department</th>
-                <th scope="col">Branch</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for employee in employees %}
-            <tr>
-                <th scope="row">{{ forloop.counter }}</th>
-                <td>{{employee}}</td>
-                <td>{{employee.date_employed}}</td>
-                <td>{{employee.official_mobile }}</td>
-                <td>{{employee.position}}</td>
-                <td>{{employee.department}}</td>
-                <td>{{employee.branch}}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-<!--            <tfoot>-->
-<!--                <tr>-->
-
-<!--                </tr>-->
-<!--            </tfoot>-->
-        </table>
-    </div>
-</div>
-<br><br>
-<div class="row">
-    <div class="col">
-        Part 3: Payroll Data
-    </div>
-    <div class="col">
-        <table class="table caption-top">
-            <thead>
-            <tr>
-                <th width="50px" scope="col">S/N</th>
-                <th scope="col">Staff</th>
-                <th scope="col">Salary</th>
-                <th scope="col">Allowance</th>
-                <th scope="col">Tax</th>
-                <th scope="col">Banker</th>
-                <th scope="col">Account Number</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for employee in employees %}
-            <tr>
-                <th scope="row">{{ forloop.counter }}</th>
-                <td>{{employee}}</td>
-                <td>{{employee.basic_salary.amount|floatformat:"2g"}}</td>
-                <td>{{employee.allowance.amount|floatformat:"2g" }}</td>
-                <td>{{employee.tax_amount.amount|floatformat:"2g"}}</td>
-                <td>{{employee.banker}}</td>
-                <td>{{employee.account_number}}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-<br><br>
-<div class="row">
-    <div class="col">
-        Part 4: Contact Data
-    </div>
-
-    <div class="col">
-        <table class="table caption-top">
-            <thead>
-            <tr>
-                <th width="40px" scope="col">S/N</th>
-                <th width="100px" scope="col">Staff</th>
-                <th scope="col">Official email</th>
-                <th width="100px" scope="col">Official mobile</th>
-                <th scope="col">Email</th>
-                <th width="100px" scope="col">Mobile</th>
-
-            </tr>
-            </thead>
-            <tbody>
-            {% for employee in employees %}
-            <tr>
-                <th scope="row">{{ forloop.counter }}</th>
-                <td>{{employee}}</td>
-                <td>{{employee.official_email}}</td>
-                <td>{{employee.official_mobile }}</td>
-                <td>{{employee.staff.email}}</td>
-                <td>{{employee.staff.mobile }}</td>
+                <td>{{employee.staff.course}}</td>
             </tr>
             {% endfor %}
             </tbody>
@@ -222,9 +111,7 @@
 <div class="row">
     <br>
     <div class="col">
-        <small>note: WAT -> West African Time (GMT+1)
-        <br>
-        total column that is blue are fixed values. requires modifications</small>
+        <small>note: WAT -> West African Time (GMT+1)</small>
     </div>
 </div>
 
