@@ -7,7 +7,7 @@ from customer.models import CustomerProfile
 from apply.models import Applicant
 from django.contrib.auth.models import User
 from django.views.generic import ListView
-from staff.models import Employee
+from staff.models import Employee, Payroll
 from django.db.models import Sum
 from decimal import Decimal
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -38,36 +38,32 @@ class CustomerView(LoginRequiredMixin, View):
 
 
 class PayrollListView(LoginRequiredMixin, ListView):
-    model = Employee
+    model = Payroll
     template_name = 'pdf/pdf_payroll.html'
     context_object_name = 'employees'
 
     def get(self, request, *args, **kwargs):
-        total = [
-        self.get_queryset().aggregate(sum=Sum('basic_salary')),
-        self.get_queryset().aggregate(sum=Sum('allowance')),
-        ]
-        X = 0
-        for value in total:
-            X += value.get('sum')
-        total.append({'sum': X})
-        total.append(self.get_queryset().aggregate(sum=Sum('tax_amount')))
-        total.append({'sum': total[2].get('sum') - total[3].get('sum')})
-
-        """the debit and credit will be from another model"""
-        total.append({'sum': Decimal(20000)})
-        total.append({'sum': Decimal(24000)})
-
-        total.append({'sum': total[4].get('sum')
-                             - total[5].get('sum') + total[6].get('sum')}
-                     )
+        period = '2021-06'
+        queryset = self.get_queryset().filter(period=period)
+        if period:
+            p = period.split('-')
+            year = int(p[0])
+            month = int(p[1])
+            month_word = datetime.date(year, month, 1).strftime("%B")
+            period_word = f"{month_word} {year}"
+        else:
+            period_word = ''
 
         context = {
             'today': datetime.datetime.now(),
-            'host': f"{request.META.get('HTTP_HOST')} | {request.user}",
-            'users': User.objects.all(),
-            'employees': self.get_queryset().order_by('staff'),
-            'totals': total,
+            'period': period,
+            'period_month': period_word,
+            'employees': queryset.order_by('staff'),
+            'total_salary': queryset.aggregate(sum=Sum('net_pay')),
+            'total_debit': queryset.aggregate(sum=Sum('debit_amount')),
+            'total_credit': queryset.aggregate(sum=Sum('credit_amount')),
+            'total_deduction': queryset.aggregate(sum=Sum('deduction')),
+            'total_outstanding': queryset.aggregate(sum=Sum('outstanding')),
         }
         pdf = render_to_pdf(self.template_name, context)
         if pdf:
@@ -112,7 +108,6 @@ class RejectedApplicantList(ListView):
             'applicants': self.get_queryset().filter(status=False).order_by('last_name')
         }
         return render_to_pdf(self.template_name, context_dict=context)
-
 
 
 class PoliciesDocView(LoginRequiredMixin, View):

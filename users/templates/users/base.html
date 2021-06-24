@@ -110,7 +110,6 @@
     </a>
     <div class="collapse navbar-collapse" id="Dropdown">
             <ul class="navbar-nav mr-auto">
-
                 <li class="nav-item">
                     <a class="nav-link active text-light" href="{% url 'home' %}">
                         <i class="fa fa-home text-white fa-2x"></i><span class="sr-only">(current)</span></a>
@@ -189,9 +188,12 @@
                        aria-expanded="false">
                         <i class="fa fa-file-pdf-o text-white"></i> PDF</a>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{%url 'pdf-apply-list'%}">All Applicants</a>
-                        <a class="dropdown-item" href="{%url 'pdf-employee-list'%}">Employed Applicant</a>
+                        <a class="dropdown-item" href="{%url 'pdf-apply-list'%}">Applicants</a>
                         <a class="dropdown-item" href="{%url 'pdf-rejected-list'%}">Rejected Applicant</a>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{%url 'pdf-employee-list'%}">Basic Staff Profile</a>
+                        <a class="dropdown-item" href="{%url 'pdf-payroll-list' %}">Payroll</a>
+                        <hr class="dropdown-divider">
                         <hr class="dropdown-divider">
                         <a class="dropdown-item" href="{%url 'pdf-customers-list'%}">Customers</a>
                         <a class="dropdown-item" href="#">Stock</a>

@@ -62,21 +62,16 @@
 <div class="row">
     <div class="col">
         <div class='details'>
-            <p>Workforce: {{employees.count}}</p>
-            <p>Males: {{num_male.count}} | <span>Females: {{num_female.count}}</span></p>
-            <p>Single: {{num_single.count}} | <span>Married: {{num_married.count}}</span></p>
+            <p>Workforce: {{employees.count}}<br>
+            Males: {{num_male.count}} | <span>Females: {{num_female.count}}</span><br>
+            Single: {{num_single.count}} | <span>Married: {{num_married.count}}</span></p>
             As At: {% now "d-m-Y H:i" %} WAT
-            <br>
         </div>
     </div>
 </div>
 <br>
-<div class="row">
-    <div class="col">
-        <h2 style="color:blue">Staff-Data Part 1</h2>
-    </div>
-    <div class="col">
-        <table class="table caption-top">
+<h2 style="color:blue">Staff-Data Part 1</h2>
+<table class="table caption-top">
             <thead>
             <tr>
                 <th width="40px" scope="col">ID</th>
@@ -104,16 +99,10 @@
             {% endfor %}
             </tbody>
         </table>
-    </div>
-</div>
 
 <!--        footnote-->
-<div class="row">
-    <br>
-    <div class="col">
-        <small>note: WAT -> West African Time (GMT+1)</small>
-    </div>
-</div>
+<br>
+<small>note: WAT -> West African Time (GMT+1)</small>
 
 </body>
 </html>
