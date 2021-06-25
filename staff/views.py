@@ -5,7 +5,8 @@ from .models import (Employee,
 from django.shortcuts import render, reverse
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import (TemplateView,
+from django.views.generic import (View,
+                                  TemplateView,
                                   ListView,
                                   DetailView,
                                   CreateView,
@@ -64,6 +65,59 @@ c = outstanding"""
             c = x
             x = Money(0, 'NGN')
         return x, b, c
+
+
+class PDFProfileView(View):
+
+    def get(self, request):
+        all_periods = list(i.period for i in Payroll.objects.all())
+        all_periods = set(all_periods)
+        choice = request.GET['radioPayroll']
+        if choice == '1':
+            context = {
+                'title': 'first mail'
+            }
+        elif choice == '2':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '3':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '4':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '5':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '6':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '7':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '8':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '9':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '10':
+            context = {
+                'title': 'second mail'
+            }
+        else:
+            context = {
+                'title': ''
+            }
+        return render(request, 'mails/mailing_form.html', context)
 
 
 class StaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):

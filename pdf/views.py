@@ -9,7 +9,6 @@ from django.contrib.auth.models import User
 from django.views.generic import ListView
 from staff.models import Employee, Payroll
 from django.db.models import Sum
-from decimal import Decimal
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -43,33 +42,36 @@ class PayrollListView(LoginRequiredMixin, ListView):
     context_object_name = 'employees'
 
     def get(self, request, *args, **kwargs):
-        period = '2021-06'
+        period = self.request.GET.get('period')
         queryset = self.get_queryset().filter(period=period)
-        if period:
-            p = period.split('-')
-            year = int(p[0])
-            month = int(p[1])
-            month_word = datetime.date(year, month, 1).strftime("%B")
-            period_word = f"{month_word} {year}"
-        else:
-            period_word = ''
+        if queryset.exists():
+            if period:
+                p = period.split('-')
+                year = int(p[0])
+                month = int(p[1])
+                month_word = datetime.date(year, month, 1).strftime("%B")
+                period_word = f"{month_word} {year}"
+            else:
+                period_word = ''
 
-        context = {
-            'today': datetime.datetime.now(),
-            'period': period,
-            'period_month': period_word,
-            'employees': queryset.order_by('staff'),
-            'total_salary': queryset.aggregate(sum=Sum('net_pay')),
-            'total_debit': queryset.aggregate(sum=Sum('debit_amount')),
-            'total_credit': queryset.aggregate(sum=Sum('credit_amount')),
-            'total_deduction': queryset.aggregate(sum=Sum('deduction')),
-            'total_outstanding': queryset.aggregate(sum=Sum('outstanding')),
-        }
-        pdf = render_to_pdf(self.template_name, context)
-        if pdf:
-            response = HttpResponse(pdf, content_type='application/pdf')
-            return response
-        return HttpResponse('Payroll not ready')
+            context = {
+                'today': datetime.datetime.now(),
+                'period': period,
+                'period_month': period_word,
+                'employees': queryset.order_by('staff'),
+                'total_salary': queryset.aggregate(sum=Sum('net_pay')),
+                'total_debit': queryset.aggregate(sum=Sum('debit_amount')),
+                'total_credit': queryset.aggregate(sum=Sum('credit_amount')),
+                'total_deduction': queryset.aggregate(sum=Sum('deduction')),
+                'total_outstanding': queryset.aggregate(sum=Sum('outstanding')),
+            }
+            pdf = render_to_pdf(self.template_name, context)
+            if pdf:
+                response = HttpResponse(pdf, content_type='application/pdf')
+                return response
+        return HttpResponse(f"""<div style=padding:20;><h1>Payroll period {period} do not exist</h1>
+<p>Either the period is not in database or the period is yet to be generated
+<p><a href='/home/'>Return Home</a></p></div>""")
 
 
 class EmployeeListView(LoginRequiredMixin, ListView):
@@ -82,7 +84,9 @@ class EmployeeListView(LoginRequiredMixin, ListView):
             'num_male': Employee.active.filter(staff__gender='MALE'),
             'num_female': Employee.active.filter(staff__gender='FEMALE'),
             'num_single': Employee.active.filter(staff__marital_status='SINGLE'),
-            'num_married': Employee.active.filter(staff__marital_status='MARRIED')
+            'num_married': Employee.active.filter(staff__marital_status='MARRIED'),
+            'num_management': Employee.active.filter(is_management=True),
+            'num_non_management': Employee.active.filter(is_management=False),
         }
         return render_to_pdf(self.template_name, context_dict=context)
 

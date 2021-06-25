@@ -103,3 +103,9 @@ class SendMailView(View):
             html_message = ''
             return HttpResponse('the second')
 
+
+class pdfPayrollView(View):
+
+    def get(self, request):
+
+      return render(request, 'pdf/pdf_payroll.html')

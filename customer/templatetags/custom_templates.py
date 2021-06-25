@@ -1,5 +1,7 @@
 from django import template
 from django.template.defaultfilters import stringfilter
+from ozone.mytools import Month
+from datetime import date
 
 register = template.Library()
 
@@ -36,3 +38,16 @@ def replace(value):
         value1 = value1.replace(value1[int(len(value1)/2)], arg)
     return value1 + '@' + value.split('@')[1]
 
+
+@register.filter(name="last_month_payroll_period")
+def payroll_period_last(value):
+    last_month = Month.last_month()
+    year = date.today().year
+    return f"{year}-{str(last_month).zfill(2)}"
+
+
+@register.filter(name="next_month_payroll_period")
+def payroll_period_next(value):
+    next_month = Month.next_month()
+    year = date.today().year
+    return f"{year}-{str(next_month).zfill(2)}"
