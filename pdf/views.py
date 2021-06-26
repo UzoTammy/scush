@@ -68,6 +68,7 @@ class PayrollListView(LoginRequiredMixin, ListView):
             pdf = render_to_pdf(self.template_name, context)
             if pdf:
                 response = HttpResponse(pdf, content_type='application/pdf')
+                response['Content-Disposition'] = 'attachment; filename="report.pdf"'
                 return response
         return HttpResponse(f"""<div style=padding:20;><h1>Payroll period {period} do not exist</h1>
 <p>Either the period is not in database or the period is yet to be generated

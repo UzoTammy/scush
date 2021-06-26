@@ -23,6 +23,7 @@ from django.core.mail import send_mail, mail_admins, mail_managers
 from django.core.validators import ValidationError
 from .form import DebitForm, CreditForm
 from django.template import loader
+from django.db.models import Sum
 
 
 class Salary:
@@ -137,6 +138,18 @@ class StaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         """requires if data exist for query"""
         data = {}
         if self.queryset:
+            workforce = self.get_queryset().count()
+            basic_salary_payable = self.get_queryset().aggregate(bs=Sum('basic_salary'))
+            allowance_payable = self.get_queryset().aggregate(al=Sum('allowance'))
+            salary_payable = basic_salary_payable['bs'] + allowance_payable['al']
+
+            month_days = mytools.Month.number_of_working_days(
+                datetime.date.today().year,
+                datetime.date.today().month)
+
+            daily_man_hours = 9.75 * workforce
+            monthly_man_hours = daily_man_hours * month_days
+
             for obj in self.queryset:
                 countdown = mytools.DatePeriod.countdown(obj.staff.birth_date.strftime('%d-%m-%Y'), 10)
                 if countdown >= 0:
@@ -149,6 +162,8 @@ class StaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             context['oldest_employee'] = employees.latest('staff__birth_date')
             context['highest_paid'] = employees.latest('basic_salary').basic_salary
             context['lowest_paid'] = employees.earliest('basic_salary').basic_salary
+            context['monthly_man_hours'] = monthly_man_hours
+            context['wage_rate'] = f'{chr(8358)}{float(salary_payable)/monthly_man_hours:,.2f}/Hr'
         return context
 
 
@@ -205,6 +220,12 @@ class StaffUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Update'
         return context
+
+    def form_valid(self, form):
+        if form.instance.image.name == '':
+            form.instance.image.name = 'default.jpg'
+            form.save()
+        return super().form_valid(form)
 
 
 class CreditNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):

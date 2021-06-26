@@ -4,10 +4,8 @@ from djmoney.models.validators import MaxMoneyValidator, MinMoneyValidator
 from django.utils import timezone
 from django.urls import reverse
 from apply.models import Applicant
-# from django.core.validators import MaxValueValidator, MinValueValidator
 from djmoney.money import Money
 import datetime
-from ozone.mytools import DatePeriod, Month
 
 
 class ActiveEmployeeManager(models.Manager):

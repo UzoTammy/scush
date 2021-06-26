@@ -1,9 +1,7 @@
 import datetime
 import calendar
 import csv
-import os
 import itertools as it
-from django.conf import settings
 
 
 class DatePeriod:
@@ -244,15 +242,31 @@ class Month:
         for i in iters:
             if cls.month == i:
                 n_month = next(iters)
+
                 return n_month
 
+    @classmethod
+    def number_of_working_days(cls, year, month):
+        days_in_month = calendar.monthrange(year, month)
+        month_range = range(1, days_in_month[1]+1)
+        first_day = days_in_month[0]
+
+        if first_day == 0:
+
+            return len(list(i for i in zip(it.cycle(range(7)), month_range) if i[0] != calendar.SUNDAY))
+        else:
+            week_one = list(range(first_day, 6))
+            week_one = list(i for i in zip(week_one, range(1, len(week_one)+1)))
+            result = list(i for i in zip(it.cycle(range(7)), range(len(week_one)+1, days_in_month[1])) if i[0] != calendar.SUNDAY)
+            return len(week_one + result)
 
 
 
-number_of_days = DatePeriod('26-09-2025').age_days()
-age_in_tuple = DatePeriod('26-09-2025').age_tuple()
-B = DatePeriod('26-09-2025').year_month_week_day()
-countdown = DatePeriod.countdown('26-08-2008', 120)
+
+# number_of_days = DatePeriod('26-09-2025').age_days()
+# age_in_tuple = DatePeriod('26-09-2025').age_tuple()
+# B = DatePeriod('26-09-2025').year_month_week_day()
+# countdown = DatePeriod.countdown('26-08-2008', 120)
 
 
 # file = CSVtoTuple(filepath=os.path.join(settings.BASE_DIR, 'customer/static/customers.csv'))

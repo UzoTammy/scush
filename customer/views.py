@@ -103,14 +103,15 @@ def generate_token():
 
 
 with open(os.path.join(settings.BASE_DIR, 'customer/static/customer/company.json'), 'r') as rf:
-    company = json.load(rf)
+    comp = json.load(rf)
 
-company['Core Values'] = company.get('Core Values').split(',')
+comp['Core Values'] = comp.get('Core Values').split(',')
 
 
 def index(request):
+
     context = {
-        'company': company,
+        'company': comp,
     }
     return render(request, 'customer/index.html', context)
 
