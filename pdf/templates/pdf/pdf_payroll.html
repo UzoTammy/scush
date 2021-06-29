@@ -48,44 +48,42 @@
             table {
                 width: 100%;
             }
-            img {
 
-            }
         </style>
 </head>
 <body>
 <small>Scush Web App </small>
 <div class='wrapper'>
     <div class='header'>
-        <p class='title'>Ozone: Payroll</p>
+        <h1 class='title'>Ozone F & L: Payroll Report for {{period_month}}</h1>
     </div>
 </div>
 <div class='details'>
     <p>Number of Staff: {{employees.count}} <br>
-    As At: {{today}} WAT</p>
+    As At: {{today}} WAT
+    </p>
     <p>
-        Total Net Pay: {{total_salary.sum|floatformat:"2g"}}<br>
-        Debit Incurred: {{total_debit.sum|floatformat:"2g"}} |
-        Credit Accrued: {{total_credit.sum|floatformat:"2g"}}<br>
-        Deductions: {{total_deduction.sum|floatformat:"2g"}} |
-        Balance: {{total_outstanding.sum|floatformat:"2g"}}
+        Total Net Pay: {{N}}{{total_net_pay.sum|floatformat:"2g"}}<br>
+        Debit Incurred: {{N}}{{total_debit.sum|floatformat:"2g"}} |
+        Credit Accrued: {{N}}{{total_credit.sum|floatformat:"2g"}}<br>
+        Deductions: {{N}}{{total_deduction.sum|floatformat:"2g"}} |
+        Balance: {{N}}{{total_outstanding.sum|floatformat:"2g"}}
     </p>
 
 </div>
 <br>
-<h2 style="color:blue">Payroll for {{period_month}}</h2>
+<h2 style="color:blue">Payroll for the period-{{period}}</h2>
 <table class="table caption-top">
     <thead>
         <tr>
-            <th width="50px" scope="col">ID</th>
+            <th width="40px" scope="col">ID</th>
             <th scope="col">Staff</th>
             <th scope="col">Pay Code</th>
-            <th scope="col" style="color: red">Debit</th>
-            <th scope="col" style="color: green">Credit</th>
-            <th scope="col" style="color: #007cae;">NetPay</th>
-            <th scope="col">Deduction</th>
-            <th scope="col" style="color: #007cae;">Balance</th>
-            <th scope="col" style="color: #007cae;">Status</th>
+            <th scope="col">Banker</th>
+            <th scope="col">Acct Num</th>
+            <th width="90px" scope="col">Salary</th>
+            <th width="65px" scope="col">Tax</th>
+            <th width="90px" scope="col" style="color: #007cae;">Net Pay</th>
         </tr>
     </thead>
     <tbody>
@@ -93,36 +91,37 @@
         <tr>
             <th scope="row">{{ employee.staff.id|zeropadding:3 }}</th>
             <td>{{employee.staff}}</td>
-            <td style="text-align:center;">{{employee.period}}-{{employee.id|zeropadding:3}}</td>
-            <td style="text-align:right;">{{employee.debit_amount.amount|floatformat:"2g"}}</td>
-            <td style="text-align:right;">{{employee.credit_amount.amount|floatformat:"2g"}}</td>
-            <td style="text-align:right;">{{employee.net_pay.amount|floatformat:"2g"}}</td>
-            <td style="text-align:right;">{{employee.deduction.amount|floatformat:"2g"}}</td>
-            <td style="text-align:right;">{{employee.outstanding.amount|floatformat:"2g"}}</td>
-            <td style="text-align:center;">{{employee.status|yesno:'paid, not paid'}}</td>
+            <td style="text-align:center;">{{employee.staff.id|zeropadding:3}}-{{employee.period}}</td>
+            <td style="text-align:center;">{{employee.staff.banker}}</td>
+            <td style="text-align:right;">{{employee.staff.account_number|addsep}}</td>
+<!--            Change to employee.salary-->
+            <td style="text-align:right;">{{employee.staff.gross_pay.amount|floatformat:"2g"}}</td>
+<!--            Change to employee.tax-->
+            <td style="text-align:right;">{{employee.staff.tax_amount.amount|floatformat:"2g"}}</td>
+            <td style="text-align:right; color:#007cae;">{{employee.net_pay.amount|floatformat:"2g"}}</td>
         </tr>
         {% endfor %}
     </tbody>
     <tfoot>
         <tr>
-    <th width="50px" scope="col">ID</th>
-    <th scope="col">Staff</th>
-    <th scope="col">Pay Code</th>
-    <th scope="col" style="color: red">Debit</th>
-    <th scope="col" style="color: green">Credit</th>
-    <th scope="col" style="color: #007cae;">NetPay</th>
-    <th scope="col">Deduction</th>
-    <th scope="col" style="color: #007cae;">Balance</th>
-    <th scope="col" style="color: #007cae;">Status</th>
-</tr>
+            <th width="50px" scope="col">ID</th>
+            <th scope="col">Staff</th>
+            <th scope="col">Pay Code</th>
+            <th scope="col">Banker</th>
+            <th scope="col">Acct Num</th>
+            <th scope="col">Salary</th>
+            <th scope="col">Tax</th>
+            <th scope="col" style="color: #007cae;">Net Pay</th>
+        </tr>
     </tfoot>
 </table>
 <!--        footnote-->
 <div class="row">
     <br>
     <div class="col">
+        <p>{{credentials}}</p>
         <small>note: WAT -> West African Time (GMT+1).</small><br>
-        <small>All figures are in naira</small>
+        <small>All figures are currencies in Nigerian naira</small>
     </div>
 </div>
 

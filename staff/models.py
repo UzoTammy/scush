@@ -183,8 +183,10 @@ class Payroll(models.Model):
     net_pay = MoneyField(max_digits=8, default_currency='NGN', decimal_places=2, default=Money(0, 'NGN'))
     deduction = MoneyField(max_digits=8, default_currency='NGN', decimal_places=2, default=Money(0, 'NGN'))
     outstanding = MoneyField(max_digits=8, default_currency='NGN', decimal_places=2, default=Money(0, 'NGN'))
+    salary = MoneyField(max_digits=8, default_currency='NGN', decimal_places=2, default=Money(0, 'NGN'))
+    tax = MoneyField(max_digits=8, default_currency='NGN', decimal_places=2, default=Money(0, 'NGN'))
     status = models.BooleanField(default=False)
-    # status: True means paid and False means not paid
+    """status: True means paid and False means not paid"""
 
     def __str__(self):
         return f"{self.staff.fullname()}:{self.period}"

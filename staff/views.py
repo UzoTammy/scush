@@ -138,17 +138,6 @@ class StaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         """requires if data exist for query"""
         data = {}
         if self.queryset:
-            workforce = self.get_queryset().count()
-            basic_salary_payable = self.get_queryset().aggregate(bs=Sum('basic_salary'))
-            allowance_payable = self.get_queryset().aggregate(al=Sum('allowance'))
-            salary_payable = basic_salary_payable['bs'] + allowance_payable['al']
-
-            month_days = mytools.Month.number_of_working_days(
-                datetime.date.today().year,
-                datetime.date.today().month)
-
-            daily_man_hours = 9.75 * workforce
-            monthly_man_hours = daily_man_hours * month_days
 
             for obj in self.queryset:
                 countdown = mytools.DatePeriod.countdown(obj.staff.birth_date.strftime('%d-%m-%Y'), 10)
@@ -162,6 +151,39 @@ class StaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             context['oldest_employee'] = employees.latest('staff__birth_date')
             context['highest_paid'] = employees.latest('basic_salary').basic_salary
             context['lowest_paid'] = employees.earliest('basic_salary').basic_salary
+        return context
+
+
+class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Employee
+    ordering = '-pk'
+    queryset = model.active.all()
+    template_name = 'staff/employee_list_private.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        """requires if data exist for query"""
+        data = {}
+        if self.queryset:
+            workforce = self.get_queryset().count()
+            basic_salary_payable = self.get_queryset().aggregate(bs=Sum('basic_salary'))
+            allowance_payable = self.get_queryset().aggregate(al=Sum('allowance'))
+            salary_payable = basic_salary_payable['bs'] + allowance_payable['al']
+
+            month_days = mytools.Month.number_of_working_days(
+                datetime.date.today().year,
+                datetime.date.today().month)
+
+            daily_man_hours = 9.75 * workforce
+            monthly_man_hours = daily_man_hours * month_days
+
             context['monthly_man_hours'] = monthly_man_hours
             context['wage_rate'] = f'{chr(8358)}{float(salary_payable)/monthly_man_hours:,.2f}/Hr'
         return context
@@ -325,9 +347,14 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
          debit_amount,
          net_pay,
          deduction,
-         outstanding) = (list(), list(), list(), list(), list())
+         outstanding,
+         salary,
+         tax) = (list(), list(), list(), list(), list(), list(), list())
 
         for employee in employees:
+            salary.append(employee.basic_salary+employee.allowance)
+            tax.append(employee.tax_amount)
+
             # cr_amount is the aggregate credit amount for a staff
             # yet to be taken
             obj_credit = CreditNote.objects.filter(period=period)
@@ -356,15 +383,19 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             outstanding.append(result[2])
 
         group = zip(employees,
+                    salary,
+                    tax,
                     credit_amount,
                     debit_amount,
                     net_pay,
                     deduction,
                     outstanding)
         totals = [
-            sum(record.salary().amount for record in employees),
-            sum(record.tax_amount.amount for record in employees),
-            sum(record.gross_pay().amount for record in employees),
+            # sum(record.salary().amount for record in employees),
+            # sum(record.tax_amount.amount for record in employees),
+            sum(i.amount for i in salary),
+            sum(i.amount for i in tax),
+            # sum(record.gross_pay().amount for record in employees),
             sum(record.balance.amount for record in employees),
             sum(i.amount for i in credit_amount),
             sum(i.amount for i in debit_amount),
@@ -375,7 +406,7 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         x = period.split('-')
         year = x[0]
         month = datetime.date(int(year), int(x[1]), 1).strftime('%B')
-
+        #
         context = {
             "records": group,
             'period': period,
@@ -384,12 +415,12 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             'salary': totals[0],
             'tax': totals[1],
             'salary_due': totals[2],
-            'balance': totals[8],
-            'credit': totals[4],
-            'debit': totals[5],
-            'net_pay': totals[6],
-            'deduction': totals[7],
-            'outstanding': totals[8],
+            'balance': totals[2],
+            'credit': totals[3],
+            'debit': totals[4],
+            'net_pay': totals[5],
+            'deduction': totals[6],
+            'outstanding': totals[7],
         }
         return context
 
@@ -404,24 +435,30 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             return render(request, 'staff/payroll/recordexists.html', context)
 
         return render(request, self.template_name, context)
+        # return HttpResponse(f'{queryset}')
 
     def post(self, request, **kwargs):
         """Get context, get period"""
         context = self.get_context_data(**kwargs)
 
         """Save to database or throw error if data is unclean"""
+        """record context is group"""
         for row in context['records']:
             staff = Employee.active.get(pk=int(row[0].id))
             """get the queryset"""
             data = Payroll(period=context['period'],
                            date_paid=datetime.date.today(),
                            staff=staff,
-                           credit_amount=round(row[1], 2),
-                           debit_amount=round(row[2], 2),
-                           net_pay=round(row[3], 2),
-                           deduction=round(row[4], 2),
-                           outstanding=round(row[5], 2),
-                           status=False)
+                           credit_amount=round(row[3], 2),
+                           debit_amount=round(row[4], 2),
+                           net_pay=round(row[5], 2),
+                           deduction=round(row[6], 2),
+                           outstanding=round(row[7], 2),
+                           status=False,
+                           # added two field as adjusted in model
+                           salary=round(row[1], 2),
+                           tax=round(row[2], 2),
+                           )
             try:
                 data.full_clean()
                 data.save()  # Save Save Save
@@ -510,6 +547,9 @@ and compare"""
                                                           'net_pay': data[0],
                                                           'deduction': data[1],
                                                           'outstanding': data[2],
+                                                          # added fields
+                                                          'salary': staff_id.basic_salary + staff_id.allowance,
+                                                          'tax': staff_id.tax_amount,
                                                       })
 
         context['recordset'] = Payroll.objects.filter(period=period)

@@ -32,12 +32,12 @@
             </tr>
                 </thead>
         <tbody>
-      {% for record, credit, debit, netPay, in, out in records  %}
+      {% for record, salary, tax, credit, debit, netPay, deduct, out in records  %}
         <tr>
             <th scope="row">{{ forloop.counter }}</th>
             <td><a href="#">{{record.fullname}}</a></td>
-            <td class="text-right">{{record.salary}}</td>
-            <td class="text-right">{{record.tax_amount}}</td>
+            <td class="text-right">{{salary}}</td>
+            <td class="text-right">{{tax}}</td>
             <td class="text-right">{{record.gross_pay}}</td>
             {% if record.balance.amount >= 0 %}
             <td class="text-right">{{record.balance}}</td>
@@ -48,7 +48,7 @@
             <td class="text-right text-danger">{{debit}}</td>
             <td class="bg-success text-white text-right">
                 <b>{{netPay}}</b></td>
-            <td class="text-right">{{in}}</td>
+            <td class="text-right">{{deduct}}</td>
             {% if out.amount >= 0 %}
             <td class="text-right">{{out}}</td>
             {% else %}

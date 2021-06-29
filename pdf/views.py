@@ -1,12 +1,10 @@
-from django.views.generic import (
-                                  View,)
 import datetime
 from django.http import HttpResponse
 from pdf.utils import render_to_pdf
 from customer.models import CustomerProfile
 from apply.models import Applicant
 from django.contrib.auth.models import User
-from django.views.generic import ListView
+from django.views.generic import (View, ListView, TemplateView)
 from staff.models import Employee, Payroll
 from django.db.models import Sum
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -50,25 +48,29 @@ class PayrollListView(LoginRequiredMixin, ListView):
                 year = int(p[0])
                 month = int(p[1])
                 month_word = datetime.date(year, month, 1).strftime("%B")
-                period_word = f"{month_word} {year}"
+                period_word = f"{month_word}, {year}"
             else:
                 period_word = ''
 
             context = {
+                'N': 'NGN',
+                'credentials': f"Authorized by: {request.user.first_name} {request.user.last_name}",
                 'today': datetime.datetime.now(),
                 'period': period,
                 'period_month': period_word,
                 'employees': queryset.order_by('staff'),
-                'total_salary': queryset.aggregate(sum=Sum('net_pay')),
+                'total_net_pay': queryset.aggregate(sum=Sum('net_pay')),
                 'total_debit': queryset.aggregate(sum=Sum('debit_amount')),
                 'total_credit': queryset.aggregate(sum=Sum('credit_amount')),
                 'total_deduction': queryset.aggregate(sum=Sum('deduction')),
                 'total_outstanding': queryset.aggregate(sum=Sum('outstanding')),
+                # 'total_salary': queryset.aggregate(sum=Sum('salary')),
+                # 'total_tax': queryset.aggregate(sum=Sum('tax')),
             }
             pdf = render_to_pdf(self.template_name, context)
             if pdf:
                 response = HttpResponse(pdf, content_type='application/pdf')
-                response['Content-Disposition'] = 'attachment; filename="report.pdf"'
+                response['Content-Disposition'] = f'filename="payroll-{period}.pdf"'
                 return response
         return HttpResponse(f"""<div style=padding:20;><h1>Payroll period {period} do not exist</h1>
 <p>Either the period is not in database or the period is yet to be generated
@@ -124,3 +126,39 @@ class PoliciesDocView(LoginRequiredMixin, View):
 
         }
         return render_to_pdf(self.template_name, context_dict=context)
+
+
+class PayslipView(LoginRequiredMixin, TemplateView):
+    template_name = 'pdf/pdf_payslip.html'
+
+    def get(self, request, *args, **kwargs):
+        user_input = request.GET['payCode']
+        try:
+            user_input_list = user_input.split('-')
+            period = user_input_list[1] + '-' + user_input_list[2]
+            code = int(user_input_list[0])
+            staff_id = Employee.active.get(pk=code).id
+            person = Payroll.objects.filter(period=period).get(staff_id=staff_id)
+            year, month = int(user_input_list[1]), int(user_input_list[2])
+            date = datetime.date(year, month, 1)
+            month = date.strftime('%B')
+
+            context = {
+                'title': 'Payslip',
+                'period_month': f"{month}, {year}",
+                'paycode': request.GET['payCode'],
+                'person': person,
+            }
+            return render_to_pdf(self.template_name, context_dict=context)
+        except:
+            return HttpResponse(
+                """<div style="padding:20;">
+                <h2 style="color:red;">Incorrect user input</h2>
+                <ul><li>Either the pay code do not exist</li>
+                <li>or the user input is entered incorrectly</li>
+                <li>Kindly return and check your input</li>
+                </ul>
+                <a href="/home/">Home</a>
+                </div>"""
+            )
+

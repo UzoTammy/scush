@@ -60,15 +60,9 @@
         <div class="row">
             <div class="col">
                 <div class='details'>
-                    Source: {{ host }}
-                    <br>
                     Total:  {{applicants.count}}
                     <br/>
-                    Print on: {% now "jS \o\f F Y \@ H:i" %} WAT
-                    <br>
-                    Last Modified: {{ last_modified_object }} on {{ last_time_modified }}
-                    <br>
-                    Last Created: {{customers.last }} on {{ customers.last.date_created}} WAT
+                    As At: {% now "jS \o\f F Y \@ H:i" %} WAT
                 </div>
             </div>
         </div>

@@ -30,6 +30,7 @@ class ApplyListViewPending(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['title'] = 'Applicants-pending'
         context['applicants_pending'] = self.get_queryset().filter(status=None).order_by('last_name')
         context['number_pending'] = context['applicants_pending']
         return context
@@ -47,6 +48,7 @@ class ApplyListViewEmployed(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['title'] = 'Applicants-employed'
         context['applicants_employed'] = self.get_queryset().filter(status=True).order_by('last_name')
         context['number_pending'] = context['applicants_employed']
         return context

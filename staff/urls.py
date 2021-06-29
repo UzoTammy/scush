@@ -15,14 +15,15 @@ from .views import (StaffListView,
                     RegeneratedPayroll,
                     SalaryPayment,
                     Payslip,
-                    PayrollStatement)
+                    PayrollStatement,
+                    StaffListPrivateView)
 
 urlpatterns = [
     path('staff/', StaffListView.as_view(), name='staff-list'),
     path('staff/<int:pk>/detailed/', StaffDetailView.as_view(), name='employee-detail'),
     path('staff/<int:pk>/update/', StaffUpdateView.as_view(), name='employee-update'),
     path('staff/new/<int:pk>/', StaffCreateView.as_view(), name='employee-create'),
-    # path('staff/<int:pk>/delete/', StaffDeleteView.as_view(), name='employee-delete'),
+    path('staff/private/', StaffListPrivateView.as_view(), name='employee-list-private'),
     ]
 
 urlpatterns += [

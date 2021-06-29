@@ -1,0 +1,166 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="section p-3">
+    <small>
+        <span class="text-danger">G-Gender</span> |
+        <span class="text-danger">MS-Marital Status</span> |
+        <span class="text-warning">ST-Status</span> |
+        <span class="text-success">MG-Management</span> |
+        <span class="text-primary">NM-Non Management</span> |
+        <span class="text-warning">SG-Single</span> |
+        <span class="text-success">MR-Married</span> |
+        <span class="text-primary">FM-Female</span>
+    </small>
+    <table data-toggle="table"
+               data-search="true"
+               data-pagination="true"
+               class="table caption-top table-sm">
+            <caption>
+                <div class="row">
+                    <div class="col">
+                        All Employees More Private Data
+                    </div>
+                    <div class="col text-right">
+                        <!--  links to variety of listings-->
+                        <a href="#"
+                           class="btn btn-dark btn-sm text-right">
+                            <i class="fa fa-plus text-success"></i>
+
+                        </a>
+                        <a href="#"
+                           class="btn btn-dark btn-sm text-right">
+                            <i class="fa fa-plus text-success"></i>
+
+                        </a>
+                        <a href="#"
+                           class="btn btn-dark btn-sm text-right">
+                            <i class="fa fa-plus text-success"></i>
+
+                        </a>
+                        <a href="#"
+                           class="btn btn-dark btn-sm text-right">
+                            <i class="fa fa-plus text-success"></i>
+
+                        </a>
+                        <a href="{% url 'staff-list' %}"
+                           class="btn btn-dark btn-sm text-right">
+                            <i class="fa fa-plus text-success"></i>
+                            Basic
+                        </a>
+                        <!-- Button trigger modal -->
+                        <button type="button"
+                                class="btn btn-dark btn-sm text-right"
+                                data-toggle="modal"
+                                data-target="#newEmployeeModal">
+                            <i class="fa fa-plus text-success"></i>
+                            New Employee note
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="text-left modal fade"
+                             id="newEmployeeModal"
+                             tabindex="-1"
+                             aria-labelledby="newEmployeeModalLabel"
+                             aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title"
+                                            id="newEmployeeModalLabel">
+                                            Ozone-SCUsH | New Employment
+                                        </h5>
+                                        <button type="button" class="fa fa-close text-danger" data-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <P>A new staff must come through an application process and cannot be added
+                                            directly.
+                                            Therefore, he or she must have completed the application form in the past,
+                                            and to employ such a person, we must go through the detailed page of the
+                                            applicant.
+                                            An employ link is provided to continue data capture of such staff.
+                                            At the top of the menu, click
+                                            <br>
+                                            <span class="text-center text-danger">
+                                        applicant --> name link --> employ
+                                    </span>
+                                        </P>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </caption>
+
+            <thead class="bg-warning text-white">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Fullname</th>
+                <th scope="col">G</th>
+                <th scope="col">MS</th>
+                <th scope="col">ST</th>
+                <th scope="col">Branch</th>
+                <th scope="col">Banker</th>
+                <th scope="col">Acct.Num</th>
+                <th scope="col">Tax</th>
+                <th scope="col">Basic</th>
+                <th scope="col">Allowance</th>
+                <th scope="col">Balance</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for employee in object_list %}
+            <tr>
+                <th scope="row">
+                    {{ employee.pk|zeropadding:3 }}
+                </th>
+                <td><a href="{% url 'employee-detail' employee.pk %}">
+                    {% if employee.is_management %}
+                    <i class="fa fa-user-circle-o text-success"></i>
+                    {% else %}
+                    <i class="fa fa-user-circle-o text-danger"></i>
+                    {% endif %}
+                    {{employee.fullname}}</a></td>
+                {% if employee.staff.gender == 'MALE' %}<td>ML</td>{% else %}<td>FM</td>{% endif %}
+                {% if employee.staff.marital_status == 'MARRIED' %}<td>MR</td>{% else %}<td>SG</td>{% endif %}
+                <td>{{employee.is_management|yesno:'MG, NM'}}</td>
+                <td>{{employee.branch}}</td>
+                <td>{{employee.banker}}</td>
+                <td>{{employee.account_number|addsep}}</td>
+                <td>{{employee.tax_amount}}</td>
+                <td>{{employee.basic_salary}}</td>
+                <td>{{employee.allowance}}</td>
+                <td>{{employee.balance}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+
+            </tfoot>
+        </table>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                Monthly: {{monthly_man_hours}} Man-Hours
+            </li>
+
+            <li class="list-group-item text-danger">
+                AWR: {{wage_rate}} per head
+            </li>
+            <li class="list-group-item text-success">
+                YTD Man-hour
+            </li>
+        </ul>
+    </div>
+    </div>
+</div>
+{% endblock content %}

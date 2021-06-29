@@ -1,0 +1,56 @@
+{% extends "pdf/base.html" %}
+
+{% block content %}
+<small>Scush Web App </small>
+<div class="wrapper">
+    <div class="header">
+        <p class="title">Payslip from Ozone F & L</p>
+    </div>
+
+    <div class="subheader">
+        <p>For: {{person.staff.fullname}}<br>
+        Period: {{period_month}}</p>
+    </div>
+</div>
+<div class="details">
+    <p>Dispatch Date: {% now "d-M-Y" %}</p>
+    <p>Pay Date: {{ person.date_paid }}</p>
+    <p>Pay Code: <span id="standout">{{ paycode }}</span></p>
+    <hr>
+    <table>
+        <tbody>
+            <tr>
+                <td>Salary: {{person.salary}}</td>
+                <td>Tax Payable: {{person.tax}}</td>
+            </tr>
+            <tr>
+                <td>Debit Amount: {{person.debit_amount}}
+                <sup style="color:red">-</sup>
+                </td>
+                <td>Credit Amount: {{person.credit_amount}}
+                <sup style="color:green">+</sup>
+                </td>
+            </tr>
+            <tr>
+                <td>Balance:
+                    {% if person.staff.balance.amount >= 0 %}
+                    <span>{{ person.staff.balance }}</span>
+                    {% else %}
+                    <span style="color:red;">{{ person.staff.balance }}</span>
+                    {%endif%}
+                </td>
+                <td style="color:green">Net Pay: {{ person.net_pay }}</td>
+            </tr>
+            <tr>
+                <td>Deduction: {{person.deduction}}</td>
+                <td>Outstanding: {{person.outstanding}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <hr width="100%">
+    <p style="color:grey">We are committed to pay duly to all staff</p>
+    <p style="color:red">Confidential document!!!</p>
+
+</div>
+
+{% endblock %}

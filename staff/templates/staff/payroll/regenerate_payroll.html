@@ -30,83 +30,83 @@
     </form>
 </div>
 <div class="row">
-        {% if period %}
-        <div class="col m-3">
-            <table data-toggle="table"
-                   data-pagination="true"
-                   data-search="true"
-                   data-show-columns="true"
-                   data-show-footer="true"
-                   class="table table-bordered caption-top table-sm"
-                   width="40px" bgcolor="#efe3de">
-                <caption class="text-secondary">Current Payroll Table for the period {{period}}
-                    <span class="text-success float-right">{{the_period}}</span>
-                </caption>
-        <thead class="bg-secondary text-white text-center">
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Staff</th>
-              <th scope="col">Status</th>
-              <th scope="col">Salary</th>
-              <th scope="col">Salary Due</th>
-              <th scope="col">Balance</th>
-              <th scope="col">Credit Amount</th>
-              <th scope="col">Debit Amount</th>
-              <th scope="col" class="bg-success">Net Pay</th>
-              <th scope="col">Deduction</th>
-              <th scope="col">Outstanding</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for record in records  %}
-                <tr>
-                    <th scope="row">{{ record.staff.id|zeropadding:3 }}</th>
-                    <td><a href="#">{{record.staff}}</a></td>
-                    <td>{{record.status|yesno:"Paid, Not Paid"}}</td>
-                    <td class="text-right">{{record.staff.salary}}</td>
-                    <td class="text-right">{{record.staff.gross_pay}}</td>
-                    {% if record.staff.balance.amount >= 0 %}
-                    <td class="text-right">{{record.staff.balance}}</td>
-                    {% else %}
-                    <td class="text-right text-danger">{{record.staff.balance|abs}}</td>
-                    {% endif %}
-                    <td class="text-right">{{record.credit_amount}}</td>
-                    <td class="text-right text-danger">{{record.debit_amount}}</td>
-                    <td class="bg-success text-white text-right">
-                        <b>{{record.net_pay}}</b></td>
-                    <td class="text-right">{{record.deduction}}</td>
-                    {% if record.outstanding.amount >= 0 %}
-                    <td class="text-right">{{record.outstanding}}</td>
-                    {% else %}
-                    <td class="text-right text-danger">{{record.outstanding|abs}}</td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    <tfoot>
+    {% if period %}
+    <div class="col m-3">
+        <table data-toggle="table"
+               data-pagination="true"
+               data-search="true"
+               data-show-columns="true"
+               data-show-footer="true"
+               class="table table-bordered caption-top table-sm"
+               width="40px" bgcolor="#efe3de">
+            <caption class="text-secondary">Current Payroll Table for the period {{period}}
+                <span class="text-success float-right">{{the_period}}</span>
+            </caption>
+    <thead class="bg-secondary text-white text-center">
         <tr>
-            <th colspan="2">Hello</th>
+          <th scope="col">ID</th>
+          <th scope="col">Staff</th>
+          <th scope="col">Status</th>
+          <th scope="col">Salary</th>
+          <th scope="col">Tax</th>
+          <th scope="col">Balance</th>
+          <th scope="col">Credit Amount</th>
+          <th scope="col">Debit Amount</th>
+          <th scope="col" class="bg-success">Net Pay</th>
+          <th scope="col">Deduction</th>
+          <th scope="col">Outstanding</th>
         </tr>
-    </tfoot>
-    </table>
-            {% if request.POST %}
-                <form action="{% url 'regenerated-payroll' %}" method="post">{% csrf_token %}
-                    <button name="period" value="{{period}}" type="submit"
-                        class="btn btn-outline-primary">
-                    Regenerate
-                    </button>
+    </thead>
+    <tbody>
+        {% for record in records  %}
+            <tr>
+                <th scope="row">{{ record.staff.id|zeropadding:3 }}</th>
+                <td><a href="#">{{record.staff}}</a></td>
+                <td>{{record.status|yesno:"Paid, Not Paid"}}</td>
+                <td class="text-right">{{record.salary}}</td>
+                <td class="text-right">{{record.tax}}</td>
+                {% if record.staff.balance.amount >= 0 %}
+                <td class="text-right">{{record.staff.balance}}</td>
+                {% else %}
+                <td class="text-right text-danger">{{record.staff.balance|abs}}</td>
+                {% endif %}
+                <td class="text-right">{{record.credit_amount}}</td>
+                <td class="text-right text-danger">{{record.debit_amount}}</td>
+                <td class="bg-success text-white text-right">
+                    <b>{{record.net_pay}}</b></td>
+                <td class="text-right">{{record.deduction}}</td>
+                {% if record.outstanding.amount >= 0 %}
+                <td class="text-right">{{record.outstanding}}</td>
+                {% else %}
+                <td class="text-right text-danger">{{record.outstanding|abs}}</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </tbody>
+<tfoot>
+    <tr>
+        <th colspan="2"></th>
+    </tr>
+</tfoot>
+</table>
+        {% if request.POST %}
+            <form action="{% url 'regenerated-payroll' %}" method="post">{% csrf_token %}
+                <button name="period" value="{{period}}" type="submit"
+                    class="btn btn-outline-primary">
+                Regenerate
+                </button>
 
-                    <a class="btn btn-dark float-right" href="{% url 'home' %}">
-                        <i class="fa fa-reply"></i>
-                    </a>
-                </form>
-            {% endif %}
-        </div>
-        {% else %}
-        <div class="col m-5">
-            <h3>Click on the period above you wish to regenerate</h3>
-        </div>
+                <a class="btn btn-dark float-right" href="{% url 'home' %}">
+                    <i class="fa fa-reply"></i>
+                </a>
+            </form>
         {% endif %}
+    </div>
+    {% else %}
+    <div class="col m-5">
+        <h3>Click on the period above you wish to regenerate</h3>
+    </div>
+    {% endif %}
 </div>
 
 <div class="row">
