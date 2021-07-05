@@ -327,6 +327,10 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
         context['next_period'] = f"{year}-{str(month+1).zfill(2)}"
         return context
 
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return render(request, self.template_name, context=context)
+
 
 class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     """Generate payroll and save to Payroll model"""

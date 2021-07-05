@@ -4,14 +4,15 @@
 {% block content %}
 <div class="section p-3">
     <small>
-        <span class="text-danger">G-Gender</span> |
-        <span class="text-danger">MS-Marital Status</span> |
-        <span class="text-warning">ST-Status</span> |
-        <span class="text-success">MG-Management</span> |
-        <span class="text-primary">NM-Non Management</span> |
-        <span class="text-warning">SG-Single</span> |
-        <span class="text-success">MR-Married</span> |
-        <span class="text-primary">FM-Female</span>
+        <span class="text-warning">GN-Gender</span> |
+        <span class="text-success">MA-Male</span> |
+        <span class="text-primary">FE-Female</span> |
+        <span class="text-warning">MS-Marital Status</span> |
+        <span class="text-success">MS-Married</span> |
+        <span class="text-primary">SN-Single</span> |
+        <span class="text-warning">SG-Status</span> |
+        <span class="text-success">ST-Management</span> |
+        <span class="text-primary">NM-Non Management</span>
     </small>
     <table data-toggle="table"
                data-search="true"
@@ -102,7 +103,7 @@
             <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Fullname</th>
-                <th scope="col">G</th>
+                <th scope="col">GN</th>
                 <th scope="col">MS</th>
                 <th scope="col">ST</th>
                 <th scope="col">Branch</th>
@@ -127,7 +128,7 @@
                     <i class="fa fa-user-circle-o text-danger"></i>
                     {% endif %}
                     {{employee.fullname}}</a></td>
-                {% if employee.staff.gender == 'MALE' %}<td>ML</td>{% else %}<td>FM</td>{% endif %}
+                {% if employee.staff.gender == 'MALE' %}<td>MA</td>{% else %}<td>FE</td>{% endif %}
                 {% if employee.staff.marital_status == 'MARRIED' %}<td>MR</td>{% else %}<td>SG</td>{% endif %}
                 <td>{{employee.is_management|yesno:'MG, NM'}}</td>
                 <td>{{employee.branch}}</td>

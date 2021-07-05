@@ -1,0 +1,37 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+<!--        The form-->
+        <div class="col-7">
+            <form action="" method="post">
+                {% csrf_token %}
+                <legend class="text-info">Create Delivery (1 of 5 steps)</legend>
+                <div class="form-group mt-3">
+                       {{form|crispy}}
+                    <button type="submit"
+                            class="btn btn-outline-info btn-sm">Create
+                    </button>
+                    <a class="btn btn-outline-dark btn-sm float-right"
+                       type="button" href="{% url 'delivery-home' %}">
+                        <i class="fa fa-reply"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+<!--        The list group-->
+        <div class="col mt-5">
+            <ul class="list-group">
+                <li class="list-group-item active"><small>Stock Delivery Stages</small></li>
+                <li class="list-group-item"><i class="fa fa-check-square text-success"></i> Stage 1:Create</li>
+                <li class="list-group-item"><i class="fa fa-times text-danger"></i> Stage 2:Deliver</li>
+                <li class="list-group-item"><i class="fa fa-times text-danger"></i> Stage 3:Return</li>
+                <li class="list-group-item"><i class="fa fa-times text-danger"></i> Stage 4:Confirm</li>
+                <li class="list-group-item"><i class="fa fa-times text-danger"></i> Stage 5:Credited</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

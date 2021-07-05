@@ -1,0 +1,379 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row p-2">
+        <div class="col">
+            <h1>Delivery Note</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            <p>Delivery Number: {{object.delivery_number}}</p>
+            <p>Shipment Date: {{object.created_date}}</p>
+            <p>Delivery Date: {{object.delivery_date}}</p>
+            <p>Source: {{object.source}}</p>
+        </div>
+        <div class="col-sm-4">
+            <div class="row float-left">
+                <div class="col">
+                    <p>Stage: {{object.stage}}</p>
+                    <p>SO Number: {{object.order_number}}</p>
+                    <p>Ship To: {{object.ship_to}}</p>
+                    <p>Confirmed to Source: {{object.confirm|yesno:'Yes, Not Yet'}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="row float-left">
+                <div class="col">
+                    <p>Transporter: {{object.transporter}}</p>
+                    <p>Vehicle Number: {{object.vehicle_number}}</p>
+                    <p>Delivered To: {{object.delivered_to}}</p>
+                    {% if object.credit %}
+                    <p>Status: Credited
+                        <i class="fa fa-flag text-success"></i>
+                    </p>
+                    {% else %}
+                    <p class="text-danger">Status: Not Credited</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col bg-white text-dark">
+            <p><a class="btn btn-outline-primary btn-sm"
+                  data-target="#btnRemark"
+                  data-toggle="modal"
+                  type="button" href=""><i class="fa fa-plus"></i></a>
+                Remark:{{object.remark}}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {% if object.credit %}
+            <p class="text-success">Credit Amount: {{ object.products.totals.total_amount_credit }}</p>
+            {% else %}
+            <p>Credit Amount: {{ object.products.totals.total_amount_credit }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row p-3">
+        <div class="col">
+            <table class="table table-bordered table-sm shadow">
+                <thead class="bg-secondary text-white">
+                <tr>
+                    <th width="80px" class="text-center" scope="col">Code</th>
+                    <th class="text-center" scope="col">Product</th>
+                    <th class="text-center" scope="col">Delivered</th>
+                    <th class="text-center" scope="col">Received</th>
+                    <th class="text-center" scope="col">Price</th>
+                    <th class="text-center" scope="col">VAT</th>
+                    <th class="text-center" scope="col">Discount</th>
+                    <th class="text-center" scope="col">Sub Total</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for key, values in object.products.items %}
+                {% if key != 'totals' %}
+                <tr>
+                    {% for key, value in values.items %}
+                    {% if key != 'total_amount_credit' %}
+                    <td class="text-right">{{value}}</td>
+                    {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endif %}
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                <tr>
+                    <th colspan="2" class="text-right"><h5>Total</h5></th>
+                    {% for key, values in object.products.items %}
+                    {% if key == 'totals' %}
+                    <th class="text-right"><h5>{{values.total_delivered}}</h5></th>
+                    <th class="text-right"><h5>{{values.total_received}}</h5></th>
+                    <th colspan="4" class="text-right m-2"><h5>{{values.total_amount}}</h5></th>
+                    {% endif %}
+                    {% endfor %}
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <p>The Process
+        <i class="fa fa-forward text-primary"></i>
+        <i class="fa fa-forward text-primary"></i>
+        <i class="fa fa-forward text-primary"></i>
+        <!--            <i class="fa fa-stop text-primary"></i>-->
+    </p>
+    <div class="row mb-5">
+        <div class="col">
+            <a class="btn btn-outline-dark btn-sm" href="{% url 'delivery-arrive' object.pk %}">
+                Deliver
+            </a>
+        </div>
+        <div class="col">
+            <a class="btn btn-outline-dark btn-sm" href="{% url 'delivery-return' object.pk %}">
+                Receive
+            </a>
+        </div>
+        <div class="col">
+            <a type="button"
+               data-toggle="modal"
+               data-target="#delConfirm"
+               class="btn btn-outline-dark btn-sm" href="">
+                Confirm
+            </a>
+        </div>
+        <div class="col">
+            <a class="btn btn-outline-dark btn-sm"
+               data-toggle="modal"
+               type="button"
+               data-target="#delCredit" href="">
+                Credit
+            </a>
+        </div>
+        <div class="col">
+            <a class="btn btn-outline-dark btn-sm" href="{% url 'delivery-list' %}">
+                <i class="fa fa-reply text-primary"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!--Modal for delivery note confirmation-->
+<div class="modal"
+     tabindex="-1"
+     role="dialog"
+     id="delConfirm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirmation (4 of 5 steps)</h3>
+                <button type="button"
+                        class="close"
+                        aria-label="close"
+                        data-dismiss="modal">
+                    <i class="fa fa-times text-danger"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <h5>Delivery Number: {{ object.delivery_number }}</h5>
+                        <div class="col mt-2">
+                            <ul class="list-group">
+                                <li class="list-group-item active">Stock Confirmation Stages</li>
+                                <li class="list-group-item"><i class="fa fa-check-square text-success"></i> Stage
+                                    1:Create
+                                </li>
+                                <li class="list-group-item"><i class="fa fa-check-square text-success"></i> Stage
+                                    2:Deliver
+                                </li>
+                                <li class="list-group-item"><i class="fa fa-check-square text-success"></i> Stage
+                                    3:Receive
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col">
+                                            <i class="fa fa-check-square text-success"></i> Stage 4:Confirm
+                                        </div>
+                                        <div class="col">
+                                            <form action="{% url 'delivery-confirm' object.pk %}" method="post">
+                                                {% csrf_token %}
+                                                <div class="form-group form-check">
+                                                    <input type="checkbox"
+                                                           class="form-check-input"
+                                                           id="checkConfirm">
+                                                    <label class="form-check-label"
+                                                           for="checkConfirm">
+                                                        Confirm Delivery
+                                                    </label>
+                                                </div>
+                                                <button type="submit"
+                                                        id="btnConfirm"
+                                                        class="btn btn-outline-primary float-right" disabled>
+                                                    Confirm
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </li>
+                                <li class="list-group-item"><i class="fa fa-times text-danger"></i> Stage 5:Credited
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal"
+     tabindex="-1"
+     role="dialog"
+     id="delCredit">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Credit Confirmation (5 of 5 steps)</h3>
+                <button type="button"
+                        class="close"
+                        aria-label="close"
+                        data-dismiss="modal">
+                    <i class="fa fa-times text-danger"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <h5>Delivery Number: {{ object.delivery_number }}</h5>
+                        <div class="col mt-2">
+                            <ul class="list-group">
+                                <li class="list-group-item active">Credit Confirmation Stages</li>
+                                <li class="list-group-item"><i class="fa fa-check-square text-success"></i> Stage
+                                    1:Create
+                                </li>
+                                <li class="list-group-item"><i class="fa fa-check-square text-success"></i> Stage
+                                    2:Deliver
+                                </li>
+                                <li class="list-group-item"><i class="fa fa-check-square text-success"></i> Stage
+                                    3:Receive
+                                </li>
+                                <li class="list-group-item"><i class="fa fa-check-square text-success"></i>
+                                    Stage 4:Confirm
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col">
+                                            <i class="fa fa-check-square text-success"></i> Stage 5:Credit
+                                        </div>
+                                        <div class="col">
+                                            <form action="{% url 'delivery-credit' object.pk %}" method="post">
+                                                {% csrf_token %}
+                                                <div class="form-group form-check">
+                                                    <input type="checkbox"
+                                                           class="form-check-input"
+                                                           id="checkCredit">
+                                                    <label class="form-check-label"
+                                                           for="checkCredit">
+                                                        Confirm Credit
+                                                    </label>
+                                                </div>
+                                                <button type="submit"
+                                                        id="btnCredit"
+                                                        class="btn btn-outline-primary float-right" disabled>
+                                                    Credit
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal"
+     tabindex="-1"
+     role="dialog"
+     id="btnRemark">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Short Remark</h3>
+                <button type="button"
+                        class="close"
+                        aria-label="close"
+                        data-dismiss="modal">
+                    <i class="fa fa-times text-danger"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <h5>Delivery Number: {{ object.delivery_number }}</h5>
+                        <div class="col mt-2">
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col">
+                                            <form action="{% url 'delivery-remark' object.pk %}" method="post">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label class="form-label"
+                                                           for="remarkInput">
+                                                        Remark
+                                                    </label>
+                                                    <input type="text"
+                                                           class="form-control"
+                                                           name="comment"
+                                                           value=""
+                                                           id="remarkInput">
+                                                </div>
+                                                <button type="submit"
+                                                        id="btnOK"
+                                                        class="btn btn-outline-primary float-right" disabled>
+                                                    OK
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("checkConfirm").onclick = function() {confirmFunction()};
+    document.getElementById("checkCredit").onclick = function() {creditFunction()};
+    document.getElementById("remarkInput").oninput = function() {remarkFunction()};
+
+
+    function confirmFunction() {
+        let doc = document.getElementById("btnConfirm")
+            if (doc.disabled == true) {
+                doc.disabled=false
+            } else {
+                doc.disabled=true
+            }
+    }
+
+    function creditFunction() {
+        let doc = document.getElementById('btnCredit')
+            if (doc.disabled == true) {
+                doc.disabled=false;
+            } else {
+                doc.disabled=true
+            }
+    }
+
+    function remarkFunction() {
+        let doc = document.getElementById('remarkInput')
+        if (doc.innerHTML == '') {
+            document.getElementById('btnOK').disabled=false
+            } else {
+            document.getElementById('btnOK').disabled=true
+            }
+        }
+
+
+</script>
+{% endblock %}

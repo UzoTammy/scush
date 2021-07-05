@@ -59,9 +59,17 @@ class Product(models.Model):
     parameter = models.CharField(max_length=20,
                                  help_text='<span class="text-danger">types but of same price e.g. maltina classic, maltina pineaple</span>')
     active = models.BooleanField(default=True, choices=[(True, 'Active'), (False, 'Inactive')])
+    discount = models.FloatField(default=0.0)
+    discount_type = models.CharField(max_length=20,
+                                     choices=[
+                                         ('PP', 'Per Pack'),
+                                         ('PERCENT', 'Percent'),
+                                         ('VALUE', 'Absolute Value'),
+                                         ('RATIO', 'Qty Ratio')
+                                     ], default='PP')
 
     def __str__(self):
-        return f"{self.name} {self.unit_type}~{self.size_value}{self.size_value_unit}x{self.quantity_per_pack}{self.pack_type}"
+        return f"{self.name} {self.parameter} {self.unit_type}~{self.size_value}{self.size_value_unit}x{self.quantity_per_pack}{self.pack_type}"
 
     def get_absolute_url(self):
         return reverse('product-detail', kwargs={'pk': self.pk})

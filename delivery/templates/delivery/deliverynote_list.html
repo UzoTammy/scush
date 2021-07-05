@@ -1,0 +1,67 @@
+{% extends 'users/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="p-3">
+    <table data-toggle="table"
+           data-search="true"
+           data-pagination="true"
+           class="table caption-top table-sm">
+        <caption>
+            <div class="row">
+                <div class="col">
+                    Pending Deliveries
+                </div>
+            </div>
+
+        </caption>
+
+        <thead>
+        <ul>
+            <th>ID</th>
+            <th>Delivery #</th>
+            <th>Sales Order</th>
+            <th>Source</th>
+            <th>Ship to</th>
+            <th>Date Created</th>
+            <th>Stage</th>
+            <th>Transporter
+            <th>Vehicle #</th>
+            <th>Delivery Date</th>
+            <th>Delivered to</th>
+        </ul>
+        </thead>
+        <tbody>
+        {% for object in object_list %}
+        <tr>
+            <td>{{object.id}}</td>
+            <td><a href="{% url 'delivery-detail' object.pk %}">{{object}}</a></td>
+            <td>{{object.order_number}}</td>
+            <td>{{object.source}}</td>
+            <td>{{object.ship_to}}</td>
+            <td>{{object.created_date}}</td>
+            <td>{{object.stage}}</td>
+            <td>{{object.transporter}}</td>
+            <td>{{object.vehicle_number}}</td>
+            <td>{{object.delivery_date}}</td>
+            <td>{{object.delivered_to}}</td>
+        </tr>
+        {% endfor %}
+
+        </tbody>
+        <tfoot>
+
+        </tfoot>
+    </table>
+    <div class="container mt-5">
+        <div class="row float-right">
+            <div class="col">
+                <a class="btn btn-outline-dark" href="{% url 'delivery-home' %}">
+                    <i class="fa fa-reply text-danger"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
