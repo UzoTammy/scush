@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container mt-3">
     <div class="row">
-<!--        The list group-->
+        <!--        The list group-->
         <div class="col-sm-4 mt-3">
             <ul class="list-group">
                 <li class="list-group-item active"><small>Stock Delivery Stages</small></li>
@@ -15,7 +15,7 @@
                 <li class="list-group-item"><i class="fa fa-times text-danger"></i> Stage 5:Credited</li>
             </ul>
         </div>
-<!--        The form-->
+        <!--        The form-->
         <div class="col-sm-8 mt-3">
             <form action="" method="post">
                 {% csrf_token %}
@@ -24,7 +24,7 @@
                         id="btnAdd"
                         onclick="formFunction()"
                         class="btn btn-sm btn-outline-primary float-right">
-                        <i class="fa fa-plus text-dark"></i></button>
+                    <i class="fa fa-plus text-dark"></i></button>
                 <p class="text-success">Delivery Number: {{number}}</p>
                 <div id="row1" class="form-row" style="background-color: #d6f3f7">
                     <div class="form-group col-md-6 mb-0">
@@ -34,7 +34,7 @@
                         <span id="qtyDel1">{{form.quantity_delivered_1|as_crispy_field}}</span>
                     </div>
                     <div class="form-group col-md-3 mb-0">
-                        <span onchange="formFunction()" id="qtyRec1">{{form.quantity_received_1|as_crispy_field}}</span>
+                        <span id="qtyRec1">{{form.quantity_received_1|as_crispy_field}}</span>
                     </div>
                 </div>
                 <div id="row2" class="form-row" style="background-color: #cedfde;">
@@ -72,15 +72,5 @@
         </div>
     </div>
 </div>
-<script>
-    function formFunction() {
-        let qtyDel = document.getElementById("qtyDel1").value;
-        let qtyRec = document.getElementById("qtyRec1").value;
-        console.log(qtyDel)
-        if (qtyRec > qtyDel) {
-            console.log('hello')
-        }
-    }
-</script>
 {% endblock %}
 

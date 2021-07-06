@@ -58,17 +58,6 @@ class DeliveryReturnUpdateView(FormView):
     template_name = 'delivery/delivery_form_receive.html'
     success_url = reverse_lazy('delivery-home')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        product_obj = Product.objects.get(id=kwargs['pk'])
-        product_id = product_obj.id
-        product_name = product_obj.name
-        product_price = float(product_obj.cost_price.amount)
-        product_discount = product_obj.discount
-        context['product'] = [product_id, product_name, product_price,
-                              product_discount]
-        return context
-
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         obj = self.model.objects.get(id=kwargs['pk'])
@@ -76,7 +65,7 @@ class DeliveryReturnUpdateView(FormView):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        # context = self.get_context_data(**kwargs)
+        
         json_data = dict()
         total_delivered, total_received, total_amount, total_amount_credit = 0, 0, 0, 0
         for i in range(1, 4):

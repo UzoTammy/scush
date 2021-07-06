@@ -88,6 +88,11 @@
                 <div class="col">
                     <div class="list-group list-group-flush">
                         <a class="list-group-item" href="{% url 'employee-update' object.pk %}">Update</a>
+                        <a class="list-group-item"
+                           data-toggle="modal"
+                           data-target="#staffTerminate"
+                           href="">Terminate
+                        </a>
                         <a class="list-group-item" href="{% url 'payroll-statement' object.pk %}">Statement</a>
                         <a class="list-group-item" href="#">Payslip</a>
                         <a class="list-group-item" href="{% url 'staff-list' %}">
@@ -95,6 +100,67 @@
                     </div>
                 </div>
            </div>
+        </div>
+    </div>
+</div>
+
+<!--modal Terminate-->
+<div class="modal"
+     tabindex="-1"
+     role="dialog"
+     id="staffTerminate">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Termination of Staff</h3>
+                <button type="button"
+                        class="close"
+                        aria-label="close"
+                        data-dismiss="modal">
+                    <i class="fa fa-times text-danger"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col">
+                        <h5>Staff: {{ object.fullname }} with ID {{ object.pk|zeropadding:3 }}</h5>
+                        <div class="col mt-2">
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <div class="row">
+                                        <div class="col">
+                                            <form action="{% url 'employee-terminate' object.pk %}" method="post">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    <label class="form-label"
+                                                           for="terminate">
+                                                        You are about to Terminate this staff. Enter the word
+                                                        "TERMINATE"
+                                                    </label>
+                                                    <input type="text"
+                                                           class="form-control"
+                                                           name="keyWord"
+                                                           value=""
+                                                           id="terminate">
+                                                </div>
+                                                <button type="submit"
+                                                        id="btnOK"
+                                                        class="btn btn-outline-danger float-right">
+                                                    Terminate
+                                                </button>
+                                                <a class="btn btn-dark" href="{% url 'employee-detail' object.pk %}">
+                                                    Cancel
+                                                </a>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

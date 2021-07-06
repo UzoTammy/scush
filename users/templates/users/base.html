@@ -17,17 +17,20 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!--  Bootstrap table  -->
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
+
+
     <!--    custom styles-->
     <style>
-            <!-- background-image: url("{% static 'customer/background/filename' %}");-->
-          body {
+            body {
             font-family: 'Oswald', sans-serif !important;
             font-size: 14px;
             background-size: cover;
             }
+
           nav {
             font-size: 12px;
           }
+
           a:hover {
             color: red;
             background-color: transparent;
@@ -41,8 +44,9 @@
           tbody, tfoot {
             font-size: 13px;
           }
+
     </style>
-<!--    hoverable toggling menu-->
+    <!--    hoverable toggling menu-->
     <style>
         .dropbtn {
           background-color: #04AA6D;
@@ -79,14 +83,15 @@
 
         .dropbutton:hover .dropbtn {background-color: #3e8e41;}
 
+
     </style>
 
     {% block head %} {% endblock %}
 
     {% if title %}
-        <title>SCusH | {{title}}</title>
+    <title>SCusH | {{title}}</title>
     {% else %}
-        <title>SCusH</title>
+    <title>SCusH</title>
     {% endif %}
     <link rel="icon" class="shadow-xl" href="{% static 'customer/logo.ico' %}">
 </head>
@@ -108,184 +113,184 @@
        data-toggle="tooltip"
        title="About Ozone">
         <span class="text-danger"></span>
-        <img src="{% static 'customer/logo.png' %}" height="30" class="rounded-circle" alt="#"️>
+        <img src="{% static 'customer/logo.png' %}" height="30" class="rounded-circle" alt="#" ️>
     </a>
     <div class="collapse navbar-collapse" id="Dropdown">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'home' %}">
-                        <i class="fa fa-home text-white fa-2x"></i><span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light" href="{% url 'apply-pending' %}">
-                        <i class="fa fa-pencil-square text-white"></i> Applicants</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'staff-list' %}">
-                        <i class="fa fa-user text-success"></i> Staff</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'customer-list' %}">
-                        <i class="fa fa-users bg-dark text-white"></i> Customers</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'product-list' %}">
-                        <i class="fa fa-cubes text-danger"></i> Stocks</a>
-                </li>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link active text-light" href="{% url 'home' %}">
+                    <i class="fa fa-home text-white fa-2x"></i><span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" href="{% url 'apply-pending' %}">
+                    <i class="fa fa-pencil-square text-white"></i> Applicants</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active text-light" href="{% url 'staff-list' %}">
+                    <i class="fa fa-user text-success"></i> Staff</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active text-light" href="{% url 'customer-list' %}">
+                    <i class="fa fa-users bg-dark text-white"></i> Customers</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active text-light" href="{% url 'product-list' %}">
+                    <i class="fa fa-cubes text-danger"></i> Stocks</a>
+            </li>
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-light"
-                       data-toggle="dropdown"
-                       href="#"
-                       role="button"
-                       aria-haspopup="true"
-                       aria-expanded="false">
-                        <i class="fa fa-play-circle text-dark"></i>
-                        Action
-                    </a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{% url 'credit-create' %}">Add Credit</a>
-                        <a class="dropdown-item" href="{% url 'debit-create' %}">Add Debit</a>
-                        <a class="dropdown-item text-muted">Payroll Process</a>
-                        <div class="dropbutton col">
-                            <a class="dropdown-item" href="#">Payroll
-                                <small><i class="fa fa-play text-info"></i></small></a>
-                            <div class="dropdown-content">
-                                <a href="{% url 'salary' %}">Generate</a>
-                                <a href="{% url 'regenerate-payroll' %}">Regenerate</a>
-                                <a href="{% url 'start-pay' %}">Pay Salary</a>
-                            </div>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-light"
+                   data-toggle="dropdown"
+                   href="#"
+                   role="button"
+                   aria-haspopup="true"
+                   aria-expanded="false">
+                    <i class="fa fa-play-circle text-dark"></i>
+                    Action
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'credit-create' %}">Add Credit</a>
+                    <a class="dropdown-item" href="{% url 'debit-create' %}">Add Debit</a>
+                    <a class="dropdown-item text-muted">Payroll Process</a>
+                    <div class="dropbutton col">
+                        <a class="dropdown-item" href="#">Payroll
+                            <small><i class="fa fa-play text-info"></i></small></a>
+                        <div class="dropdown-content">
+                            <a href="{% url 'salary' %}">Generate</a>
+                            <a href="{% url 'regenerate-payroll' %}">Regenerate</a>
+                            <a href="{% url 'start-pay' %}">Pay Salary</a>
                         </div>
-                        <hr class="dropdown-divider">
-                        <div class="dropbutton col">
-                            <a class="dropdown-item" href="#">Sales
+                    </div>
+                    <hr class="dropdown-divider">
+                    <div class="dropbutton col">
+                        <a class="dropdown-item" href="#">Sales
                             <small><i class="fa fa-play text-info"></i></small>
-                            </a>
-                            <div class="dropdown-content">
-                                <a class="dropdown-item" href="#">Sales Order</a>
-                                <a class="dropdown-item" href="#">Payment</a>
-                                <a class="dropdown-item" href="#">Sales Invoice</a>
-                                <a class="dropdown-item" href="#">Delivery</a>
-                            </div>
-                        </div>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="#">Purchase Order</a>
-                    </div>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
-                       aria-haspopup="true"
-                       aria-expanded="false">
-                        <i class="fa fa-address-card text-white"></i> Views</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{%url 'credit-list' %}">Credit</a>
-                        <a class="dropdown-item" href="{%url 'debit-list' %}">Debit</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'csv-customers' %}">CSV-Customers</a>
-                    </div>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
-                       aria-haspopup="true"
-                       aria-expanded="false">
-                        <i class="fa fa-file-pdf-o text-white"></i> Report</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{% url 'pdf-apply-list'%}">Applicants</a>
-                        <a class="dropdown-item" href="{% url 'pdf-rejected-list'%}">Rejected Applicant</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'pdf-employee-list' %}">Staff Profile</a>
-                        <a class="dropdown-item" data-toggle="modal"
-                           data-target="#pdfPayrollModal">
-                            Payroll for Bank
                         </a>
-                        <a class="dropdown-item" data-toggle="modal"
-                           data-target="#pdfPayslipModal">Payslip</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{%url 'pdf-customers-list'%}">Customers</a>
-                        <a class="dropdown-item" href="#">Stock</a>
-                        <a class="dropdown-item" href="{% url 'pdf-employee-list' %}">Staff</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'policies-docs' %}">Policies and Procedures</a>
+                        <div class="dropdown-content">
+                            <a class="dropdown-item" href="#">Sales Order</a>
+                            <a class="dropdown-item" href="#">Payment</a>
+                            <a class="dropdown-item" href="#">Sales Invoice</a>
+                            <a class="dropdown-item" href="#">Delivery</a>
+                        </div>
                     </div>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-light"
-                       data-toggle="dropdown"
-                       href="#" role="button"
-                       aria-haspopup="true"
-                       aria-expanded="false">
-                        <i class="fa fa-envelope text-white"></i> Mail</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">Applicant</a>
-                        <a class="dropdown-item" href="#">Customer</a>
-                        <a class="dropdown-item" href="#">Stock</a>
-                        <a class="dropdown-item" href="#">Staff</a>
-                        <a class="dropdown-item" href="#">Users</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="#">Others...</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'delivery-home' %}">
-                        <i class="fa fa-truck text-white"></i> Delivery</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
-                       aria-haspopup="true"
-                       aria-expanded="false">
-                        <i class="fa fa-gears text-dark"></i> Administration</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{% url 'register' %}">User Registration</a>
-                    </div>
-                </li>
-
-            </ul>
-            <ul class="navbar-nav">
-                {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'profile' %}">
-                        <img src="{{user.profile.image.url}}"
-                             height="30"
-                             class="rounded-circle bg-white"
-                             alt="">
-                     {{user.username|title}} | Your Info
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="#">Purchase Order</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
+                   aria-haspopup="true"
+                   aria-expanded="false">
+                    <i class="fa fa-address-card text-white"></i> Views</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{%url 'credit-list' %}">Credit</a>
+                    <a class="dropdown-item" href="{%url 'debit-list' %}">Debit</a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="{% url 'csv-customers' %}">CSV-Customers</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
+                   aria-haspopup="true"
+                   aria-expanded="false">
+                    <i class="fa fa-file-pdf-o text-white"></i> Report</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'pdf-apply-list'%}">Applicants</a>
+                    <a class="dropdown-item" href="{% url 'pdf-rejected-list'%}">Rejected Applicant</a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="{% url 'pdf-employee-list' %}">Staff Profile</a>
+                    <a class="dropdown-item" data-toggle="modal"
+                       data-target="#pdfPayrollModal">
+                        Payroll for Bank
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="#">
-                        <i class="fa fa-tachometer text-dark"></i> Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'logout' %}">
-                        <i class="fa fa-sign-out text-dark"></i> Sign Out</a>
-                </li>
-                {% else %}
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'login' %}">
-                        <i class="fa fa-sign-in text-dark"></i> Sign In</a>
-                </li>
-                <li class="nav-item">
-                    <button type="button"
-                            class="btn btn-danger btn-sm"
-                            data-toggle="modal"
-                            data-target="#registerModal">
-                        Register
-                    </button>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
+                    <a class="dropdown-item" data-toggle="modal"
+                       data-target="#pdfPayslipModal">Payslip</a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="{%url 'pdf-customers-list'%}">Customers</a>
+                    <a class="dropdown-item" href="#">Stock</a>
+                    <a class="dropdown-item" href="{% url 'pdf-employee-list' %}">Staff</a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="{% url 'policies-docs' %}">Policies and Procedures</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-light"
+                   data-toggle="dropdown"
+                   href="#" role="button"
+                   aria-haspopup="true"
+                   aria-expanded="false">
+                    <i class="fa fa-envelope text-white"></i> Mail</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#">Applicant</a>
+                    <a class="dropdown-item" href="#">Customer</a>
+                    <a class="dropdown-item" href="#">Stock</a>
+                    <a class="dropdown-item" href="#">Staff</a>
+                    <a class="dropdown-item" href="#">Users</a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="#">Others...</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active text-light" href="{% url 'delivery-home' %}">
+                    <i class="fa fa-truck text-white"></i> Delivery</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
+                   aria-haspopup="true"
+                   aria-expanded="false">
+                    <i class="fa fa-gears text-dark"></i> Administration</a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'register' %}">User Registration</a>
+                </div>
+            </li>
+
+        </ul>
+        <ul class="navbar-nav">
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link active text-light" href="{% url 'profile' %}">
+                    <img src="{{user.profile.image.url}}"
+                         height="30"
+                         class="rounded-circle bg-white"
+                         alt="">
+                    {{user.username|title}} | Your Info
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active text-light" href="#">
+                    <i class="fa fa-tachometer text-dark"></i> Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active text-light" href="{% url 'logout' %}">
+                    <i class="fa fa-sign-out text-dark"></i> Sign Out</a>
+            </li>
+            {% else %}
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{% url 'login' %}">
+                    <i class="fa fa-sign-in text-dark"></i> Sign In</a>
+            </li>
+            <li class="nav-item">
+                <button type="button"
+                        class="btn btn-danger btn-sm"
+                        data-toggle="modal"
+                        data-target="#registerModal">
+                    Register
+                </button>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
 </nav>
 <div class="container">
     <div class="row">
         <div class="col text-center">
-        {% if messages %}
+            {% if messages %}
             {% for message in messages %}
             <div class="alert alert-{{ message.tags }}">
                 {{ message }}
             </div>
             {% endfor %}
-        {% endif %}
+            {% endif %}
         </div>
     </div>
 </div>
@@ -297,75 +302,75 @@
      tabindex="-1"
      aria-labelledby="pdfPayrollModalLabel"
      aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content bg-dark text-white">
-      <div class="modal-header">
-        <h5 class="modal-title"
-            id="pdfPayrollModalLabel">
-            Payroll Period Options
-        </h5>
-        <button type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-          <form action="{% url 'pdf-payroll-list' %}" method="GET">
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="period"
-                           value="{{none|last_month_payroll_period}}"
-                           id="radio1" checked>
-                    <label class="form-check-label"
-                           for="radio1">
-                        {{none|last_month_payroll_period}}
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="period"
-                           value="{% now 'Y-m'%}"
-                           id="radio2">
-                    <label class="form-check-label"
-                           for="radio2">
-                        {% now 'Y-m' %}
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="period"
-                           value="{{none|next_month_payroll_period}}"
-                           id="radio3">
-                    <label class="form-check-label"
-                           for="radio3">
-                        {{none|next_month_payroll_period}}
-                    </label>
-                </div>
-              <hr class="bg-light">
-              <div class="form-group">
-                  <label class="text-primary" for="inputPeriod">Period</label>
-                  <input id="inputPeriod"
-                         class="form-control"
-                         placeholder="This option not yet available"
-                         type="text" disabled>
-              </div>
-      <div class="modal-footer">
-        <input value="OK" type="submit" class="btn btn-primary">
-        <button type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal">
-            Cancel
-        </button>
-      </div>
-    </form>
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="pdfPayrollModalLabel">
+                    Payroll Period Options
+                </h5>
+                <button type="button"
+                        class="btn-close"
+                        data-dismiss="modal"
+                        aria-label="Close">
+                    <i class="fa fa-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'pdf-payroll-list' %}" method="GET">
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="period"
+                               value="{{none|last_month_payroll_period}}"
+                               id="radio1" checked>
+                        <label class="form-check-label"
+                               for="radio1">
+                            {{none|last_month_payroll_period}}
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="period"
+                               value="{% now 'Y-m'%}"
+                               id="radio2">
+                        <label class="form-check-label"
+                               for="radio2">
+                            {% now 'Y-m' %}
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="period"
+                               value="{{none|next_month_payroll_period}}"
+                               id="radio3">
+                        <label class="form-check-label"
+                               for="radio3">
+                            {{none|next_month_payroll_period}}
+                        </label>
+                    </div>
+                    <hr class="bg-light">
+                    <div class="form-group">
+                        <label class="text-primary" for="inputPeriod">Period</label>
+                        <input id="inputPeriod"
+                               class="form-control"
+                               placeholder="This option not yet available"
+                               type="text" disabled>
+                    </div>
+                    <div class="modal-footer">
+                        <input value="OK" type="submit" class="btn btn-primary">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-dismiss="modal">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 </div>
 <!--PDF Payslip-->
 <div class="modal fade"
@@ -373,45 +378,45 @@
      tabindex="-1"
      aria-labelledby="pdfPayslipModalLabel"
      aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content bg-dark text-white">
-      <div class="modal-header">
-        <h5 class="modal-title"
-            id="pdfPayslipModalLabel">
-            Payslip in PDF Format
-        </h5>
-        <button type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-          <form action="{% url 'pdf-payslip' %}" method="GET">
-              <div class="form-group">
-                  <label class="text-primary"
-                         for="inputPayCode">Pay Code</label>
-                  <input id="inputPayCode"
-                         class="form-control"
-                         name="payCode"
-                         value=""
-                         placeholder="0ID-YYYY-MM"
-                         type="text">
-              </div>
-      <div class="modal-footer">
-<!--          <a type="submit" href="#" class="btn btn-primary">OK</a>-->
-          <input value="OK" type="submit" class="btn btn-primary">
-        <button type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal">
-            Cancel
-        </button>
-      </div>
-    </form>
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="pdfPayslipModalLabel">
+                    Payslip in PDF Format
+                </h5>
+                <button type="button"
+                        class="btn-close"
+                        data-dismiss="modal"
+                        aria-label="Close">
+                    <i class="fa fa-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'pdf-payslip' %}" method="GET">
+                    <div class="form-group">
+                        <label class="text-primary"
+                               for="inputPayCode">Pay Code</label>
+                        <input id="inputPayCode"
+                               class="form-control"
+                               name="payCode"
+                               value=""
+                               placeholder="0ID-YYYY-MM"
+                               type="text">
+                    </div>
+                    <div class="modal-footer">
+                        <!--          <a type="submit" href="#" class="btn btn-primary">OK</a>-->
+                        <input value="OK" type="submit" class="btn btn-primary">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-dismiss="modal">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 </div>
 
 <!-- Option 2: Separate Popper and Bootstrap JS -->
@@ -426,6 +431,7 @@
         crossorigin="anonymous"></script>
 <!--bootstrap table-->
 <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
 
 </body>
 </html>

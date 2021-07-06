@@ -4,7 +4,7 @@ from .views import (StaffListView,
                     StaffDetailView,
                     StaffCreateView,
                     StaffUpdateView,
-                    # StaffDeleteView,
+                    StaffTerminate,
                     CreditNoteListView,
                     CreditNoteCreateView,
                     DebitNoteListView,
@@ -24,6 +24,7 @@ urlpatterns = [
     path('staff/<int:pk>/update/', StaffUpdateView.as_view(), name='employee-update'),
     path('staff/new/<int:pk>/', StaffCreateView.as_view(), name='employee-create'),
     path('staff/private/', StaffListPrivateView.as_view(), name='employee-list-private'),
+    path('staff/terminate/<int:pk>/', StaffTerminate.as_view(), name='employee-terminate'),
     ]
 
 urlpatterns += [

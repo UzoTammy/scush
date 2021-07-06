@@ -80,6 +80,7 @@ class PayrollListView(LoginRequiredMixin, ListView):
 class EmployeeListView(LoginRequiredMixin, ListView):
     model = Employee
     template_name = 'pdf/pdf_staff_list.html'
+    queryset = Employee.active.all()
 
     def get(self, request, *args, **kwargs):
         context = {

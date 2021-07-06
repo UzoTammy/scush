@@ -15,9 +15,12 @@
         <span class="text-primary">NM-Non Management</span>
     </small>
     <table data-toggle="table"
-               data-search="true"
-               data-pagination="true"
-               class="table caption-top table-sm">
+           data-search="true"
+           data-show-footer="true"
+           data-show-columns="true"
+           data-pagination="true"
+           id="privateEmployeeTable"
+           class="table table-striped caption-top table-sm">
             <caption>
                 <div class="row">
                     <div class="col">
@@ -25,21 +28,6 @@
                     </div>
                     <div class="col text-right">
                         <!--  links to variety of listings-->
-                        <a href="#"
-                           class="btn btn-dark btn-sm text-right">
-                            <i class="fa fa-plus text-success"></i>
-
-                        </a>
-                        <a href="#"
-                           class="btn btn-dark btn-sm text-right">
-                            <i class="fa fa-plus text-success"></i>
-
-                        </a>
-                        <a href="#"
-                           class="btn btn-dark btn-sm text-right">
-                            <i class="fa fa-plus text-success"></i>
-
-                        </a>
                         <a href="#"
                            class="btn btn-dark btn-sm text-right">
                             <i class="fa fa-plus text-success"></i>
@@ -98,9 +86,8 @@
                     </div>
                 </div>
             </caption>
-
             <thead class="bg-warning text-white">
-            <tr>
+                <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Fullname</th>
                 <th scope="col">GN</th>
@@ -141,8 +128,21 @@
             </tr>
             {% endfor %}
             </tbody>
-            <tfoot>
-
+            <tfoot class="bg-light">
+                <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Fullname</th>
+                <th scope="col">GN</th>
+                <th scope="col">MS</th>
+                <th scope="col">ST</th>
+                <th scope="col">Branch</th>
+                <th scope="col">Banker</th>
+                <th scope="col">Acct.Num</th>
+                <th scope="col">Tax</th>
+                <th scope="col">Basic</th>
+                <th scope="col">Allowance</th>
+                <th scope="col">Balance</th>
+            </tr>
             </tfoot>
         </table>
 </div>
@@ -164,4 +164,9 @@
     </div>
     </div>
 </div>
+<script>
+$(document).ready(function () {
+    $('#privateEmployeeTable').DataTable();
+    })
+</script>
 {% endblock content %}

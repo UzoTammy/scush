@@ -2,7 +2,7 @@ from .models import (Employee,
                      Payroll,
                      CreditNote,
                      DebitNote)
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, redirect
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import (View,
@@ -692,3 +692,17 @@ class PayrollStatement(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
         return render(request, self.template_name, context=context)
 
+
+class StaffTerminate(UpdateView):
+    model = Employee
+
+    def post(self, request, *args, **kwargs):
+        if request.POST['keyWord'] == 'TERMINATE':
+            qs = self.get_queryset().get(id=kwargs['pk'])
+            qs.status = False
+            qs.save()
+            messages.success(request, f"{qs} with ID {str(qs.pk).zfill(3)} is terminated successfully")
+            return redirect('staff-list')
+
+        messages.info(request, "Incorrect key word, Staff yet to be terminated")
+        return redirect('employee-detail', pk=kwargs['pk'])
