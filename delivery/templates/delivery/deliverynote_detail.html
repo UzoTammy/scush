@@ -77,16 +77,12 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for key, values in object.products.items %}
-                {% if key != 'totals' %}
-                <tr>
-                    {% for key, value in values.items %}
-                    {% if key != 'total_amount_credit' %}
-                    <td class="text-right">{{value}}</td>
-                    {% endif %}
-                    {% endfor %}
-                </tr>
-                {% endif %}
+                {% for product in products %}
+                    <tr>
+                        {% for value in product %}
+                        <td class="text-right">{{value}}</td>
+                        {% endfor %}
+                    </tr>
                 {% endfor %}
                 </tbody>
                 <tfoot>
@@ -110,7 +106,6 @@
         <i class="fa fa-forward text-primary"></i>
         <i class="fa fa-forward text-primary"></i>
         <i class="fa fa-forward text-primary"></i>
-        <!--            <i class="fa fa-stop text-primary"></i>-->
     </p>
     <div class="row mb-5">
         <div class="col">

@@ -11,9 +11,16 @@ from django.views.generic import (ListView, DetailView, View)
 from .form import (DeliveryFormCreate,
                    DeliveryFormDeliver,
                    DeliveryFormReturn)
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
-class DeliveryHomeView(View):
+class DeliveryHomeView(LoginRequiredMixin, UserPassesTestMixin, View):
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
     def get(self, request):
         context = {
@@ -22,41 +29,86 @@ class DeliveryHomeView(View):
         return render(request, 'delivery/home.html', context)
 
 
-class DeliveryCreateView(CreateView):
+class DeliveryCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = DeliveryFormCreate
     success_url = reverse_lazy('delivery-home')
     template_name = 'delivery/deliverynote_form.html'
 
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
-class DeliveryListView(ListView):
+
+class DeliveryListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = DeliveryNote
 
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
-class DeliveryDetailView(DetailView):
+
+class DeliveryDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = DeliveryNote
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['products'] = self.get_queryset()
+        recordset = list()
+        qs = self.get_queryset().filter(pk=kwargs['object'].pk).first()
+        del qs.products['totals']
+        for i in range(1, 4):
+            if f'row_{i}' in qs.products:
+                code = qs.products[f'row_{i}']['code']
+                name = qs.products[f'row_{i}']['name']
+                delivered = qs.products[f'row_{i}']['delivered']
+                received = qs.products[f'row_{i}']['received']
+                price = qs.products[f'row_{i}']['price']
+                vat = qs.products[f'row_{i}']['vat']
+                discount = qs.products[f'row_{i}']['discount']
+                amount = qs.products[f'row_{i}']['amount']
+                recordset.append((code, name, delivered, received, price, vat, discount, amount))
+
+        context['products'] = recordset
         return context
 
 
-class DeliveryArriveUpdateView(UpdateView):
+class DeliveryArriveUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = DeliveryNote
     form_class = DeliveryFormDeliver
     template_name = 'delivery/delivery_form_deliver.html'
     success_url = reverse_lazy('delivery-home')
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
     def form_valid(self, form):
         form.instance.stage = 'DELIVERED'
         return super().form_valid(form)
 
 
-class DeliveryReturnUpdateView(FormView):
+class DeliveryReturnUpdateView(LoginRequiredMixin, UserPassesTestMixin, FormView):
     model = DeliveryNote
     form_class = DeliveryFormReturn
     template_name = 'delivery/delivery_form_receive.html'
     success_url = reverse_lazy('delivery-home')
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -65,7 +117,7 @@ class DeliveryReturnUpdateView(FormView):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        
+
         json_data = dict()
         total_delivered, total_received, total_amount, total_amount_credit = 0, 0, 0, 0
         for i in range(1, 4):
@@ -140,8 +192,14 @@ the quantity delivered. Data was not saved. Kindly re-enter record""")
         return redirect('delivery-detail', pk=kwargs['pk'])
 
 
-class DeliveryConfirm(UpdateView):
+class DeliveryConfirm(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = DeliveryNote
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
     def post(self, request, *args, **kwargs):
         qs = self.get_queryset().get(id=kwargs['pk'])
@@ -150,8 +208,14 @@ class DeliveryConfirm(UpdateView):
         return redirect('delivery-detail', pk=kwargs['pk'])
 
 
-class DeliveryCredit(UpdateView):
+class DeliveryCredit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = DeliveryNote
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
     def post(self, request, *args, **kwargs):
         qs = self.get_queryset().get(id=kwargs['pk'])
@@ -160,8 +224,14 @@ class DeliveryCredit(UpdateView):
         return redirect('delivery-detail', pk=kwargs['pk'])
 
 
-class DeliveryRemark(UpdateView):
+class DeliveryRemark(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = DeliveryNote
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
     def post(self, request, *args, **kwargs):
         qs = self.get_queryset().get(id=kwargs['pk'])
