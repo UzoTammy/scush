@@ -14,34 +14,43 @@
     </div>
     <div class="row">
         <div class="col-5">
-            <ul class="list-group">
+            <ul class="list-group list-group-sm list-group-flush">
                 <li class="list-group-item active">
                     Delivery Stages
                 </li>
-                <li class="list-group-item">
+                <li class="list-group-item bg-light">
                     <div class="row mr-2">
+                        <div class="col-6">
+                            <a href="{% url 'delivery-list' %}">All Deliveries</a>
+                        </div>
                         <div class="col-6">
                             <a href="{% url 'delivery-create' %}">Create</a>
                         </div>
-                        <div class="col-6">
-                            <a href="{% url 'delivery-list' %}">Pending</a>
-                        </div>
+
                     </div>
+
                 </li>
-                <li class="list-group-item">Deliver
-                    <span class="badge badge-primary badge-pill">14</span>
+
+                <li class="list-group-item"><a href="{% url 'delivery-stage' create_stage %}">Created</a>
+                    <span class="badge badge-primary badge-pill">{{created.count}}</span>
                 </li>
-                <li class="list-group-item">Receive
-                    <span class="badge badge-primary badge-pill">14</span>
+
+                <li class="list-group-item"><a href="{% url 'delivery-stage' deliver_stage %}">Delivered</a>
+                    <span class="badge badge-primary badge-pill">{{delivered.count}}</span>
                 </li>
-                <li class="list-group-item">Confirm
-                    <span class="badge badge-primary badge-pill">14</span>
+
+                <li class="list-group-item"><a href="{% url 'delivery-stage' return_stage %}">Returned</a>
+                    <span class="badge badge-primary badge-pill">{{returned.count}}</span>
                 </li>
-                <li class="list-group-item">Credit
-                    <span class="badge badge-primary badge-pill">14</span>
+                <li class="list-group-item"><a href="{% url 'delivery-stage' confirm_stage %}">Confirmed</a>
+                    <span class="badge badge-primary badge-pill">{{confirmed.count}}</span>
+                </li>
+                <li class="list-group-item"><a href="{% url 'delivery-stage' credit_stage %}">Credited</a>
+                    <span class="badge badge-primary badge-pill">{{credited.count}}</span>
                 </li>
             </ul>
         </div>
     </div>
+    <hr>
 </div>
 {% endblock %}

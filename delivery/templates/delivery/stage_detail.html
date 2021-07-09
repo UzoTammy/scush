@@ -13,7 +13,7 @@
         <caption>
             <div class="row">
                 <div class="col">
-                    Pending Deliveries
+                    Deliveries at {{stage}} stage
                 </div>
             </div>
 
@@ -27,7 +27,6 @@
             <th>Source</th>
             <th>Ship to</th>
             <th>Date Created</th>
-            <th>Stage</th>
             <th>Transporter</th>
             <th>Vehicle #</th>
             <th>Delivery Date</th>
@@ -35,7 +34,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for object in object_list %}
+        {% for object in objects %}
         <tr>
             <td>{{object.id|zeropadding:4}}</td>
             <td><a href="{% url 'delivery-detail' object.pk %}">{{object}}</a></td>
@@ -43,7 +42,6 @@
             <td>{{object.source}}</td>
             <td>{{object.ship_to}}</td>
             <td>{{object.created_date}}</td>
-            <td>{{object.stage}}</td>
             <td>{{object.transporter}}</td>
             <td>{{object.vehicle_number}}</td>
             <td>{{object.delivery_date}}</td>

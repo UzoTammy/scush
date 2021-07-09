@@ -9,6 +9,7 @@ from .views import (DeliveryHomeView,
                     DeliveryConfirm,
                     DeliveryCredit,
                     DeliveryRemark,
+                    DeliveryStageListView
 
                     )
 
@@ -24,5 +25,6 @@ urlpatterns = [
     path('confirm/<int:pk>/', DeliveryConfirm.as_view(), name='delivery-confirm'),
     path('credit/<int:pk>/', DeliveryCredit.as_view(), name='delivery-credit'),
     path('remark/<int:pk>/', DeliveryRemark.as_view(), name='delivery-remark'),
+    path('stage/<str:stage>/', DeliveryStageListView.as_view(), name='delivery-stage'),
 
 ]

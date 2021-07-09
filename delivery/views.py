@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import DeliveryNote
 from stock.models import Product
 from django.contrib import messages
@@ -24,7 +24,17 @@ class DeliveryHomeView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def get(self, request):
         context = {
-            'title': 'Delivery'
+            'title': 'Delivery',
+            'create_stage': 'CREATED',
+            'deliver_stage': 'DELIVERED',
+            'return_stage': 'RETURNED',
+            'confirm_stage': 'CONFIRMED',
+            'credit_stage': 'CREDITED',
+            'created': DeliveryNote.objects.filter(stage='CREATED'),
+            'delivered': DeliveryNote.objects.filter(stage='DELIVERED'),
+            'returned': DeliveryNote.objects.filter(stage='RETURNED'),
+            'confirmed': DeliveryNote.objects.filter(stage='CONFIRMED'),
+            'credited': DeliveryNote.objects.filter(stage='CREDITED'),
         }
         return render(request, 'delivery/home.html', context)
 
@@ -43,6 +53,7 @@ class DeliveryCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
 class DeliveryListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = DeliveryNote
+    ordering = '-created_date'
 
     def test_func(self):
         """if user is a member of the group HRD then grant access to this view"""
@@ -117,7 +128,6 @@ class DeliveryReturnUpdateView(LoginRequiredMixin, UserPassesTestMixin, FormView
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-
         json_data = dict()
         total_delivered, total_received, total_amount, total_amount_credit = 0, 0, 0, 0
         for i in range(1, 4):
@@ -204,6 +214,7 @@ class DeliveryConfirm(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         qs = self.get_queryset().get(id=kwargs['pk'])
         qs.confirm = True
+        qs.stage = 'CONFIRMED'
         qs.save()
         return redirect('delivery-detail', pk=kwargs['pk'])
 
@@ -220,6 +231,7 @@ class DeliveryCredit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         qs = self.get_queryset().get(id=kwargs['pk'])
         qs.credit = True
+        qs.stage = 'CREDITED'
         qs.save()
         return redirect('delivery-detail', pk=kwargs['pk'])
 
@@ -239,3 +251,21 @@ class DeliveryRemark(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         qs.save()
         return redirect('delivery-detail', pk=kwargs['pk'])
 
+
+class DeliveryStageListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = DeliveryNote
+    template_name = 'delivery/stage_detail.html'
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get(self, request, *args, **kwargs):
+        qs = self.get_queryset().filter(stage=kwargs.get('stage'))
+        context = {
+            'objects': qs.order_by('-created_date'),
+        }
+        context.update(kwargs)
+        return render(request, self.template_name, context)
