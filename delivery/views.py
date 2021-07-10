@@ -1,5 +1,5 @@
-from django.http import HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, Http404
+from django.shortcuts import render, redirect, get_list_or_404
 from .models import DeliveryNote
 from stock.models import Product
 from django.contrib import messages
@@ -15,6 +15,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 class DeliveryHomeView(LoginRequiredMixin, UserPassesTestMixin, View):
+    model = DeliveryNote.objects.all()
 
     def test_func(self):
         """if user is a member of the group HRD then grant access to this view"""
@@ -30,11 +31,11 @@ class DeliveryHomeView(LoginRequiredMixin, UserPassesTestMixin, View):
             'return_stage': 'RETURNED',
             'confirm_stage': 'CONFIRMED',
             'credit_stage': 'CREDITED',
-            'created': DeliveryNote.objects.filter(stage='CREATED'),
-            'delivered': DeliveryNote.objects.filter(stage='DELIVERED'),
-            'returned': DeliveryNote.objects.filter(stage='RETURNED'),
-            'confirmed': DeliveryNote.objects.filter(stage='CONFIRMED'),
-            'credited': DeliveryNote.objects.filter(stage='CREDITED'),
+            'created': self.model.filter(stage='CREATED'),
+            'delivered': self.model.filter(stage='DELIVERED'),
+            'returned': self.model.filter(stage='RETURNED'),
+            'confirmed': self.model.filter(stage='CONFIRMED'),
+            'credited': self.model.filter(stage='CREDITED'),
         }
         return render(request, 'delivery/home.html', context)
 
@@ -262,10 +263,5 @@ class DeliveryStageListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             return True
         return False
 
-    def get(self, request, *args, **kwargs):
-        qs = self.get_queryset().filter(stage=kwargs.get('stage'))
-        context = {
-            'objects': qs.order_by('-created_date'),
-        }
-        context.update(kwargs)
-        return render(request, self.template_name, context)
+    def get_queryset(self):
+        return get_list_or_404(DeliveryNote, stage=self.kwargs.get('stage'))

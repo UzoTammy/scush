@@ -170,7 +170,7 @@ class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context = super().get_context_data(**kwargs)
 
         """requires if data exist for query"""
-        data = {}
+
         if self.queryset:
             workforce = self.get_queryset().count()
             basic_salary_payable = self.get_queryset().aggregate(bs=Sum('basic_salary'))
@@ -181,12 +181,21 @@ class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
                 datetime.date.today().year,
                 datetime.date.today().month)
 
-            daily_man_hours = 9.75 * workforce
+            delta = datetime.datetime(2021, 1, 1, 17, 45, 0) - datetime.datetime(2021, 1, 1, 7, 45, 0)
+            hours_spent_per_workday = delta.seconds / 3600
+
+            daily_man_hours = hours_spent_per_workday * workforce
             monthly_man_hours = daily_man_hours * month_days
 
             context['monthly_man_hours'] = monthly_man_hours
             context['wage_rate'] = f'{chr(8358)}{float(salary_payable)/monthly_man_hours:,.2f}/Hr'
         return context
+
+
+class StaffListPicturesView(LoginRequiredMixin, ListView):
+    model = Employee
+    template_name = 'staff/employee_pictures.html'
+    ordering = '-pk'
 
 
 class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):

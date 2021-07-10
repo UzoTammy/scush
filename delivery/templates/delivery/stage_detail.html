@@ -13,7 +13,7 @@
         <caption>
             <div class="row">
                 <div class="col">
-                    Deliveries at {{stage}} stage
+                    Deliveries at {{view.kwargs.stage}} stage
                 </div>
             </div>
 
@@ -34,7 +34,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for object in objects %}
+        {% for object in object_list %}
         <tr>
             <td>{{object.id|zeropadding:4}}</td>
             <td><a href="{% url 'delivery-detail' object.pk %}">{{object}}</a></td>

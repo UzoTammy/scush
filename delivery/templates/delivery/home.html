@@ -30,24 +30,31 @@
                     </div>
 
                 </li>
-
+                {% if created %}
                 <li class="list-group-item"><a href="{% url 'delivery-stage' create_stage %}">Created</a>
                     <span class="badge badge-primary badge-pill">{{created.count}}</span>
                 </li>
-
+                {% endif %}
+                {% if delivered %}
                 <li class="list-group-item"><a href="{% url 'delivery-stage' deliver_stage %}">Delivered</a>
                     <span class="badge badge-primary badge-pill">{{delivered.count}}</span>
                 </li>
-
+                {% endif %}
+                {% if returned %}
                 <li class="list-group-item"><a href="{% url 'delivery-stage' return_stage %}">Returned</a>
                     <span class="badge badge-primary badge-pill">{{returned.count}}</span>
                 </li>
+                {% endif %}
+                {% if confirmed %}
                 <li class="list-group-item"><a href="{% url 'delivery-stage' confirm_stage %}">Confirmed</a>
                     <span class="badge badge-primary badge-pill">{{confirmed.count}}</span>
                 </li>
+                {% endif %}
+                {% if credited %}
                 <li class="list-group-item"><a href="{% url 'delivery-stage' credit_stage %}">Credited</a>
                     <span class="badge badge-primary badge-pill">{{credited.count}}</span>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </div>

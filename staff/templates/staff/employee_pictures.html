@@ -1,0 +1,37 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col mt-3">
+            <h3>Staff Photo View Page - ({{object_list.count}})</h3>
+        </div>
+    </div>
+
+    <div class="row bg-dark ">
+        {% for object in object_list %}
+        <div class="col-md-3 p-2 d-flex justify-content-sm-center">
+            <div class="card" style="width: 14rem;">
+                <img src={{object.image.url}}
+                     class="card-img-top img-thumbnail mx-auto d-block"
+                     style="height: 300px"
+                     alt="...">
+                <div class="card-body">
+                    <p class="card-text"><img src="{% static 'customer/logo.ico' %}"
+                                              class="rounded-circle"
+                                              width="40px"
+                                              alt="">
+                        <span class="text-bg"> {{object.id|zeropadding:3}}</span><br>{{object.fullname}}<br>
+                        <span class="text-info">{{object.position}}</span>
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -16,10 +16,12 @@ from .views import (StaffListView,
                     SalaryPayment,
                     Payslip,
                     PayrollStatement,
-                    StaffListPrivateView)
+                    StaffListPrivateView,
+                    StaffListPicturesView)
 
 urlpatterns = [
     path('staff/', StaffListView.as_view(), name='staff-list'),
+    path('staff/pictures/', StaffListPicturesView.as_view(), name='staff-pictures'),
     path('staff/<int:pk>/detailed/', StaffDetailView.as_view(), name='employee-detail'),
     path('staff/<int:pk>/update/', StaffUpdateView.as_view(), name='employee-update'),
     path('staff/new/<int:pk>/', StaffCreateView.as_view(), name='employee-create'),

@@ -29,7 +29,7 @@
                         <li class="list-group-item">Name: {{object.name}} </li>
                         <li class="list-group-item">Source: {{object.source}}</li>
                         <li class="list-group-item">Category: {{object.category}}</li>
-                        <li class="list-group-item">Unit Price: {{object.unit_price}}</li>
+                        <li class="list-group-item">Unit Selling Price: {{object.unit_price}}</li>
                         <li class="list-group-item">Cost Price: {{object.cost_price}}</li>
                         <li class="list-group-item">Pack Type: {{object.pack_type}}</li>
                         <li class="list-group-item">Quantity Per Pack: {{object.quantity_per_pack}}</li>
@@ -38,6 +38,11 @@
                         <li class="list-group-item">Size Value: {{object.size_value}}{{object.size_value_unit}}</li>
                         <li class="list-group-item">Alcoholic Content: {{object.alcohol_content}}</li>
                         <li class="list-group-item">VAT (in %): {{object.vat}}</li>
+                        <li class="list-group-item">Parameter: {{object.parameter }}</li>
+                        <li class="list-group-item">Active: {{object.active|yesno:'Yes, No'}}</li>
+                        <li class="list-group-item">Discount: {{object.discount}}</li>
+                        <li class="list-group-item">Discount Type: {{object.discount_type}}</li>
+                        <li class="list-group-item">Product Description: {{object}}</li>
                     </ul>
                 </div>
             </div>
@@ -64,9 +69,11 @@
                 <div class="col mb-3">
                     <a class="btn btn-info" href="{% url 'product-update' object.pk %}">Update</a>
                 </div>
+                {% if user.is_superuser %}
                 <div class="col mb-3">
                     <a class="btn btn-danger" href="{% url 'product-delete' object.pk %}">Delete</a>
                 </div>
+                {% endif %}
                 <div class="col">
                      <a class="btn btn-dark" href="{% url 'product-list' %}"><i class="fa fa-reply text-danger"></i> Return</a>
                 </div>
