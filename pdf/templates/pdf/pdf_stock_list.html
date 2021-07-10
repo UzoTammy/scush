@@ -79,11 +79,12 @@
                 <table class="table caption-top">
                     <thead>
                     <tr>
-                        <th width="50px" scope="col">CODE</th>
+                        <th width="40px" scope="col">CODE</th>
                         <th width="150px" scope="col">Description</th>
-                        <th scope="col">Source</th>
-                        <th scope="col">Cost Price</th>
-                        <th scope="col">Selling Price</th>
+                        <th width="70px" scope="col">Source</th>
+                        <th width="70px" scope="col">Category</th>
+                        <th scope="col">Cost Price (NGN)</th>
+                        <th scope="col">Selling Price (NGN)</th>
                         <th width="50px" scope="col">State</th>
                         <th width="50px" scope="col">AC</th>
                         <th scope="col">Discount</th>
@@ -95,8 +96,9 @@
                         <th scope="row">{{ stock.pk|zeropadding:4 }}</th>
                         <td>{{stock}}</td>
                         <td>{{stock.source}}</td>
-                        <td style="text-align:right;">{{stock.cost_price}}</td>
-                        <td style="text-align:right;">{{stock.unit_price}}</td>
+                        <td>{{stock.category}}</td>
+                        <td style="text-align:right;">{{stock.cost_price.amount}}</td>
+                        <td style="text-align:right;">{{stock.unit_price.amount}}</td>
                         <td style="text-align:right;">{{stock.active|yesno:'Active, Disabled'}}</td>
                         <td>{{stock.alcohol_content}}</td>
                         <td>{{stock.discount}}/{{stock.discount_type}}</td>
