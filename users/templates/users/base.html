@@ -207,7 +207,16 @@
                        data-target="#pdfPayslipModal">Payslip</a>
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{%url 'pdf-customers-list'%}">Customers</a>
-                    <a class="dropdown-item" href="#">Stock</a>
+                    <a class="dropdown-item text-muted">Stock</a>
+                    <div class="dropbutton col">
+                        <a class="dropdown-item" href="#">Products
+                            <small><i class="fa fa-play text-info"></i></small></a>
+                            <div class="dropdown-content">
+                                <a href="{% url 'pdf-stock-list' %}">All</a>
+<!--                                <a href="#">Some</a>-->
+<!--                                <a href="#">Disabled</a>-->
+                            </div>
+                    </div>
                     <a class="dropdown-item" href="{% url 'pdf-employee-list' %}">Staff</a>
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'policies-docs' %}">Policies and Procedures</a>

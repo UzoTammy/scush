@@ -9,7 +9,6 @@
             <h3>Staff Photo View Page - ({{object_list.count}})</h3>
         </div>
     </div>
-
     <div class="row bg-dark ">
         {% for object in object_list %}
         <div class="col-md-3 p-2 d-flex justify-content-sm-center">
@@ -32,6 +31,11 @@
 
         </div>
         {% endfor %}
+    </div>
+    <div class="row">
+        <div class="col mt-3 mb-5">
+            <a href="{% url 'staff-list' %}"><i class="fa fa-reply"></i>Staff View</a>
+        </div>
     </div>
 </div>
 {% endblock %}

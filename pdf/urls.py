@@ -4,7 +4,8 @@ from pdf.views import (CustomerView,
                        EmployeeListView,
                        RejectedApplicantList,
                        PayslipView,
-                       PoliciesDocView)
+                       PoliciesDocView,
+                       StockViewList)
 
 
 urlpatterns = [
@@ -12,7 +13,9 @@ urlpatterns = [
     path('payroll/list/', PayrollListView.as_view(), name='pdf-payroll-list'),
     path('staff/list/',  EmployeeListView.as_view(), name='pdf-employee-list'),
     path('apply/rejected/', RejectedApplicantList.as_view(), name='pdf-rejected-list'),
-    path('payslip/', PayslipView.as_view(), name='pdf-payslip')
+    path('payslip/', PayslipView.as_view(), name='pdf-payslip'),
+
+    path('stock/list/', StockViewList.as_view(), name='pdf-stock-list')
 ]
 
 urlpatterns += [

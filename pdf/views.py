@@ -6,6 +6,7 @@ from apply.models import Applicant
 from django.contrib.auth.models import User
 from django.views.generic import (View, ListView, TemplateView)
 from staff.models import Employee, Payroll
+from stock.models import Product
 from django.db.models import Sum
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -169,3 +170,19 @@ class PayslipView(LoginRequiredMixin, TemplateView):
                 </div>"""
             )
 
+
+class StockViewList(LoginRequiredMixin, ListView):
+    model = Product
+    template_name = 'pdf/pdf_stock_list.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'stocks': self.get_queryset().order_by('-pk')
+        }
+        pdf = render_to_pdf(self.template_name, context)
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            response['Content-Disposition'] = f'filename="products"'
+            return response
+        return HttpResponse("""No such file
+        <a href="/home/">Home</a>""")
