@@ -23,18 +23,20 @@
                                               width="40px"
                                               alt="">
                         <span class="text-bg"> {{object.id|zeropadding:3}}</span><br>{{object.fullname}}<br>
+                        {% if object.position == 'SCM' and object.branch %}
+                        <span class="text-info">{{object.position}}-{{object.branch}}</span>
+                        {% else %}
                         <span class="text-info">{{object.position}}</span>
+                        {% endif %}
                     </p>
                 </div>
-
             </div>
-
         </div>
         {% endfor %}
     </div>
     <div class="row">
         <div class="col mt-3 mb-5">
-            <a href="{% url 'staff-list' %}"><i class="fa fa-reply"></i>Staff View</a>
+            <a type="button" class="btn btn-outline-primary float-right" href="{% url 'staff-list' %}"><i class="fa fa-reply"></i>Staff View</a>
         </div>
     </div>
 </div>

@@ -154,7 +154,7 @@ class PayslipView(LoginRequiredMixin, TemplateView):
             pdf = render_to_pdf(self.template_name, context)
             if pdf:
                 response = HttpResponse(pdf, content_type='application/pdf')
-                response['Content-Disposition'] = f'filename="payslip-{user_input}"'
+                response['Content-Disposition'] = f'filename="payslip-{user_input}.pdf"'
                 return response
             return HttpResponse(f"""<div style=padding:20;><h1>Payslip {user_input} do not exist</h1>
 <p><a href='/home/'>Return Home</a></p></div>""")
@@ -182,7 +182,7 @@ class StockViewList(LoginRequiredMixin, ListView):
         pdf = render_to_pdf(self.template_name, context)
         if pdf:
             response = HttpResponse(pdf, content_type='application/pdf')
-            response['Content-Disposition'] = f'filename="products"'
+            response['Content-Disposition'] = f'filename="products.pdf"'
             return response
         return HttpResponse("""No such file
         <a href="/home/">Home</a>""")

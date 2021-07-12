@@ -1,0 +1,79 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row">
+        <div class="col">
+            <h3>SCUSH App design progress</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <ol>
+                <li>Home Page - <span class="text-danger">customer/home.html</span></li>
+                <li>About Page - <span class="text-danger">customer/about.html</span> - About page is an unrestricted web page. It is intended for general public</li>
+                <li>Applicants and Staff Database
+                    <ol>
+                        <li>Applicant
+                        <ul>
+                            <li>Create - <span class="text-danger">applicant_form.html</span> - Linked from apply in the About page for general access</li>
+                            <li>Read(View)
+                                <ol>
+                                    <li>All - <span class="text-danger">applicant_list.html</span></li>
+                                    <li>Pending - <span class="text-danger">applicant_list_pending.html</span></li>
+                                    <li>Employed - <span class="text-danger">applicant_list_employed.html</span></li>
+                                    <li>Rejected - <span class="text-danger">applicant_list_rejected.html</span></li>
+                                    <li>Detail - <span class="text-danger">applicant_detail.html</span></li>
+                                </ol>
+                            </li>
+                            <li>Update - <span class="text-danger">applicant_form.html</span></li>
+                        </ul>
+                        </li>
+                        <li>Staff
+                            <ul>
+                                <li>Home Page - <span class="text-danger">home_page.html</span></li>
+                                <li>Create - <span class="text-danger">employee_form.html</span></li>
+                                <li>Read(View)
+                                    <ol>
+                                        <li>All - <span class="text-danger">employee_list.html</span></li>
+                                        <li>Private - <span class="text-danger">employee_list_private.html</span></li>
+                                        <li>Photo - <span class="text-danger">employee_pictures.html</span></li>
+                                        <li>Detail - <span class="text-danger">employee_detail.html</span></li>
+                                    </ol>
+                                </li>
+                                <li>Update</li>
+                                <li>Delete</li>
+                                <li>Scush - <span class="text-danger">scush.html</span></li>
+                            </ul>
+                        </li>
+                    </ol>
+                </li>
+                <li>Payroll Process - embedded into the staff app: Requires
+                    <ol>
+                        <li>Staff Database - already designed</li>
+                        <li>Credit Database
+                            <ul>
+                                <li>Create - <span class="text-danger">staff/payroll/creditnote_form.html</span></li>
+                                <li>Read(View) - <span class="text-danger">staff/payroll/credit_list.html</span></li>
+                                <li>Update - <span class="text-danger">staff/payroll/creditnote_form.html</span></li>
+                                <li>Delete - not designed</li>
+                            </ul>
+                        </li>
+                        <li>Debit Database
+                            <ul>
+                                <li>Create</li>
+                                <li>Read</li>
+                                <li>Update</li>
+                                <li>Delete</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </li>
+                <li>Stock Database</li>
+                <li>Delivery Process</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+{% endblock content%}

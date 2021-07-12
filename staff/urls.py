@@ -1,6 +1,9 @@
 from django.urls import path
 from . import views
-from .views import (StaffListView,
+from .views import (StaffScushView,
+                    StaffPoliciesView,
+                    StaffMainPageView,
+                    StaffListView,
                     StaffDetailView,
                     StaffCreateView,
                     StaffUpdateView,
@@ -20,7 +23,10 @@ from .views import (StaffListView,
                     StaffListPicturesView)
 
 urlpatterns = [
+    path('staff/home/', StaffMainPageView.as_view(), name='staff-home'),
     path('staff/', StaffListView.as_view(), name='staff-list'),
+    path('staff/scush/', StaffScushView.as_view(), name='staff-scush'),
+    path('staff/policies/', StaffPoliciesView.as_view(), name='staff-policies'),
     path('staff/pictures/', StaffListPicturesView.as_view(), name='staff-pictures'),
     path('staff/<int:pk>/detailed/', StaffDetailView.as_view(), name='employee-detail'),
     path('staff/<int:pk>/update/', StaffUpdateView.as_view(), name='employee-update'),

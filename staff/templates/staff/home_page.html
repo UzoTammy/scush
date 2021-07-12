@@ -1,0 +1,107 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load custom_templates %}
+
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row p-2">
+        <div class="col">
+            {% for key, value in countdown %}
+            {% if value == 0 %}
+               <h5 style="font-family: cursive; color: #21ae10"
+                   class="text-center">
+                   Happy Birthday {{key}}. Our management and staff hereby wishes
+        you a lovely years ahead</h5>
+            {% endif %}
+        {% endfor %}
+        </div>
+
+        </div>
+<!--    upcoming birthdays-->
+    {% if countdown %}
+    <div class="row">
+        <div class="col">
+            <h5>Upcoming Birthday</h5>
+        </div>
+    </div>
+    <div class="row">
+        <!--        {{countdown}}-->
+        <div class="col-sm-6">
+            <ul>
+        {% for key, value in countdown %}
+            {% if value != 0 %}
+                    <li style="font-family: cursive; font-size:13pt" class="text-info">{{key}}, your birthday comes up in {{value}}
+                        day{{value|pluralize}}
+                    </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<div class="section">
+    <div class="p-3">
+        <div class="row">
+            <div class="col text-center">
+                <h3>{{header}}</h3>
+            </div>
+        </div>
+        <div class="row">
+        <div class="col-3 bg-light">
+            <ul class="list-group list-group-flush">
+            <!--Employee-->
+          <li class="list-group-item"><div class="row mb-1">
+                        <a class="ml-1" href="{% url 'staff-list' %}">
+                            Employee
+                        </a>
+                    </div></li>
+            <!--Payroll-->
+          <li class="list-group-item"><div class="row mb-1">
+                        <a class="ml-1" href="{% url 'salary' %}">Payroll</a>
+                    </div></li>
+            <!--Policies-->
+          <li class="list-group-item"><div class="row mb-1">
+                        <a class="ml-1" href="{% url 'staff-policies' %}">Policies</a>
+                    </div></li>
+            <!--Procedures-->
+          <li class="list-group-item"><div class="row mb-1">
+                        <a class="ml-1" href="">Procedure</a>
+                    </div></li>
+            <!--    SCUSH-->
+          <li class="list-group-item"><div class="row mb-1">
+                        <a class="ml-1" href="{% url 'staff-scush' %}">Progress with SCUSH</a>
+                    </div></li>
+        </ul>
+        </div>
+    <!--   Body of Page     -->
+        <div class="col-9" style="font-family: Times New Roman; font-size: 12pt">
+            <p>{{message_one}}</p>
+        <!--Workforce basic characteristics -->
+            <div class="container mb-3">
+                <div class="row text-info">
+                <div class="col">
+                    Workforce: {{workforce}}
+                </div>
+                <div class="col">
+                    Male: {{male}}
+                </div>
+                <div class="col">
+                    Female: {{female}}
+                </div>
+                <div class="col">
+                    Married: {{married}}
+                </div>
+                <div class="col">
+                    Single: {{single}}
+                </div>
+            </div>
+            </div>
+            <p>{{ message_two }}</p>
+        </div>
+    </div>
+    </div>
+</div>
+
+{% endblock %}

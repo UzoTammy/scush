@@ -68,6 +68,61 @@ c = outstanding"""
         return x, b, c
 
 
+class StaffScushView(View):
+
+    def get(self, request):
+        return render(request, 'staff/scush.html')
+
+
+class StaffPoliciesView(View):
+    def get(self, request):
+        return render(request, 'staff/policies.html')
+
+
+class StaffMainPageView(View):
+    template_name = 'staff/home_page.html'
+    messages_one = f"""Employees remain the most important asset of this company.
+Their combined effort is the result of what we have today. However, for the purpose of leadership and direction,
+we must provide policies and procedures to guide everyone towards expected result. We believe in their collaborative
+effort, integrity, punctuality and passion as they carry out their various assigned tasks. Therefore, whatever we do,
+our staff comes first and only with them can we pride ourselves in what we have achieved. As a company, we believe every
+staff deserves respect from one another irrespective of position and status and also from our clients while they 
+discharge their duty to them. In as much as we have groomed them to treat our customers as Kings and Queens. The 
+happiness of our staff is important, that is what we expect them to transfer to our customers and their fellow staff. 
+"""
+    messages_two = f"""The most important parameter we measure is employee engagement. Those who are discretionary,
+    committed, enthusiastic and involved. They don't work just for a paycheck or just for the next promotion, but work 
+    on behalf of the organisation's goals. These workers are exceptional, productive and contented. 
+    On the other, and unfortunately, their exist employees who chose not to be engaged, they are toxic, complaining 
+    frequently, works against policies and procedures and kill the enthusiasm of engaged employees. Even though they are
+    aware of their behaviour, they often tend to conceal it, making it difficult for the organisation to identify them.
+    We cherish and count on your engagement as we continue to spend time together working as a team. 
+"""
+
+    def get(self, request):
+        data = dict()
+        queryset = Employee.active.all()
+        if queryset:
+            for obj in queryset:
+                countdown = mytools.DatePeriod.countdown(obj.staff.birth_date.strftime('%d-%m-%Y'), 10)
+                if countdown >= 0:
+                    data[obj.staff.first_name] = countdown
+
+        context = {
+            'title': 'Staff Home',
+            'header': 'Staff Home Page',
+            'message_one': self.messages_one,
+            'workforce': Employee.active.count(),
+            'male': Employee.active.filter(staff__gender='MALE').count(),
+            'female': Employee.active.filter(staff__gender='FEMALE').count(),
+            'married': Employee.active.filter(staff__marital_status='MARRIED').count(),
+            'single': Employee.active.filter(staff__marital_status='SINGLE').count(),
+            'countdown': sorted(data.items(), key=lambda x: x[-1]),
+            'message_two': self.messages_two,
+        }
+        return render(request, self.template_name, context=context)
+
+
 class PDFProfileView(View):
 
     def get(self, request):
@@ -135,16 +190,8 @@ class StaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        """requires if data exist for query"""
-        data = {}
         if self.queryset:
-
-            for obj in self.queryset:
-                countdown = mytools.DatePeriod.countdown(obj.staff.birth_date.strftime('%d-%m-%Y'), 10)
-                if countdown >= 0:
-                    data[obj.staff.first_name] = countdown
-            context['countdown'] = sorted(data.items(), key=lambda x: x[-1])
-            employees = self.queryset.exclude(position='MD')
+            employees = self.queryset.exclude(staff__last_name='Nwokoro')
             context['earliest_employee'] = employees.earliest('date_employed')
             context['latest_employee'] = employees.latest('date_employed')
             context['youngest_employee'] = employees.earliest('staff__birth_date')
@@ -195,6 +242,7 @@ class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 class StaffListPicturesView(LoginRequiredMixin, ListView):
     model = Employee
     template_name = 'staff/employee_pictures.html'
+    queryset = model.active.all()
     ordering = '-pk'
 
 
