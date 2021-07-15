@@ -77,8 +77,8 @@ class ProductHomeView(View):
         for each_record in DeliveryNote.objects.all():
             for i in range(1, 4):
                 if f'row_{i}' in each_record.products:
-                    name = each_record.products[f'row_{i}']['name']
-                    category = Product.objects.get(name=name).category
+                    code = each_record.products[f'row_{i}']['code']
+                    category = Product.objects.get(id=int(code)).category
                     if category == 'Malt':
                         data_malt.append(each_record.products[f'row_{i}']['delivered'])
                     elif category == 'Lager':
