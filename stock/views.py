@@ -1,14 +1,20 @@
 from django.shortcuts import render
 from .models import Product
+from delivery.models import DeliveryNote
 from django.views.generic import View
 from django.template.loader import get_template
 from django.http import HttpResponse
+from django.db.models import Sum
 from django.contrib import messages
 from django.views.generic import (ListView,
                                   DetailView,
                                   CreateView,
                                   UpdateView,
                                   DeleteView)
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+
+
+permitted_group_name = 'Sales'
 
 
 class MyFirstView(View):
@@ -22,18 +28,142 @@ class MyFirstView(View):
         return HttpResponse(response)
 
 
-class ProductListView(ListView):
+class ProductHomeView(View):
+
+    @staticmethod
+    def delivery_qty_values():
+        qty_delivered, qty_rejected, amount, amount_credit = list(), list(), list(), list()
+        (total_delivered,
+         total_rejected,
+         percent_rejected,
+         total_amount,
+         total_amount_credit,
+         percent_credited) = 0, 0, '', 0, 0, ''
+        for each_record in DeliveryNote.objects.all():
+            if 'totals' in each_record.products:
+                delivered = int(each_record.products['totals']['total_delivered'].replace(',', ''))
+                qty_delivered.append(delivered)
+                qty_rejected.append(delivered - int(each_record.products['totals']['total_received'].replace(',', '')))
+
+                # values
+                value = each_record.products['totals']['total_amount'].replace(',', '')
+                value = value.replace(chr(8358), '')
+                value_credit = each_record.products['totals']['total_amount_credit'].replace(',', '')
+                value_credit = value_credit.replace(chr(8358), '')
+
+                amount.append(float(value))
+                amount_credit.append(float(value_credit))
+
+            total_delivered = sum(qty_delivered)
+            total_rejected = sum(qty_rejected)
+            percent_rejected = f'{100 * total_rejected / total_delivered:,.2f}%'
+            total_amount = sum(amount)
+            total_amount_credit = sum(amount_credit)
+            percent_credited = f"{100 * total_amount_credit / total_amount:,.2f}%"
+        return total_delivered, total_rejected, percent_rejected, total_amount, total_amount_credit, percent_credited
+
+    @staticmethod
+    def category():
+        data_malt = list()
+        data_lager = list()
+        data_rtd = list()
+        data_soft = list()
+        data_stout = list()
+        data_ed = list()
+        data_bitters = list()
+        data_na_wine = list()
+        data_wine = list()
+        data_others = list()
+        for each_record in DeliveryNote.objects.all():
+            for i in range(1, 4):
+                if f'row_{i}' in each_record.products:
+                    name = each_record.products[f'row_{i}']['name']
+                    category = Product.objects.get(name=name).category
+                    if category == 'Malt':
+                        data_malt.append(each_record.products[f'row_{i}']['delivered'])
+                    elif category == 'Lager':
+                        data_lager.append(each_record.products[f'row_{i}']['delivered'])
+                    elif category == 'RTD':
+                        data_rtd.append(each_record.products[f'row_{i}']['delivered'])
+                    elif category == 'Soft':
+                        data_soft.append(each_record.products[f'row_{i}']['delivered'])
+                    elif category == 'Stout':
+                        data_soft.append(each_record.products[f'row_{i}']['delivered'])
+                    elif category == 'NA Wine':
+                        data_na_wine.append(each_record.products[f'row_{i}']['delivered'])
+                    elif category == 'Wine':
+                        data_wine.append(each_record.products[f'row_{i}']['delivered'])
+                    else:
+                        data_others.append(each_record.products[f'row_{i}']['delivered'])
+
+        return (sum(data_malt),
+                sum(data_lager),
+                sum(data_rtd),
+                sum(data_soft),
+                sum(data_stout),
+                sum(data_ed),
+                sum(data_bitters),
+                sum(data_wine),
+                sum(data_na_wine),
+                sum(data_others))
+
+    def get(self, request):
+
+        context = {
+            'total_count': Product.objects.all(),
+            'nb_count': Product.objects.filter(source='NB'),
+            'gn_count': Product.objects.filter(source='GN'),
+            'ib_count': Product.objects.filter(source='IB'),
+            'quantity_delivered': self.delivery_qty_values()[0],
+            'quantity_rejected': self.delivery_qty_values()[1],
+            'percent_rejected': self.delivery_qty_values()[2],
+            'total_amount': f"{chr(8358)}{self.delivery_qty_values()[3]:,.2f}",
+            'total_amount_credit': f"{chr(8358)}{self.delivery_qty_values()[4]:,.2f}",
+            'percent_credited': self.delivery_qty_values()[5],
+            'total_malt_delivered': self.category()[0],
+            'total_lager_delivered': self.category()[1],
+            'total_rtd_delivered': self.category()[2],
+            'total_soft_delivered': self.category()[3],
+            'total_stout_delivered': self.category()[4],
+            'total_ed_delivered': self.category()[5],
+            'total_bitters_delivered': self.category()[6],
+            'total_wine_delivered': self.category()[7],
+            'total_na_wine_delivered': self.category()[8],
+            'total_others_delivered': self.category()[9]
+        }
+        return render(request, 'stock/product_home.html', context=context)
+
+
+class ProductListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Product
     ordering = ['name']
 
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
 
-class ProductDetailedView(DetailView):
+
+class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Product
 
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
 
-class ProductCreateView(CreateView):
+
+class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Product
     fields = '__all__'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -41,9 +171,15 @@ class ProductCreateView(CreateView):
         return context
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Product
     fields = '__all__'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -51,6 +187,13 @@ class ProductUpdateView(UpdateView):
         return context
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Product
     success_url = '/products/list/'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+

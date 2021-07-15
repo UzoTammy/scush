@@ -9,8 +9,9 @@ SOURCES = [('NB', 'NBPlc'),
            ('SW', 'SellWell'),
            ('MD', 'Monument'),
            ('FN', 'Fouani'),
+           ('HY', 'Hayat'),
            ('MSC', 'Miscellaneous'),
-           ('Hayat', 'Hayat')]
+           ]
 
 CATEGORIES = [('Malt', 'Malt'),
               ('Lager', 'Lager'),
@@ -19,17 +20,25 @@ CATEGORIES = [('Malt', 'Malt'),
               ('ED', 'Energy Drink'),
               ('Bitters', 'Bitters'),
               ('Soft', 'Soft Drink'),
-              ('H2O', 'Water'),
+              ('Others', 'Others'),
               ('NA Wine', 'Non Alcoholic Wine'),
               ('Wine', 'Alcoholic Wine')]
 
 UNITS = [('Pieces', 'Pieces'),
-         ("Pack", 'Pack'),
+         ('Pack', 'Pack'),
          ('Pallet', 'Pallet')]
 
-PACKS = [('Can', 'Can'), ('Pet', 'Pet'), ('Bottle', 'Bottle'), ('Tetra', 'Tetra Pak'), ('Crate', 'Crate')]
+PACKS = [('Can', 'Can'),
+         ('Pet', 'Pet'),
+         ('Bottle', 'Bottle'),
+         ('Tetra', 'Tetra Pak'),
+         ('Crate', 'Crate'),
+         ('Sachet', 'Sachet')]
 
-STATES = [('Liquid', 'Liquid'), ('Solid', 'Solid'), ('Gas', 'Gas')]
+STATES = [('Liquid', 'Liquid'),
+          ('Solid', 'Solid'),
+          ('Gas', 'Gas')
+          ]
 
 SIZE_VALUE_UNIT = [('ml', 'Millilitres'),
                    ('cl', 'Centilitres'),

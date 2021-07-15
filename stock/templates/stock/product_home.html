@@ -1,0 +1,125 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+    <div class="p-3">
+        <div class="row">
+            <div class="col text-center">
+                <h3>Products Home Page</h3>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-3 bg-light">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <a href="{% url 'product-list' %}">View Products</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="{% url 'product-create' %}">Create Product</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="{% url 'delivery-home' %}">Deliveries</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-9">
+                <div class="row">
+<!--                    Product Count-->
+                    <div class="col-6">
+                        <h4 style="font-family: cursive" class="text-danger">Counts</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item list-group-item-info">
+                                <i>Products: {{total_count.count}}</i>
+                            </li>
+                            <li class="list-group-item">
+                                <i>NB Products: {{nb_count.count}}</i>
+                            </li>
+                            <li class="list-group-item list-group-item-info">
+                                <i>GN Products: {{gn_count.count}}</i>
+                            </li>
+                            <li class="list-group-item">
+                                <i>IB Products: {{ib_count.count}}</i>
+                            </li>
+                        </ul>
+                    </div>
+<!--                    Quantity Delivered-->
+                    <div class="col-6">
+                        <h4 style="font-family: cursive" class="text-danger">Quantity</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item list-group-item-info">
+                                <i>Delivered: {{quantity_delivered}}</i>
+                            </li>
+                            <li class="list-group-item">
+                                <i>Sold: not ready</i>
+                            </li>
+                            <li class="list-group-item list-group-item-info">
+                                <i>Rejected: {{quantity_rejected}}</i>
+                            </li>
+                            <li class="list-group-item">
+                                <i>{{percent_rejected}} of all deliveries were rejected.</i>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-6">
+                        <h4 style="font-family: cursive" class="text-danger">Values</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item list-group-item-info">
+                                <i>Delivered: {{total_amount}}</i>
+                            </li>
+                            <li class="list-group-item">
+                                <i>Sold: not ready</i>
+                            </li>
+                            <li class="list-group-item list-group-item-info">
+                                <i>Rejected: {{total_amount_credit}}</i>
+                            </li>
+<!--                            <li class="list-group-item">-->
+<!--                                <i>{{percent_credited}} of all deliveries were rejected.</i>-->
+<!--                            </li>-->
+                        </ul>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+<!--                    Category-->
+                    <div class="col-6">
+                        <h4 style="font-family: cursive" class="text-danger">Category</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item list-group-item-info">
+                                <i>Malt: {{total_malt_delivered}}</i>
+                            </li>
+                            <li class="list-group-item">
+                                <i>Lager: {{total_lager_delivered}}</i>
+                            </li>
+                            <li class="list-group-item list-group-item-info">
+                                <i>RTD: {{total_rtd_delivered}}</i>
+                            </li>
+                            <li class="list-group-item">
+                                <i>Soft: {{total_soft_delivered}}</i>
+                            </li>
+                        </ul>
+                    </div>
+<!--                    Category-->
+                    <div class="col-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><i>Stout: {{total_stout_delivered}}</i></li>
+                            <li class="list-group-item list-group-item-info">
+                                <i>ED: {{total_ed_delivered}}</i>
+                            </li>
+                            <li class="list-group-item">
+                                <i>Bitters: {{total_bitters_delivered}}</i>
+                            </li>
+                            <li class="list-group-item list-group-item-info">
+                                <i>Alcoholic Wine: {{total_wine_delivered}}</i>
+                            </li>
+                            <li class="list-group-item">
+                                <i>Non Alcoholic Wine: {{total_na_wine_delivered}}</i>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

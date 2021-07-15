@@ -3,8 +3,8 @@
 {% load custom_templates %}
 
 {% block content %}
-<div class="container mt-3">
-    <h2 class="text-secondary text-center bg-light">Product Detail Page</h2>
+<div class="p-4">
+    <h2 class="text-secondary text-center">Product Detail Page</h2>
     <div class="row">
         <div class="col-sm-8">
             <div class="media">
@@ -15,17 +15,17 @@
                    alt="...">
               <div class="media-body">
                 <h5 class="text-info mt-0">{{object}}</h5>
-                <p class="text-success">Product Id: {{object.id|zeropadding:3}}</p>
+                <p class="text-success">Product Code: {{object.id|zeropadding:4}}</p>
               </div>
             </div>
             <div class="row p-2">
-                <div class="col-6">
-                    <button type="button"
+                    <div class="col">
+                        <button type="button"
                     class="list-group-item list-group-item-action bg-light"
                     aria-current="true">
                 <b class="text-center">{{object.name}} {{object.unit_type}} {{object.parameter}}</b>
             </button>
-                    <ul class="list-group list-group-flush">
+                        <ul class="list-group list-group-flush">
                         <li class="list-group-item">Name: {{object.name}} </li>
                         <li class="list-group-item">Source: {{object.source}}</li>
                         <li class="list-group-item">Category: {{object.category}}</li>
@@ -44,10 +44,23 @@
                         <li class="list-group-item">Discount Type: {{object.discount_type}}</li>
                         <li class="list-group-item">Product Description: {{object}}</li>
                     </ul>
+                    </div>
                 </div>
-            </div>
         </div>
         <div class="col-sm-4">
+            <!--Side menu-->
+            <div class="row mb-5 mt-3">
+                <div class="col bg-light">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="{% url 'product-update' object.pk %}">Update</a></li>
+                        {% if user.is_superuser %}
+                        <li class="list-group-item"><a href="{% url 'product-delete' object.pk %}">Delete</a></li>
+                        {% endif %}
+                        <li class="list-group-item"><a href="{% url 'product-list' %}"><i class="fa fa-reply text-danger"></i> Return</a></li>
+                    </ul>
+                </div>
+            </div>
+            <!--derived data-->
             <div class="row">
                 <div class="col">
                     <button type="button"
@@ -58,26 +71,12 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item text-info">Sourced: Quantity Value</li>
                         <li class="list-group-item text-success">Sold: Quantity Value</li>
-                        <li class="list-group-item">C</li>
-                        <li class="list-group-item">D</li>
-                        <li class="list-group-item text-danger">E</li>
+<!--                        <li class="list-group-item">C</li>-->
+<!--                        <li class="list-group-item">D</li>-->
+<!--                        <li class="list-group-item text-danger">E</li>-->
                     </ul>
                 </div>
             </div>
-            <hr>
-            <div class="row">
-                <div class="col mb-3">
-                    <a class="btn btn-info" href="{% url 'product-update' object.pk %}">Update</a>
-                </div>
-                {% if user.is_superuser %}
-                <div class="col mb-3">
-                    <a class="btn btn-danger" href="{% url 'product-delete' object.pk %}">Delete</a>
-                </div>
-                {% endif %}
-                <div class="col">
-                     <a class="btn btn-dark" href="{% url 'product-list' %}"><i class="fa fa-reply text-danger"></i> Return</a>
-                </div>
-           </div>
         </div>
     </div>
 </div>

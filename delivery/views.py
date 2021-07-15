@@ -14,12 +14,15 @@ from .form import (DeliveryFormCreate,
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
+permitted_group_name = 'Sales'
+
+
 class DeliveryHomeView(LoginRequiredMixin, UserPassesTestMixin, View):
     model = DeliveryNote.objects.all()
 
     def test_func(self):
         """if user is a member of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
 
@@ -46,8 +49,8 @@ class DeliveryCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = 'delivery/deliverynote_form.html'
 
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
 
@@ -57,8 +60,8 @@ class DeliveryListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     ordering = '-created_date'
 
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
 
@@ -67,8 +70,8 @@ class DeliveryDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = DeliveryNote
 
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
 
@@ -76,7 +79,8 @@ class DeliveryDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context = super().get_context_data(**kwargs)
         recordset = list()
         qs = self.get_queryset().filter(pk=kwargs['object'].pk).first()
-        del qs.products['totals']
+        if qs.products:
+            del qs.products['totals']
         for i in range(1, 4):
             if f'row_{i}' in qs.products:
                 code = qs.products[f'row_{i}']['code']
@@ -100,8 +104,8 @@ class DeliveryArriveUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateVi
     success_url = reverse_lazy('delivery-home')
 
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
 
@@ -117,8 +121,8 @@ class DeliveryReturnUpdateView(LoginRequiredMixin, UserPassesTestMixin, FormView
     success_url = reverse_lazy('delivery-home')
 
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
 
@@ -167,7 +171,7 @@ class DeliveryReturnUpdateView(LoginRequiredMixin, UserPassesTestMixin, FormView
                 amount_credit = price * qty_to_be_credited - discount_amount_credit + vattable_amount_credit
                 json_data.update({
                     f'row_{i}': {
-                        'code': f'{product_id}'.zfill(3),
+                        'code': f'{product_id}'.zfill(4),
                         'name': name,
                         'delivered': qty_delivered,
                         'received': qty_received,
@@ -207,8 +211,8 @@ class DeliveryConfirm(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = DeliveryNote
 
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
 
@@ -224,8 +228,8 @@ class DeliveryCredit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = DeliveryNote
 
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
 
@@ -241,8 +245,8 @@ class DeliveryRemark(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = DeliveryNote
 
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
 
@@ -258,8 +262,8 @@ class DeliveryStageListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     template_name = 'delivery/stage_detail.html'
 
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
 
