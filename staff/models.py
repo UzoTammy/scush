@@ -10,6 +10,7 @@ import datetime
 
 class ActiveEmployeeManager(models.Manager):
     def get_queryset(self):
+        """Either True for active or false for Terminated Employee"""
         return super().get_queryset().filter(status=True)
 
 
@@ -190,3 +191,34 @@ class Payroll(models.Model):
 
     def __str__(self):
         return f"{self.staff.fullname()}:{self.period}"
+
+
+class Reassign(models.Model):
+    staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    reassign_type = models.CharField(max_length=10, default='Temporal',
+                                     choices=[('Temporal', 'Temporal'),
+                                              ('Permanent', 'Permanent')]
+                                     )
+    from_position = models.CharField(max_length=30, null=True, blank=True)
+    to_position = models.CharField(max_length=30, choices=Employee.POSITIONS, null=True, blank=True)
+    from_branch = models.CharField(max_length=30, null=True, blank=True)
+    to_branch = models.CharField(max_length=30, choices=Employee.BRANCHES, null=True, blank=True)
+    start_date = models.DateField(default=timezone.now)
+    remark = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.staff.fullname()
+
+
+class Terminate(models.Model):
+    staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    termination_type = models.CharField(max_length=6, default='Resign',
+                                        choices=[('Resign', 'Resign'),
+                                                 ('Sack', 'Sack')]
+                                        )
+    remark = models.CharField(max_length=100)
+    date = models.DateField(default=timezone.now)
+
+    def __str__(self):
+        return self.staff.fullname()
+

@@ -1,9 +1,10 @@
 from .models import (Employee,
                      Payroll,
                      CreditNote,
-                     DebitNote)
+                     DebitNote,
+                     Terminate,
+                     Reassign)
 from django.shortcuts import render, reverse, redirect
-from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import (View,
                                   TemplateView,
@@ -11,19 +12,21 @@ from django.views.generic import (View,
                                   DetailView,
                                   CreateView,
                                   UpdateView,
-                                  DeleteView)
+                                  )
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from apply.models import Applicant
 from djmoney.money import Money
 from ozone import mytools
 import datetime
 from django.contrib import messages
+from django.utils import timezone
 from django.contrib.auth.admin import Group
 from django.core.mail import send_mail, mail_admins, mail_managers
 from django.core.validators import ValidationError
 from .form import DebitForm, CreditForm
 from django.template import loader
 from django.db.models import Sum
+
 
 
 class Salary:
@@ -112,13 +115,17 @@ happiness of our staff is important, that is what we expect them to transfer to 
             'title': 'Staff Home',
             'header': 'Staff Home Page',
             'message_one': self.messages_one,
-            'workforce': Employee.active.count(),
-            'male': Employee.active.filter(staff__gender='MALE').count(),
-            'female': Employee.active.filter(staff__gender='FEMALE').count(),
-            'married': Employee.active.filter(staff__marital_status='MARRIED').count(),
-            'single': Employee.active.filter(staff__marital_status='SINGLE').count(),
+            'workforce': queryset.count(),
+            'male': queryset.filter(staff__gender='MALE').count(),
+            'female': queryset.filter(staff__gender='FEMALE').count(),
+            'married': queryset.filter(staff__marital_status='MARRIED').count(),
+            'single': queryset.filter(staff__marital_status='SINGLE').count(),
             'countdown': sorted(data.items(), key=lambda x: x[-1]),
             'message_two': self.messages_two,
+            'management': queryset.filter(is_management=True).count(),
+            'non_management': queryset.exclude(is_management=True).count(),
+            'terminated': Employee.objects.filter(status=False).count(),
+            'probation': queryset.filter(is_confirmed=False).count(),
         }
         return render(request, self.template_name, context=context)
 
@@ -178,8 +185,8 @@ class PDFProfileView(View):
 
 class StaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Employee
-    ordering = 'staff__first_name'
     queryset = model.active.all()
+    ordering = '-pk'
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -244,6 +251,7 @@ class StaffListPicturesView(LoginRequiredMixin, ListView):
     template_name = 'staff/employee_pictures.html'
     queryset = model.active.all()
     ordering = '-pk'
+    paginate_by = 4
 
 
 class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -254,6 +262,16 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['positions'] = (i[0] for i in Employee.POSITIONS)
+        context['branches'] = (i[0] for i in Employee.BRANCHES)
+        return context
+
+    # def post(self, request, **kwargs):
+    #     print(request.POST)
+    #     return redirect('employee-', pk=kwargs['pk'])
 
 
 class StaffCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -750,16 +768,82 @@ class PayrollStatement(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return render(request, self.template_name, context=context)
 
 
-class StaffTerminate(UpdateView):
+class StaffTerminate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Employee
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
     def post(self, request, *args, **kwargs):
         if request.POST['keyWord'] == 'TERMINATE':
+            """Update Employee record"""
             qs = self.get_queryset().get(id=kwargs['pk'])
             qs.status = False
             qs.save()
+
+            """Create a terminate record"""
+            term = Terminate(staff=qs,
+                             termination_type=request.POST['type'],
+                             remark=request.POST['remark'],
+                             date=request.POST['date'])
+            term.save()
+
+            """success message"""
             messages.success(request, f"{qs} with ID {str(qs.pk).zfill(3)} is terminated successfully")
             return redirect('staff-list')
 
         messages.info(request, "Incorrect key word, Staff yet to be terminated")
+        return redirect('employee-detail', pk=kwargs['pk'])
+
+
+class StaffReassign(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        position = None if request.POST['position'] == "None" else request.POST['position']
+        branch = None if request.POST['branch'] == "None" else request.POST['branch']
+        qs = self.get_queryset().get(id=kwargs['pk'])
+
+        pos = {
+            'Sales': ['Driver', 'Cashier', 'Store-Keeper', 'Sales-Clerk',
+                      'Stock-Keeper', 'SCM', 'GSM'],
+            'Marketing': ['Sales Rep', 'Marketing Manager'],
+            'Accounts': ['Account-Clerk', 'Accountant'],
+            'HR': ['HRM'],
+            'Admin': ['Analyst', 'MD']
+        }
+        """Create to reassign database"""
+        date = datetime.date.today() if request.POST['start_date'] == "" else request.POST['start_date']
+        reassign = Reassign(staff=qs,
+                            reassign_type=request.POST['type'],
+                            from_position=request.POST['current_position'],
+                            from_branch=request.POST['current_branch'],
+                            to_position=request.POST['position'],
+                            to_branch=request.POST['branch'],
+                            remark=request.POST['remark'],
+                            start_date=date,
+                            )
+        reassign.save()
+
+        department = None
+        for key, value in pos.items():
+            if position in value:
+                department = key
+        qs.position = position
+        qs.branch = branch
+        qs.department = department
+        """data modified time needs to change and mail needs"""
+        qs.save()
+
+
+        messages.success(request, f'Position and Branch changed to {position} and {branch} respectively')
         return redirect('employee-detail', pk=kwargs['pk'])

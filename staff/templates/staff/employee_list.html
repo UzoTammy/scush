@@ -8,6 +8,7 @@
     <div class="col-sm-12">
         <table data-toggle="table"
                data-search="true"
+               data-show-columns="true"
                data-pagination="true"
                class="table caption-top table-sm">
             <caption>
@@ -99,6 +100,7 @@
                 <th scope="col">Employee</th>
                 <th scope="col">Date Employed</th>
                 <th scope="col">Status</th>
+                <th scope="col">State</th>
                 <th scope="col">Qualification</th>
                 <th scope="col">Course</th>
                 <th scope="col">Mobile</th>
@@ -123,6 +125,7 @@
                 <td><a href="{% url 'employee-detail' employee.pk %}">{{employee.fullname}}</a></td>
                 <td>{{employee.date_employed}}</td>
                 <td>{{employee.staff.status|yesno:'Active, Terminated, Leave'}}</td>
+                <td>{{employee.is_confirmed|yesno:'Confirmed, Probation'}}</td>
                 <td>{{employee.staff.qualification}}</td>
                 <td>{{employee.staff.course}}</td>
                 <td>{{employee.staff.mobile|addsep}}</td>

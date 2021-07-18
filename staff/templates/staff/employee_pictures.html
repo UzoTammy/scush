@@ -6,7 +6,7 @@
 <div class="container">
     <div class="row">
         <div class="col mt-3">
-            <h3>Staff Photo View Page - ({{object_list.count}})</h3>
+            <h3>Staff Photo View Page - ({{page_obj.paginator.count}})</h3>
         </div>
     </div>
     <div class="row bg-dark ">
@@ -35,8 +35,34 @@
         {% endfor %}
     </div>
     <div class="row">
+        <div class="col">
+            <div class="pagination mt-3">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a type="button" class="btn btn-outline-info btn-sm" href="?page=1">
+                            <i class="fa fa-fast-backward"></i>
+                        </a>
+                        <a type="button" class="btn btn-outline-info btn-sm" href="?page={{page_obj.previous_page_number}}">
+                            <i class="fa fa-backward"></i>
+                        </a>
+                    {% endif %}
+                    <span class="current">
+                        Page {{ page_obj.number}} of
+                        {{page_obj.paginator.num_pages}}
+                    </span>
+                    {% if page_obj.has_next %}
+                    <a type="button" class="btn btn-outline-info btn-sm" href="?page={{ page_obj.next_page_number }}">
+                        <i class="fa fa-forward"></i></a>
+                    <a type="button" class="btn btn-outline-info btn-sm" href="?page={{ page_obj.paginator.num_pages }}">
+                        <i class="fa fa-fast-forward"></i></a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
         <div class="col mt-3 mb-5">
-            <a type="button" class="btn btn-outline-primary float-right" href="{% url 'staff-list' %}"><i class="fa fa-reply"></i>Staff View</a>
+            <a type="button" class="btn btn-outline-info btn-sm float-right" href="{% url 'staff-list' %}">
+                <i class="fa fa-reply"></i> Return
+            </a>
         </div>
     </div>
 </div>

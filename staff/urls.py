@@ -20,7 +20,8 @@ from .views import (StaffScushView,
                     Payslip,
                     PayrollStatement,
                     StaffListPrivateView,
-                    StaffListPicturesView)
+                    StaffListPicturesView,
+                    StaffReassign)
 
 urlpatterns = [
     path('staff/home/', StaffMainPageView.as_view(), name='staff-home'),
@@ -33,6 +34,7 @@ urlpatterns = [
     path('staff/new/<int:pk>/', StaffCreateView.as_view(), name='employee-create'),
     path('staff/private/', StaffListPrivateView.as_view(), name='employee-list-private'),
     path('staff/terminate/<int:pk>/', StaffTerminate.as_view(), name='employee-terminate'),
+    path('staff/reassign/<int:pk>/', StaffReassign.as_view(), name='employee-reassign'),
     ]
 
 urlpatterns += [

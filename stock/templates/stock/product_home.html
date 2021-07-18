@@ -28,16 +28,16 @@
                         <h4 style="font-family: cursive" class="text-danger">Counts</h4>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item list-group-item-info">
-                                <i>Products: {{total_count.count}}</i>
+                                <i>Products: {{total_count}}</i>
                             </li>
                             <li class="list-group-item">
-                                <i>NB Products: {{nb_count.count}}</i>
+                                <i>NB Products: {{nb_count}}</i>
                             </li>
                             <li class="list-group-item list-group-item-info">
-                                <i>GN Products: {{gn_count.count}}</i>
+                                <i>GN Products: {{gn_count}}</i>
                             </li>
                             <li class="list-group-item">
-                                <i>IB Products: {{ib_count.count}}</i>
+                                <i>IB Products: {{ib_count}}</i>
                             </li>
                         </ul>
                     </div>
@@ -79,10 +79,29 @@
 <!--                            </li>-->
                         </ul>
                     </div>
+<!--                    Sources-->
+                    <div class="col-6">
+                        <h4 style="font-family: cursive"
+                            class="text-danger">Sources</h4>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item list-group-item-info">
+                                <i>GN: {{gn_delivered}} ({{gn_amount}})</i>
+                            </li>
+                            <li class="list-group-item">
+                                <i>NB: {{nb_delivered}} ({{nb_amount}})</i>
+                            </li>
+                            <li class="list-group-item list-group-item-info">
+                                <i>IB: {{ib_delivered}} ({{ib_amount}})</i>
+                            </li>
+<!--                            <li class="list-group-item">-->
+<!--                                <i>{{percent_credited}} of all deliveries were rejected.</i>-->
+<!--                            </li>-->
+                        </ul>
+                    </div>
                 </div>
                 <hr>
                 <div class="row">
-<!--                    Category-->
+<!--                    Category right side-->
                     <div class="col-6">
                         <h4 style="font-family: cursive" class="text-danger">Category</h4>
                         <ul class="list-group list-group-flush">
@@ -100,7 +119,7 @@
                             </li>
                         </ul>
                     </div>
-<!--                    Category-->
+<!--                    Category left side-->
                     <div class="col-6">
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item"><i>Stout: {{total_stout_delivered}}</i></li>

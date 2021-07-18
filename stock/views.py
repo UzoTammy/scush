@@ -31,7 +31,7 @@ class MyFirstView(View):
 class ProductHomeView(View):
 
     @staticmethod
-    def delivery_qty_values():
+    def delivery_qty_values(obj):
         qty_delivered, qty_rejected, amount, amount_credit = list(), list(), list(), list()
         (total_delivered,
          total_rejected,
@@ -39,7 +39,7 @@ class ProductHomeView(View):
          total_amount,
          total_amount_credit,
          percent_credited) = 0, 0, '', 0, 0, ''
-        for each_record in DeliveryNote.objects.all():
+        for each_record in obj:
             if 'totals' in each_record.products:
                 delivered = int(each_record.products['totals']['total_delivered'].replace(',', ''))
                 qty_delivered.append(delivered)
@@ -110,16 +110,16 @@ class ProductHomeView(View):
     def get(self, request):
 
         context = {
-            'total_count': Product.objects.all(),
-            'nb_count': Product.objects.filter(source='NB'),
-            'gn_count': Product.objects.filter(source='GN'),
-            'ib_count': Product.objects.filter(source='IB'),
-            'quantity_delivered': self.delivery_qty_values()[0],
-            'quantity_rejected': self.delivery_qty_values()[1],
-            'percent_rejected': self.delivery_qty_values()[2],
-            'total_amount': f"{chr(8358)}{self.delivery_qty_values()[3]:,.2f}",
-            'total_amount_credit': f"{chr(8358)}{self.delivery_qty_values()[4]:,.2f}",
-            'percent_credited': self.delivery_qty_values()[5],
+            'total_count': Product.objects.all().count(),
+            'nb_count': Product.objects.filter(source='NB').count(),
+            'gn_count': Product.objects.filter(source='GN').count(),
+            'ib_count': Product.objects.filter(source='IB').count(),
+            'quantity_delivered': self.delivery_qty_values(DeliveryNote.objects.all())[0],
+            'quantity_rejected': self.delivery_qty_values(DeliveryNote.objects.all())[1],
+            'percent_rejected': self.delivery_qty_values(DeliveryNote.objects.all())[2],
+            'total_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.all())[3]:,.2f}",
+            'total_amount_credit': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.all())[4]:,.2f}",
+            'percent_credited': self.delivery_qty_values(DeliveryNote.objects.all())[5],
             'total_malt_delivered': self.category()[0],
             'total_lager_delivered': self.category()[1],
             'total_rtd_delivered': self.category()[2],
@@ -129,7 +129,13 @@ class ProductHomeView(View):
             'total_bitters_delivered': self.category()[6],
             'total_wine_delivered': self.category()[7],
             'total_na_wine_delivered': self.category()[8],
-            'total_others_delivered': self.category()[9]
+            'total_others_delivered': self.category()[9],
+            'nb_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='NB'))[0],
+            'nb_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='NB'))[3]:,.2f}",
+            'gn_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='GN'))[0],
+            'gn_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='GN'))[3]:,.2f}",
+            'ib_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[0],
+            'ib_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[3]:,.2f}",
         }
         return render(request, 'stock/product_home.html', context=context)
 
