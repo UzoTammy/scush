@@ -102,6 +102,26 @@ happiness of our staff is important, that is what we expect them to transfer to 
     We cherish and count on your engagement as we continue to spend time together working as a team. 
 """
 
+    def confirm_staff(self):
+        staff_on_probation = list()
+        """get all employees"""
+        employees = Employee.active.all()
+        """check the state"""
+        for employee in employees:
+            """if staff is on probation"""
+            if employee.is_confirmed is False:
+                today = datetime.date.today()
+                days_worked = (today - employee.date_employed).days
+                if days_worked > 90:
+                    employee.is_confirmed = True
+                    employee.save()
+                else:
+                    staff_on_probation.append({'code': employee.id,
+                                               'name': employee.fullname(),
+                                               'date': today + datetime.timedelta(90-days_worked)}
+                                              )
+        return staff_on_probation
+
     def get(self, request):
         data = dict()
         queryset = Employee.active.all()
@@ -126,6 +146,8 @@ happiness of our staff is important, that is what we expect them to transfer to 
             'non_management': queryset.exclude(is_management=True).count(),
             'terminated': Employee.objects.filter(status=False).count(),
             'probation': queryset.filter(is_confirmed=False).count(),
+            'staff_on_probation': self.confirm_staff(),
+            'today': datetime.date.today()
         }
         return render(request, self.template_name, context=context)
 

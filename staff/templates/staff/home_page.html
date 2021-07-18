@@ -4,7 +4,7 @@
 
 
 {% block content %}
-<div class="container mt-3">
+<div class="container">
     <div class="row p-2">
         <div class="col">
             {% for key, value in countdown %}
@@ -115,9 +115,35 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-sm-6 text-center">
+                    <table class="table">
+                        <caption>Probation Table</caption>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Employee</th>
+                            <th>Time Left</th>
+                            <th>Due Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for staff in staff_on_probation %}
+                        <tr>
+                            <td>{{staff.code|zeropadding:3}}</td>
+                            <td>{{staff.name}}</td>
+                            <td>{{staff.date|timeuntil:today }}</td>
+                            <td>{{staff.date|date:'jS M, Y'}}</td>
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
+
     </div>
 </div>
-
 {% endblock %}
