@@ -28,7 +28,6 @@ from django.template import loader
 from django.db.models import Sum
 
 
-
 class Salary:
     """
 x = amount to pay
@@ -71,15 +70,12 @@ c = outstanding"""
         return x, b, c
 
 
-class StaffScushView(View):
-
-    def get(self, request):
-        return render(request, 'staff/scush.html')
+class StaffScushView(TemplateView):
+    template_name = 'staff/scush.html'
 
 
-class StaffPoliciesView(View):
-    def get(self, request):
-        return render(request, 'staff/policies.html')
+class StaffPoliciesView(TemplateView):
+    template_name = 'staff/policies.html'
 
 
 class StaffMainPageView(View):

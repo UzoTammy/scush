@@ -102,39 +102,32 @@ def generate_token():
     return secrets.token_hex(4)
 
 
-with open(os.path.join(settings.BASE_DIR, 'customer/static/customer/company.json'), 'r') as rf:
-    comp = json.load(rf)
+# with open(os.path.join(settings.BASE_DIR, 'customer/static/customer/company.json'), 'r') as rf:
+#     comp = json.load(rf)
 
-comp['Core Values'] = comp.get('Core Values').split(',')
-
-
-def index(request):
-
-    context = {
-        'company': comp,
-    }
-    return render(request, 'customer/index.html', context)
+# comp['Core Values'] = comp.get('Core Values').split(',')
 
 
-def home(request):
-    the_path = 'customer/static/customer/secret.json'
-    with open(os.path.join(settings.BASE_DIR, the_path), 'r') as rf:
-        data = json.load(rf)
-        token = data[0]['token']
-    context = {
-        'title': 'Home',
-        'company': company,
-        'token': token,
-        'toke_url': (token,),
-    }
-    return render(request, 'customer/home.html', context)
+# def index(request):
+
+    # context = {
+    #     'company': comp,
+    # }
+    # return render(request, 'customer/index.html', context)
 
 
-def about(request):
-    context = {
-        'title': 'About',
-    }
-    return render(request, 'customer/about.html', context)
+# def home(request):
+#     the_path = 'customer/static/customer/secret.json'
+#     with open(os.path.join(settings.BASE_DIR, the_path), 'r') as rf:
+#         data = json.load(rf)
+#         token = data[0]['token']
+#     context = {
+#         'title': 'Home',
+#         'company': company,
+#         'token': token,
+#         'toke_url': (token,),
+#     }
+#     return render(request, 'customer/home.html', context)
 
 
 def company(request):
@@ -159,6 +152,28 @@ def permit(request):
 
     context = {'result': result}
     return render(request, 'customer/permit.html', context)
+
+
+class AboutView(TemplateView):
+    template_name = 'customer/about.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(AboutView, self).get_context_data(**kwargs)
+        context['title'] = 'About'
+        return context
+
+
+class HomeView(TemplateView):
+    template_name = 'customer/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(HomeView, self).get_context_data(**kwargs)
+        context['title'] = 'Home'
+        return context
+
+
+class IndexView(TemplateView):
+    template_name = 'customer/index.html'
 
 
 class CustomerListView(LoginRequiredMixin, ListView):

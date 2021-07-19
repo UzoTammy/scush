@@ -28,7 +28,7 @@ urlpatterns = [
     path('', include('stock.urls')),
     path('PDF/', include('pdf.urls')),
     path('delivery/', include('delivery.urls')),
-    path('', include('staff.urls')),
+    path('staff/', include('staff.urls')),
     path('', include('mails.urls')),
     path('register/', user_views.register, name='register'),
     path('register/<slug:token>/', user_views.register, name='register'),

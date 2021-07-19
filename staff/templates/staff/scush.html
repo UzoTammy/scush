@@ -1,12 +1,199 @@
 {% extends 'users/base.html' %}
 
 {% block content %}
-<div class="container mt-3">
-    <div class="row">
+<div class="row m-3">
         <div class="col">
             <h3>SCUSH App design progress</h3>
         </div>
     </div>
+<div class="m-3">
+    <table class="table table-sm">
+        <thead class="">
+        <tr>
+            <th>SN</th>
+            <th>Process</th>
+            <th>Title Page</th>
+            <th>App</th>
+            <th>Template Location</th>
+            <th>Views Class</th>
+            <th>Models Class</th>
+            <th>url path</th>
+            <th>url name</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Basic</td>
+                <td>Index</td>
+                <td>Customer</td>
+                <td>index.html</td>
+                <td>IndexView</td>
+                <td>---</td>
+                <td>/</td>
+                <td>index</td>
+
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Basic</td>
+                <td>Home</td>
+                <td>Customer</td>
+                <td>home.html</td>
+                <td>HomeView</td>
+                <td>---</td>
+                <td>home/</td>
+                <td>home</td>
+
+            </tr>
+            <tr>
+            <td>3</td>
+            <td>Basic</td>
+            <td>About</td>
+            <td>Customer</td>
+            <td>about.html</td>
+            <td>AboutView</td>
+            <td>---</td>
+            <td>about/</td>
+            <td>about</td>
+        </tr>
+            <tr>
+            <td>4</td>
+            <td>Application</td>
+            <td>All List</td>
+            <td>apply</td>
+            <td>applicant_list.html</td>
+            <td>ApplyListView</td>
+            <td>Applicant</td>
+            <td>apply/list/all/</td>
+            <td>apply</td>
+        </tr>
+            <tr>
+            <td>5</td>
+            <td>Application</td>
+            <td>Pending List</td>
+            <td>apply</td>
+            <td>applicant_list_pending.html</td>
+            <td>ApplyListViewPending</td>
+            <td>Applicant</td>
+            <td>apply/list/pending/</td>
+            <td>apply-pending</td>
+        </tr>
+            <tr>
+            <td>6</td>
+            <td>Application</td>
+            <td>Employed List</td>
+            <td>apply</td>
+            <td>applicant_list_employed.html</td>
+            <td>ApplyListViewEmployed</td>
+            <td>Applicant</td>
+            <td>apply/list/employed/</td>
+            <td>apply-employed</td>
+        </tr>
+            <tr>
+            <td>7</td>
+            <td>Application</td>
+            <td>Rejected List</td>
+            <td>apply</td>
+            <td>applicant_list_rejected.html</td>
+            <td>ApplyListViewRejected</td>
+            <td>Applicant</td>
+            <td>apply/list/rejected/</td>
+            <td>apply-rejected</td>
+        </tr>
+            <tr>
+            <td>8</td>
+            <td>Application</td>
+            <td>Create</td>
+            <td>apply</td>
+            <td>applicant_form.html</td>
+            <td>ApplyCreateView</td>
+            <td>Applicant</td>
+            <td>apply/new/</td>
+            <td>apply-create</td>
+        </tr>
+            <tr>
+            <td>9</td>
+            <td>Application</td>
+            <td>Detail</td>
+            <td>apply</td>
+            <td>applicant_detail.html</td>
+            <td>ApplyDetailView</td>
+            <td>Applicant</td>
+            <td>apply/int:pk>/detail</td>
+            <td>apply-detail</td>
+        </tr>
+            <tr>
+            <td>10</td>
+            <td>Application</td>
+            <td>Update</td>
+            <td>apply</td>
+            <td>applicant_form.html</td>
+            <td>ApplyUpdateView</td>
+            <td>Applicant</td>
+            <td>apply/int:pk>/update/</td>
+            <td>apply-update</td>
+        </tr>
+            <tr>
+            <td>11</td>
+            <td>Application</td>
+            <td>Delete</td>
+            <td>apply</td>
+            <td>applicant_delete.html</td>
+            <td>ApplyDeleteView</td>
+            <td>Applicant</td>
+            <td>apply/int:pk>/delete/</td>
+            <td>apply-delete</td>
+        </tr>
+            <tr>
+            <td>12</td>
+            <td>Staff</td>
+            <td>Staff Home</td>
+            <td>staff</td>
+            <td>home_page.html</td>
+            <td>StaffMainPageView</td>
+            <td>Employee</td>
+            <td>staff/home/</td>
+            <td>staff-home</td>
+        </tr>
+            <tr>
+            <td>13</td>
+            <td>Staff</td>
+            <td>All List</td>
+            <td>staff</td>
+            <td>employee_list.html</td>
+            <td>StaffListView</td>
+            <td>Employee</td>
+            <td>staff/</td>
+            <td>staff-list</td>
+        </tr>
+            <tr>
+            <td>14</td>
+            <td>Staff</td>
+            <td>Scush</td>
+            <td>staff</td>
+            <td>scush.html</td>
+            <td>StaffScushView</td>
+            <td>----</td>
+            <td>scush/</td>
+            <td>staff-scush</td>
+        </tr>
+            <tr>
+            <td>15</td>
+            <td>Staff</td>
+            <td>Policies</td>
+            <td>staff</td>
+            <td>policies.html</td>
+            <td>StaffPoliciesView</td>
+            <td>----</td>
+            <td>policies/</td>
+            <td>staff-policies</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="container m-3">
+
     <div class="row">
         <div class="col">
             <ol>
@@ -75,5 +262,4 @@
         </div>
     </div>
 </div>
-
 {% endblock content%}

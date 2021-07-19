@@ -1,6 +1,9 @@
 from django.urls import path
 from . import views
-from .views import (CustomerListView,
+from .views import (AboutView,
+                    IndexView,
+                    HomeView,
+                    CustomerListView,
                     CustomerDetailView,
                     CustomerCreateView,
                     CustomerUpdateView,
@@ -10,9 +13,9 @@ from .views import (CustomerListView,
 
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('home/', views.home, name='home'),
-    path('about/', views.about, name='about'),
+    path('', IndexView.as_view(), name='index'),
+    path('home/', HomeView.as_view(), name='home'),
+    path('about/', AboutView.as_view(), name='about'),
     path('company/', views.company, name='company'),
     path('customer/', CustomerListView.as_view(), name='customer-list'),
     path('customer/<int:pk>/', CustomerDetailView.as_view(), name='customer-detail'),

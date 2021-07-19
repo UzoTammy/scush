@@ -24,17 +24,17 @@ from .views import (StaffScushView,
                     StaffReassign)
 
 urlpatterns = [
-    path('staff/home/', StaffMainPageView.as_view(), name='staff-home'),
-    path('staff/', StaffListView.as_view(), name='staff-list'),
-    path('staff/scush/', StaffScushView.as_view(), name='staff-scush'),
-    path('staff/policies/', StaffPoliciesView.as_view(), name='staff-policies'),
-    path('staff/pictures/', StaffListPicturesView.as_view(), name='staff-pictures'),
-    path('staff/<int:pk>/detailed/', StaffDetailView.as_view(), name='employee-detail'),
-    path('staff/<int:pk>/update/', StaffUpdateView.as_view(), name='employee-update'),
-    path('staff/new/<int:pk>/', StaffCreateView.as_view(), name='employee-create'),
-    path('staff/private/', StaffListPrivateView.as_view(), name='employee-list-private'),
-    path('staff/terminate/<int:pk>/', StaffTerminate.as_view(), name='employee-terminate'),
-    path('staff/reassign/<int:pk>/', StaffReassign.as_view(), name='employee-reassign'),
+    path('home/', StaffMainPageView.as_view(), name='staff-home'),
+    path('', StaffListView.as_view(), name='staff-list'),
+    path('scush/', StaffScushView.as_view(), name='staff-scush'),
+    path('policies/', StaffPoliciesView.as_view(), name='staff-policies'),
+    path('pictures/', StaffListPicturesView.as_view(), name='staff-pictures'),
+    path('<int:pk>/detailed/', StaffDetailView.as_view(), name='employee-detail'),
+    path('<int:pk>/update/', StaffUpdateView.as_view(), name='employee-update'),
+    path('new/<int:pk>/', StaffCreateView.as_view(), name='employee-create'),
+    path('private/', StaffListPrivateView.as_view(), name='employee-list-private'),
+    path('terminate/<int:pk>/', StaffTerminate.as_view(), name='employee-terminate'),
+    path('reassign/<int:pk>/', StaffReassign.as_view(), name='employee-reassign'),
     ]
 
 urlpatterns += [
