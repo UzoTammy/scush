@@ -5,7 +5,9 @@ from .models import (Employee,
                      DebitNote,
                      Payroll,
                      Terminate,
-                     Reassign)
+                     Reassign,
+                     Suspend,
+                     Permit)
 
 # Register your models here.
 admin.site.register(Employee)
@@ -15,5 +17,8 @@ admin.site.register(DebitNote)
 admin.site.register(Payroll)
 admin.site.register(Terminate)
 admin.site.register(Reassign)
+admin.site.register(Suspend)
+admin.site.register(Permit)
+
 
 

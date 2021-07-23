@@ -4,7 +4,7 @@ from delivery.models import DeliveryNote
 from django.views.generic import View
 from django.template.loader import get_template
 from django.http import HttpResponse
-from django.db.models import Sum
+from django.db.models import F, Sum
 from django.contrib import messages
 from django.views.generic import (ListView,
                                   DetailView,
@@ -149,6 +149,10 @@ class ProductListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 
 class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):

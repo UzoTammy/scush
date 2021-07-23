@@ -87,21 +87,30 @@
             <div class="row">
                 <div class="col">
                     <div class="list-group list-group-flush">
-                        <a class="list-group-item" href="{% url 'employee-update' object.pk %}">Update</a>
+<!--                        <a class="list-group-item"-->
+<!--                           href="{% url 'employee-update' object.pk %}">-->
+<!--                            Update-->
+<!--                        </a>-->
                         <a class="list-group-item" data-toggle="modal"
                            data-target="#staffReassign"
-                           href="#">Reassign*</a>
-                        <a class="list-group-item" href="#">Promote**</a>
-                        <a class="list-group-item" href="#">Demote**</a>
-                        <a class="list-group-item" href="#">Warning**</a>
-                        <a class="list-group-item" href="#">Suspend**</a>
+                           href="#">Reassign</a>
+                        <a class="list-group-item"
+                           data-toggle="modal"
+                           data-target="#staffPermit"
+                           href="#">Permit</a>
+<!--                        <a class="list-group-item" href="#">Grant**</a>-->
+<!--                        <a class="list-group-item" href="#">Warning**</a>-->
+                        <a class="list-group-item"
+                           data-toggle="modal"
+                           data-target="#staffSuspend"
+                           href="#">Suspend</a>
                         <a class="list-group-item"
                            data-toggle="modal"
                            data-target="#staffTerminate"
-                           href="#">Terminate*
+                           href="#">Terminate
                         </a>
-                        <a class="list-group-item" href="{% url 'payroll-statement' object.pk %}">Statement*</a>
-                        <a class="list-group-item" href="#">Payslip**</a>
+                        <a class="list-group-item" href="{% url 'payroll-statement' object.pk %}">Statement</a>
+<!--                        <a class="list-group-item" href="#">Payslip**</a>-->
                         <a class="list-group-item" href="{% url 'staff-list' %}">
                             <i class="fa fa-reply"></i></a>
                     </div>
@@ -328,4 +337,161 @@
         </div>
     </div>
 </div>
+<!--modal Suspend-->
+<div class="modal"
+     tabindex="-1"
+     data-backdrop="static"
+     role="dialog"
+     id="staffSuspend">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Suspend (<span style="font-size: 11pt">
+                    {{view.kwargs.pk|zeropadding:3}} - {{object}}
+                </span>)
+                </h3>
+                <button type="button"
+                        class="close"
+                        aria-label="close"
+                        data-dismiss="modal">
+                    <i class="fa fa-times text-danger"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+
+                    <form action="{% url 'employee-suspend' object.pk %}"
+                          method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="form-label" for="sD">Start Date</label>
+                                <input id="sD"
+                                       class="form-control"
+                                       name="startDate"
+                                       value=""
+                                       type="date">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="form-label" for="rD">Resumption Date</label>
+                                <input id="rD"
+                                       class="form-control"
+                                       name="resumptionDate"
+                                       value=""
+                                       type="date">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="form-label" for="reason">Reason</label>
+                                    <input name="reason" placeholder="Reason for suspending" id="reason" class="form-control" type="text">
+                                </div>
+                            </div>
+                        </div>
+                    <div class="modal-footer">
+                <button type="submit"
+                        class="btn btn-outline-info">
+                    Apply
+                </button>
+                <button type="button"
+                        data-dismiss="modal"
+                        class="btn btn-outline-dark">
+                    Cancel
+                </button>
+            </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--modal Permit-->
+<div class="modal"
+     tabindex="-1"
+     data-backdrop="static"
+     role="dialog"
+     id="staffPermit">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Permit (<span style="font-size: 11pt">
+                    {{view.kwargs.pk|zeropadding:3}} - {{object}}
+                </span>)
+                </h3>
+                <button type="button"
+                        class="close"
+                        aria-label="close"
+                        data-dismiss="modal">
+                    <i class="fa fa-times text-danger"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <p>Permissible this year: {{permissible_days}} days</p>
+                    <p>Number of permissions: {{permit_count}}</p>
+                    <p>Already Consumed this year: {{consumed_days}} day{{consumed_days|pluralize}}</p>
+                    {% if permissible_days > consumed_days %}
+                    <p class="text-success">Permission beyond {{balance_days}} day{{balance_days|pluralize}} should not be granted</p>
+                    {% endif %}
+                    <form action="{% url 'employee-permit' object.pk %}"
+                          method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="form-label" for="sF">Starting From</label>
+                                <input id="sF"
+                                       class="form-control"
+                                       name="startFrom"
+                                       value=""
+                                       type="datetime-local">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="form-label" for="eA">Ending At</label>
+                                <input id="eA"
+                                       class="form-control"
+                                       name="endingAt"
+                                       value=""
+                                       type="datetime-local">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="form-label" for="reasonP">Reason</label>
+                                    <input name="reason" placeholder="Reason for permission" id="reasonP" class="form-control" type="text">
+                                </div>
+                            </div>
+                        </div>
+                    <div class="modal-footer">
+                <button type="submit"
+                        class="btn btn-outline-info">
+                    Apply
+                </button>
+                <button type="button"
+                        data-dismiss="modal"
+                        class="btn btn-outline-dark">
+                    Cancel
+                </button>
+            </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {% endblock content %}

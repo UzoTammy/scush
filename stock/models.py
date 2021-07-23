@@ -84,3 +84,9 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse('product-detail', kwargs={'pk': self.pk})
+
+    def margin(self):
+        return self.unit_price - self.cost_price
+
+    def percentage_margin(self):
+        return 100*(self.unit_price/self.cost_price - 1)

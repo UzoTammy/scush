@@ -78,6 +78,9 @@ class DatePeriod:
             return days_apart
         return -1
 
+    def working_days(self,):
+        return
+
 
 class Person:
     """dummy data"""
@@ -261,13 +264,48 @@ class Month:
             return len(week_one + result)
 
 
+class DateRange:
+    def __init__(self, start_date, end_date):
+        self.start_date = start_date
+        self.end_date = end_date
 
+    @property
+    def days(self):
+        if self.end_date > self.start_date:
+            return self.end_date - self.start_date
+        return self.start_date - self.end_date
 
-# number_of_days = DatePeriod('26-09-2025').age_days()
-# age_in_tuple = DatePeriod('26-09-2025').age_tuple()
-# B = DatePeriod('26-09-2025').year_month_week_day()
-# countdown = DatePeriod.countdown('26-08-2008', 120)
+    @property
+    def days_exclusive(self):
+        if self.end_date > self.start_date:
+            next_date = self.start_date + datetime.timedelta(1)
+            previous_date = self.end_date - datetime.timedelta(1)
+        else:
+            next_date = self.end_date + datetime.timedelta(1)
+            previous_date = self.start_date - datetime.timedelta(1)
+        return previous_date - next_date
 
+    @property
+    def exclude_a_day(self):
+        if self.end_date > self.start_date:
+            start_date = self.start_date + datetime.timedelta(1)
+            return self.end_date - start_date
+        else:
+            end_date = self.end_date + datetime.timedelta(1)
+            return self.start_date - end_date
 
-# file = CSVtoTuple(filepath=os.path.join(settings.BASE_DIR, 'customer/static/customers.csv'))
-# print(file.csv_content(integer=(0,), decimal=(7,)))
+    def range(self):
+        result = list()
+        for i in range(self.days.days):
+            if self.start_date > self.end_date:
+                self.start_date, self.end_date = self.end_date, self.start_date
+            result.append(self.start_date + datetime.timedelta(i))
+        result.append(self.end_date)
+        return result
+
+    def exclude_weekday(self, weekday):
+        result = list()
+        for i in self.range():
+            if i.weekday() != weekday:
+                result.append(i)
+        return result

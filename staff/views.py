@@ -3,7 +3,9 @@ from .models import (Employee,
                      CreditNote,
                      DebitNote,
                      Terminate,
-                     Reassign)
+                     Reassign,
+                     Suspend,
+                     Permit)
 from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import (View,
@@ -17,6 +19,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from apply.models import Applicant
 from djmoney.money import Money
 from ozone import mytools
+import calendar
 import datetime
 from django.contrib import messages
 from django.utils import timezone
@@ -25,7 +28,7 @@ from django.core.mail import send_mail, mail_admins, mail_managers
 from django.core.validators import ValidationError
 from .form import DebitForm, CreditForm
 from django.template import loader
-from django.db.models import Sum
+from django.db.models import F, Sum
 
 
 class Salary:
@@ -261,6 +264,11 @@ class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
             context['monthly_man_hours'] = monthly_man_hours
             context['wage_rate'] = f'{chr(8358)}{float(salary_payable)/monthly_man_hours:,.2f}/Hr'
+            context['salary'] = self.get_queryset().aggregate(total=Sum(F('basic_salary') + F('allowance')))
+            context['tax'] = self.get_queryset().aggregate(total=Sum('tax_amount'))
+            context['salary_management'] = self.get_queryset().filter(is_management=True).aggregate(total=Sum(F('basic_salary') + F('allowance')))
+            context['salary_non_management'] = self.get_queryset().filter(is_management=False).aggregate(total=Sum(F('basic_salary') + F('allowance')))
+            context['balance'] = self.get_queryset().aggregate(total=Sum('balance'))
         return context
 
 
@@ -281,15 +289,33 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             return True
         return False
 
+    def leave(self):
+        """This year's man hour"""
+        days_in_year = int(datetime.date(datetime.date.today().year, 12, 31).strftime('%j'))
+        full_year_workdays = days_in_year - 52
+        allocation = 0.04  # 4% of full_year_workdays
+        return int(full_year_workdays * allocation)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        person = self.get_queryset().get(pk=kwargs['object'].pk)
+        leave = (1 - person.date_employed.month / 12) * self.leave() if person.date_employed.year == datetime.date.today().year else self.leave()
+
+        permit = Permit.objects.filter(staff_id=person)
+
+        if permit.exists():
+            results = permit.annotate(delta=F('ending_at') - F('starting_from'))
+            total_days = sum(result.delta.days for result in results)
+            days_consumed = int(total_days)
+        else:
+            days_consumed = 0
+        context['permissible_days'] = int(leave)
+        context['consumed_days'] = days_consumed
+        context['permit_count'] = 'None' if days_consumed == 0 else permit.count()
+        context['balance_days'] = int(leave) - days_consumed
         context['positions'] = (i[0] for i in Employee.POSITIONS)
         context['branches'] = (i[0] for i in Employee.BRANCHES)
         return context
-
-    # def post(self, request, **kwargs):
-    #     print(request.POST)
-    #     return redirect('employee-', pk=kwargs['pk'])
 
 
 class StaffCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -862,6 +888,79 @@ class StaffReassign(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         """data modified time needs to change and mail needs"""
         qs.save()
 
-
         messages.success(request, f'Position and Branch changed to {position} and {branch} respectively')
+        return redirect('employee-detail', pk=kwargs['pk'])
+
+
+class StaffSuspend(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        if request.POST['startDate'] > request.POST['resumptionDate']:
+            messages.info(request, 'Suspension did not apply. Resumption date must be a later date.')
+        elif request.POST['startDate'] == request.POST['resumptionDate']:
+            messages.info(request, 'Resumption date must defer from start date')
+        else:
+            """calculate the cost"""
+            start_date_object = datetime.datetime.strptime(request.POST['startDate'], '%Y-%m-%d')
+            resumption_date_object = datetime.datetime.strptime(request.POST['resumptionDate'], '%Y-%m-%d')
+
+            days = (resumption_date_object - start_date_object).days
+            month = start_date_object.month
+            days_in_month = calendar.mdays[month-1]
+
+            person = self.get_queryset().get(id=kwargs['pk'])
+            penalty_cost = person.salary() * days/days_in_month
+
+            suspend = Suspend(
+                staff=person,
+                start_date=request.POST['startDate'],
+                resumption_date=request.POST['resumptionDate'],
+                reason=request.POST['reason'],
+                penalty=penalty_cost
+            )
+            suspend.save()
+            debit = DebitNote(
+                name=person,
+                period=f'{start_date_object.year}-{str(start_date_object.month).zfill(2)}',
+                debit_date=start_date_object,
+                remark=f"Suspension: {request.POST['reason']}",
+                value=penalty_cost,
+                status=False
+            )
+            debit.save()
+            messages.success(request, "Suspension applied successfully !!!")
+        return redirect('employee-detail', pk=kwargs['pk'])
+
+
+class StaffPermit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        person = self.get_queryset().get(id=kwargs['pk'])
+
+        start_date_object = datetime.datetime.strptime(request.POST['startFrom'], '%Y-%m-%dT%H:%M')
+        ending_at_object = datetime.datetime.strptime(request.POST['endingAt'], '%Y-%m-%dT%H:%M')
+
+        permit = Permit(
+            staff=person,
+            starting_from=start_date_object,
+            ending_at=ending_at_object,
+            reason=request.POST['reason']
+        )
+        permit.save()
+
+        messages.success(request, f'Permission Granted for {(ending_at_object-start_date_object).total_seconds()/3600} Man-Hours')
         return redirect('employee-detail', pk=kwargs['pk'])

@@ -44,6 +44,8 @@
                     <th scope="col">Category</th>
                     <th scope="col">Cost Price</th>
                     <th scope="col">Sales Price</th>
+                    <th scope="col">Margin</th>
+                    <th scope="col">% Margin</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -62,6 +64,8 @@
                     <td>{{product.category}}</td>
                     <td>{{product.cost_price}}</td>
                     <td>{{product.unit_price}}</td>
+                    <th>{{product.margin}}</th>
+                    <th>{{product.percentage_margin|floatformat:3}}</th>
                 </tr>
                 {% endfor %}
                 </tbody>
@@ -69,6 +73,7 @@
 
                 </tfoot>
             </table>
+            <p>{{total_margin.total_margin}}</p>
         </div>
 </div>
 

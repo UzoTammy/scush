@@ -222,3 +222,24 @@ class Terminate(models.Model):
     def __str__(self):
         return self.staff.fullname()
 
+
+class Suspend(models.Model):
+    staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    start_date = models.DateField(default=timezone.now)
+    resumption_date = models.DateField(default=timezone.now)
+    reason = models.CharField(max_length=100)
+    penalty = MoneyField(max_digits=7, decimal_places=2)
+
+    def __str__(self):
+        return f"""{self.staff.fullname()}-{self.id}"""
+
+
+class Permit(models.Model):
+    staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    starting_from = models.DateTimeField(default=timezone.now)
+    ending_at = models.DateTimeField(default=timezone.now)
+    reason = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"""{self.staff.fullname()}-{self.id}"""
+

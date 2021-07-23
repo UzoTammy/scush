@@ -150,6 +150,31 @@
     <div class="row">
         <div class="col">
         <ul class="list-group list-group-flush">
+            <li class="list-group-item text-success">
+                <div class="row">
+                    <div class="col">
+                        Salary : {{salary.total}}
+                    </div>
+                    <div class="col">
+                        Management: {{salary_management.total}}
+                    </div>
+                    <div class="col">
+                        Non-Management: {{salary_non_management.total}}
+                    </div>
+                </div>
+
+            </li>
+            <li class="list-group-item text-success">
+                <div class="row">
+                    <div class="col-4">
+                        Tax: {{tax.total}}
+                    </div>
+                    <div class="col-4">
+                        Balance: {{balance.total}}
+                    </div>
+                </div>
+
+            </li>
             <li class="list-group-item">
                 Monthly: {{monthly_man_hours}} Man-Hours
             </li>
@@ -157,9 +182,7 @@
             <li class="list-group-item text-danger">
                 AWR: {{wage_rate}} per head
             </li>
-            <li class="list-group-item text-success">
-                YTD Man-hour
-            </li>
+
         </ul>
     </div>
     </div>
