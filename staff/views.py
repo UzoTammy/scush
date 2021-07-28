@@ -5,7 +5,8 @@ from .models import (Employee,
                      Terminate,
                      Reassign,
                      Suspend,
-                     Permit)
+                     Permit,
+                     SalaryChange)
 from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import (View,
@@ -319,6 +320,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['reassigned'] = Reassign.objects.filter(staff_id=person)
         context['permissions'] = Permit.objects.filter(staff_id=person)
         context['suspensions'] = Suspend.objects.filter(staff_id=person)
+        context['salary_changed'] = SalaryChange.objects.filter(staff_id=person)
         return context
 
 
@@ -967,4 +969,40 @@ class StaffPermit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         permit.save()
 
         messages.success(request, f'Permission Granted for {(ending_at_object-start_date_object).total_seconds()/3600} Man-Hours')
+        return redirect('employee-detail', pk=kwargs['pk'])
+
+
+class StaffSalaryChange(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        person = self.get_queryset().get(id=kwargs['pk'])
+        salary = float(request.POST['salary'])
+
+        qs = self.get_queryset().get(id=kwargs['pk'])
+        previous_pay = qs.basic_salary + qs.allowance
+        if qs.is_management:
+            basic_salary = 0.4 * salary
+            allowance = 0.6 * salary
+        else:
+            basic_salary = 0.6 * salary
+            allowance = 0.4 * salary
+
+        qs.basic_salary = Money(basic_salary, 'NGN')
+        qs.allowance = Money(allowance, 'NGN')
+        qs.save()
+
+        change_salary = SalaryChange(staff=person,
+                                     previous_value=previous_pay,
+                                     value=Money(salary, 'NGN'),
+                                     remark=request.POST['remark']
+                                     )
+        change_salary.save()
+        messages.success(request, f"Salary Change is successful")
         return redirect('employee-detail', pk=kwargs['pk'])

@@ -243,3 +243,15 @@ class Permit(models.Model):
     def __str__(self):
         return f"""{self.staff.fullname()}-{self.id}"""
 
+
+class SalaryChange(models.Model):
+    staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    previous_value = MoneyField(max_digits=8,
+                                decimal_places=2,
+                                default=Money(0, 'NGN'))
+    value = MoneyField(max_digits=8, decimal_places=2)
+    remark = models.CharField(max_length=100)
+    date = models.DateField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.staff.fullname()}-{self.id}"

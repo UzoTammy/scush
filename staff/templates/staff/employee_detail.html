@@ -100,6 +100,11 @@
                            href="#">Suspend</a>
                         <a class="list-group-item"
                            data-toggle="modal"
+                           data-target="#staffSalary"
+                           href="#">Change Salary
+                        </a>
+                        <a class="list-group-item"
+                           data-toggle="modal"
                            data-target="#staffTerminate"
                            href="#">Terminate
                         </a>
@@ -138,6 +143,35 @@
                                 <th>{{reassign.to_branch}}</th>
                                 <th>{{reassign.start_date}}</th>
                                 <th>{{reassign.remark}}</th>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if salary_changed %}
+        <h3 class="text-info" style="font-family:cursive;">Salary Changes</h3>
+        <div class="row bg-light mb-2">
+            <div class="col">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Previous Salary</th>
+                            <th>Current Salary</th>
+                            <th>Remark</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for salary in salary_changed %}
+                            <tr>
+                                <td>{{salary.date}}</td>
+                                <th>{{salary.previous_value}}</th>
+                                <th>{{salary.value}}</th>
+                                <th>{{salary.remark}}</th>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -205,6 +239,76 @@
     </div>
 </div>
 
+
+<!--Change Salary-->
+<div class="modal"
+     tabindex="-1"
+     data-backdrop="static"
+     role="dialog"
+     id="staffSalary">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Reassign (<span style="font-size: 11pt">
+                    {{view.kwargs.pk|zeropadding:3}} - {{object}}
+                </span>)
+                </h3>
+                <button type="button"
+                        class="close"
+                        aria-label="close"
+                        data-dismiss="modal">
+                    <i class="fa fa-times text-danger"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <p>Basic Salary: {{object.basic_salary}}</p>
+                    <p>Allowance: {{object.allowance}}</p>
+                    <form action="{% url 'employee-salary-change' object.pk %}"
+                          method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="form-label" for="tSal">Total Salary</label>
+                                <input id="tSal"
+                                       class="form-control"
+                                       name="salary"
+                                       value=""
+                                       type="number">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="form-label" for="salComment">Remark</label>
+                                    <input name="remark"
+                                           placeholder="Reason for the change"
+                                           id="salComment"
+                                           class="form-control"
+                                           type="text">
+                                </div>
+                            </div>
+                        </div>
+                    <div class="modal-footer">
+                <button type="submit"
+                        class="btn btn-outline-info">
+                    Apply
+                </button>
+                <button type="button"
+                        data-dismiss="modal"
+                        class="btn btn-outline-dark">
+                    Cancel
+                </button>
+            </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!--Reassign-->
 <div class="modal"
      tabindex="-1"
