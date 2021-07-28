@@ -315,6 +315,10 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['balance_days'] = int(leave) - days_consumed
         context['positions'] = (i[0] for i in Employee.POSITIONS)
         context['branches'] = (i[0] for i in Employee.BRANCHES)
+
+        context['reassigned'] = Reassign.objects.filter(staff_id=person)
+        context['permissions'] = Permit.objects.filter(staff_id=person)
+        context['suspensions'] = Suspend.objects.filter(staff_id=person)
         return context
 
 

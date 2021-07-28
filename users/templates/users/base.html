@@ -250,6 +250,12 @@
                     <i class="fa fa-gears text-dark"></i> Administration</a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="{% url 'register' %}">User Registration</a>
+                    <a class="dropdown-item"
+                       data-toggle="modal"
+                       data-target="#bankList"
+                       href="#">List of Bank</a>
+                    <a class="dropdown-item"
+                       href="#">Staff Position</a>
                 </div>
             </li>
 
@@ -303,6 +309,7 @@
         </div>
     </div>
 </div>
+
 {% block content %} {% endblock %}
 
 <!--PDF Payroll-->
@@ -427,6 +434,54 @@
         </div>
     </div>
 </div>
+<!--List of Banks-->
+<div class="modal fade"
+     id="bankList"
+     tabindex="-1"
+     aria-labelledby="banks"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="banks">
+                    List of Banks
+                </h5>
+                <button type="button"
+                        class="btn-close"
+                        data-dismiss="modal"
+                        aria-label="Close">
+                    <i class="fa fa-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="#" method="GET">
+                    <div class="form-group">
+                        <label class="text-primary"
+                               for="listBank">List of Bank</label>
+                        <input id="listBank"
+                               class="form-control"
+                               name="
+"
+                               value=""
+                               placeholder=""
+                               type="text">
+                    </div>
+                    <div class="modal-footer">
+                        <!--          <a type="submit" href="#" class="btn btn-primary">OK</a>-->
+                        <input value="OK" type="submit" class="btn btn-primary">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-dismiss="modal">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Option 2: Separate Popper and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

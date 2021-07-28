@@ -87,10 +87,6 @@
             <div class="row">
                 <div class="col">
                     <div class="list-group list-group-flush">
-<!--                        <a class="list-group-item"-->
-<!--                           href="{% url 'employee-update' object.pk %}">-->
-<!--                            Update-->
-<!--                        </a>-->
                         <a class="list-group-item" data-toggle="modal"
                            data-target="#staffReassign"
                            href="#">Reassign</a>
@@ -98,8 +94,6 @@
                            data-toggle="modal"
                            data-target="#staffPermit"
                            href="#">Permit</a>
-<!--                        <a class="list-group-item" href="#">Grant**</a>-->
-<!--                        <a class="list-group-item" href="#">Warning**</a>-->
                         <a class="list-group-item"
                            data-toggle="modal"
                            data-target="#staffSuspend"
@@ -110,13 +104,104 @@
                            href="#">Terminate
                         </a>
                         <a class="list-group-item" href="{% url 'payroll-statement' object.pk %}">Statement</a>
-<!--                        <a class="list-group-item" href="#">Payslip**</a>-->
                         <a class="list-group-item" href="{% url 'staff-list' %}">
                             <i class="fa fa-reply"></i></a>
                     </div>
                 </div>
            </div>
         </div>
+    </div>
+    <div class="section">
+        {% if reassigned %}
+        <h3 class="text-info" style="font-family:cursive;">Reassigned</h3>
+        <div class="row bg-light mb-2">
+            <div class="col">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Position:From</th>
+                            <th>Position:To</th>
+                            <th>Branch:From</th>
+                            <th>Branch:To</th>
+                            <th>Date</th>
+                            <th>Remark</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reassign in reassigned %}
+                            <tr>
+                                <td>{{reassign.reassign_type}}</td>
+                                <th>{{reassign.from_position}}</th>
+                                <th>{{reassign.to_position}}</th>
+                                <th>{{reassign.from_branch}}</th>
+                                <th>{{reassign.to_branch}}</th>
+                                <th>{{reassign.start_date}}</th>
+                                <th>{{reassign.remark}}</th>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if permissions %}
+        <h3 class="text-info" style="font-family:cursive;">Permissions</h3>
+        <div class="row bg-light mb-2">
+            <div class="col">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Start Date</th>
+                            <th>Resumption Date</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for permission in permissions %}
+                            <tr>
+                                <td>{{permission.starting_from}}</td>
+                                <th>{{permission.ending_at}}</th>
+                                <th>{{permission.reason}}</th>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if suspensions %}
+        <h3 class="text-info" style="font-family:cursive;">Suspensions</h3>
+        <div class="row bg-light mb-2">
+            <div class="col">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Start Date</th>
+                            <th>Resumption Date</th>
+                            <th>Reason</th>
+                            <th>Penalty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for suspension in suspensions %}
+                            <tr>
+                                <td>{{suspension.start_date}}</td>
+                                <th>{{suspension.resumption_date}}</th>
+                                <th>{{suspension.reason}}</th>
+                                <th>{{suspension.penalty}}</th>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot></tfoot>
+                </table>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 
