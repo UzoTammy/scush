@@ -71,7 +71,7 @@ c = outstanding"""
             b = y
             c = x
             x = Money(0, 'NGN')
-        return x, b, c
+        return [x, b, c]
 
 
 class StaffScushView(TemplateView):
@@ -478,7 +478,8 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
          deduction,
          outstanding,
          salary,
-         tax) = (list(), list(), list(), list(), list(), list(), list())
+         tax,
+         pay_more) = (list(), list(), list(), list(), list(), list(), list(), list())
 
         for employee in employees:
             salary.append(employee.basic_salary+employee.allowance)
@@ -507,10 +508,21 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             # and outstanding
             result = Salary.regime(amount_to_pay, employee.gross_pay())
 
+            """For Now, All outstanding is paid to the staff"""
+            result[0] += result[2]
+            result[2] = Money(0, 'NGN')
+
             net_pay.append(result[0])
             deduction.append(result[1])
             outstanding.append(result[2])
 
+            """Get those who can get more than their salary"""
+            if result[2] != Money(0, "NGN"):
+                pay_more.append((employee, result[2]))
+
+        """If more pay is to be considered, code here
+        1. Filter from MorePay model those marked pay more
+        """
         group = zip(employees,
                     salary,
                     tax,
@@ -520,11 +532,8 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                     deduction,
                     outstanding)
         totals = [
-            # sum(record.salary().amount for record in employees),
-            # sum(record.tax_amount.amount for record in employees),
             sum(i.amount for i in salary),
             sum(i.amount for i in tax),
-            # sum(record.gross_pay().amount for record in employees),
             sum(record.balance.amount for record in employees),
             sum(i.amount for i in credit_amount),
             sum(i.amount for i in debit_amount),
@@ -535,15 +544,16 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         x = period.split('-')
         year = x[0]
         month = datetime.date(int(year), int(x[1]), 1).strftime('%B')
-        #
+
         context = {
+            "payMore": pay_more,
             "records": group,
             'period': period,
             'year': year,
             'month': month,
             'salary': totals[0],
             'tax': totals[1],
-            'salary_due': totals[2],
+            'salary_due': totals[0] - totals[1],
             'balance': totals[2],
             'credit': totals[3],
             'debit': totals[4],
