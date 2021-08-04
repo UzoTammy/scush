@@ -13,6 +13,7 @@ from .views import (StaffScushView,
                     DebitNoteListView,
                     DebitNoteCreateView,
                     StartGeneratePayroll,
+                    PayrollPeriodView,
                     GeneratePayroll,
                     RegeneratePayroll,
                     RegeneratedPayroll,
@@ -24,7 +25,8 @@ from .views import (StaffScushView,
                     StaffReassign,
                     StaffSuspend,
                     StaffPermit,
-                    StaffSalaryChange)
+                    StaffSalaryChange,
+                    )
 
 urlpatterns = [
     path('home/', StaffMainPageView.as_view(), name='staff-home'),
@@ -40,7 +42,7 @@ urlpatterns = [
     path('reassign/<int:pk>/', StaffReassign.as_view(), name='employee-reassign'),
     path('suspend/<int:pk>/', StaffSuspend.as_view(), name='employee-suspend'),
     path('permit/<int:pk>/', StaffPermit.as_view(), name='employee-permit'),
-    path('salary-change/<int:pk>/', StaffSalaryChange.as_view(), name='employee-salary-change')
+    path('salary-change/<int:pk>/', StaffSalaryChange.as_view(), name='employee-salary-change'),
     ]
 
 urlpatterns += [
@@ -49,6 +51,8 @@ urlpatterns += [
     path('payroll/debit/', DebitNoteListView.as_view(), name='debit-list'),
     path('payroll/debit-note/new/', DebitNoteCreateView.as_view(), name='debit-create'),
     path('payroll/start/generate/salary/', StartGeneratePayroll.as_view(), name='salary'),
+    path('payroll/<str:year>/<str:month>/', PayrollPeriodView.as_view(), name='payroll-period'),
+    # path('payroll/<str:year>/', PayrollPeriodYearView.as_view(), name='payroll-period-year'),
     path('payroll/generate/<period>/', GeneratePayroll.as_view(), name='generate_payroll'),
     path('payroll/regenerate/', RegeneratePayroll.as_view(), name='regenerate-payroll'),
     path('payroll/regenerated/', RegeneratedPayroll.as_view(), name='regenerated-payroll'),

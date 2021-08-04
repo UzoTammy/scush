@@ -1,0 +1,73 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+{% load djmoney %}
+
+{% block content %}
+
+<div class="container p-2">
+    {% if payroll %}
+    <h3>Payroll for {{heading.month}}, {{heading.year}}</h3>
+    <div class="row">
+        <div class="col">
+            <h6>Number of Staff Paid: {{payroll.count}}</h6>
+        </div>
+        <div class="col">
+            <h6>Date Generated: {{payroll.first.date_paid}}</h6>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table data-toggle="table" class="table">
+                <thead>
+                    <tr class="bg-dark text-white">
+                        <th>Code</th>
+                        <th>Staff</th>
+                        <th>Salary</th>
+                        <th>Tax</th>
+                        <th>Credit</th>
+                        <th>Debit</th>
+                        <th>Net Pay</th>
+                        <th>Deduction</th>
+                        <th>Outstanding</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pay in payroll %}
+                    <tr>
+                        <td>{{pay.staff.id|zeropadding:3}}</td>
+                        <td>{{pay.staff.fullname}}</td>
+                        <td>{{pay.salary.amount}}</td>
+                        <td>{{pay.tax.amount}}</td>
+                        <td>{{pay.credit_amount.amount}}</td>
+                        <td>{{pay.debit_amount.amount}}</td>
+                        <td>{{pay.net_pay.amount}}</td>
+                        <td>{{pay.deduction.amount}}</td>
+                        <td>{{pay.outstanding.amount}}</td>
+                        {% if pay.status %}
+                        <td class="text-success">
+                            <i class="fa fa-check"></i>
+                        </td>
+                        {% else %}
+                        <td class="text-danger">
+                            <i class="fa fa-times"></i>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor%}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row p-3">
+        <div class="col">
+            <a href="{% url 'salary' %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+    {% else %}
+    <h3>No Payroll for this period to display</h3>
+    <a href="{% url 'salary' %}"><i class="fa fa-reply"></i></a>
+    {% endif %}
+</div>
+
+{% endblock content %}

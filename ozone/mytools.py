@@ -309,3 +309,42 @@ class DateRange:
             if i.weekday() != weekday:
                 result.append(i)
         return result
+
+
+class Period:
+    full_months = {
+        '01': 'January',
+        '02': 'February',
+        '03': 'March',
+        '04': 'April',
+        '05': 'May',
+        '06': 'June',
+        '07': 'July',
+        '08': 'August',
+        '09': 'September',
+        '10': 'October',
+        '11': 'November',
+        '12': 'December',
+    }
+
+    def __init__(self, year, month):
+        self.year = year
+        self.month = month
+
+    def __str__(self):
+        return f"{self.year}-{str(self.month).zfill(2)}"
+
+    def previous(self):
+        if self.month == 1:
+            self.month = 12
+            self.year -= 1
+            return f"{self.year}-{str(self.month).zfill(2)}"
+        return f"{self.year}-{str(self.month-1).zfill(2)}"
+
+    def next(self):
+        if self.month == 12:
+            self.month = 1
+            self.year += 1
+            return f"{self.year}-{str(self.month).zfill(2)}"
+        return f"{self.year}-{str(self.month+1).zfill(2)}"
+

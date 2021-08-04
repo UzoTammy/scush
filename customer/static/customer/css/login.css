@@ -1,0 +1,16 @@
+body {
+    background-color:#dedfd6;
+      }
+
+    #login {
+        background-color:#cedfde;
+            }
+
+    #sidebar {
+        display: none;
+        color: red
+            }
+
+    #navmain {
+        display: none;
+            }

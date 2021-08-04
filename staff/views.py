@@ -22,6 +22,7 @@ from djmoney.money import Money
 from ozone import mytools
 import calendar
 import datetime
+import itertools
 from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.admin import Group
@@ -439,21 +440,103 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
             context['last_period_generated'] = last.period
         else:
             context['messenger'] = 'No Record in Payroll Database'
+
         today = datetime.date.today()
         year = today.year
         month = today.month
         last_month = mytools.Month.last_month()
         next_month = mytools.Month.next_month()
-        context['last_month'] = datetime.date(year, last_month, today.day).strftime('%B')
+        context['last_month'] = datetime.date(year, last_month, calendar.mdays[last_month]).strftime('%B')
         context['this_month'] = today.strftime('%B')
-        context['next_month'] = datetime.date(year, next_month, today.day).strftime('%B')
+        context['next_month'] = datetime.date(year, next_month, calendar.mdays[next_month]).strftime('%B')
         context['last_period'] = f"{year}-{str(month-1).zfill(2)}"
         context['current_period'] = f"{year}-{str(month).zfill(2)}"
         context['next_period'] = f"{year}-{str(month+1).zfill(2)}"
-        return context
+
+        if Payroll.objects.exists():
+            """If payroll record exist, then get the last record's period and convert to integer"""
+            last_record = Payroll.objects.last()
+            month_in_period = int(last_record.period.split('-')[1])
+            year_in_period = int(last_record.period.split('-')[0])
+            """Get the last six recent periods into a list object, starting from the period of 
+            the last record in payroll"""
+            periods = [last_record.period]
+            for i in range(3):
+                payroll_periods = mytools.Period(year_in_period, month_in_period - i)
+                periods.append(payroll_periods.previous())
+            """From the list of periods, get the name of the months"""
+            recent_months = list()
+            for period in periods:
+                year = int(period.split('-')[0])
+                month = int(period.split('-')[1])
+                days = calendar.mdays[month]
+                recent_months.append((year, datetime.date(year, month, days).strftime('%B')))
+
+            all_periods_queryset = set(i.period for i in Payroll.objects.all())
+            all_periods_dict = list({'year': i.split('-')[0],
+                                     'month': i.split('-')[1],
+                                     'month_in_words': mytools.Period.full_months[i.split('-')[1]]
+                                     } for i in all_periods_queryset)
+            period_by_year = itertools.groupby(all_periods_dict, lambda p: p['year'])
+            years, months = list(), list()
+            for key, group in period_by_year:
+                years.append(key)
+                for year in group:
+                    months.append(year['month_in_words'])
+
+            context['recent_months'] = recent_months
+            return context
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
+        return render(request, self.template_name, context=context)
+
+
+class PayrollPeriodView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Payroll
+    template_name = 'staff/payroll/payroll_period.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get(self, request, *args, **kwargs):
+        month = kwargs['month']
+        year = kwargs['year']
+
+        period = ''
+        for key, value in mytools.Period.full_months.items():
+            if value == month:
+                period = f"{year}-{key}"
+        context = {
+            'title': 'payroll',
+            'heading': self.kwargs,
+            'payroll': self.get_queryset().filter(period=period),
+        }
+        return render(request, self.template_name, context=context)
+
+
+class PayrollPeriodYearView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Payroll
+    template_name = 'staff/payroll/payroll_period_year.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get(self, request, *args, **kwargs):
+        year, month = '', ''
+        for k, v in request.GET.items():
+            year = k
+        context = {
+            'title': 'payroll',
+            'heading': self.kwargs,
+            'payroll': self.get_queryset().filter(period__startswith=year),
+        }
         return render(request, self.template_name, context=context)
 
 
@@ -546,7 +629,7 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         month = datetime.date(int(year), int(x[1]), 1).strftime('%B')
 
         context = {
-            "payMore": pay_more,
+            "payMore": zip(employees, outstanding),
             "records": group,
             'period': period,
             'year': year,
@@ -1016,3 +1099,5 @@ class StaffSalaryChange(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         change_salary.save()
         messages.success(request, f"Salary Change is successful")
         return redirect('employee-detail', pk=kwargs['pk'])
+
+

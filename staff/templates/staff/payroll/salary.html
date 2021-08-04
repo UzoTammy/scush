@@ -2,9 +2,22 @@
 
 {% block content %}
 <div class="container">
-    <div class="row p-3">
+    <div class="row mt-3">
         <div class="col">
-            <h3>Generate Payroll Process</h3>
+            <h3>Recent Payroll</h3>
+        </div>
+    </div>
+    <div class="row mb-2">
+        {% for month in recent_months %}
+        <div class="col-sm-2">
+            <a href="{% url 'payroll-period' month|first month|last %}">{{month|last}}</a>
+        </div>
+        {% endfor %}
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col">
+            <h3>Generate Payroll</h3>
             <p>This process is best carried out between the 25th of the present month and before the end of the month.
                 However there is room to generate immediate past month and the next month.
             </p>
@@ -15,7 +28,7 @@
             <p>Other vital information</p>
         </div>
     </div>
-    <div class="row p-2">
+    <div class="row">
         <div class="col-sm-4">
             <a class="btn"
                href="#"

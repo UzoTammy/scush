@@ -3,21 +3,7 @@
 {% load static %}
 
 {% block head %}
-    <style>
-            body {
-                background-color:#dedfd6;
-            }
-            #login {
-                background-color:#d6f3f7;
-            }
-            #sidebar {
-                display: none;
-                color: red
-            }
-            #navmain {
-                display: none;
-            }
-        </style>
+    <link rel="stylesheet" href="{% static 'customer/css/login.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -26,10 +12,10 @@
         <div class="col-8">
             <div id="login" class="container mt-5">
                 <div class="row">
-                    <div class="col">
-                        <img src="{% static 'customer/room-1.jpeg' %}"
-                             width="50%"
-                             class="float-right p-1 shadow"
+                    <div class="col text-center">
+                        <img src="{% static 'customer/logo.png' %}"
+                             width="80rem;"
+                             class="rounded-circle p-1 shadow"
                              alt="">
                     </div>
                 </div>

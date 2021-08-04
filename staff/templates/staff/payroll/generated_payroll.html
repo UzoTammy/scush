@@ -125,14 +125,103 @@
         <div class="row">
             <div class="col">
                 <button type="submit" class="btn btn-success">Save</button>
-                {% if payMore %}
-                <a href="#" class="btn btn-primary">Pay More...</a>
-                {% endif %}
-                <a href="{% url 'salary' %}" class="btn btn-dark float-right">
+            </div>
+            <div class="col">
+                <a href="#"
+                   data-toggle="modal"
+                   data-target="#payMore"
+                   class="btn btn-primary">
+                    Pay More...
+                </a>
+            </div>
+            <div class="col">
+                <a href="{% url 'salary' %}" class="btn btn-dark">
                     <i class="fa fa-reply"></i>
                 </a>
             </div>
         </div>
-        </form>
+    </form>
+</section>
+
+<section>
+<div class="modal"
+     tabindex="-1"
+     data-backdrop="static"
+     role="dialog"
+     id="payMore">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="#"
+                  method="post">{% csrf_token %}
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        Staff that can be Paid More
+                    </h3>
+                    <button type="button"
+                            class="close"
+                            aria-label="close"
+                            data-dismiss="modal">
+                        <i class="fa fa-times text-danger"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <table class="table"
+                               data-toggle="table"
+                               tabindex="-1">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Staff</th>
+                                <th>Salary Due</th>
+                                <th>Outstanding</th>
+                                <th>Select</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for record, out in payMore %}
+                                {% if out.amount != 0 %}
+                                <tr>
+                                    <td>{{record.id|zeropadding:3}}</td>
+                                    <td>{{record.fullname}}</td>
+                                    <td>{{record.salary}}</td>
+                                    <td>{{out}}</td>
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value=""
+                                                   id="flexCheckDefault">
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                                    <div class="form-group">
+                                        <button type="submit"
+                                                class="btn btn-outline-info">
+                                            Apply
+                                        </button>
+                                        <button type="button"
+                                                data-dismiss="modal"
+                                                class="btn btn-outline-dark">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+            </form>
+        </div>
+    </div>
+</div>
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+        <label class="form-check-label" for="flexCheckChecked">
+            Checked checkbox
+        </label>
+    </div>
+
 </section>
 {% endblock content %}
