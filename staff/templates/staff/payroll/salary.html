@@ -4,15 +4,15 @@
 <div class="container">
     <div class="row mt-3">
         <div class="col">
-            <h3>Recent Payroll</h3>
+            <a type="button"
+               class="btn btn btn-outline-dark"
+               href="{% url 'payroll-views' current_period %}">Payroll Views</a>
         </div>
-    </div>
-    <div class="row mb-2">
-        {% for month in recent_months %}
-        <div class="col-sm-2">
-            <a href="{% url 'payroll-period' month|first month|last %}">{{month|last}}</a>
+        <div class="col">
+            <a type="button"
+               class="btn btn btn-outline-dark"
+               href="{% url 'regenerate-payroll' %}">Regenerate</a>
         </div>
-        {% endfor %}
     </div>
     <hr>
     <div class="row">
@@ -46,7 +46,7 @@
         </div>
         <div class="col-sm-4">
             <a class="btn"
-               href="#"
+               href=""
                data-toggle="modal"
                data-target="#secondModal">
                 <div class="jumbotron bg-success text-white">
@@ -61,7 +61,7 @@
         </div>
         <div class="col-sm-4">
             <a class="btn"
-               href="#"
+               href=""
                data-target="#thirdModal"
                data-toggle="modal">
                 <div class="jumbotron bg-warning text-white">
@@ -75,6 +75,15 @@
             </a>
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <a class="btn btn-outline-dark float-right"
+               href="{% url 'staff-home' %}">
+                <i class="fa fa-reply"></i>
+            </a>
+        </div>
+
+    </div>
 </div>
 
 <!-- Modal -->
@@ -82,6 +91,7 @@
 <div class="modal fade"
      id="firstModal"
      tabindex="-1"
+     data-backdrop="static"
      aria-labelledby="firstModalLabel"
      aria-hidden="true">
   <div class="modal-dialog">
@@ -102,7 +112,7 @@
         You are about to generate payroll for the period {{last_period}}
       </div>
       <div class="modal-footer">
-        <a href="{% url 'generate_payroll' last_period %}"
+        <a href="{% url 'generate-payroll' last_period %}"
            class="btn btn-danger">
             Proceed
         </a>
@@ -119,6 +129,7 @@
 <div class="modal fade"
      id="secondModal"
      tabindex="-1"
+     data-backdrop="static"
      aria-labelledby="secondModalLabel"
      aria-hidden="true">
   <div class="modal-dialog">
@@ -139,7 +150,7 @@
         You are about to generate payroll for the period {{current_period}}
       </div>
       <div class="modal-footer">
-        <a href="{% url 'generate_payroll' current_period %}"
+        <a href="{% url 'generate-payroll' current_period %}"
            class="btn btn-danger">
             Proceed
         </a>
@@ -156,6 +167,7 @@
 <div class="modal fade"
      id="thirdModal"
      tabindex="-1"
+     data-backdrop="static"
      aria-labelledby="thirdModalLabel"
      aria-hidden="true">
   <div class="modal-dialog">
@@ -176,7 +188,7 @@
         You are about to generate payroll for the period {{next_period}}
       </div>
       <div class="modal-footer">
-        <a href="{% url 'generate_payroll' next_period %}"
+        <a href="{% url 'generate-payroll' next_period %}"
            class="btn btn-danger">
             Proceed
         </a>

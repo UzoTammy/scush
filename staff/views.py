@@ -484,6 +484,7 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
                 for year in group:
                     months.append(year['month_in_words'])
 
+            # print(recent_months)
             context['recent_months'] = recent_months
             return context
 
@@ -492,7 +493,7 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
         return render(request, self.template_name, context=context)
 
 
-class PayrollPeriodView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+class PayrollViews(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Payroll
     template_name = 'staff/payroll/payroll_period.html'
 
@@ -502,46 +503,55 @@ class PayrollPeriodView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             return True
         return False
 
-    def get(self, request, *args, **kwargs):
-        month = kwargs['month']
-        year = kwargs['year']
+    def recent_months(self, period):
+        """Get the last four periods"""
+        year = period.split('-')[0]
+        month = period.split('-')[1]
 
-        period = ''
-        for key, value in mytools.Period.full_months.items():
-            if value == month:
-                period = f"{year}-{key}"
+        start = int(month)
+        periods = [period,
+                   f'{year}-{str(start - 1).zfill(2)}',
+                   f'{year}-{str(start - 2).zfill(2)}',
+                   f'{year}-{str(start - 3).zfill(2)}'
+                   ]
+        periods = [period,
+                   f'{int(year) - 1}-12',
+                   f'{int(year) - 1}-11',
+                   f'{int(year) - 1}-10',
+                   ] if start == 1 else periods
+        periods = [period,
+                   f'{year}-01',
+                   f'{int(year) - 1}-12',
+                   f'{int(year) - 1}-11',
+                   ] if start == 2 else periods
+        periods = [period,
+                   f'{year}-02',
+                   f'{year}-01',
+                   f'{int(year) - 1}-12',
+                   ] if start == 3 else periods
+        return list((i, mytools.Period.full_months.get(i.split('-')[1])) for i in periods)
+
+    def get(self, request, *args, **kwargs):
+        """The most recent payroll is derived from the period of the last
+        record in payroll"""
+        period = kwargs.get('period')
+        year = period.split('-')[0]
+        month = period.split('-')[1]
+
         context = {
-            'title': 'payroll',
-            'heading': self.kwargs,
+            'title': 'view payroll',
+            'heading': {'year': year, 'month': mytools.Period.full_months.get(month)},
             'payroll': self.get_queryset().filter(period=period),
-        }
-        return render(request, self.template_name, context=context)
-
-
-class PayrollPeriodYearView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = Payroll
-    template_name = 'staff/payroll/payroll_period_year.html'
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def get(self, request, *args, **kwargs):
-        year, month = '', ''
-        for k, v in request.GET.items():
-            year = k
-        context = {
-            'title': 'payroll',
-            'heading': self.kwargs,
-            'payroll': self.get_queryset().filter(period__startswith=year),
+            'salary': self.get_queryset().filter(period=period).aggregate(sum=Sum('net_pay')),
+            'naira': chr(8358),
+            'periods_months': self.recent_months(self.get_queryset().last().period),
         }
         return render(request, self.template_name, context=context)
 
 
 class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     """Generate payroll and save to Payroll model"""
+    model = Payroll
     template_name = 'staff/payroll/generated_payroll.html'
 
     def test_func(self):
@@ -650,14 +660,12 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context = self.get_context_data(**kwargs)
 
         """Go into the payroll database and fetch data for the period"""
-        queryset = Payroll.objects.filter(period=context['period'])
+        queryset = self.model.objects.filter(period=context['period'])
 
         if queryset.exists():
             context['object'] = queryset
             return render(request, 'staff/payroll/recordexists.html', context)
-
         return render(request, self.template_name, context)
-        # return HttpResponse(f'{queryset}')
 
     def post(self, request, **kwargs):
         """Get context, get period"""

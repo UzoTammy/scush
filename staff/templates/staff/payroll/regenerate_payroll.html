@@ -7,8 +7,8 @@
 <div class="container mt-3">
     <div class="row">
         <div class="col">
-            <h1 class="text-danger">Regeneration</h1>
-            <h3>Periods that can be regenerated</h3>
+            <h3 class="text-danger">Regenerate Payroll</h3>
+            <h5>Periods that can be regenerated</h5>
         </div>
     </div>
     <form action="#" method="post">
@@ -17,19 +17,23 @@
         {% for str_period, period in periods %}
             <div class="col-sm-4">
                 <div class="form-group form-inline">
-                <label for="{{str_period}}"><small>{{str_period}}:</small></label>
-                    <input type="submit"
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{str_period}}</h5>
+                            <p class="card-text"></p>
+                            <input type="submit"
                             class="btn btn-sm btn-outline-primary"
                             id="{{str_period}}"
                             name="period"
                             value="{{period}}">
+                        </div>
+                    </div>
                 </div>
             </div>
         {% endfor %}
         </div>
     </form>
-</div>
-<div class="row">
+    <div class="row">
     {% if period %}
     <div class="col m-3">
         <table data-toggle="table"
@@ -95,21 +99,16 @@
                     class="btn btn-outline-primary">
                 Regenerate
                 </button>
-
-                <a class="btn btn-dark float-right" href="{% url 'home' %}">
-                    <i class="fa fa-reply"></i>
-                </a>
             </form>
         {% endif %}
     </div>
     {% else %}
-    <div class="col m-5">
-        <h3>Click on the period above you wish to regenerate</h3>
+    <div class="col m-3">
+        <h5>Click on the period above if you wish to regenerate payroll</h5>
     </div>
     {% endif %}
 </div>
-
-<div class="row">
+    <div class="row">
         <div class="col">
             <ul class="text-danger">
                 <li>
@@ -125,9 +124,15 @@
         </div>
     </div>
 {% else %}
-<div class="container">
     <h1>No payroll to regenerate</h1>
-    <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
-</div>
+<!--    <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>-->
 {% endif %}
+    <div class="row float-right">
+        <div class="col">
+        <a type="btn" class="btn btn-outline-dark" href="{% url 'salary' %}">
+            <i class="fa fa-reply"></i>
+        </a>
+    </div>
+    </div>
+</div>
 {% endblock content %}
