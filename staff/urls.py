@@ -26,6 +26,7 @@ from .views import (StaffScushView,
                     StaffSuspend,
                     StaffPermit,
                     StaffSalaryChange,
+                    PayrollSummaryView,
                     )
 
 urlpatterns = [
@@ -51,11 +52,12 @@ urlpatterns += [
     path('payroll/debit/', DebitNoteListView.as_view(), name='debit-list'),
     path('payroll/debit-note/new/', DebitNoteCreateView.as_view(), name='debit-create'),
     path('payroll/start/generate/salary/', StartGeneratePayroll.as_view(), name='salary'),
-    path('payroll/views/<str:period>', PayrollViews.as_view(), name='payroll-views'),
+    path('payroll/views/<str:period>/', PayrollViews.as_view(), name='payroll-views'),
     path('payroll/generate/<str:period>/', GeneratePayroll.as_view(), name='generate-payroll'),
     path('payroll/regenerate/', RegeneratePayroll.as_view(), name='regenerate-payroll'),
     path('payroll/regenerated/', RegeneratedPayroll.as_view(), name='regenerated-payroll'),
     path('payroll/start-pay/', SalaryPayment.as_view(), name='start-pay'),
     path('payroll/pay-salary/<int:pk>/', Payslip.as_view(), name='pay-salary'),
     path('payroll/<int:pk>/statement/', PayrollStatement.as_view(), name='payroll-statement'),
+    path('payroll/summary/<str:summary_period>/', PayrollSummaryView.as_view(), name='payroll-summary')
 ]

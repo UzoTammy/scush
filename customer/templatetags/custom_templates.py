@@ -2,6 +2,7 @@ from django import template
 from django.template.defaultfilters import stringfilter
 from ozone.mytools import Month
 from datetime import date
+from ozone import mytools
 
 register = template.Library()
 
@@ -51,3 +52,8 @@ def payroll_period_next(value):
     next_month = Month.next_month()
     year = date.today().year
     return f"{year}-{str(next_month).zfill(2)}"
+
+
+@register.filter
+def join(value, arg):
+    return f'{arg}-{value}'

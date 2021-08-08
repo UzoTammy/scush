@@ -30,7 +30,7 @@ from django.core.mail import send_mail, mail_admins, mail_managers
 from django.core.validators import ValidationError
 from .form import DebitForm, CreditForm
 from django.template import loader
-from django.db.models import F, Sum
+from django.db.models import F, Sum, Avg, Max, Min
 
 
 class Salary:
@@ -484,8 +484,8 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
                 for year in group:
                     months.append(year['month_in_words'])
 
-            # print(recent_months)
             context['recent_months'] = recent_months
+            context['payroll_current_period'] = Payroll.objects.last().period
             return context
 
     def get(self, request, *args, **kwargs):
@@ -538,6 +538,8 @@ class PayrollViews(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         year = period.split('-')[0]
         month = period.split('-')[1]
 
+        this_year = datetime.date.today().year
+        years = [str(this_year)]
         context = {
             'title': 'view payroll',
             'heading': {'year': year, 'month': mytools.Period.full_months.get(month)},
@@ -545,6 +547,9 @@ class PayrollViews(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             'salary': self.get_queryset().filter(period=period).aggregate(sum=Sum('net_pay')),
             'naira': chr(8358),
             'periods_months': self.recent_months(self.get_queryset().last().period),
+            'months': mytools.Period.full_months,
+            'years': years,
+            'summary_period': ('Month', 'Year')
         }
         return render(request, self.template_name, context=context)
 
@@ -1109,3 +1114,54 @@ class StaffSalaryChange(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return redirect('employee-detail', pk=kwargs['pk'])
 
 
+class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Payroll
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get_dict(self, queryset):
+        data = dict()
+        data['number'] = queryset.count()
+        data['average'] = queryset.aggregate(net_pay=Avg('net_pay'))
+        data['minimum'] = queryset.aggregate(net_pay=Min('net_pay'))
+        data['maximum'] = queryset.aggregate(net_pay=Max('net_pay'))
+        data['salary'] = queryset.aggregate(total=Sum('salary'))
+        data['tax'] = queryset.aggregate(total=Sum('tax'))
+        data['credit'] = queryset.aggregate(total=Sum('credit_amount'))
+        data['debit'] = queryset.aggregate(total=Sum('debit_amount'))
+        data['net_pay'] = queryset.aggregate(total=Sum('net_pay'))
+        data['deduction'] = queryset.aggregate(total=Sum('deduction'))
+        data['outstanding'] = queryset.aggregate(total=Sum('outstanding'))
+        return data
+
+    def get(self, request, *args, **kwargs):
+
+        """Search the database for all periods
+        and use set to filter out repeated periods"""
+        periods_set = set(i.period for i in self.get_queryset())
+        dataset = list()
+        if kwargs.get('summary_period') == 'Month':
+            periods = tuple(periods_set)
+            for period in sorted(periods):
+                queryset = self.get_queryset().filter(period=period)
+                qs_dict = self.get_dict(queryset)
+                qs_dict['period'] = mytools.Period.full_months.get(period.split('-')[1])
+                dataset.append(qs_dict)
+        else:
+            year_set = set(i.split('-')[0] for i in periods_set)
+            for year in sorted(year_set):
+                queryset = self.get_queryset().filter(period__startswith=year)
+                qs_dict = self.get_dict(queryset)
+                qs_dict['period'] = year
+                dataset.append(qs_dict)
+
+        context = {
+            'title': kwargs.get('summary_period'),
+            'current_period': self.get_queryset().last().period,
+            'dataset': tuple(dataset)
+        }
+        return render(request, 'staff/payroll/payroll_summary.html', context)

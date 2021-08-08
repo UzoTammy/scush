@@ -1,0 +1,64 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+{% load djmoney %}
+
+{% block content %}
+<div class="container mt-3">
+  <div class="row">
+    <div class="col">
+      <h3>{{title}}ly Payroll Summary</h3>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col" style="font-family: Times New Roman; font-size: 12pt">
+      <table data-search="true"
+             data-pagination="true"
+             tabindex="-1"
+             class="table table-bordered">
+        <thead class="bg-dark text-white">
+          <tr>
+            <th>Count</th>
+            <th>Period</th>
+            <th>Average</th>
+            <th>Minimum</th>
+            <th>Maximum</th>
+            <th>Salary</th>
+            <th>Tax</th>
+            <th>Credit</th>
+            <th>Debit</th>
+            <th>Net Pay</th>
+            <th>Deduction</th>
+            <th>Outstanding</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for data in dataset %}
+            <tr>
+            <td>{{data.number}}</td>
+            <td>{{data.period}}</td>
+            <td class="text-right">{{data.average.net_pay|floatformat:2}}</td>
+            <td class="text-right">{{data.minimum.net_pay|floatformat:2}}</td>
+            <td class="text-right">{{data.maximum.net_pay|floatformat:2}}</td>
+            <td class="text-right">{{data.salary.total|floatformat:2}}</td>
+            <td class="text-right">{{data.tax.total|floatformat:2}}</td>
+            <td class="text-right">{{data.credit.total|floatformat:2}}</td>
+            <td class="text-right">{{data.debit.total|floatformat:2}}</td>
+            <td class="text-right">{{data.net_pay.total|floatformat:2}}</td>
+            <td class="text-right">{{data.deduction.total|floatformat:2}}</td>
+            <td class="text-right">{{data.outstanding.total|floatformat:2}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      </div>
+  </div>
+  <div class="row float-right">
+    <div class="col">
+      <a type="button" class="btn btn-outline-dark" href="{% url 'payroll-views' current_period %}">
+        <i class="fa fa-reply"></i>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock content %}

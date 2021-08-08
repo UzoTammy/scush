@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-2 bg-dark">
             <p class="m-2 text-white">
-                <i class="fa fa-plus text-success"></i>
+                <i class="fa fa-plus text-warning"></i>
                 Recent
             </p>
             <ul class="nav flex-column">
@@ -20,12 +20,45 @@
                 {% endfor %}
             </ul>
             <p class="m-2 text-white">
-                <i class="fa fa-archive text-success"></i>
-                Years
+                <i class="fa fa-archive text-warning"></i>
+                    Years
+            </p>
+            <ul class="nav flex-column">
+                {% for yr in years %}
+                <li class="nav-item">
+                    <p class="m-2 text-white">
+                        <a class="m-3" data-toggle="collapse" href="#abc{{yr}}" role="button"
+                           aria-expanded="false" aria-controls="abc">
+                            {{yr}}
+                        </a>
+                    <div class="collapse" id="abc{{yr}}">
+                        <div class="card card-body">
+                            <ul class="list-group">
+                                {% for mn, month in months.items %}
+                                <li class="list-group-item list-group-item-sm">
+                                    <a href="{% url 'payroll-views' mn|join:yr %}">{{month}}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    </p>
+                </li>
+                {% endfor %}
+            </ul>
+            <p class="text-white m-2">
+                <i class="fa fa-database text-warning"></i> Summary
             </p>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">2021</a>
+                    <a class="nav-link" href="{% url 'payroll-summary' summary_period|first %}">
+                        {{summary_period|first}}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'payroll-summary' summary_period|last %}">
+                        {{summary_period|last}}
+                    </a>
                 </li>
             </ul>
         </div>
@@ -47,7 +80,9 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <table data-toggle="table" class="table">
+                            <table data-toggle="table"
+                                   data-pagination="true"
+                                   class="table">
                                 <thead>
                                 <tr class="bg-dark text-white">
                                     <th>Code</th>
@@ -67,19 +102,19 @@
                                 <tr>
                                     <td>{{pay.staff.id|zeropadding:3}}</td>
                                     <td>{{pay.staff.fullname}}</td>
-                                    <td>{{pay.salary.amount}}</td>
-                                    <td>{{pay.tax.amount}}</td>
-                                    <td>{{pay.credit_amount.amount}}</td>
-                                    <td>{{pay.debit_amount.amount}}</td>
-                                    <td>{{pay.net_pay.amount}}</td>
-                                    <td>{{pay.deduction.amount}}</td>
-                                    <td>{{pay.outstanding.amount}}</td>
+                                    <td class="text-right">{{pay.salary.amount}}</td>
+                                    <td class="text-right">{{pay.tax.amount}}</td>
+                                    <td class="text-right">{{pay.credit_amount.amount}}</td>
+                                    <td class="text-right">{{pay.debit_amount.amount}}</td>
+                                    <td class="text-right">{{pay.net_pay.amount}}</td>
+                                    <td class="text-right">{{pay.deduction.amount}}</td>
+                                    <td class="text-right">{{pay.outstanding.amount}}</td>
                                     {% if pay.status %}
-                                    <td class="text-success">
+                                    <td class="text-success text-center">
                                         <i class="fa fa-check"></i>
                                     </td>
                                     {% else %}
-                                    <td class="text-danger">
+                                    <td class="text-danger text-center">
                                         <i class="fa fa-times"></i>
                                     </td>
                                     {% endif %}
