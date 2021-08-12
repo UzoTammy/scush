@@ -196,14 +196,16 @@ class Payroll(models.Model):
 class Reassign(models.Model):
     staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
     reassign_type = models.CharField(max_length=10, default='Temporal',
-                                     choices=[('Temporal', 'Temporal'),
-                                              ('Permanent', 'Permanent')]
+                                     choices=[('T', 'Temporal'),
+                                              ('A', 'Acting'),
+                                              ('C', 'Confirmed')]
                                      )
     from_position = models.CharField(max_length=30, null=True, blank=True)
     to_position = models.CharField(max_length=30, choices=Employee.POSITIONS, null=True, blank=True)
     from_branch = models.CharField(max_length=30, null=True, blank=True)
     to_branch = models.CharField(max_length=30, choices=Employee.BRANCHES, null=True, blank=True)
     start_date = models.DateField(default=timezone.now)
+    duration = models.SmallIntegerField(default=0)
     remark = models.CharField(max_length=100)
 
     def __str__(self):

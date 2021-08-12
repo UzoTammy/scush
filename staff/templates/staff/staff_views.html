@@ -1,0 +1,62 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load custom_templates %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <table data-toggle="table"
+               data-pagination="true"
+               class="table caption-top table-sm">
+            <caption>
+                <div class="row">
+                    <div class="col">
+                        Terminated Staff
+                    </div>
+                </div>
+            </caption>
+
+            <thead class="bg-dark text-white">
+            <tr>
+                <th scope="col">ID</th>
+                <th width="40px" scope="col">Image</th>
+                <th scope="col">Name</th>
+                <th scope="col">Date Employed</th>
+                <th scope="col">Date Terminated</th>
+                <th scope="col">Mobile</th>
+                <th scope="col">Nature</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for employee in terminated_staff %}
+            <tr>
+                <th scope="row">{{ employee.staff.pk|zeropadding:3 }}</th>
+                <td><img src="{{ employee.staff.image.url }}"
+                         class="rounded-circle"
+                         width="50px"
+                         height="50px"
+                         alt=""></td>
+                <td>{{employee.staff.fullname}}</td>
+                <td>{{employee.staff.date_employed}}</td>
+                <td>{{employee.date}}</td>
+                <td>{{employee.staff.mobile|addsep}}</td>
+                <td>{{employee.termination_type}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+
+            </tfoot>
+        </table>
+        </div>
+    </div>
+    <div class="row float-right">
+        <div class="col">
+            <a type="button" class="btn btn-outline-dark" href="{% url 'staff-home' %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

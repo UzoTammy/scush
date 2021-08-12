@@ -1,7 +1,6 @@
 {% extends 'users/base.html' %}
 {% load custom_templates %}
 
-
 {% block content %}
 <!-- Table, Caption, Workforce, Pagination, Side bar, countdown-->
 <div class="row m-2">
@@ -200,7 +199,7 @@
         </ul>
     </div>
 </div>
-<!--        {{countdown}}-->
+<!--{{countdown}}-->
 <div class="col-sm-4 ml-4">
             <ul>
         {% for key, value in countdown %}
@@ -216,10 +215,10 @@
 <div class="container">
     <div class="row mb-5 float-right">
     <div class="col">
-        <a type="button" class="btn btn-outline-primary btn-sm" href="{% url 'staff-home' %}">
-            <i class="fa fa-reply">
-                return to staff home page
-            </i></a>
+        <a type="button" class="btn btn-outline-dark"
+           href="{% url 'staff-home' %}">
+            <i class="fa fa-reply"></i>
+        </a>
     </div>
 </div>
 </div>

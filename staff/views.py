@@ -30,7 +30,8 @@ from django.core.mail import send_mail, mail_admins, mail_managers
 from django.core.validators import ValidationError
 from .form import DebitForm, CreditForm
 from django.template import loader
-from django.db.models import F, Sum, Avg, Max, Min
+from django.db.models import F, Sum, Avg, Max, Min, DateField, ExpressionWrapper
+
 
 
 class Salary:
@@ -132,6 +133,25 @@ happiness of our staff is important, that is what we expect them to transfer to 
                 if countdown >= 0:
                     data[obj.staff.first_name] = countdown
 
+        if Reassign:
+            qs_reassign = Reassign.objects.filter(reassign_type='A')
+            recordset = list()
+            for record in qs_reassign:
+                start_date = record.start_date
+                duration = record.duration
+                today = datetime.date.today()
+                due_date = start_date + datetime.timedelta(duration)
+                days_left = (due_date - today).days
+                if days_left >= 0:
+                    reassign_data = {
+                        'code': record.staff.id,
+                        'staff': record.staff.fullname,
+                        'start_date': start_date,
+                        'due_date': due_date,
+                        'days_left': days_left
+                    }
+                    recordset.append(reassign_data)
+
         context = {
             'title': 'Staff Home',
             'header': 'Staff Home Page',
@@ -148,9 +168,29 @@ happiness of our staff is important, that is what we expect them to transfer to 
             'terminated': Employee.objects.filter(status=False).count(),
             'probation': queryset.filter(is_confirmed=False).count(),
             'staff_on_probation': self.confirm_staff(),
-            'today': datetime.date.today()
+            'reassign_data': recordset,
+            'today': datetime.date.today(),
+            'staff_category': 'terminate',
         }
         return render(request, self.template_name, context=context)
+
+
+class StaffViews(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Terminate
+    template_name = 'staff/staff_views.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get(self, request, *args, **kwargs):
+
+        context = {
+            'terminated_staff': self.get_queryset()
+        }
+        return render(request, self.template_name, context)
 
 
 class PDFProfileView(View):
@@ -979,12 +1019,14 @@ class StaffReassign(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         }
         """Create to reassign database"""
         date = datetime.date.today() if request.POST['start_date'] == "" else request.POST['start_date']
+        duration = 0 if request.POST['type'] == 'T' or request.POST['type'] == 'C' else int(request.POST['duration'])
         reassign = Reassign(staff=qs,
                             reassign_type=request.POST['type'],
                             from_position=request.POST['current_position'],
                             from_branch=request.POST['current_branch'],
                             to_position=request.POST['position'],
                             to_branch=request.POST['branch'],
+                            duration=duration,
                             remark=request.POST['remark'],
                             start_date=date,
                             )
@@ -1139,7 +1181,6 @@ class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return data
 
     def get(self, request, *args, **kwargs):
-
         """Search the database for all periods
         and use set to filter out repeated periods"""
         periods_set = set(i.period for i in self.get_queryset())
@@ -1165,3 +1206,5 @@ class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             'dataset': tuple(dataset)
         }
         return render(request, 'staff/payroll/payroll_summary.html', context)
+
+

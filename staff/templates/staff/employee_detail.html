@@ -30,10 +30,11 @@
                     <p>Course: {{object.staff.course }}</p>
                     <p>Personal Mobile:
                         {% if object.staff.mobile is None %}
-                        {{object.staff.mobile}}</p>
+                        {{object.staff.mobile}}
                         {% else %}
-                        {{object.staff.mobile|addsep}}</p>
+                        {{object.staff.mobile|addsep}}
                         {% endif %}
+                    </p>
                     <p>Personal Email: {{object.staff.email}}</p>
                     <p>Application Date: {{object.staff.apply_date}}</p>
                     <p>Data Modified Time: {{object.staff.modified_date}}</p>
@@ -109,8 +110,7 @@
                            href="#">Terminate
                         </a>
                         <a class="list-group-item" href="{% url 'payroll-statement' object.pk %}">Statement</a>
-                        <a class="list-group-item" href="{% url 'staff-list' %}">
-                            <i class="fa fa-reply"></i></a>
+
                     </div>
                 </div>
            </div>
@@ -231,12 +231,18 @@
                             </tr>
                         {% endfor %}
                     </tbody>
-                    <tfoot></tfoot>
                 </table>
             </div>
         </div>
         {% endif %}
     </div>
+    <div class="row mt-2 mb-5 float-right">
+        <div class="col">
+            <a type="button" class="btn btn-outline-dark" href="{% url 'staff-list' %}">
+            <i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+
 </div>
 
 
@@ -332,14 +338,7 @@
             </div>
             <div class="modal-body">
                 <div class="container">
-                    <p>Reassigning Staff involves change of position and/or branch</p>
 
-                    This can take place either as
-                    <ul>
-                        <li>Position change only - Select Position and click Apply</li>
-                        <li>Branch change only - Select Branch and click Apply</li>
-                        <li>change Both - Select Position and Branch and click Apply</li>
-                    </ul>
                     <form action="{% url 'employee-reassign' object.pk %}"
                           method="post">
                     {% csrf_token %}
@@ -375,9 +374,10 @@
                         <div class="col">
                             <div class="form-group">
                                 <label class="form-label" for="reassign">Type</label>
-                                <select class="form-control" name="type" id="reassign">
+                                <select onchange="lostFocus()" class="form-control" name="type" id="reassign">
                                     <option value="T">Temporal</option>
-                                    <option value="P">Permanent</option>
+                                    <option value="A">Acting</option>
+                                    <option value="C">Confirmed</option>
                                 </select>
                             </div>
                         </div>
@@ -412,6 +412,15 @@
                                 {% endfor %}
                             </select>
                         </div>
+                        </div>
+                    </div>
+                    <div id="divDuration" class="row" hidden>
+                        <div class="col-5">
+                            <div class="form-group">
+                                <label class="form-label" for="duration">Duration(in days)</label>
+                                <input name="duration" value=60 id="duration" class="form-control"
+                                       type="number">
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -682,5 +691,17 @@
     </div>
 </div>
 
+<script>
+    function lostFocus() {
+        if (document.getElementById("reassign").value=='A') {
+            <!--show duration field with default of 60 days -->
+            console.log('hello')
+            document.getElementById("divDuration").hidden = false;
+        }
+        else {
+            document.getElementById("divDuration").hidden = true;
+        }
+    }
+</script>
 
 {% endblock content %}
