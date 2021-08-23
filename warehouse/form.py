@@ -13,4 +13,4 @@ class StoreForm(ModelForm):
 
     class Meta:
         model = Stores
-        fields = '__all__'
+        exclude = ('status', 'disabled')

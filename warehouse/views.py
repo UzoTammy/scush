@@ -7,6 +7,7 @@ from .form import StoreForm
 from django.db.models import Sum
 from django.shortcuts import render, reverse, redirect
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 def next_year(date):
@@ -20,9 +21,15 @@ def next_year(date):
     return datetime.date(year, month, day)
 
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'warehouse/home.html'
     queryset = Stores.active.exclude(owner='Self')
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -43,22 +50,36 @@ class HomeView(TemplateView):
         return context
 
 
-class StoresListView(ListView):
+class StoresListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Stores
     template_name = 'warehouse/stores_list.html'
     context_object_name = 'stores'
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
 
-class StoreHelpView(TemplateView):
+class StoreHelpView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'warehouse/help.html'
 
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
-class StoresDetailView(DetailView):
+
+class StoresDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Stores
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -67,22 +88,42 @@ class StoresDetailView(DetailView):
         return context
 
 
-class StoresCreateView(CreateView):
+class StoresCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = StoreForm
     template_name = 'warehouse/stores_form.html'
     success_url = reverse_lazy('warehouse-home')
 
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
     def get_context_data(self, **kwargs):
-        context = super(StoresCreateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['title'] = 'Add New'
         return context
 
 
-class StoresUpdateView(UpdateView):
+class StoresUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Stores
     template_name = 'warehouse/stores_form.html'
-    fields = '__all__'
+    fields = ('name',
+              'store_type',
+              'usage',
+              'owner',
+              'address',
+              'contact',
+              'rent_amount',
+              'capacity',
+              'expiry_date')
     success_url = reverse_lazy('warehouse-home')
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -90,8 +131,14 @@ class StoresUpdateView(UpdateView):
         return context
 
 
-class PayRent(UpdateView):
+class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Stores
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
 
     def post(self, request, *args, **kwargs):
         qs = self.get_queryset().get(id=kwargs['pk'])
@@ -123,5 +170,5 @@ class PayRent(UpdateView):
         renew.save()
 
         # the message
-        messages.success(request, f'Rent renewal saved successfully')
+        messages.success(request, f'Rent renewal saved successfully !!!')
         return redirect('warehouse-detail', pk=kwargs['pk'])
