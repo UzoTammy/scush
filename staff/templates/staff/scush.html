@@ -7,7 +7,9 @@
         </div>
     </div>
 <div class="m-3">
-    <table class="table table-sm">
+    <table class="table table-sm"
+           data-pagination="true"
+           data-toggle="table">
         <thead class="">
         <tr>
             <th>SN</th>
@@ -19,7 +21,6 @@
             <th>Models Class</th>
             <th>url path</th>
             <th>url name</th>
-<!--            <th>Remark</th>-->
         </tr>
         </thead>
         <tbody>
@@ -355,173 +356,215 @@
         </tr>
             <tr>
             <td>32</td>
-            <td>Staff</td>
-            <td>New</td>
-            <td>staff</td>
-            <td>employee_form.html</td>
-            <td>StaffCreateView</td>
-            <td>Employee</td>
-            <td>new/int:pk>/</td>
-            <td>employee-create</td>
+            <td>Stock</td>
+            <td>Home</td>
+            <td>stock</td>
+            <td>product_home.html</td>
+            <td>ProductHomeView</td>
+            <td>Product</td>
+            <td>products/home/</td>
+            <td>product-home</td>
         </tr>
             <tr>
             <td>33</td>
-            <td>Staff</td>
-            <td>Private</td>
-            <td>staff</td>
-            <td>employee_private.html</td>
-            <td>StaffListPrivateView</td>
-            <td>Employee</td>
-            <td>private/</td>
-            <td>staff-private</td>
+            <td>Stock</td>
+            <td>List</td>
+            <td>stock</td>
+            <td>product_list.html</td>
+            <td>ProductListView</td>
+            <td>Product</td>
+            <td>products/list/</td>
+            <td>product-list</td>
         </tr>
             <tr>
             <td>34</td>
-            <td>Staff</td>
-            <td>Terminate</td>
-            <td>staff</td>
-            <td>employee_detail.html:modal</td>
-            <td>StaffTerminate</td>
-            <td>Employee</td>
-            <td>terminate/int:pk>/</td>
-            <td>employee-terminate</td>
+            <td>Stock</td>
+            <td>Detail</td>
+            <td>stock</td>
+            <td>product_detail.html:modal</td>
+            <td>ProductDetailedView</td>
+            <td>Product</td>
+            <td>product/int:pk>/detail/</td>
+            <td>product-detail</td>
         </tr>
             <tr>
             <td>35</td>
-            <td>Staff</td>
-            <td>Reassign</td>
-            <td>staff</td>
-            <td>employee_detail.html:modal</td>
+            <td>Stock</td>
+            <td>New</td>
+            <td>stock</td>
+            <td>product_form.html</td>
             <td>StaffReassign</td>
-            <td>Employee</td>
-            <td>reassign/int:pk>/</td>
-            <td>employee-reassign</td>
+            <td>Product</td>
+            <td>product/new/</td>
+            <td>product-new</td>
         </tr>
             <tr>
             <td>36</td>
-            <td>Staff</td>
-            <td>Suspend</td>
-            <td>staff</td>
-            <td>employee_detail.html:modal</td>
-            <td>StaffSuspend</td>
-            <td>Employee</td>
-            <td>suspend/int:pk>/</td>
-            <td>employee-suspend</td>
+            <td>Stock</td>
+            <td>Update</td>
+            <td>stock</td>
+            <td>product_form.html</td>
+            <td>ProductUpdateView</td>
+            <td>Product</td>
+            <td>product/int:pk>/update/</td>
+            <td>product-update</td>
         </tr>
             <tr>
             <td>37</td>
-            <td>Staff</td>
-            <td>Permit</td>
-            <td>staff</td>
-            <td>employee_detail.html:modal</td>
-            <td>StaffPermit</td>
+            <td>Stock</td>
+            <td>Delete</td>
+            <td>stock</td>
+            <td>product_confirm_delete.html</td>
+            <td>ProductDeleteView</td>
             <td>Employee</td>
-            <td>permit/int:pk>/</td>
-            <td>employee-permit</td>
+            <td>product/int:pk>/delete/</td>
+            <td>product-delete</td>
         </tr>
             <tr>
             <td>38</td>
-            <td>Staff</td>
-            <td>Salary Change</td>
-            <td>staff</td>
-            <td>employee_detail.html:modal</td>
-            <td>StaffSalaryChange</td>
-            <td>Employee</td>
-            <td>salary-change/int:pk>/</td>
-            <td>employee-salary-change</td>
+            <td>User</td>
+            <td>Register</td>
+            <td>users</td>
+            <td>user/register.html</td>
+            <td>user_views.register</td>
+            <td>User</td>
+            <td>register/</td>
+            <td>register</td>
         </tr>
             <tr>
             <td>39</td>
-            <td>Staff</td>
-            <td>Credit List</td>
-            <td>staff</td>
-            <td>credit_list.html</td>
-            <td>CreditNoteListView</td>
-            <td>CreditNote</td>
-            <td>payroll/credit/</td>
-            <td>credit-list</td>
+            <td>User</td>
+            <td>Profile</td>
+            <td>users</td>
+            <td>profile.html</td>
+            <td>user_views.profile</td>
+            <td>User</td>
+            <td>profile/</td>
+            <td>profile</td>
         </tr>
             <tr>
             <td>40</td>
-            <td>Staff</td>
-            <td>Credit Create</td>
-            <td>staff</td>
-            <td>credit_form.html</td>
-            <td>CreditNoteCreateView</td>
-            <td>CreditNote</td>
-            <td>payroll/credit-note/new/</td>
-            <td>credit-create</td>
+            <td>User</td>
+            <td>Login</td>
+            <td>users</td>
+            <td>users/login.html</td>
+            <td>auth_views.LoginView</td>
+            <td>User</td>
+            <td>login/</td>
+            <td>login</td>
+        </tr>
+            <tr>
+            <td>41</td>
+            <td>User</td>
+            <td>Logout</td>
+            <td>users</td>
+            <td>users/logout.html</td>
+            <td>auth_views.LogoutView</td>
+            <td>User</td>
+            <td>logout/</td>
+            <td>logout</td>
+        </tr>
+            <tr>
+            <td>42</td>
+            <td>User</td>
+            <td>Password Reset</td>
+            <td>users</td>
+            <td>users/password_reset.html</td>
+            <td>auth_views.PasswordResetView</td>
+            <td>User</td>
+            <td>password-reset/</td>
+            <td>password_reset</td>
+        </tr>
+            <tr>
+            <td>43</td>
+            <td>User</td>
+            <td>Password Reset Done</td>
+            <td>users</td>
+            <td>users/password_reset_done.html</td>
+            <td>auth_views.PasswordResetDoneView</td>
+            <td>User</td>
+            <td>password-reset/done/</td>
+            <td>password_reset_done</td>
+        </tr>
+            <tr>
+            <td>44</td>
+            <td>User</td>
+            <td>Password Reset Confirm</td>
+            <td>users</td>
+            <td>users/password_reset_confirm.html</td>
+            <td>auth_views.PasswordResetConfirmView</td>
+            <td>User</td>
+            <td>password-reset/confirm/uidb64>/token>/</td>
+            <td>password_reset_confirm</td>
+        </tr>
+            <tr>
+            <td>45</td>
+            <td>User</td>
+            <td>Password Reset Complete</td>
+            <td>users</td>
+            <td>users/password_reset_complete.html</td>
+            <td>auth_views.PasswordResetCompleteView</td>
+            <td>User</td>
+            <td>password-reset/complete/</td>
+            <td>password_reset_complete</td>
+        </tr>
+            <tr>
+            <td>46</td>
+            <td>Customer</td>
+            <td>List</td>
+            <td>customer</td>
+            <td>customer/customer.html</td>
+            <td>CustomerListView</td>
+            <td>CustomerProfile</td>
+            <td>customer/</td>
+            <td>customer-list</td>
+        </tr>
+            <tr>
+            <td>47</td>
+            <td>Customer</td>
+            <td>Detail</td>
+            <td>customer</td>
+            <td>customer/customerprofile_detail.html</td>
+            <td>CustomerDetailView</td>
+            <td>CustomerProfile</td>
+            <td>customer/int:pk>/</td>
+            <td>customer-detail</td>
+        </tr>
+            <tr>
+            <td>48</td>
+            <td>Customer</td>
+            <td>Create</td>
+            <td>customer</td>
+            <td>customer/customerprofile_form.html</td>
+            <td>CustomerCreateView</td>
+            <td>CustomerProfile</td>
+            <td>customer/new/</td>
+            <td>customer-create</td>
+        </tr>
+            <tr>
+            <td>49</td>
+            <td>Customer</td>
+            <td>Update</td>
+            <td>customer</td>
+            <td>customer/customerprofile_form.html</td>
+            <td>CustomerUpdateView</td>
+            <td>CustomerProfile</td>
+            <td>customer/int:pk>/update/</td>
+            <td>customer-update</td>
+        </tr>
+            <tr>
+            <td>50</td>
+            <td>Customer</td>
+            <td>Delete</td>
+            <td>customer</td>
+            <td>customer/customerprofile_confirm_delete.html</td>
+            <td>CustomerDeleteView</td>
+            <td>CustomerProfile</td>
+            <td>customer/int:pk>/delete/</td>
+            <td>customer-delete</td>
         </tr>
         </tbody>
     </table>
 </div>
-<div class="container m-3">
-    <div class="row">
-        <div class="col">
-            <ol>
-                <li>Home Page - <span class="text-danger">customer/home.html</span></li>
-                <li>About Page - <span class="text-danger">customer/about.html</span> - About page is an unrestricted web page. It is intended for general public</li>
-                <li>Applicants and Staff Database
-                    <ol>
-                        <li>Applicant
-                        <ul>
-                            <li>Create - <span class="text-danger">applicant_form.html</span> - Linked from apply in the About page for general access</li>
-                            <li>Read(View)
-                                <ol>
-                                    <li>All - <span class="text-danger">applicant_list.html</span></li>
-                                    <li>Pending - <span class="text-danger">applicant_list_pending.html</span></li>
-                                    <li>Employed - <span class="text-danger">applicant_list_employed.html</span></li>
-                                    <li>Rejected - <span class="text-danger">applicant_list_rejected.html</span></li>
-                                    <li>Detail - <span class="text-danger">applicant_detail.html</span></li>
-                                </ol>
-                            </li>
-                            <li>Update - <span class="text-danger">applicant_form.html</span></li>
-                        </ul>
-                        </li>
-                        <li>Staff
-                            <ul>
-                                <li>Home Page - <span class="text-danger">home_page.html</span></li>
-                                <li>Create - <span class="text-danger">employee_form.html</span></li>
-                                <li>Read(View)
-                                    <ol>
-                                        <li>All - <span class="text-danger">employee_list.html</span></li>
-                                        <li>Private - <span class="text-danger">employee_list_private.html</span></li>
-                                        <li>Photo - <span class="text-danger">employee_pictures.html</span></li>
-                                        <li>Detail - <span class="text-danger">employee_detail.html</span></li>
-                                    </ol>
-                                </li>
-                                <li>Update</li>
-                                <li>Delete</li>
-                                <li>Scush - <span class="text-danger">scush.html</span></li>
-                            </ul>
-                        </li>
-                    </ol>
-                </li>
-                <li>Payroll Process - embedded into the staff app: Requires
-                    <ol>
-                        <li>Staff Database - already designed</li>
-                        <li>Credit Database
-                            <ul>
-                                <li>Create - <span class="text-danger">staff/payroll/creditnote_form.html</span></li>
-                                <li>Read(View) - <span class="text-danger">staff/payroll/credit_list.html</span></li>
-                                <li>Update - <span class="text-danger">staff/payroll/creditnote_form.html</span></li>
-                                <li>Delete - not designed</li>
-                            </ul>
-                        </li>
-                        <li>Debit Database
-                            <ul>
-                                <li>Create</li>
-                                <li>Read</li>
-                                <li>Update</li>
-                                <li>Delete</li>
-                            </ul>
-                        </li>
-                    </ol>
-                </li>
-                <li>Stock Database</li>
-                <li>Delivery Process</li>
-            </ol>
-        </div>
-    </div>
-</div>
+
 {% endblock content%}

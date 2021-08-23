@@ -245,7 +245,6 @@ class Month:
         for i in iters:
             if cls.month == i:
                 n_month = next(iters)
-
                 return n_month
 
     @classmethod

@@ -146,22 +146,26 @@
                    aria-haspopup="true"
                    aria-expanded="false">
                     <i class="fa fa-play-circle text-dark"></i>
-                    Action
+                    More
                 </a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'credit-create' %}">Add Credit</a>
-                    <a class="dropdown-item" href="{% url 'debit-create' %}">Add Debit</a>
-                    <a class="dropdown-item text-muted">Payroll Process</a>
-                    <div class="dropbutton col">
-                        <a class="dropdown-item" href="#">Payroll
-                            <small><i class="fa fa-play text-info"></i></small></a>
-                        <div class="dropdown-content">
-                            <a href="{% url 'salary' %}">Generate</a>
-                            <a href="{% url 'regenerate-payroll' %}">Regenerate</a>
-                            <a href="{% url 'start-pay' %}">Pay Salary</a>
-                        </div>
-                    </div>
+                    <a class="dropdown-item" href="{% url 'credit-create' %}">Credit</a>
+                    <a class="dropdown-item" href="{% url 'debit-create' %}">Debit</a>
                     <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="{% url 'warehouse-home' %}">Stores</a>
+                    <hr class="dropdown-divider">
+
+<!--                    <a class="dropdown-item text-muted">Payroll Process</a>-->
+<!--                    <div class="dropbutton col">-->
+<!--                        <a class="dropdown-item" href="#">Payroll-->
+<!--                            <small><i class="fa fa-play text-info"></i></small></a>-->
+<!--                        <div class="dropdown-content">-->
+<!--                            <a href="{% url 'salary' %}">Generate</a>-->
+<!--                            <a href="{% url 'regenerate-payroll' %}">Regenerate</a>-->
+<!--                            <a href="{% url 'start-pay' %}">Pay Salary</a>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
                     <div class="dropbutton col">
                         <a class="dropdown-item" href="#">Sales
                             <small><i class="fa fa-play text-info"></i></small>

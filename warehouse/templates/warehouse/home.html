@@ -1,0 +1,163 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="section mr-2">
+    <div class="row">
+<!--        side menu-->
+        <div class="col-2 bg-dark">
+            <ul class="nav flex-column">
+                <li class="nav-item mt-3">
+                    <a class="nav-link"
+                       href="{% url 'warehouse-list-all' %}">
+                        <i class="fa fa-eye-slash text-warning"></i> All
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'warehouse-create' %}">
+                        <i class="fa fa-plus text-warning"></i> Add
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'warehouse-help' %}">
+                        <i class="fa fa-question text-warning"></i> Help
+                    </a>
+                </li>
+            </ul>
+<!--            <p class="m-2 text-white">-->
+<!--                <i class="fa fa-minus text-warning"></i>-->
+<!--                 Store Types-->
+<!--            </p>-->
+<!--            <ul class="nav flex-column">-->
+<!--                {% for stype in store_types %}-->
+<!--                    <li class="nav-item">-->
+<!--                    <a class="nav-link" href="{% url 'warehouse-list-all' %}">-->
+<!--                        {{stype}}-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                {% endfor %}-->
+<!--            </ul>-->
+<!--            <hr>-->
+<!--            <p class="m-2 text-white">-->
+<!--                <i class="fa fa-minus text-warning"></i>-->
+<!--                    Used As-->
+<!--            </p>-->
+<!--            <ul class="nav flex-column">-->
+<!--                {% for use in usage %}-->
+<!--                    <li class="nav-item">-->
+<!--                    <a class="nav-link" href="{% url 'warehouse-list-all' %}">-->
+<!--                        {{use}}-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                {% endfor %}-->
+<!--            </ul>-->
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">
+                        <i class="fa fa-reply text-warning"></i> Home
+                    </a>
+                </li>
+            </ul>
+        </div>
+<!--        body of page-->
+        <div class="col-8">
+            <div class="container mt-2">
+                <div class="row">
+                    <div class="col">
+                        <h3 class="text-center">Stores Home Page</h3>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-sm-6">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Cumulative Values</h5>
+                                <p class="card-text">Rent: {{N}}{{total_rent_payable_per_annum|floatformat:2}}</p>
+                                <p class="card-text">Sell-Out Capacity: {{sellout_capacity|floatformat:0}}</p>
+                                <p class="card-text">Storage Capacity: {{storage_capacity|floatformat:0}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h5 class="card-title">Rent Status</h5>
+                                <p class="card-text text-success">Rent Paid: {{N}}{{rent_amount_paid|floatformat:2}}</p>
+                                <p class="card-text text-danger">Pending Rent: {{N}}{{rent_amount_unpaid|floatformat:2}}</p>
+                                <p class="card-text">Paid: <span class="text-success">{{quantity_rent.paid}}</span>
+                                    Unpaid: <span class="text-danger">{{quantity_rent.unpaid}}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <table class="table">
+                            <caption>Rent Position</caption>
+                            <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Store</th>
+                                <th scope="col">Expiry date</th>
+                                <th scope="col">Time left</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for store in stores %}
+                                <tr>
+                                <th scope="row">{{store.id}}</th>
+                                <td>{{store.name}}</td>
+                                <td>{{store.expiry_date}}</td>
+                                   {% if store.expiry_date > today %}
+                                <td>{{store.expiry_date|timeuntil}}</td>
+                                    {% else %}
+                                <td class="text-danger">Rent is due</td>
+                                    {% endif %}
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <table class="table">
+                            <caption>Owned</caption>
+                            <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">Store</th>
+                                <th scope="col">Value</th>
+                                <th scope="col">Due Date</th>
+                                <th scope="col">Review</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for property in properties %}
+                                <tr>
+                                <th scope="row">{{property.id}}</th>
+                                <td><{{property.name}}</td>
+                                <td>{{property.rent_amount}}</td>
+                                <td>{{property.expiry_date}}</td>
+                                   {% if property.expiry_date <= today %}
+                                <td>{{property.expiry_date|timeuntil}}</td>
+                                    {% else %}
+                                <td class="text-danger">Due for Review</td>
+                                    {% endif %}
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content%}

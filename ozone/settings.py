@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'stock.apps.StockConfig',
     'mails.apps.MailsConfig',
     'delivery.apps.DeliveryConfig',
+    'warehouse.apps.WarehouseConfig',
 ]
 
 MIDDLEWARE = [

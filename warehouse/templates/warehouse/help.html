@@ -1,0 +1,77 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="section mr-2">
+    <div class="row mt-3">
+        <div class="col-3 bg-dark">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab"
+                   aria-controls="v-pills-home" aria-selected="true">Home</a>
+                <a class="nav-link" id="v-pills-update-tab" data-toggle="pill" href="#v-pills-update" role="tab"
+                   aria-controls="v-pills-update" aria-selected="false">Update</a>
+<!--                <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab"-->
+<!--                   aria-controls="v-pills-messages" aria-selected="false">Messages</a>-->
+<!--                <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab"-->
+<!--                   aria-controls="v-pills-settings" aria-selected="false">Settings</a>-->
+                <a class="nav-link" href="{% url 'warehouse-home' %}">
+                    <i class="fa fa-reply text-warning"></i> Back</a>
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel"
+                     aria-labelledby="v-pills-home-tab">
+                    <div class="row">
+                        <div class="col">
+                            <h3>Introduction</h3>
+                            <p>
+                                Our business is not run from one location but multiple locations and with many stores.
+                                They are of different sizes and types. Some are small lock-up shops and yet
+                                some are of warehouse size, we also use them as either sellout points or for
+                                storage (warehousing). These properties are retained because of the rents we pay on
+                                each of them except for some that we own.
+                            </p>
+                            <p>
+                                For proper accountability and effect management of these properties, we have decided to
+                                integrate them into the SCusH app for administrative purposes. Our aim is to
+                                <ul>
+                                    <li>Keep inventory of these properties</li>
+                                    <li>Be alerted when rent is due</li>
+                                    <li>To differentiate what we own and what we pay rent on</li>
+                                    <li>To store the value of the properties we own</li>
+                                    <li>To be able to evaluate monthly and annually what it cost the company to
+                                        maintain these properties</li>
+                                </ul>
+                            </p>
+                            <p>
+
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="v-pills-update" role="tabpanel" aria-labelledby="v-pills-update-tab">
+                    <div class="row">
+                        <div class="col">
+                            <p>To update a store, from the Stores Home Page and by the sidebar,</p>
+                            <ul>
+                                <li>Click All and you will see stores table with name column</li>
+                                <li>Click the name link of the particular store of interest</li>
+                                <li>By the sidebar, click Update</li>
+                                <li>Make the adequate changes on the populated form and click
+                                    submit to apply the changes or return to cancel</li>
+                            </ul>
+                            <small class="text-danger">Note: The submit button is at the bottom of the page</small>
+                        </div>
+                    </div>
+                </div>
+<!--                <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">-->
+<!--                    ...-->
+<!--                </div>-->
+<!--                <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">-->
+<!--                    ...-->
+<!--                </div>-->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content%}

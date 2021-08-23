@@ -20,8 +20,7 @@ class Employee(models.Model):
                    ('Leave', 'Leave'),
                    ('Training', 'Training'),
                    ('Suspension', 'Suspension'),
-                   ('Terminated', 'Terminated')
-                   ]
+                   ('Terminated', 'Terminated')]
     BANKS = [('UBA', 'UBA'),
              ('GTB', "GTB"),
              ('FCMB', "FCMB"),

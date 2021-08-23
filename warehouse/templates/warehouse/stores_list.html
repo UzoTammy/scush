@@ -1,0 +1,55 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="row m-2">
+    <div class="col-sm-12">
+        <table data-search="true"
+                   data-pagination="true"
+                   data-toggle="table"
+                   class="table caption-top table-bordered table-sm">
+                <caption>
+                    <div class="row">
+                        <div class="col text-center">
+                            All Stores
+                        </div>
+                    </div>
+                </caption>
+                <thead class="bg-dark text-white">
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Used As</th>
+                    <th scope="col">Owner</th>
+                    <th scope="col">Contact</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Rent per Annum</th>
+                    <th scope="col">Expiry Date</th>
+                    <th scope="col">Capacity</th>
+                    <th scope="col">Status</th>
+                </tr>
+                </thead>
+                <tbody>
+            {% for store in stores %}
+                <tr>
+                    <th scope="row"><a href="{% url 'warehouse-detail' store.pk %}">{{store.name}}</a></th>
+                    <td>{{store.store_type}}</td>
+                    <td>{{store.usage}}</td>
+                    <td>{{store.owner}}</td>
+                    <td>{{store.contact}}</td>
+                    <th>{{store.address}}</th>
+                    <th>{{store.rent_amount}}</th>
+                    <th>{{store.expiry_date}}</th>
+                    <th>{{store.capacity}}</th>
+                    <th>{{store.status|yesno:'Paid, Not Paid'}}</th>
+                </tr>
+            {% endfor %}
+                </tbody>
+            </table>
+        <div class="row float-right">
+        <div class="col">
+            <a type="button" class="btn btn-outline-dark" href="{% url 'warehouse-home' %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+    </div>
+</div>
+{% endblock %}

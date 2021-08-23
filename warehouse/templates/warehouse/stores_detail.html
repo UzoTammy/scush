@@ -1,0 +1,145 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="section">
+    <div class="row">
+<!--        side menu-->
+        <div class="col-2 bg-dark">
+            <p class="m-2 text-white">
+                <i class="fa fa-minus text-warning"></i>
+                Action
+            </p>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       data-toggle="modal"
+                       data-target="#payModal"
+                       href="#">
+                        Renew
+                    </a>
+                </li>
+            </ul>
+            <p class="m-2 text-white">
+                <i class="fa fa-minus text-warning"></i>
+                Basic
+            </p>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'warehouse-update' object.pk %}">
+                        Update
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Disable
+                    </a>
+                </li>
+            </ul>
+            <p class="m-2 text-white">
+                <i class="fa fa-minus text-warning"></i>
+                End
+            </p>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'warehouse-list-all' %}">
+                        <i class="fa fa-reply text-warning"></i> Back
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!--        -->
+        <div class="col-8">
+        <div class="container mt-2">
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-center">{{object.name}} {{object.store_type}}</h3>
+                    <ul class="list-group">
+                        <li class="list-group-item">Store: {{object.name}}</li>
+                        <li class="list-group-item">Type: {{object.store_type}}</li>
+                        <li class="list-group-item">Used As: {{object.usage}}</li>
+                        <li class="list-group-item">Owner: {{object.owner}}</li>
+                        <li class="list-group-item">Address: {{object.address}}</li>
+                        <li class="list-group-item">Contact: {{object.contact}}</li>
+                        <li class="list-group-item">Rent per annum: {{object.rent_amount}}</li>
+                        <li class="list-group-item">Capacity: {{object.capacity}}</li>
+                        <li class="list-group-item">Expiry Date: {{object.expiry_date}}</li>
+                        <li class="list-group-item">Status: {{object.status|yesno:'Paid, Not paid'}}</li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!--Modal-->
+<div class="section">
+<!--    Rent Renewal-->
+    <div class="modal fade"
+         id="payModal"
+         tabindex="-1"
+         aria-labelledby="payModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title" id="payModalLabel">
+                    Rent Renewal
+                </h5>
+                <button type="button"
+                        class="close"
+                        data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times text-danger"></i></span>
+                </button>
+            </div>
+                <form action="{% url 'warehouse-pay-rent' object.pk %}" method="post">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <p>The Store: {{object}} {{object.store_type}}</p>
+                        <p>Current Annual Rent: {{object.rent_amount}}</p>
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="period">Period</label>
+                                    <select class="form-control"
+                                            name="period"
+                                            id="period">
+                                        {% for i in range %}
+                                            <option value="{{i}}">{{i}}</option>
+                                        {% endfor %}
+                                    </select>
+                        </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                            <label for="unit">Unit</label>
+                            <select class="form-control"
+                                    name="unit"
+                                   id="unit">
+                                <option value="Year">Year</option>
+                                <option value="Month">Month</option>
+                            </select>
+                        </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit"
+                                class="btn btn-outline-primary">
+                            Renew
+                        </button>
+                        <button type="button"
+                                data-dismiss="modal"
+                                class="btn btn-outline-secondary">
+                            Close
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

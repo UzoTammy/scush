@@ -24,14 +24,17 @@ import calendar
 import datetime
 import itertools
 from django.contrib import messages
-from django.utils import timezone
-from django.contrib.auth.admin import Group
 from django.core.mail import send_mail, mail_admins, mail_managers
 from django.core.validators import ValidationError
 from .form import DebitForm, CreditForm
 from django.template import loader
-from django.db.models import F, Sum, Avg, Max, Min, DateField, ExpressionWrapper
-
+from django.db.models import (F,
+                              Sum,
+                              Avg,
+                              Max,
+                              Min,
+                              DateField,
+                              ExpressionWrapper)
 
 
 class Salary:
@@ -126,6 +129,7 @@ happiness of our staff is important, that is what we expect them to transfer to 
 
     def get(self, request):
         data = dict()
+        recordset = list()
         queryset = Employee.active.all()
         if queryset:
             for obj in queryset:
@@ -135,7 +139,7 @@ happiness of our staff is important, that is what we expect them to transfer to 
 
         if Reassign:
             qs_reassign = Reassign.objects.filter(reassign_type='A')
-            recordset = list()
+
             for record in qs_reassign:
                 start_date = record.start_date
                 duration = record.duration
