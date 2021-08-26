@@ -1,6 +1,7 @@
 from django.shortcuts import render, reverse
 from django.urls import reverse_lazy
 from .models import CustomerProfile
+from staff.models import Employee
 from users.models import Profile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import (CreateView,
@@ -131,10 +132,18 @@ def generate_token():
 
 
 def company(request):
+    md = Employee.active.filter(position='MD')
+    gsm = Employee.active.filter(position='GSM')
+    scm = Employee.active.filter(position='SCM')
+    hrm = Employee.active.filter(position='HRM')
+    acct = Employee.active.filter(position='Accountant')
+    mrk = Employee.active.filter(position='Marketing Manager')
+    lyst = Employee.active.filter(position='Analyst')
+
+
     context = {
         'company': company,
-        'members': Profile.objects.all().exclude(id=1),
-        'leader': Profile.objects.get(id=1)
+        'members': md.union(gsm, scm, hrm, acct, mrk, lyst),
     }
     return render(request, 'customer/company.html', context)
 

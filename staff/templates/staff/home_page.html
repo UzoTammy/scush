@@ -52,15 +52,19 @@
         <div class="col-3 bg-light">
             <ul class="list-group list-group-flush">
             <!--Employee-->
-          <li class="list-group-item"><div class="row mb-1">
-                        <a class="ml-1" href="{% url 'staff-list' %}">
-                            Employee
-                        </a>
-                    </div></li>
+          <li class="list-group-item">
+              <div class="row mb-1">
+                <a class="ml-1" href="{% url 'staff-list' %}">
+                    Employee
+                </a>
+                </div>
+          </li>
             <!--Payroll-->
-          <li class="list-group-item"><div class="row mb-1">
-                        <a class="ml-1" href="{% url 'salary' %}">Payroll</a>
-                    </div></li>
+          <li class="list-group-item">
+              <div class="row mb-1">
+                <a class="ml-1" href="{% url 'salary' %}">Payroll</a>
+              </div>
+          </li>
             <!--Policies-->
           <li class="list-group-item"><div class="row mb-1">
                         <a class="ml-1" href="{% url 'staff-policies' %}">Policies</a>
@@ -73,6 +77,10 @@
           <li class="list-group-item"><div class="row mb-1">
                         <a class="ml-1" href="{% url 'staff-scush' %}">Progress with SCUSH</a>
                     </div></li>
+<!--                Return Home-->
+            <li class="list-group-item">
+                <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
+            </li>
         </ul>
         </div>
     <!--   Body of Page     -->

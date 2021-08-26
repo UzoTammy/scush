@@ -5,7 +5,7 @@ from django.views.generic import (View, TemplateView, ListView, CreateView, Upda
 from .models import Stores, Renewal
 from .form import StoreForm
 from django.db.models import Sum
-from django.shortcuts import render, reverse, redirect
+from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 

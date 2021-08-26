@@ -9,9 +9,9 @@
             <h3>Staff Photo View Page - ({{page_obj.paginator.count}})</h3>
         </div>
     </div>
-    <div class="row bg-dark ">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 bg-dark ">
         {% for object in object_list %}
-        <div class="col-md-3 p-2 d-flex justify-content-sm-center">
+        <div class="col-md-3 p-2 d-flex justify-content-center">
             <div class="card" style="width: 14rem;">
                 <img src={{object.image.url}}
                      class="card-img-top img-thumbnail mx-auto d-block"
