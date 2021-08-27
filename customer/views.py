@@ -103,34 +103,6 @@ def generate_token():
     return secrets.token_hex(4)
 
 
-# with open(os.path.join(settings.BASE_DIR, 'customer/static/customer/company.json'), 'r') as rf:
-#     comp = json.load(rf)
-
-# comp['Core Values'] = comp.get('Core Values').split(',')
-
-
-# def index(request):
-
-    # context = {
-    #     'company': comp,
-    # }
-    # return render(request, 'customer/index.html', context)
-
-
-# def home(request):
-#     the_path = 'customer/static/customer/secret.json'
-#     with open(os.path.join(settings.BASE_DIR, the_path), 'r') as rf:
-#         data = json.load(rf)
-#         token = data[0]['token']
-#     context = {
-#         'title': 'Home',
-#         'company': company,
-#         'token': token,
-#         'toke_url': (token,),
-#     }
-#     return render(request, 'customer/home.html', context)
-
-
 def company(request):
     md = Employee.active.filter(position='MD')
     gsm = Employee.active.filter(position='GSM')
@@ -183,6 +155,10 @@ class HomeView(TemplateView):
 
 class IndexView(TemplateView):
     template_name = 'customer/index.html'
+
+
+class CustomerHomeView(TemplateView):
+    template_name = 'customer/customer_home.html'
 
 
 class CustomerListView(LoginRequiredMixin, ListView):
@@ -254,19 +230,10 @@ class CustomerUpdateView(LoginRequiredMixin, UpdateView):
 
 class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = CustomerProfile
-    success_url = reverse_lazy('customer-list')  # '/','/index/'
+    success_url = reverse_lazy('customer-list-all')  # '/','/index/'
 
     def test_func(self):
         # customer = self.get_object()
         if self.request.user.is_superuser:
             return True
         return False
-
-
-# class CSVToModel(CreateView):
-#     model = CustomerProfile
-#     fields = '__all__'
-#
-#     def form_invalid(self, form):
-#         # form.instance.xx = self.
-#         return super().form_invalid(form)

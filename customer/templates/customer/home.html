@@ -104,13 +104,7 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col shadow-lg">
-            <a href="#"
-               data-target="#mailModal"
-               data-toggle="modal">send mail</a>
-        </div>
-    </div>
+
     <!--    Social Media and key partners-->
     <div class="row mt-4 ml-2">
         <div class="col-4">
@@ -126,11 +120,11 @@
                     <img src="{% static 'customer/photo/NB.jpeg'%}"
                          style="width:100px"
                          alt=""></a>
-                <a href="#"><img src="{% static 'customer/photo/GN.png'%}"
+                <a href="#">
+                    <img src="{% static 'customer/photo/GN.png'%}"
                                  style="width:50px"
                                  alt=""
-                                 class="rounded-circle"
-                >
+                                 class="rounded-circle">
                 </a>
                 <a href="#"><img src="{% static 'customer/photo/AB.jpeg'%}"
                                  style="width:120px"
@@ -149,132 +143,6 @@
     </div>
 </div>
 
-<!--    Modals-->
-<!--Mail modal-->
-<div class="modal fade"
-     id="mailModal"
-     tabindex="-1"
-     aria-labelledby="mailModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"
-            id="mailModalLabel">
-            Special Mails
-        </h5>
-        <button
-                type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close"></i>
-        </button>
-      </div>
-        <form action="{% url 'mail' %}" method="GET">
-            {% csrf_token %}
-            <div class="modal-body">
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="radioMail"
-                           value="1"
-                           id="flexRadioDefault1" checked>
-                    <label class="form-check-label"
-                           for="flexRadioDefault1">
-                        First
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="radioMail"
-                           value="2"
-                           id="flexRadioDefault2">
-                    <label class="form-check-label"
-                           for="flexRadioDefault2">
-                        Second
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="radioMail"
-                           value="3"
-                           id="flexRadioDefault3">
-                    <label class="form-check-label"
-                           for="flexRadioDefault3">
-                        Third
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="radioMail"
-                           value="4"
-                           id="flexRadioDefault4">
-                    <label class="form-check-label"
-                           for="flexRadioDefault4">
-                        Fourth
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="radioMail"
-                           value="5"
-                           id="flexRadioDefault5">
-                    <label class="form-check-label"
-                           for="flexRadioDefault5">
-                        Fifth
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="radioMail"
-                           value="6"
-                           id="flexRadioDefault6">
-                    <label class="form-check-label"
-                           for="flexRadioDefault6">
-                        Sixth
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="radioMail"
-                           value="7"
-                           id="flexRadioDefault7">
-                    <label class="form-check-label"
-                           for="flexRadioDefault7">
-                        Seventh
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input"
-                           type="radio"
-                           name="radioMail"
-                           value="8"
-                           id="flexRadioDefault8">
-                    <label class="form-check-label"
-                           for="flexRadioDefault8">
-                        Eighth
-                    </label>
-                </div>
-            </div>
-            <div class="modal-footer">
-<!--                <a href="{% url 'mail' %}" class="btn btn-primary">OK</a>-->
-                <button class="btn btn-primary" type="submit">OK</button>
-                <button type="button"
-                        class="btn btn-secondary"
-                        data-dismiss="modal">Close
-                </button>
-            </div>
-        </form>
-    </div>
-  </div>
-</div>
 
 <!--Register-->
 <div class="modal fade"

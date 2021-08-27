@@ -1,0 +1,41 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container-fluid mr-2">
+    <div class="row">
+<!--        side menu-->
+        <div class="col-2 bg-dark">
+            <ul class="nav flex-column">
+                <li class="nav-item mt-3">
+                    <a class="nav-link"
+                       href="{% url 'customer-list-all' %}">
+                        <i class="fa fa-eye-slash text-warning"></i> All
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'customer-create' %}">
+                        <i class="fa fa-plus text-warning"></i> Add
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'warehouse-help' %}">
+                        <i class="fa fa-question text-warning"></i> Help
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">
+                        <i class="fa fa-reply text-warning"></i> Home
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+{% endblock content%}

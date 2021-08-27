@@ -35,17 +35,36 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         if self.queryset.exists():
-            context['properties'] = Stores.active.filter(owner='Self')
             context['N'] = chr(8358)
             context['today'] = datetime.date.today()
+
+            context['owned_properties'] = Stores.active.filter(owner='Self')
+
+            context['total_rent_payable_per_annum'] = self.queryset.aggregate(total=Sum('rent_amount'))['total']
+            context['total_capacity'] = Stores.active.aggregate(total=Sum('capacity'))['total']
+            context['rented_capacity'] = self.queryset.aggregate(total=Sum('capacity'))['total']
+            context['owned_capacity'] = context['total_capacity'] - context['rented_capacity']
+
             context['store_types'] = (i[0] for i in Stores.TYPES)
             context['usage'] = (i[0] for i in Stores.USAGE)
-            context['total_rent_payable_per_annum'] = self.queryset.aggregate(total=Sum('rent_amount'))['total']
-            context['sellout_capacity'] = self.queryset.filter(usage='Sell-out').aggregate(total_sellout=Sum('capacity'))['total_sellout']
-            context['storage_capacity'] = self.queryset.filter(usage='Storage').aggregate(total_storage=Sum('capacity'))['total_storage']
             context['rent_amount_paid'] = self.queryset.filter(status=True).aggregate(total_paid=Sum('rent_amount'))['total_paid']
             context['rent_amount_unpaid'] = self.queryset.filter(status=False).aggregate(total_unpaid=Sum('rent_amount'))['total_unpaid']
             context['quantity_rent'] = {'paid': self.queryset.filter(status=True).count(), 'unpaid': self.queryset.filter(status=False).count()}
+
+            qs = Stores.active.all()
+            qs_total = qs.aggregate(total=Sum('rent_amount'))['total']
+            qsu = qs.filter(usage='Storage') | qs.filter(usage='Sell-out')
+            context['rent'] = {'office': qs.filter(usage='Office').aggregate(total=Sum('rent_amount'))['total'],
+                               'apartment': qs.filter(usage='Apartment').aggregate(total=Sum('rent_amount'))['total'],
+                               'storage': qsu.aggregate(total=Sum('rent_amount'))['total'],
+                               }
+            office = 0 if context['rent']['office'] is None else 100*context['rent']['office']/qs_total
+            apartment = 0 if context['rent']['apartment'] is None else 100*context['rent']['apartment']/qs_total
+            storage = 0 if context['rent']['storage'] is None else 100 * context['rent']['storage'] / qs_total
+            context['rent_percentage'] = {'office': office,
+                                          'apartment': apartment,
+                                          'storage': storage,
+                                          }
             context['stores'] = self.queryset.order_by('expiry_date')
         return context
 
@@ -160,6 +179,7 @@ class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             date = datetime.date(year, num, date.day)
 
         qs.expiry_date = date
+        qs.status = True
         qs.save()
 
         # This session is to create renewal database
@@ -168,6 +188,7 @@ class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                         amount_paid=qs.rent_amount*factor,
                         expiry_date=date)
         renew.save()
+
 
         # the message
         messages.success(request, f'Rent renewal saved successfully !!!')
