@@ -107,7 +107,8 @@ happiness of our staff is important, that is what we expect them to transfer to 
     We cherish and count on your engagement as we continue to spend time together working as a team. 
 """
 
-    def confirm_staff(self):
+    @staticmethod
+    def confirm_staff():
         staff_on_probation = list()
         """get all employees"""
         employees = Employee.active.all()
@@ -125,12 +126,12 @@ happiness of our staff is important, that is what we expect them to transfer to 
                                                'name': employee.fullname(),
                                                'date': today + datetime.timedelta(90-days_worked)}
                                               )
-        return staff_on_probation
+        return sorted(staff_on_probation, key=lambda arg: arg['date'])
 
     def get(self, request):
-        data = dict()
-        recordset = list()
+        data, recordset = dict(), list()
         queryset = Employee.active.all()
+
         if queryset:
             for obj in queryset:
                 countdown = mytools.DatePeriod.countdown(obj.staff.birth_date.strftime('%d-%m-%Y'), 10)
@@ -157,20 +158,22 @@ happiness of our staff is important, that is what we expect them to transfer to 
                     recordset.append(reassign_data)
 
         context = {
+            'countdown': sorted(data.items(), key=lambda x: x[1]),
             'title': 'Staff Home',
-            'header': 'Staff Home Page',
             'message_one': self.messages_one,
             'workforce': queryset.count(),
             'male': queryset.filter(staff__gender='MALE').count(),
             'female': queryset.filter(staff__gender='FEMALE').count(),
             'married': queryset.filter(staff__marital_status='MARRIED').count(),
             'single': queryset.filter(staff__marital_status='SINGLE').count(),
-            'countdown': sorted(data.items(), key=lambda x: x[-1]),
+
             'message_two': self.messages_two,
+
             'management': queryset.filter(is_management=True).count(),
             'non_management': queryset.exclude(is_management=True).count(),
             'terminated': Employee.objects.filter(status=False).count(),
             'probation': queryset.filter(is_confirmed=False).count(),
+
             'staff_on_probation': self.confirm_staff(),
             'reassign_data': recordset,
             'today': datetime.date.today(),
@@ -276,9 +279,8 @@ class StaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 
 class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = Employee
+    queryset = Employee.active.all()
     ordering = '-pk'
-    queryset = model.active.all()
     template_name = 'staff/employee_list_private.html'
 
     def test_func(self):
@@ -289,9 +291,7 @@ class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-
         """requires if data exist for query"""
-
         if self.queryset:
             workforce = self.get_queryset().count()
             basic_salary_payable = self.get_queryset().aggregate(bs=Sum('basic_salary'))
@@ -477,25 +477,27 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        today = datetime.date.today()
 
         if Payroll.objects.exists():
             context['messenger'] = f"Number of Records in Payroll: {Payroll.objects.count()}"
             last = Payroll.objects.all().last()
             context['last_period_generated'] = last.period
+
+            year = today.year
+            month = today.month
+            last_month = mytools.Month.last_month()
+            next_month = mytools.Month.next_month()
+            context['last_month'] = datetime.date(year, last_month, calendar.mdays[last_month]).strftime('%B')
+            context['this_month'] = today.strftime('%B')
+            context['next_month'] = datetime.date(year, next_month, calendar.mdays[next_month]).strftime('%B')
+            context['last_period'] = f"{year}-{str(month - 1).zfill(2)}"
+            context['current_period'] = f"{year}-{str(month).zfill(2)}"
+            context['next_period'] = f"{year}-{str(month + 1).zfill(2)}"
+
         else:
             context['messenger'] = 'No Record in Payroll Database'
 
-        today = datetime.date.today()
-        year = today.year
-        month = today.month
-        last_month = mytools.Month.last_month()
-        next_month = mytools.Month.next_month()
-        context['last_month'] = datetime.date(year, last_month, calendar.mdays[last_month]).strftime('%B')
-        context['this_month'] = today.strftime('%B')
-        context['next_month'] = datetime.date(year, next_month, calendar.mdays[next_month]).strftime('%B')
-        context['last_period'] = f"{year}-{str(month-1).zfill(2)}"
-        context['current_period'] = f"{year}-{str(month).zfill(2)}"
-        context['next_period'] = f"{year}-{str(month+1).zfill(2)}"
 
         if Payroll.objects.exists():
             """If payroll record exist, then get the last record's period and convert to integer"""
@@ -876,9 +878,8 @@ class RegeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
 
 class SalaryPayment(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = Payroll
+    queryset = Payroll.objects.filter(status=False)
     template_name = 'staff/payroll/start_pay.html'
-    object_list = model.objects.filter(status=False)
 
     def test_func(self):
         day = datetime.date.today().day
@@ -891,30 +892,28 @@ class SalaryPayment(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         """Go into the queryset, pick all the periods existing for unpaid staff"""
         periods = []
-        for i in self.object_list:
+        for i in self.get_queryset():
             if i.period not in periods:
                 periods.append(i.period)
-        context['periods'] = sorted(periods)
+        context['periods'] = sorted(periods, reverse=True)
+        period = context['periods'][0]
+        context['period'] = period
+        j = period.split('-')
+        context['date_period'] = f"{mytools.Period.full_months[str(j[1]).zfill(2)]}, {j[0]}"
+        context['object'] = self.get_queryset().filter(period=period)
         return context
 
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        period = context['periods'][-1]
-        context['period'] = period
-        context['object'] = self.object_list.filter(period=period)
-        return render(request, self.template_name, context)
-
     def post(self, request, **kwargs):
-        context = self.get_context_data(**kwargs)
-        period = tuple(value for value in request.POST.items())
-        period = period[-1][0]
-        objects = self.object_list.filter(period=period)
+        context = self.get_context_data(object_list='payroll_list', **kwargs)
+        period = tuple(value for value in request.POST.items())[-1][0]
+        objects = self.get_queryset().filter(period=period)
         context['object'] = objects
         context['period'] = period
-        return render(request, self.template_name, context)
+        j = period.split('-')
+        context['date_period'] = f"{mytools.Period.full_months[str(j[1]).zfill(2)]}, {j[0]}"
+        return render(request, self.template_name, context=context)
 
 
 class Payslip(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -1212,3 +1211,37 @@ class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return render(request, 'staff/payroll/payroll_summary.html', context)
 
 
+class PKResetView(TemplateView):
+    template_name = 'staff/pk_reset.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'PK Reset'
+        context['codes'] = Payroll.objects.values_list('id').order_by('id'),
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+
+        if Payroll.objects.exists():
+            payroll = Payroll.objects.all()
+            num = range(1, payroll.count()+1)
+            status = 'OK' if list(num) == list(i.id for i in payroll) else 'NOK'
+
+            context['rows'] = {'table': 'Payroll',
+                               'status': status}
+        return render(request, self.template_name, context=context)
+
+
+class PKResetPayroll(View):
+
+    def get(self, request):
+        # if Payroll.objects.exists():
+        #     payroll = Payroll.objects.all()
+        #     num = range(1, payroll.count() + 1)
+
+        # for x, y in zip(num, payroll):
+        #     if x != y.id:
+        #         payroll.filter(pk=y.id).update(id=x)
+        messages.success(request, 'Congrats')
+        return HttpResponseRedirect(reverse('pk-reset'))

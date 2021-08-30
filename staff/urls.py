@@ -1,34 +1,6 @@
 from django.urls import path
 from . import views
 from .views import *
-# from .views import (StaffScushView,
-#                     StaffPoliciesView,
-#                     StaffMainPageView,
-#                     StaffListView,
-#                     StaffDetailView,
-#                     StaffCreateView,
-#                     StaffUpdateView,
-#                     StaffTerminate,
-#                     CreditNoteListView,
-#                     CreditNoteCreateView,
-#                     DebitNoteListView,
-#                     DebitNoteCreateView,
-#                     StartGeneratePayroll,
-#                     PayrollViews,
-#                     GeneratePayroll,
-#                     RegeneratePayroll,
-#                     RegeneratedPayroll,
-#                     SalaryPayment,
-#                     Payslip,
-#                     PayrollStatement,
-#                     StaffListPrivateView,
-#                     StaffListPicturesView,
-#                     StaffReassign,
-#                     StaffSuspend,
-#                     StaffPermit,
-#                     StaffSalaryChange,
-#                     PayrollSummaryView,
-#                     )
 
 urlpatterns = [
     path('home/', StaffMainPageView.as_view(), name='staff-home'),
@@ -46,6 +18,8 @@ urlpatterns = [
     path('permit/<int:pk>/', StaffPermit.as_view(), name='employee-permit'),
     path('salary-change/<int:pk>/', StaffSalaryChange.as_view(), name='employee-salary-change'),
     path('home/<str:staff_category>/', StaffViews.as_view(), name='terminated'),
+    path('pk-reset/', PKResetView.as_view(), name='pk-reset'),
+    path('pk-reset/payroll/', PKResetPayroll.as_view(), name='pk-reset-payroll'),
     ]
 
 urlpatterns += [
@@ -61,5 +35,5 @@ urlpatterns += [
     path('payroll/start-pay/', SalaryPayment.as_view(), name='start-pay'),
     path('payroll/pay-salary/<int:pk>/', Payslip.as_view(), name='pay-salary'),
     path('payroll/<int:pk>/statement/', PayrollStatement.as_view(), name='payroll-statement'),
-    path('payroll/summary/<str:summary_period>/', PayrollSummaryView.as_view(), name='payroll-summary')
+    path('payroll/summary/<str:summary_period>/', PayrollSummaryView.as_view(), name='payroll-summary'),
 ]

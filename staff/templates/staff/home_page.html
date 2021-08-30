@@ -5,6 +5,7 @@
 
 {% block content %}
 <div class="container">
+    {{codes}}
     <div class="row p-2">
         <div class="col">
             {% for key, value in countdown %}
@@ -45,7 +46,7 @@
     <div class="p-3">
         <div class="row">
             <div class="col text-center">
-                <h3>{{header}}</h3>
+                <h3>Staff Home Page</h3>
             </div>
         </div>
         <div class="row">
@@ -85,6 +86,7 @@
         </div>
     <!--   Body of Page     -->
         <div class="col-9" style="font-family: Times New Roman; font-size: 12pt">
+            {{payroll_list}}
             <p>{{message_one}}</p>
         <!--Workforce basic characteristics -->
             <div class="container mb-3">
@@ -123,6 +125,7 @@
                     </div>
                 </div>
             </div>
+<!--            Probation Tables-->
             <div class="row">
                 <div class="col-sm-6 text-center">
                     <table class="table">

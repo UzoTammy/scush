@@ -7,25 +7,25 @@
 <div class="container mt-3">
     <div class="row">
         <div class="col">
-            <h3 class="text-danger">Regenerate Payroll</h3>
-            <h5>Periods that can be regenerated</h5>
+            <h3 class="text-center">Regenerate Payroll</h3>
+            <h5 class="text-danger">Periods that can be regenerated</h5>
         </div>
     </div>
-    <form action="#" method="post">
+        <form action="#" method="post">
         {% csrf_token %}
-        <div class="row">
+        <div class="row d-flex justify-content-center row-cols-1 row-cols-sm-2 row-cols-md-4">
         {% for str_period, period in periods %}
-            <div class="col-sm-4">
+            <div class="col">
                 <div class="form-group form-inline">
                     <div class="card" style="width: 18rem;">
-                        <div class="card-body">
+                        <div class="card-body text-white bg-dark">
                             <h5 class="card-title">{{str_period}}</h5>
-                            <p class="card-text"></p>
+                            <p class="card-text text-center">
                             <input type="submit"
-                            class="btn btn-sm btn-outline-primary"
+                            class="btn btn-sm btn-outline-warning"
                             id="{{str_period}}"
                             name="period"
-                            value="{{period}}">
+                            value="{{period}}"></p>
                         </div>
                     </div>
                 </div>

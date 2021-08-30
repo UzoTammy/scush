@@ -2,22 +2,16 @@
 
 {% block content %}
 <div class="container">
-    <div class="row mt-3">
-        <div class="col">
-            <a type="button"
-               class="btn btn btn-outline-dark"
-               href="{% url 'payroll-views' payroll_current_period %}">Payroll Views</a>
-        </div>
-        <div class="col">
-            <a type="button"
-               class="btn btn btn-outline-dark"
-               href="{% url 'regenerate-payroll' %}">Regenerate</a>
-        </div>
-    </div>
-    <hr>
     <div class="row">
-        <div class="col">
-            <h3>Generate Payroll</h3>
+        <div class="col mt-3">
+            <h3 class="text-center">Payroll Page</h3>
+            <p>Payroll Process</p>
+            <ul>
+                <li>Generate</li>
+                <li>Regenerate</li>
+                <li>View existing payrolls</li>
+                <li>Pay Salary</li>
+            </ul>
             <p>This process is best carried out between the 25th of the present month and before the end of the month.
                 However there is room to generate immediate past month and the next month.
             </p>
@@ -28,6 +22,27 @@
             <p>Other vital information</p>
         </div>
     </div>
+    <hr>
+    <div class="container">
+        <div class="row">
+        <div class="col">
+            <a type="button"
+               class="btn btn btn-outline-dark"
+               href="{% url 'payroll-views' payroll_current_period %}">Payroll Views</a>
+        </div>
+        <div class="col text-center">
+            <a type="button"
+               class="btn btn btn-outline-success"
+               href="{% url 'start-pay' %}">Pay Salary</a>
+        </div>
+        <div class="col text-right">
+            <a type="button"
+               class="btn btn btn-outline-warning"
+               href="{% url 'regenerate-payroll' %}">Regenerate</a>
+        </div>
+    </div>
+    </div>
+    <hr>
     <div class="row d-flex justify-content-center row-cols-1 row-cols-sm-2 row-cols-md-4">
         <div class="col">
             <a class="btn"
