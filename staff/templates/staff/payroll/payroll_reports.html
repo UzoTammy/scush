@@ -7,12 +7,12 @@
     <div class="container">
         <div class="row mt-3">
             <div class="col">
-                <h3 class="alert alert-success">
+                <h5 class="alert alert-success">
                     Generated Payroll Submitted to Database Successfully
                     <span class="text-danger">
                         !!!
                     </span>
-                </h3>
+                </h5>
                 <h5>
                     <i class="fa fa-warning text-warning"></i>
                      A mail has been sent out for confirmation with the data below.
@@ -25,36 +25,28 @@
             <h5>Payroll Summary</h5>
         </div>
     </div>
-        <div class="row mt-3">
-        <div class="col-6 text-left bg-light ml-2">
-            <hr>
-            <p>Salary: {% money_localize salary 'NGN' %}</p>
-            <hr>
-            <p>Tax: {% money_localize tax 'NGN' %}</p>
-            <hr>
-            <p>Gross Salary: {% money_localize salary_due 'NGN' %}</p>
-            <hr>
-            <p>Balance(B/F): {% money_localize balance 'NGN' %}</p>
-            <hr>
-            <p>Credit: {% money_localize credit 'NGN' %}</p>
-            <hr>
-            <p>Debit: {% money_localize debit 'NGN' %}</p>
-            <hr>
-            <p>Net Pay: {% money_localize net_pay 'NGN' %}</p>
-            <hr>
-            <p>Deductions: {% money_localize deduction 'NGN' %}</p>
-            <hr>
-            <p>Outstanding: {% money_localize outstanding 'NGN' %}</p>
+    <div class="row mt-3">
+        <div class="col">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Salary: {{salary}}</li>
+                <li class="list-group-item">Tax: {{tax}}</li>
+                <li class="list-group-item">Balance: {{balance}}</li>
+                <li class="list-group-item">Credit: {{credit}}</li>
+                <li class="list-group-item">Debit: {{debit}}</li>
+                <li class="list-group-item">Net Pay: {{net_pay}}</li>
+                <li class="list-group-item">Deductions: {{deduction}}</li>
+                <li class="list-group-item">Outstanding: {{outstanding}}</li>
+            </ul>
             <hr>
         </div>
-
     </div>
-        <div class="row mt-3">
+        <div class="row mb-3">
             <div class="col">
-                <a class="btn btn-success" href="{% url 'start-pay' %}">Proceed to Pay</a>
+                <a class="btn btn-outline-success" href="{% url 'start-pay' %}">Proceed to Pay</a>
             </div>
-            <div class="col">
-                <a class="btn btn-danger" href="{% url 'generate-payroll' period %}">Return</a>
+            <div class="cold-flex justify-content-end">
+                <a class="btn btn-outline-dark" href="{% url 'salary' %}">
+                    <i class="fa fa-reply"></i></a>
             </div>
         </div>
     </div>

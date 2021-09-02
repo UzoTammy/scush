@@ -17,11 +17,11 @@
            data-show-columns="true"
            data-show-footer="true"
            class="table table-bordered caption-top table-sm"
-           width="40px" bgcolor="#efe3de">
+           width="40px" bgcolor="#efffff">
                 <caption class="text-secondary">Regenerated Payroll Table for the period {{period}}
                     <span class="text-success float-right">{{the_period}}</span>
                 </caption>
-        <thead class="bg-secondary text-white text-center">
+        <thead class="bg-dark text-white text-center">
             <tr>
               <th scope="col">ID</th>
               <th scope="col">Staff</th>
@@ -31,7 +31,7 @@
               <th scope="col">Balance</th>
               <th scope="col">Credit Amount</th>
               <th scope="col">Debit Amount</th>
-              <th scope="col" class="bg-success">Net Pay</th>
+              <th scope="col">Net Pay</th>
               <th scope="col">Deduction</th>
               <th scope="col">Outstanding</th>
             </tr>
@@ -40,28 +40,33 @@
             {% for record in recordset %}
                 <tr>
                     <th scope="row">{{ record.staff.id|zeropadding:3 }}</th>
-                    <td><a href="#">{{record.staff}}</a></td>
+                    <td>{{record.staff}}</td>
                     <td>{{record.status|yesno:"Paid, Not Paid"}}</td>
-                    <td class="text-right">{{record.staff.salary}}</td>
-                    <td class="text-right">{{record.staff.gross_pay}}</td>
-                    {% if record.staff.balance.amount >= 0 %}
-                    <td class="text-right">{{record.staff.balance}}</td>
+                    <td class="text-right">{{record.staff.salary.amount}}</td>
+                    <td class="text-right">{{record.staff.gross_pay.amount}}</td>
+                    {% if record.balance.amount >= 0 %}
+                    <td class="text-right">{{record.balance.amount}}</td>
                     {% else %}
-                    <td class="text-right text-danger">{{record.staff.balance|abs}}</td>
+                    <td class="text-right text-danger">{{record.balance.amount|abs}}</td>
                     {% endif %}
-                    <td class="text-right">{{record.credit_amount}}</td>
-                    <td class="text-right text-danger">{{record.debit_amount}}</td>
+                    <td class="text-right text-success">{{record.credit_amount.amount}}</td>
+                    <td class="text-right text-danger">{{record.debit_amount.amount}}</td>
                     <td class="bg-success text-white text-right">
-                        <b>{{record.net_pay}}</b></td>
-                    <td class="text-right">{{record.deduction}}</td>
+                        <b>{{record.net_pay.amount}}</b></td>
+                    <td class="text-right">{{record.deduction.amount}}</td>
                     {% if record.outstanding.amount >= 0 %}
-                    <td class="text-right">{{record.outstanding}}</td>
+                    <td class="text-right">{{record.outstanding.amount}}</td>
                     {% else %}
-                    <td class="text-right text-danger">{{record.outstanding|abs}}</td>
+                    <td class="text-right text-danger">{{record.outstanding.amount|abs}}</td>
                     {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
+                <tfoot class="bg-dark">
+                <tr>
+                    <td></td>
+                </tr>
+                </tfoot>
     </table>
         </div>
     </div>

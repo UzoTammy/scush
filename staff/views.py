@@ -23,6 +23,7 @@ from ozone import mytools
 import calendar
 import datetime
 import itertools
+from decimal import Decimal
 from django.contrib import messages
 from django.core.mail import send_mail, mail_admins, mail_managers
 from django.core.validators import ValidationError
@@ -43,40 +44,60 @@ x = amount to pay
 y = gross pay
 a = net pay
 b = deduction
-c = outstanding"""
+c = outstanding
+
+salary_payable is the amount to pay a staff after adding credit and removing debit
+salary_less_tax is the staff's salary less tax
+salary_to_pay is the amount company is willing to pay the staff
+deduction is the amount company is to recover from staff in case of debit
+outstanding is the amount the company is willing to reserve for the staff
+"""
 
     @staticmethod
-    def regime(x, y):
-        if x > 2 * y:
-            """condition 1: Too large that is greater or equals twice
-             gross pay, get more than your salary"""
-            b = Money(0, 'NGN')
-            c = x - 1.5 * y
-            x = 1.5 * y
-        elif y < x <= 2 * y:
-            """condition 2: Large that is between gross pay and twice
-            gross pay, get full salary"""
-            b = Money(0, 'NGN')
-            c = x - y
-            x = y
-        elif 0.5 * y <= x <= y:
+    def regime(salary_payable, salary_less_tax):
+        if salary_payable > 2 * salary_less_tax:
+            """condition 1: if what your earned is greater than twice 
+            your salary pay 150% of salary"""
+            deduction = Money(0, 'NGN')
+            outstanding = salary_payable - 1.5 * salary_less_tax
+            salary_payable = 1.5 * salary_less_tax
+        elif 1.8 * salary_less_tax < salary_payable <= 2 * salary_less_tax:
+            deduction = Money(0, 'NGN')
+            outstanding = salary_payable - 1.4 * salary_less_tax
+            salary_payable = 1.4 * salary_less_tax
+        elif 1.6 * salary_less_tax < salary_payable <= 1.8 * salary_less_tax:
+            deduction = Money(0, 'NGN')
+            outstanding = salary_payable - 1.3 * salary_less_tax
+            salary_payable = 1.3 * salary_less_tax
+        elif 1.4 * salary_less_tax < salary_payable <= 1.6 * salary_less_tax:
+            deduction = Money(0, 'NGN')
+            outstanding = salary_payable - 1.2 * salary_less_tax
+            salary_payable = 1.2 * salary_less_tax
+        elif 1.2 * salary_less_tax < salary_payable <= 1.4 * salary_less_tax:
+            deduction = Money(0, 'NGN')
+            outstanding = salary_payable - 1.1 * salary_less_tax
+            salary_payable = 1.1 * salary_less_tax
+        elif salary_less_tax < salary_payable <= 1.2 * salary_less_tax:
+            deduction = Money(0, 'NGN')
+            outstanding = Money(0, 'NGN')
+        elif 0.5 * salary_less_tax <= salary_payable <= salary_less_tax:
             """condition 3: Small that is between half gross pay and
             gross pay, get amount to pay"""
-            b = y - x
-            c = Money(0, 'NGN')
-        elif Money(0, 'NGN') <= x <= 0.5 * y:
+            deduction = salary_less_tax - salary_payable
+            outstanding = Money(0, 'NGN')
+        elif Money(0, 'NGN') <= salary_payable <= 0.5 * salary_less_tax:
             """condition 4: Too Small that is between zero and half gross
             pay, get less than your gross pay"""
-            b = x
-            c = Money(0, 'NGN')
-            x = y - x
+            deduction = salary_payable
+            outstanding = Money(0, 'NGN')
+            salary_payable = salary_less_tax - salary_payable
         else:
             """condition 5: Too bad that is when amount to pay goes negative,
             cease and deduct gross salary"""
-            b = y
-            c = x
-            x = Money(0, 'NGN')
-        return [x, b, c]
+            deduction = salary_less_tax
+            outstanding = salary_payable
+            salary_payable = Money(0, 'NGN')
+        return [salary_payable, deduction, outstanding]
 
 
 class StaffScushView(TemplateView):
@@ -478,35 +499,32 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         today = datetime.date.today()
+        context['months'] = mytools.Period.full_months
+        context['current_month'] = str(today.month).zfill(2)
+        context['years'] = (str(today.year-1), str(today.year), str(today.year+1))
 
-        if Payroll.objects.exists():
-            context['messenger'] = f"Number of Records in Payroll: {Payroll.objects.count()}"
+        # year = today.year
+        # month = today.month
+        # last_month = mytools.Month.last_month()
+        # next_month = mytools.Month.next_month()
+        # context['last_month'] = datetime.date(year, last_month, calendar.mdays[last_month]).strftime('%B')
+        # context['this_month'] = today.strftime('%B')
+        # context['next_month'] = datetime.date(year, next_month, calendar.mdays[next_month]).strftime('%B')
+        # context['last_period'] = f"{year}-{str(month - 1).zfill(2)}"
+        # context['current_period'] = f"{year}-{str(month).zfill(2)}"
+        # context['next_period'] = f"{year}-{str(month + 1).zfill(2)}"
+
+        payroll = Payroll.objects.all()
+        if payroll.exists():
             last = Payroll.objects.all().last()
             context['last_period_generated'] = last.period
 
-            year = today.year
-            month = today.month
-            last_month = mytools.Month.last_month()
-            next_month = mytools.Month.next_month()
-            context['last_month'] = datetime.date(year, last_month, calendar.mdays[last_month]).strftime('%B')
-            context['this_month'] = today.strftime('%B')
-            context['next_month'] = datetime.date(year, next_month, calendar.mdays[next_month]).strftime('%B')
-            context['last_period'] = f"{year}-{str(month - 1).zfill(2)}"
-            context['current_period'] = f"{year}-{str(month).zfill(2)}"
-            context['next_period'] = f"{year}-{str(month + 1).zfill(2)}"
-
-        else:
-            context['messenger'] = 'No Record in Payroll Database'
-
-
-        if Payroll.objects.exists():
             """If payroll record exist, then get the last record's period and convert to integer"""
-            last_record = Payroll.objects.last()
-            month_in_period = int(last_record.period.split('-')[1])
-            year_in_period = int(last_record.period.split('-')[0])
+            month_in_period = int(last.period.split('-')[1])
+            year_in_period = int(last.period.split('-')[0])
             """Get the last six recent periods into a list object, starting from the period of 
             the last record in payroll"""
-            periods = [last_record.period]
+            periods = [last.period]
             for i in range(3):
                 payroll_periods = mytools.Period(year_in_period, month_in_period - i)
                 periods.append(payroll_periods.previous())
@@ -532,10 +550,13 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
 
             context['recent_months'] = recent_months
             context['payroll_current_period'] = Payroll.objects.last().period
-            return context
+        return context
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
+        if request.GET:
+            period = f"{request.GET['year']}-{request.GET['month']}"
+            return redirect('generate-payroll', period=period)
         return render(request, self.template_name, context=context)
 
 
@@ -613,98 +634,73 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        """This is not clear"""
-        period = context['period']
         employees = Employee.active.all()
-        (credit_amount,
-         debit_amount,
-         net_pay,
-         deduction,
-         outstanding,
-         salary,
-         tax,
-         pay_more) = (list(), list(), list(), list(), list(), list(), list(), list())
 
+        data = list()
         for employee in employees:
-            salary.append(employee.basic_salary+employee.allowance)
-            tax.append(employee.tax_amount)
+            record = dict()
 
             # cr_amount is the aggregate credit amount for a staff
             # yet to be taken
-            obj_credit = CreditNote.objects.filter(period=period)
+            obj_credit = CreditNote.objects.filter(period=kwargs['period'])
             obj_credit = obj_credit.filter(name=employee.id)
-            cr_amount = sum(cr.value for cr in obj_credit)
-            cr_amount = Money(0, 'NGN') if cr_amount == 0 else cr_amount
-            credit_amount.append(cr_amount)
+            cr_amount = obj_credit.aggregate(total=Sum('value'))
+            cr_amount['total'] = Money('0.00', 'NGN') if cr_amount['total'] is None else Money(cr_amount['total'], 'NGN')
 
             # dr_amount is the aggregate debit amount for a staff
             # yet to be taken
-            obj_debit = DebitNote.objects.filter(period=period)
+            obj_debit = DebitNote.objects.filter(period=kwargs['period'])
             obj_debit = obj_debit.filter(name=employee.id)
-            dr_amount = sum(dr.value for dr in obj_debit)
-            dr_amount = Money(0, 'NGN') if dr_amount == 0 else dr_amount
-            debit_amount.append(dr_amount)
+            dr_amount = obj_debit.aggregate(total=Sum('value'))
+            dr_amount['total'] = Money('0.00', 'NGN') if dr_amount['total'] is None else Money(dr_amount['total'], 'NGN')
 
             # the value to use to measure what we decide
-            amount_to_pay = employee.gross_pay() + employee.balance + cr_amount - dr_amount
+            amount_to_pay = employee.gross_pay() + cr_amount['total'] - dr_amount['total']
 
             # implement salary regime function to obtain net pay, deductions
             # and outstanding
             result = Salary.regime(amount_to_pay, employee.gross_pay())
 
-            """For Now, All outstanding is paid to the staff"""
-            result[0] += result[2]
-            result[2] = Money(0, 'NGN')
+            record['code'] = employee.id
+            record['staff'] = employee.fullname()
+            record['salary'] = employee.salary()
+            record['tax'] = employee.tax_amount
+            record['gross_pay'] = employee.gross_pay()
 
-            net_pay.append(result[0])
-            deduction.append(result[1])
-            outstanding.append(result[2])
+            # """Fetch the balance of the employee record and add outstanding to it"""
+            payroll_balance = Payroll.objects.filter(staff=employee.id).exclude(period=kwargs['period']).aggregate(
+                total=Sum('outstanding'))
+            if payroll_balance['total']:
+                balance = employee.balance + Money(payroll_balance['total'], 'NGN')
+            else:
+                balance = employee.balance
 
-            """Get those who can get more than their salary"""
-            if result[2] != Money(0, "NGN"):
-                pay_more.append((employee, result[2]))
+            record['balance'] = balance
+            record['credit'] = cr_amount['total']
+            record['debit'] = dr_amount['total']
+            record['earning'] = result[0]
+            record['deduction'] = result[1]
+            record['outstanding'] = result[2]
+            data.append(record)
 
-        """If more pay is to be considered, code here
-        1. Filter from MorePay model those marked pay more
-        """
-        group = zip(employees,
-                    salary,
-                    tax,
-                    credit_amount,
-                    debit_amount,
-                    net_pay,
-                    deduction,
-                    outstanding)
-        totals = [
-            sum(i.amount for i in salary),
-            sum(i.amount for i in tax),
-            sum(record.balance.amount for record in employees),
-            sum(i.amount for i in credit_amount),
-            sum(i.amount for i in debit_amount),
-            sum(i.amount for i in net_pay),
-            sum(i.amount for i in deduction),
-            sum(i.amount for i in outstanding)
-        ]
-        x = period.split('-')
+        x = kwargs['period'].split('-')
         year = x[0]
         month = datetime.date(int(year), int(x[1]), 1).strftime('%B')
 
-        context = {
-            "payMore": zip(employees, outstanding),
-            "records": group,
-            'period': period,
-            'year': year,
-            'month': month,
-            'salary': totals[0],
-            'tax': totals[1],
-            'salary_due': totals[0] - totals[1],
-            'balance': totals[2],
-            'credit': totals[3],
-            'debit': totals[4],
-            'net_pay': totals[5],
-            'deduction': totals[6],
-            'outstanding': totals[7],
-        }
+        context["naira"] = chr(8358)
+        context["records"] = data
+        context['period'] = kwargs['period']
+        context['year'] = year
+        context['month'] = month
+        context['salary'] = sum(i['salary'] for i in data)
+        context['tax'] = sum(i['tax'] for i in data)
+        context['gross_pay'] = sum(i['gross_pay'] for i in data)
+        context['balance'] = sum(i['balance'] for i in data)
+        context['credit'] = sum(i['credit'] for i in data)
+        context['debit'] = sum(i['debit'] for i in data)
+        context['net_pay'] = sum(i['earning'] for i in data)
+        context['deduction'] = sum(i['deduction'] for i in data)
+        context['outstanding'] = sum(i['outstanding'] for i in data)
         return context
 
     def get(self, request, *args, **kwargs):
@@ -715,6 +711,9 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
         if queryset.exists():
             context['object'] = queryset
+            context['payout'] = queryset.aggregate(total=Sum('net_pay'))['total']
+            context['wages'] = queryset.aggregate(total=Sum('salary'))['total']
+            context['reserve'] = queryset.aggregate(total=Sum('balance'))['total']
             return render(request, 'staff/payroll/recordexists.html', context)
         return render(request, self.template_name, context)
 
@@ -725,20 +724,20 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         """Save to database or throw error if data is unclean"""
         """record context is group"""
         for row in context['records']:
-            staff = Employee.active.get(pk=int(row[0].id))
+            staff = Employee.active.get(pk=row['code'])
             """get the queryset"""
             data = Payroll(period=context['period'],
                            date_paid=datetime.date.today(),
                            staff=staff,
-                           credit_amount=round(row[3], 2),
-                           debit_amount=round(row[4], 2),
-                           net_pay=round(row[5], 2),
-                           deduction=round(row[6], 2),
-                           outstanding=round(row[7], 2),
+                           salary=round(row['salary'], 2),
+                           tax=round(row['tax'], 2),
+                           balance=round(row['balance'], 2),
+                           credit_amount=round(row['credit'], 2),
+                           debit_amount=round(row['debit'], 2),
+                           net_pay=round(row['earning'], 2),
+                           deduction=round(row['deduction'], 2),
+                           outstanding=round(row['outstanding'], 2),
                            status=False,
-                           # added two field as adjusted in model
-                           salary=round(row[1], 2),
-                           tax=round(row[2], 2),
                            )
             try:
                 data.full_clean()
@@ -747,7 +746,7 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 """send mail to admin"""
                 return HttpResponse(f"""Generated data is not clean. 
                 Check the validity of your 
-                data and try again or contact your admin. {err}""")
+                data and try again or contact your admin. {err}.""")
             else:
                 """generated outstanding in Payroll to replace balances in Employee"""
                 staff.balance = data.outstanding
@@ -756,8 +755,7 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
         """Send mail to managers"""
         context.update({'user': request.user})
-        mail_message = loader.render_to_string('staff/payroll/payroll_mail.html',
-                                               context)
+        mail_message = loader.render_to_string('staff/payroll/payroll_mail.html', context)
 
         period = context['period']
         year = period.split('-')[0]
@@ -789,48 +787,56 @@ class RegeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def post(self, request, **kwargs):
         f"""get the records you want to replace with payroll data
         put it in a list of dictionaries
-2. compare the lists, if they are not equal, run the dictionaries 
-and compare"""
+        2. compare the lists, if they are not equal, run the dictionaries 
+        and compare"""
         context = self.get_context_data(**kwargs)
         period = request.POST['period']
 
         """Select again all active employees"""
         employees = Employee.active.all()
+
         for employee in employees:
             # cr_amount is the aggregate credit amount
             obj_credit = CreditNote.objects.filter(period=period)
             obj_credit = obj_credit.filter(name=employee.id)
-            cr_amount = sum(cr.value for cr in obj_credit)
-            cr_amount = Money(0, 'NGN') if cr_amount == 0 else cr_amount
+            cr_amount = obj_credit.aggregate(total=Sum('value'))
+            cr_amount['total'] = Money(0, 'NGN') if cr_amount['total'] is None else Money(cr_amount['total'], 'NGN')
 
             # dr_amount is the aggregate debit amount
             obj_debit = DebitNote.objects.filter(period=period)
             obj_debit = obj_debit.filter(name=employee.id)
-            dr_amount = sum(dr.value for dr in obj_debit)
-            dr_amount = Money(0, 'NGN') if dr_amount == 0 else dr_amount
+            dr_amount = obj_debit.aggregate(total=Sum('value'))
+            dr_amount['total'] = Money(0, 'NGN') if dr_amount['total'] is None else Money(dr_amount['total'], 'NGN')
 
             # the value to use to measure what we decide
-            amount_to_pay = employee.gross_pay() + employee.balance + cr_amount - dr_amount
+            amount_to_pay = employee.gross_pay() + cr_amount['total'] - dr_amount['total']
 
-            # implement salary regime function to obtain net pay, deductions
-            # and outstanding
+            """implement salary regime function to obtain net pay, deductions
+            and outstanding"""
             data = Salary.regime(amount_to_pay, employee.gross_pay())
 
             staff_id = Employee.active.get(pk=employee.id)
             payroll = Payroll.objects.filter(period=period)
+            """Fetch the balance of the employee record and add outstanding to it"""
+            payroll_balance = Payroll.objects.filter(staff=employee.id).exclude(period=period).aggregate(
+                total=Sum('outstanding'))
+            payroll_balance_value = Money(0, 'NGN') if payroll_balance['total'] is None else Money(payroll_balance['total'], 'NGN')
+            balance = employee.balance + payroll_balance_value
+
             staff, created = payroll.update_or_create(period=period,
                                                       staff=staff_id,
                                                       defaults={
                                                           'period': period,
                                                           'staff': staff_id,
-                                                          'credit_amount': cr_amount,
-                                                          'debit_amount': dr_amount,
+                                                          'credit_amount': cr_amount['total'],
+                                                          'debit_amount': dr_amount['total'],
                                                           'net_pay': data[0],
                                                           'deduction': data[1],
                                                           'outstanding': data[2],
-                                                          # added fields
                                                           'salary': staff_id.basic_salary + staff_id.allowance,
                                                           'tax': staff_id.tax_amount,
+                                                          'status': False,
+                                                          'balance': balance,
                                                       })
 
         context['recordset'] = Payroll.objects.filter(period=period)
@@ -892,17 +898,19 @@ class SalaryPayment(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         """Go into the queryset, pick all the periods existing for unpaid staff"""
-        periods = []
-        for i in self.get_queryset():
-            if i.period not in periods:
-                periods.append(i.period)
-        context['periods'] = sorted(periods, reverse=True)
-        period = context['periods'][0]
-        context['period'] = period
-        j = period.split('-')
-        context['date_period'] = f"{mytools.Period.full_months[str(j[1]).zfill(2)]}, {j[0]}"
-        context['object'] = self.get_queryset().filter(period=period)
+        if self.get_queryset().exists():
+            periods = []
+            for i in self.get_queryset():
+                if i.period not in periods:
+                    periods.append(i.period)
+            context['periods'] = sorted(periods, reverse=True)
+            period = context['periods'][0]
+            context['period'] = period
+            j = period.split('-')
+            context['date_period'] = f"{mytools.Period.full_months[str(j[1]).zfill(2)]}, {j[0]}"
+            context['object'] = self.get_queryset().filter(period=period)
         return context
 
     def post(self, request, **kwargs):

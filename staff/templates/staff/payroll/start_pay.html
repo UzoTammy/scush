@@ -4,7 +4,7 @@
 
 
 {% block content %}
-<div class="section mr-2">
+<div class="container-fluid">
     <div class="row">
         <div class="col-2 bg-dark">
             <p class="m-2 text-white">
@@ -14,14 +14,14 @@
             <ul class="nav flex-column nav-pills">
                 <form method="post">{% csrf_token %}
                     {% for period in periods %}
-                        <li class="nav-item">
-                            <a href="" class="nav-link">
-                                <input type="submit"
-                                       class="nav-link bg-dark text-warning"
-                                        name="{{period}}"
-                                        value="{{period}}">
-                            </a>
-                        </li>
+                    <li class="nav-item">
+                        <a href="" class="nav-link">
+                            <input type="submit"
+                                   class="nav-link bg-dark text-warning"
+                                   name="{{period}}"
+                                   value="{{period}}">
+                        </a>
+                    </li>
                     {% endfor %}
                 </form>
             </ul>
@@ -35,74 +35,70 @@
                 </div>
             </div>
             <div class="container-fluid">
-<!--    The table section-->
-    <div class="row">
-        <div class="col">
-            {% if object.count != 0 %}
-            <table data-toggle="table"
-                   data-pagination="true"
-                   data-search="true"
-                   data-show-columns="true"
-                   data-show-footer="true"
-                   class="table table-bordered caption-top table-sm"
-                   width="40px" bgcolor="#ffffff">
-                <caption>Payroll for the Period
-                    <span class="text-danger">{{period}}</span>
-                    <span class="text-danger float-right">{{date_period}}</span>
-                </caption>
-        <thead class="bg-dark text-white text-center">
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">ID</th>
-              <th scope="col">Staff</th>
-              <th scope="col">Balance</th>
-              <th scope="col">Salary Due</th>
-              <th scope="col">Outstanding</th>
-              <th scope="col">Status</th>
+                <!--    The table section-->
+                <div class="row">
+                    <div class="col">
+                        <table data-toggle="table"
+                               data-pagination="true"
+                               data-search="true"
+                               data-show-columns="true"
+                               data-show-footer="true"
+                               class="table table-bordered caption-top table-sm"
+                               width="40px" bgcolor="#ffffff">
+                            <caption>Payroll for the Period
+                                <span class="text-danger">{{period}}</span>
+                                <span class="text-danger float-right">{{date_period}}</span>
+                            </caption>
+                            <thead class="bg-dark text-white text-center">
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Staff</th>
+                                <th scope="col">Balance</th>
+                                <th scope="col">Salary Due</th>
+                                <th scope="col">Outstanding</th>
+                                <th scope="col">Status</th>
 
-            </tr>
-        </thead>
-        <tbody>
-        {% for obj in object %}
-            <tr>
-                <th scope="row">{{ forloop.counter }}</th>
-                <td scope="row">{{obj.staff.pk|zeropadding:3}}</td>
-                <td>{{obj.staff.fullname}}</td>
-                <td class="text-right">{{obj.staff.balance}}</td>
-                <td class="text-right text-success">{{obj.net_pay}}</td>
-                <td class="text-right">{{obj.outstanding}}</td>
-                <td class="text-danger text-center">
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for obj in object %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td scope="row">{{obj.staff.pk|zeropadding:3}}</td>
+                                <td>{{obj.staff.fullname}}</td>
+                                <td class="text-right">{{obj.staff.balance}}</td>
+                                <td class="text-right text-success">{{obj.net_pay}}</td>
+                                <td class="text-right">{{obj.outstanding}}</td>
+                                <td class="text-danger text-center">
+                                    <a type="button"
+                                       href="{% url 'pay-salary' obj.pk %}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Pay
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                            <tfoot>
+                            <tr class="bg-dark text-white">
+                                <td colspan="2" class="text-center">Total</td>
+                                <td colspan="3" class="text-right"></td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="row mt-3 float-right">
+                    <div class="col">
                         <a type="button"
-                               href="{% url 'pay-salary' obj.pk %}"
-                               class="btn btn-sm btn-outline-primary">
-                            Pay
+                           class="btn btn-outline-dark"
+                           href="{% url 'salary' %}">
+                            <i class="fa fa-reply"></i>
                         </a>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-        <tfoot>
-    <tr class="bg-dark text-white">
-        <td colspan="2" class="text-center">Total</td>
-        <td colspan="3" class="text-right"></td>
-    </tr>
-    </tfoot>
-    </table>
-        {% else %}
-        <h5 id="pay">{{period}}: No more Staff to Pay</h5>
-        {% endif %}
-    </div>
-    </div>
-    <div class="row mb-3 float-right">
-        <div class="col">
-            <a type="button"
-                       class="btn btn-outline-dark"
-                       href="{% url 'salary' %}">
-                        <i class="fa fa-reply"></i>
-                    </a>
-        </div>
-    </div>
-</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -3,7 +3,7 @@
 {% load djmoney %}
 
 {% block content %}
-<div class="section mr-2">
+<div class="container-fluid">
     <div class="row">
         <div class="col-2 bg-dark">
             <p class="m-2 text-white">
@@ -13,7 +13,7 @@
             <ul class="nav flex-column">
                 {% for month in periods_months %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'payroll-views' month|first %}">
+                    <a class="nav-link" href="{% url 'payroll-view' month|first %}">
                         {{month|last}}
                     </a>
                 </li>
@@ -36,7 +36,7 @@
                             <ul class="list-group">
                                 {% for mn, month in months.items %}
                                 <li class="list-group-item list-group-item-sm">
-                                    <a href="{% url 'payroll-views' mn|join:yr %}">{{month}}</a>
+                                    <a href="{% url 'payroll-view' mn|join:yr %}">{{month}}</a>
                                 </li>
                                 {% endfor %}
                             </ul>
@@ -87,6 +87,7 @@
                                 <tr class="bg-dark text-white">
                                     <th>Code</th>
                                     <th>Staff</th>
+                                    <th>Balance</th>
                                     <th>Salary</th>
                                     <th>Tax</th>
                                     <th>Credit</th>
@@ -102,6 +103,7 @@
                                 <tr>
                                     <td>{{pay.staff.id|zeropadding:3}}</td>
                                     <td>{{pay.staff.fullname}}</td>
+                                    <td>{{pay.balance.amount}}</td>
                                     <td class="text-right">{{pay.salary.amount}}</td>
                                     <td class="text-right">{{pay.tax.amount}}</td>
                                     <td class="text-right">{{pay.credit_amount.amount}}</td>

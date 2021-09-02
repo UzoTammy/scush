@@ -14,43 +14,40 @@
     <div class="row">
         <div style="text-align: center; background-color: #f7fbff;">
             <p><span style="text-align: right">Salary:</span>
-                        {% money_localize salary 'NGN' %}</p>
+                        {{salary}}</p>
             <hr>
             <p><span style="text-align: right">Tax:</span>
-                        {% money_localize tax 'NGN' %}</p>
+                        {{tax}}</p>
             <hr>
-            <p><span style="text-align: right">Gross Salary:</span>
-                        {% money_localize salary_due 'NGN' %}</p>
-            <hr>
-            <p><span style="text-align: right">Balance(B/F):</span>
-                {% if balance < 0 %}
-                        {% money_localize balance|abs 'NGN' %}DR
-                {% elif balance == 0 %}
-                        {% money_localize balance 'NGN' %}
+            <p><span style="text-align: right">Balance:</span>
+                {% if balance.amount < 0 %}
+                        {{balance|abs}}DR
+                {% elif balance.amount == 0 %}
+                        {{balance}}
                 {% else %}
-                        {% money_localize balance 'NGN' %}CR
+                        {{balance}}CR
                 {% endif %}
             </p>
             <hr>
             <p><span style="text-align: right">Credit:</span>
-                        {% money_localize credit 'NGN' %}</p>
+                        {{credit}}</p>
             <hr>
             <p><span style="text-align: right">Debit:</span>
-                        {% money_localize debit 'NGN' %}</p>
+                        {{debit}}</p>
             <hr>
             <p style="color:green; font-size:16px;"><span style="text-align: right;">Net Pay:</span>
-                        {% money_localize net_pay 'NGN' %}</p>
+                        {{net_pay}}</p>
             <hr>
             <p><span style="text-align: right">Deductions:</span>
-                        {% money_localize deduction 'NGN' %}</p>
+                        {{deduction}}</p>
             <hr>
             <p><span style="text-align: right">Outstanding:</span>
-                {% if outstanding < 0 %}
-                        {% money_localize outstanding|abs 'NGN' %}DR
-                {% elif outstanding == 0 %}
-                        {% money_localize outstanding 'NGN' %}
+                {% if outstanding.amount < 0 %}
+                        {{outstanding|abs}}DR
+                {% elif outstanding.amount == 0 %}
+                        {{outstanding}}
                 {% else %}
-                        {% money_localize outstanding 'NGN' %}CR
+                        {{outstanding}}CR
                 {% endif %}
             </p>
             <hr>

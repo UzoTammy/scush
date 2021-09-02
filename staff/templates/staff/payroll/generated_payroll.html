@@ -3,7 +3,7 @@
 {% load djmoney %}
 
 {% block content %}
-<section class="p-5">
+<div class="container p-5">
     <div class="row">
         <div class="col">
             <table data-toggle="table"
@@ -16,107 +16,95 @@
                 <caption>Generated Payroll for the period {{period}}
                     <span class="text-success float-right">{{month}}, {{year}}</span>
                 </caption>
-            <thead class="bg-secondary text-white text-center">
-                    <tr>
-              <th scope="col">#</th>
-              <th scope="col">Staff</th>
-              <th scope="col">Salary</th>
-              <th scope="col">Tax</th>
-              <th scope="col">Salary Due</th>
-              <th scope="col">Balance</th>
-              <th scope="col">Credit Amount</th>
-              <th scope="col">Debit Amount</th>
-              <th scope="col" class="bg-success">Net Pay</th>
-              <th scope="col">Deduction</th>
-              <th scope="col">Outstanding</th>
-            </tr>
+                <thead class="bg-dark text-white text-center">
+                <tr>
+                    <th scope="col">Code</th>
+                    <th scope="col">Staff</th>
+                    <th scope="col">Salary</th>
+                    <th scope="col">Tax</th>
+                    <th scope="col">Balance</th>
+                    <th scope="col">Credit Amount</th>
+                    <th scope="col">Debit Amount</th>
+                    <th scope="col">Net Pay</th>
+                    <th scope="col">Deduction</th>
+                    <th scope="col">Outstanding</th>
+                </tr>
                 </thead>
-        <tbody>
-      {% for record, salary, tax, credit, debit, netPay, deduct, out in records  %}
-        <tr>
-            <th scope="row">{{ forloop.counter }}</th>
-            <td><a href="#">{{record.fullname}}</a></td>
-            <td class="text-right">{{salary}}</td>
-            <td class="text-right">{{tax}}</td>
-            <td class="text-right">{{record.gross_pay}}</td>
-            {% if record.balance.amount >= 0 %}
-            <td class="text-right">{{record.balance}}</td>
-            {% else %}
-            <td class="text-right text-danger">{{record.balance|abs}}</td>
-            {% endif %}
-            <td class="text-right">{{credit}}</td>
-            <td class="text-right text-danger">{{debit}}</td>
-            <td class="bg-success text-white text-right">
-                <b>{{netPay}}</b></td>
-            <td class="text-right">{{deduct}}</td>
-            {% if out.amount >= 0 %}
-            <td class="text-right">{{out}}</td>
-            {% else %}
-            <td class="text-right text-danger">{{out|abs}}</td>
-            {% endif %}
-        </tr>
-      {% endfor %}
-  </tbody>
-    <tfoot>
-        <tr class="bg-dark text-white">
-        <th colspan="2">Total</th>
-        <th scope="col" class="text-right">1</th>
-        <th scope="col" class="text-right">2</th>
-        <th scope="col" class="text-right">3</th>
-        <th scope="col" class="text-right">4</th>
-        <th scope="col" class="text-right">5</th>
-        <th scope="col" class="text-right">6</th>
-        <th scope="col" class="text-right">7</th>
-        <th scope="col" class="text-right">8</th>
-        <th scope="col" class="text-right">9</th>
-    </tr>
-    </tfoot>
-</table>
+                <tbody>
+                {% for record in records %}
+                <tr>
+                    <th scope="row">{{ record.code|zeropadding:3}}</th>
+                    <td>{{record.staff}}</td>
+                    <td class="text-right">{{record.salary.amount}}</td>
+                    <td class="text-right">{{record.tax.amount}}</td>
+                    {% if record.balance.amount >= 0 %}
+                    <td class="text-right">{{record.balance.amount}}</td>
+                    {% else %}
+                    <td class="text-right text-danger">{{record.balance.amount|abs}}</td>
+                    {% endif %}
+                    <td class="text-right">{{record.credit.amount|floatformat:"2g"}}</td>
+                    <td class="text-right text-danger">{{record.debit.amount|floatformat:"2g"}}</td>
+                    <td class="bg-success text-white text-right">
+                        <b>{{record.earning}}</b></td>
+                    <td class="text-right">{{record.deduction.amount|floatformat:"2g"}}</td>
+                    {% if record.outstanding.amount >= 0 %}
+                    <td class="text-right">{{record.outstanding.amount|floatformat:'2g'}}</td>
+                    {% else %}
+                    <td class="text-right text-danger">{{record.outstanding.amount|abs|floatformat:'2g'}}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td class="bg-dark"></td>
+                </tr>
+                </tfoot>
+            </table>
         </div>
     </div>
     <!--        payroll totals-->
     <div class="row p-2">
         <div class="col">
-                <ul class="list-group">
+            <ul class="list-group">
                     <li class="list-group-item active">Payroll Totals</li>
                     <li class="list-group-item">
                         <div class="row">
-                        <div class="col">Salary: {% money_localize salary 'NGN' %}</div>
+                        <div class="col">Salary: {{salary}}</div>
                         <div class="col">Balance:
-                            {% if balance < 0 %}
-                            <span class="text-danger">{% money_localize balance|abs 'NGN' %}</span>
+                            {% if balance.amount < 0 %}
+                            <span class="text-danger">{{balance|abs}}</span>
                             {% else %}
-                            <span>{% money_localize balance 'NGN' %}</span>
+                            <span>{{balance}}</span>
                             {% endif %}
                         </div>
-                        <div class="col">Net Pay: {% money_localize net_pay 'NGN' %}</div>
+                        <div class="col text-success">Net Pay: {{net_pay}}</div>
                         </div>
                     </li>
                     <li class="list-group-item">
                         <div class="row">
-                        <div class="col">Tax Due: {% money_localize tax 'NGN' %}</div>
-                        <div class="col">Credit: {% money_localize credit 'NGN' %}</div>
-                        <div class="col">Deduction: {% money_localize deduction 'NGN' %}</div>
+                        <div class="col">Tax Due: {{tax}}</div>
+                        <div class="col">Credit: {{credit}}</div>
+                        <div class="col">Deduction: {{deduction}}</div>
                         </div>
                     </li>
                     <li class="list-group-item">
                         <div class="row">
-                        <div class="col">Salary Due: {% money_localize salary_due 'NGN' %}</div>
-                        <div class="col">Debit: {% money_localize debit 'NGN' %}</div>
+                        <div class="col">Gross Pay: {{gross_pay}}</div>
+                        <div class="col">Debit: {{debit}}</div>
                         <div class="col">
                             Outstanding:
                             {% if outstanding < 0 %}
-                            <span class="text-danger">{% money_localize outstanding|abs 'NGN' %}</span>
+                            <span class="text-danger">{{ outstanding|abs}}</span>
                             {% else %}
-                            <span>{% money_localize outstanding 'NGN' %}</span>
+                            <span>{{ outstanding}}</span>
                             {% endif %}
                         </div>
                         </div>
                     </li>
                 </ul>
-            </div>
+        </div>
     </div>
-
 <!--    The form save that moves data into payroll-->
     <form class="p-2"
           action=""
@@ -124,104 +112,15 @@
                 {% csrf_token %}
         <div class="row">
             <div class="col">
-                <button type="submit" class="btn btn-success">Save</button>
+                <button type="submit" class="btn btn-outline-success">Save</button>
             </div>
-            <div class="col">
-                <a href="#"
-                   data-toggle="modal"
-                   data-target="#payMore"
-                   class="btn btn-primary">
-                    Pay More...
-                </a>
-            </div>
-            <div class="col">
-                <a href="{% url 'salary' %}" class="btn btn-dark">
+            <div class="col text-right">
+                <a href="{% url 'salary' %}" class="btn btn-outline-dark">
                     <i class="fa fa-reply"></i>
                 </a>
             </div>
         </div>
     </form>
-</section>
-
-<section>
-<div class="modal"
-     tabindex="-1"
-     data-backdrop="static"
-     role="dialog"
-     id="payMore">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form action="#"
-                  method="post">{% csrf_token %}
-                <div class="modal-header">
-                    <h3 class="modal-title">
-                        Staff that can be Paid More
-                    </h3>
-                    <button type="button"
-                            class="close"
-                            aria-label="close"
-                            data-dismiss="modal">
-                        <i class="fa fa-times text-danger"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="container">
-                        <table class="table"
-                               data-toggle="table"
-                               tabindex="-1">
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Staff</th>
-                                <th>Salary Due</th>
-                                <th>Outstanding</th>
-                                <th>Select</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                {% for record, out in payMore %}
-                                {% if out.amount != 0 %}
-                                <tr>
-                                    <td>{{record.id|zeropadding:3}}</td>
-                                    <td>{{record.fullname}}</td>
-                                    <td>{{record.salary}}</td>
-                                    <td>{{out}}</td>
-                                    <td>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value=""
-                                                   id="flexCheckDefault">
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endif %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                                    <div class="form-group">
-                                        <button type="submit"
-                                                class="btn btn-outline-info">
-                                            Apply
-                                        </button>
-                                        <button type="button"
-                                                data-dismiss="modal"
-                                                class="btn btn-outline-dark">
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </div>
-            </form>
-        </div>
-    </div>
 </div>
-    <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
-        <label class="form-check-label" for="flexCheckChecked">
-            Checked checkbox
-        </label>
-    </div>
 
-</section>
 {% endblock content %}

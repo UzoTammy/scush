@@ -187,6 +187,7 @@ class Payroll(models.Model):
     tax = MoneyField(max_digits=8, default_currency='NGN', decimal_places=2, default=Money(0, 'NGN'))
     status = models.BooleanField(default=False)
     """status: True means paid and False means not paid"""
+    balance = MoneyField(max_digits=9, default_currency='NGN', decimal_places=2, default=Money(0, 'NGN'))
 
     def __str__(self):
         return f"{self.staff.fullname()}:{self.period}"
