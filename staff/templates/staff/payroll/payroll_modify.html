@@ -1,0 +1,147 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+{% load djmoney %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-3 bg-dark">
+            <form action="">
+                <ul class="nav flex-column">
+                    <p class="text-white mt-2">Period</p>
+                    {% for period in periods %}
+                    <li class="nav-item mb-3 ml-2">
+                        {% if period == the_period %}
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   name="period"
+                                   value="{{period}}" checked>
+                            <label class="form-check-label text-warning">
+                                {{period}}
+                            </label>
+                        </div>
+                        {% else %}
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   name="period"
+                                   value="{{period}}">
+                            <label class="form-check-label text-warning">
+                                {{period}}
+                            </label>
+                        </div>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                <ul class="nav flex-column">
+                    <p class="text-white mt-3">Modify</p>
+                    <li class="nav-item mb-3 ml-2">
+                        <div class="form-check">
+                            <input class="form-check-input nav-link"
+                                   type="radio"
+                                   name="modifyType"
+                                   id="outstanding"
+                                   value="1" checked>
+                            <label class="form-check-label text-warning"
+                                   for="outstanding">
+                                Outstanding (null)
+                            </label>
+                        </div>
+                    </li>
+                    <li class="nav-item mb-3 ml-2">
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   name="modifyType"
+                                   id="balance"
+                                   value="fromBalance">
+                            <label class="form-check-label text-warning"
+                                   for="balance">
+                                From Balance
+                            </label>
+                        </div>
+                    </li>
+                    <li class="nav-item mb-3 text-center">
+                        <input type="submit"
+                               class="btn btn-dark text-white"
+                               value="Get Staff">
+                    </li>
+                    <li class="nav-item mb-3 text-center"><a class="btn btn-dark text-white"
+                                            href="{% url 'salary' %}">
+                        <i class="fa fa-reply"></i> Payroll Page</a>
+                    </li>
+                </ul>
+            </form>
+        </div>
+
+        <div class="col-9">
+            <h3 class="mt-3 text-center">Modify Payroll Page - {{the_period_in_word}}</h3>
+            <table class="table" data-toggle="table">
+                <thead class="text-center">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Staff</th>
+                        <th scope="col">Balance</th>
+                        <th scope="col">Salary</th>
+                        <th scope="col">Tax</th>
+                        <th scope="col">Credit</th>
+                        <th scope="col">Debit</th>
+                        <th scope="col">NetPay</th>
+                        <th scope="col">Deduction</th>
+                        <th scope="col">Outstanding</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                {% for data in dataset %}
+                    <tr>
+                        <td>{{data.staff.pk}}</td>
+                        <td>{{data.staff.fullname}}</td>
+                        <td class="text-right">{{data.balance.amount}}</td>
+                        <td class="text-right">{{data.salary.amount}}</td>
+                        <td class="text-right">{{data.tax.amount}}</td>
+                        <td class="text-right">{{data.credit_amount.amount}}</td>
+                        <td class="text-right">{{data.debit_amount.amount}}</td>
+                        <td class="text-right">{{data.net_pay.amount}}</td>
+                        <td class="text-right">{{data.deduction.amount}}</td>
+                        <td class="text-right">{{data.outstanding.amount}}</td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+            <div class="row mt-3 mb-5">
+                <div class="col">
+                    {% if payroll_with_outstanding_value %}
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-action active">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">List of Staff with Outstanding Values</h5>
+                            </div>
+                        </li>
+                        {% for record in payroll_with_outstanding_value %}
+                        <li class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">
+                                    {{record.staff.fullname}}-({{record.staff.id|zeropadding:3}})</h5>
+                                <a href="{% url 'payroll-modify-outstanding'  record.pk %}" class="btn btn-outline-dark btn-sm">Apply</a>
+                            </div>
+                            <p class="mb-1">Net Pay: {{record.net_pay}}</p>
+                            <p class="mb-1">Outstanding: {{record.outstanding}}</p>
+                            <small class="text-success">Expected Net Pay: {{record.net_pay|add:record.outstanding}}</small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                       <h6 class="text-danger">No Record with Outstanding Value for {{the_period_in_word}}</h6>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock content %}

@@ -7,7 +7,8 @@ from .models import (Employee,
                      Suspend,
                      Permit,
                      SalaryChange)
-from django.shortcuts import render, reverse, redirect
+from django.shortcuts import render, reverse, redirect, get_object_or_404
+from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import (View,
                                   TemplateView,
@@ -444,6 +445,7 @@ class StaffUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class CreditNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = CreditNote
     template_name = 'staff/payroll/credit_list.html'
+    ordering = '-pk'
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -455,7 +457,7 @@ class CreditNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 class CreditNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = CreditForm
     template_name = 'staff/payroll/creditnote_form.html'
-    success_url = 'payroll/credit/'
+    success_url = reverse_lazy('salary')
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -467,6 +469,7 @@ class CreditNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class DebitNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = DebitNote
     template_name = 'staff/payroll/debit_list.html'
+    ordering = '-pk'
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -478,13 +481,17 @@ class DebitNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 class DebitNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = DebitForm
     template_name = 'staff/payroll/debitnote_form.html'
-    success_url = '/payroll/debit'
+    success_url = reverse_lazy('salary')
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
+
+    def post(self, request, *args, **kwargs):
+        messages.success(request, 'Saved Successfully !!!')
+        return redirect(self.get_success_url())
 
 
 class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -1217,6 +1224,52 @@ class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             'dataset': tuple(dataset)
         }
         return render(request, 'staff/payroll/payroll_summary.html', context)
+
+
+class ModifyGeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    model = Payroll
+    template_name = 'staff/payroll/payroll_modify.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        """Spool from payroll database all the periods in it. 
+        1. fetch all rows, 2. get period field only 3. Since this
+        field is not unique, period can have same value for different
+        rows. 4. Use set to eliminate repeated values."""
+        periods = set(Payroll.objects.values_list('period', flat=True))
+        context['periods'] = sorted(list(periods), reverse=True)
+
+        qs = str()
+        if request.GET is not {} and 'period' in request.GET:
+            period = request.GET['period']
+            payroll = Payroll.objects.filter(period=period)
+            modify_type = request.GET['modifyType']
+            if modify_type == '1':
+                qs = payroll.filter(outstanding__gt=0)
+        else:
+            period = context['periods'][0]
+        context['the_period'] = period
+        context['dataset'] = Payroll.objects.filter(period=period)
+        context['payroll_with_outstanding_value'] = qs
+        context['the_period_in_word'] = f"{mytools.Period.full_months[period.split('-')[1]]}, {period.split('-')[0]}"
+        return render(request, self.template_name, context)
+
+
+class MakeOutstandingValueZero(View):
+
+    def get(self, request, pk):
+        staff = get_object_or_404(Payroll, pk=pk)
+        new_pay = staff.net_pay + staff.outstanding
+        staff.outstanding = Money(0, 'NGN')
+        staff.net_pay = new_pay
+        staff.save()
+        return redirect(reverse('payroll-modify'))
 
 
 class PKResetView(TemplateView):

@@ -36,4 +36,6 @@ urlpatterns += [
     path('payroll/pay-salary/<int:pk>/', Payslip.as_view(), name='pay-salary'),
     path('payroll/<int:pk>/statement/', PayrollStatement.as_view(), name='payroll-statement'),
     path('payroll/summary/<str:summary_period>/', PayrollSummaryView.as_view(), name='payroll-summary'),
+    path('payroll/modify/', ModifyGeneratedPayroll.as_view(), name='payroll-modify'),
+    path('payroll/modify/<int:pk>/outstanding/', MakeOutstandingValueZero.as_view(), name='payroll-modify-outstanding')
 ]

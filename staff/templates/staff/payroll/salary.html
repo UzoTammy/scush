@@ -1,20 +1,115 @@
 {% extends 'users/base.html' %}
 
 {% block content %}
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col mt-3">
+        <div class="col-3" style="background-color: #080000;">
+            <p class="m-2 text-white">
+                <i class="fa fa-plus text-warning"></i>
+                    Credit
+            </p>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{%url 'credit-list' %}">
+                        View
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'credit-create' %}">
+                        Add
+                    </a>
+                </li>
+            </ul>
+            <p class="text-white m-2">
+                <i class="fa fa-minus text-warning"></i> Debit
+            </p>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{%url 'debit-list' %}">
+                        View
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'debit-create' %}">
+                        Add
+                    </a>
+                </li>
+            </ul>
+            <p class="m-2 text-white">
+                <i class="fa fa-bank text-warning"></i>
+                Payroll
+            </p>
+            {% if last_period_generated %}
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    {% if payroll_current_period != '' %}
+                    <a class="nav-link" href="{% url 'payroll-view' payroll_current_period %}">
+                        View
+                    </a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       data-toggle="modal"
+                       data-target="#initialModal"
+                       href="#">
+                        Generate
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'regenerate-payroll' %}">
+                        Regenerate
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'payroll-modify' %}">
+                        Modify
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'start-pay' %}">
+                        Pay
+                    </a>
+                </li>
+            </ul>
+            {% else %}
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       data-toggle="modal"
+                       data-target="#initialModal"
+                       href="#">
+                        Generate
+                    </a>
+                </li>
+            </ul>
+            {% endif %}
+
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       href="{% url 'staff-home' %}">
+                        <i class="fa fa-reply"></i>
+                        Staff Home
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+        <div class="col-9 mt-3">
             <h3 class="text-center">Payroll Page</h3>
             <p>Payroll Process</p>
             <ul>
-                <li>View Existing Payrolls</li>
-                <li>Pay Salary</li>
-                <li>Regenerate</li>
-                <li>Generate</li>
+                <li>Ensure Staff Profile is updated</li>
+                <li><b>Add</b> Debit and Credit accordingly</li>
+                <li><b>Generate</b> Payroll</li>
+                <li>If exemptions are granted, use <b>modify</b> to update payroll</li>
+                <li>If staff profile is to be changed after payroll is generated,
+                you can go ahead and update the profile and then <b>regenerate</b> payroll</li>
             </ul>
             <p>
-                It is recommended you generate payroll from 25th to the end of the month.
-                before you generate payroll, you must update the employee profile, and add credits or debits where
+                It is recommended you generate payroll between 25th and before the end of the month.
+                Before you generate payroll, you must update the employee profile, and add credits or debits where
                 necessary. <span class="text-danger">However, should there be need for adjustment of the payroll,
                 then you can regenerate.</span> Payrolls are categorized according to period. A period is one month.
             </p>
@@ -23,93 +118,15 @@
 
             {% if last_period_generated %}
             <p>Last Period Generated: {{last_period_generated}}</p>
-            <hr>
-            <div class="row">
-                <div class="col">
-                    {% if payroll_current_period != '' %}
-                    <a href="{% url 'payroll-view' payroll_current_period %}">View Latest & Others</a>
-                    {% endif %}
-                </div>
-                <div class="col text-center">
-                    <a href="{% url 'start-pay' %}">Pay Salary</a>
-                </div>
-                <div class="col text-right">
-                    <a href="{% url 'regenerate-payroll' %}">Regenerate</a>
-                </div>
-            </div>
-            <hr>
             {% else %}
             <h4 class="text-primary">No Record in Payroll Database</h4>
             <hr>
             {% endif %}
-            <div class="row">
-                <div class="col">
-                    <a class="btn btn-outline-dark"
-                       data-toggle="modal"
-                       data-target="#initialModal"
-                       href="#">
-                        Generate
-                    </a>
-                </div>
-                <div class="col">
-                    <a class="btn btn-outline-dark float-right"
-                       href="{% url 'staff-home' %}">
-                        <i class="fa fa-reply"></i>
-                    </a>
-                </div>
-            </div>
+
         </div>
     </div>
+</div>
 
-    </div>
-
-<!--<div class="row d-flex justify-content-center row-cols-1 row-cols-sm-2 row-cols-md-4">-->
-<!--                <div class="col">-->
-<!--                    <a class="btn"-->
-<!--                       href="#"-->
-<!--                       data-toggle="modal"-->
-<!--                       data-target="#firstModal">-->
-<!--                        <div class="jumbotron bg-dark text-white">-->
-<!--                            <div class="container">-->
-<!--                                <h4 class="display-5">-->
-<!--                                    Generate payroll for {{last_month}}-->
-<!--                                </h4>-->
-<!--                                <p class="text-danger">(Period: {{last_period}})</p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </a>-->
-<!--                </div>-->
-<!--                <div class="col">-->
-<!--                    <a class="btn"-->
-<!--                       href=""-->
-<!--                       data-toggle="modal"-->
-<!--                       data-target="#secondModal">-->
-<!--                        <div class="jumbotron bg-success text-white">-->
-<!--                            <div class="container">-->
-<!--                                <h4 class="display-5">-->
-<!--                                    Generate Payroll for {{this_month}}-->
-<!--                                </h4>-->
-<!--                                <p class="text-danger">(Period: {{current_period}})</p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </a>-->
-<!--                </div>-->
-<!--                <div class="col">-->
-<!--                    <a class="btn"-->
-<!--                       href=""-->
-<!--                       data-target="#thirdModal"-->
-<!--                       data-toggle="modal">-->
-<!--                        <div class="jumbotron bg-warning text-white">-->
-<!--                            <div class="container">-->
-<!--                                <h4 class="display-5">-->
-<!--                                    Generate payroll for {{next_month}}-->
-<!--                                </h4>-->
-<!--                                <p class="text-danger">(Period: {{next_period}})</p>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </a>-->
-<!--                </div>-->
-<!--            </div>-->
 
 <!-- Modal -->
 <div class="modal fade"
@@ -177,119 +194,4 @@
     </div>
   </div>
 </div>
-<!--Last month-->
-<!--<div class="modal fade"-->
-<!--     id="firstModal"-->
-<!--     tabindex="-1"-->
-<!--     data-backdrop="static"-->
-<!--     aria-labelledby="firstModalLabel"-->
-<!--     aria-hidden="true">-->
-<!--  <div class="modal-dialog">-->
-<!--    <div class="modal-content bg-dark text-white">-->
-<!--      <div class="modal-header">-->
-<!--        <h5 class="modal-title"-->
-<!--            id="firstModalLabel">-->
-<!--            Payroll for {{last_month}}-->
-<!--        </h5>-->
-<!--        <button type="button"-->
-<!--                class="btn-close"-->
-<!--                data-dismiss="modal"-->
-<!--                aria-label="Close">-->
-<!--            <i class="fa fa-close"></i>-->
-<!--        </button>-->
-<!--      </div>-->
-<!--      <div class="modal-body">-->
-<!--        You are about to generate payroll for the period {{last_period}}-->
-<!--      </div>-->
-<!--      <div class="modal-footer">-->
-<!--        <a href="#"-->
-<!--           class="btn btn-danger">-->
-<!--            Proceed-->
-<!--        </a>-->
-<!--        <button type="button"-->
-<!--                class="btn btn-secondary"-->
-<!--                data-dismiss="modal">-->
-<!--            Cancel-->
-<!--        </button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
-<!--This month-->
-<!--<div class="modal fade"-->
-<!--     id="secondModal"-->
-<!--     tabindex="-1"-->
-<!--     data-backdrop="static"-->
-<!--     aria-labelledby="secondModalLabel"-->
-<!--     aria-hidden="true">-->
-<!--  <div class="modal-dialog">-->
-<!--    <div class="modal-content bg-dark text-white">-->
-<!--      <div class="modal-header">-->
-<!--        <h5 class="modal-title"-->
-<!--            id="secondModalLabel">-->
-<!--            Payroll for {{this_month}}-->
-<!--        </h5>-->
-<!--        <button type="button"-->
-<!--                class="btn-close"-->
-<!--                data-dismiss="modal"-->
-<!--                aria-label="Close">-->
-<!--            <i class="fa fa-close"></i>-->
-<!--        </button>-->
-<!--      </div>-->
-<!--      <div class="modal-body">-->
-<!--        You are about to generate payroll for the period {{current_period}}-->
-<!--      </div>-->
-<!--      <div class="modal-footer">-->
-<!--        <a href="#"-->
-<!--           class="btn btn-danger">-->
-<!--            Proceed-->
-<!--        </a>-->
-<!--        <button type="button"-->
-<!--                class="btn btn-secondary"-->
-<!--                data-dismiss="modal">-->
-<!--            Cancel-->
-<!--        </button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
-<!--Next Month-->
-<!--<div class="modal fade"-->
-<!--     id="thirdModal"-->
-<!--     tabindex="-1"-->
-<!--     data-backdrop="static"-->
-<!--     aria-labelledby="thirdModalLabel"-->
-<!--     aria-hidden="true">-->
-<!--  <div class="modal-dialog">-->
-<!--    <div class="modal-content bg-dark text-white">-->
-<!--      <div class="modal-header">-->
-<!--        <h5 class="modal-title"-->
-<!--            id="thirdModalLabel">-->
-<!--            Payroll for {{next_month}}-->
-<!--        </h5>-->
-<!--        <button type="button"-->
-<!--                class="btn-close"-->
-<!--                data-dismiss="modal"-->
-<!--                aria-label="Close">-->
-<!--            <i class="fa fa-close"></i>-->
-<!--        </button>-->
-<!--      </div>-->
-<!--      <div class="modal-body">-->
-<!--        You are about to generate payroll for the period {{next_period}}-->
-<!--      </div>-->
-<!--      <div class="modal-footer">-->
-<!--        <a href="#"-->
-<!--           class="btn btn-danger">-->
-<!--            Proceed-->
-<!--        </a>-->
-<!--        <button type="button"-->
-<!--                class="btn btn-secondary"-->
-<!--                data-dismiss="modal">-->
-<!--            Cancel-->
-<!--        </button>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
-
 {% endblock %}
