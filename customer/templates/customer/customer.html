@@ -32,10 +32,15 @@
                         <thead class="text-white bg-primary">
                         <tr>
                             <th scope="col">ID</th>
-                            <th scope="col">Business Name</th>
-                            <th scope="col">Business Owner</th>
+                            <th scope="col">Business</th>
+                            <th scope="col">Owner</th>
                             <th scope="col">Cluster</th>
                             <th scope="col">Mobile</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Sales</th>
+                            <th scope="col">Frequency</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Category</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -46,6 +51,11 @@
                             <td>{{customer.business_owner}}</td>
                             <td>{{customer.cluster}}</td>
                             <td>{{customer.mobile|addsep}}</td>
+                            <td>{{customer.email}}</td>
+                            <td>{{customer.sales}}</td>
+                            <td>{{customer.freq}}</td>
+                            <td>{{customer.type}}</td>
+                            <td>{{customer.category}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

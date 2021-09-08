@@ -20,6 +20,7 @@ urlpatterns = [
     path('home/<str:staff_category>/', StaffViews.as_view(), name='terminated'),
     path('pk-reset/', PKResetView.as_view(), name='pk-reset'),
     path('pk-reset/payroll/', PKResetPayroll.as_view(), name='pk-reset-payroll'),
+    path('employee/<int:pk>/balance/', AddStaffBalance.as_view(), name='employee-balance'),
     ]
 
 urlpatterns += [

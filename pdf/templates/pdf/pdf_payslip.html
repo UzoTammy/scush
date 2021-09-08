@@ -33,10 +33,10 @@
             </tr>
             <tr>
                 <td>Balance:
-                    {% if person.staff.balance.amount >= 0 %}
-                    <span>{{ person.staff.balance }}</span>
+                    {% if person.balance.amount >= 0 %}
+                    <span>{{ person.balance }}</span>
                     {% else %}
-                    <span style="color:red;">{{ person.staff.balance }}</span>
+                    <span style="color:red;">{{ person.balance }}</span>
                     {%endif%}
                 </td>
                 <td style="color:green">Net Pay: {{ person.net_pay }}</td>

@@ -6,7 +6,8 @@ from .models import (Employee,
                      Reassign,
                      Suspend,
                      Permit,
-                     SalaryChange)
+                     SalaryChange,
+                     EmployeeBalance)
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
@@ -377,6 +378,18 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             days_consumed = int(total_days)
         else:
             days_consumed = 0
+
+        balance = EmployeeBalance.objects.filter(staff_id=person)
+        if balance.exists():
+            credit = balance.filter(value_type='Cr')
+            debit = balance.filter(value_type='Dr')
+            credit_value = credit.aggregate(total=Sum('value'))['total'] if credit else Decimal('0')
+            debit_value = debit.aggregate(total=Sum('value'))['total'] if debit else Decimal('0')
+            total_balance = credit_value - debit_value
+        else:
+            total_balance = Decimal('0.00')
+
+        context['naira'] = chr(8358)
         context['permissible_days'] = int(leave)
         context['consumed_days'] = days_consumed
         context['permit_count'] = 'None' if days_consumed == 0 else permit.count()
@@ -388,6 +401,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['permissions'] = Permit.objects.filter(staff_id=person)
         context['suspensions'] = Suspend.objects.filter(staff_id=person)
         context['salary_changed'] = SalaryChange.objects.filter(staff_id=person)
+        context['total_balance'] = total_balance
         return context
 
 
@@ -1189,6 +1203,7 @@ class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         data['average'] = queryset.aggregate(net_pay=Avg('net_pay'))
         data['minimum'] = queryset.aggregate(net_pay=Min('net_pay'))
         data['maximum'] = queryset.aggregate(net_pay=Max('net_pay'))
+        data['balance'] = queryset.aggregate(total=Sum('balance'))
         data['salary'] = queryset.aggregate(total=Sum('salary'))
         data['tax'] = queryset.aggregate(total=Sum('tax'))
         data['credit'] = queryset.aggregate(total=Sum('credit_amount'))
@@ -1270,6 +1285,22 @@ class MakeOutstandingValueZero(View):
         staff.net_pay = new_pay
         staff.save()
         return redirect(reverse('payroll-modify'))
+
+
+class AddStaffBalance(View):
+
+    def post(self, request, *args, **kwargs):
+        staff = get_object_or_404(Employee.active, pk=kwargs['pk'])
+        """Create a record of this balance"""
+        value = float(request.POST.get('balance')) if request.POST.get('balance') != '' else Money(0, 'NGN')
+        balance = EmployeeBalance.objects.create(staff=staff,
+                                                 value=value,
+                                                 value_type=request.POST.get('CrDr'),
+                                                 description=request.POST.get('comment')
+                                                 )
+        balance.save()
+        messages.success(request, 'Applied successfully !!!')
+        return redirect(staff)
 
 
 class PKResetView(TemplateView):

@@ -257,3 +257,11 @@ class SalaryChange(models.Model):
 
     def __str__(self):
         return f"{self.staff.fullname()}-{self.id}"
+
+
+class EmployeeBalance(models.Model):
+    staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    date = models.DateField(default=timezone.now)
+    value = MoneyField(max_digits=10, decimal_places=2, default=Money(0, 'NGN'))
+    value_type = models.CharField(max_length=2, default='Cr')
+    description = models.CharField(max_length=50)

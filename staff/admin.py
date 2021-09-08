@@ -8,7 +8,7 @@ from .models import (Employee,
                      Reassign,
                      Suspend,
                      Permit,
-                     SalaryChange)
+                     SalaryChange, EmployeeBalance)
 
 # Register your models here.
 admin.site.register(Employee)
@@ -21,6 +21,8 @@ admin.site.register(Reassign)
 admin.site.register(Suspend)
 admin.site.register(Permit)
 admin.site.register(SalaryChange)
+admin.site.register(EmployeeBalance)
+
 
 
 

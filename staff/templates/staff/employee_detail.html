@@ -44,10 +44,27 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
+                       data-toggle="modal"
+                       data-target="#staffBalance">
+                        <i class="fa fa-book text-warning"></i>
+                        Profile Balance
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
                            data-toggle="modal"
                            data-target="#staffTerminate">
                         <i class="fa fa-stop text-warning"></i>
                         Terminate
+                    </a>
+                </li>
+                <hr class="dropdown-divider">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       data-toggle="modal"
+                       data-target="#pdfPayslipModal">
+                        <i class="fa fa-book text-warning"></i>
+                        Payslip
                     </a>
                 </li>
                 <li class="nav-item">
@@ -111,7 +128,7 @@
                             <p>Residential Address: {{object.staff.address}}</p>
                         </div>
                         <div class="col-6">
-                            <p class="text-success">Balance (B/F): {{object.balance}}</p>
+                            <p class="text-success">Balance (B/F): {{naira}}{{total_balance}}</p>
                             <p class="text-success">Worked For: {{object.date_employed|timesince}}</p>
                             <hr>
                             <p>Date Employed: {{object.date_employed}}</p>
@@ -337,6 +354,85 @@
         </div>
     </div>
 </div>
+<!--Enter Balance-->
+<div class="modal"
+     tabindex="-1"
+     data-backdrop="static"
+     role="dialog"
+     id="staffBalance">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Profile Balance(<span style="font-size: 11pt">
+                    {{view.kwargs.pk|zeropadding:3}} - {{object}}
+                </span>)
+                </h3>
+                <button type="button"
+                        class="close"
+                        aria-label="close"
+                        data-dismiss="modal">
+                    <i class="fa fa-times text-danger"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <p id="dateField"></p>
+                    <form action="{% url 'employee-balance' object.pk %}" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="form-group">
+                                <label class="form-label" for="tBal">Value</label>
+                                <input id="tBal"
+                                       class="form-control"
+                                       name="balance"
+                                       value="0.00"
+                                       type="number">
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="form-group">
+                                <label class="form-label" for="tBal">Type</label>
+                                <select class="form-control" name="CrDr" id="balType">
+                                    <option value="Cr">Cr</option>
+                                    <option value="Dr">Dr</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="form-label" for="salComment">Description</label>
+                                <input name="comment"
+                                       id="balComment"
+                                       maxlength="50"
+                                       class="form-control"
+                                       type="text">
+                                <small class="form-help text-muted">Not more than 50 characters</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit"
+                                class="btn btn-outline-info">
+                            Apply
+                        </button>
+                        <button type="button"
+                                data-dismiss="modal"
+                                class="btn btn-outline-dark">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <!--Reassign-->
 <div class="modal"
      tabindex="-1"
@@ -714,6 +810,8 @@
 </div>
 
 <script>
+    const date = new Date();
+    document.getElementById('dateField').innerHTML = 'Entry Date: ' + date.toDateString();
     function lostFocus() {
         if (document.getElementById("reassign").value=='A') {
             <!--show duration field with default of 60 days -->
@@ -724,6 +822,8 @@
             document.getElementById("divDuration").hidden = true;
         }
     }
+
+
 </script>
 
 {% endblock content %}

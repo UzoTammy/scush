@@ -28,7 +28,7 @@
         <p>Sales: {% money_localize object.sales 'NGN' %}</p>
         <p>Frequency: {{object.freq}}</p>
         <button class="btn btn-outline-primary" type="submit">Submit</button>
-        <a class="btn btn-dark float-right" href="{% url 'csv-customers' %}">Cancel</a>
+        <a class="btn btn-dark float-right" href="{% url 'customer-csv' %}">Cancel</a>
     </div>
     </div>
 </div>

@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from .models import CustomerProfile
 from staff.models import Employee
 from users.models import Profile
+from django.db.models import F
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import (CreateView,
                                   ListView,
@@ -17,39 +18,39 @@ import json
 import secrets
 import datetime
 from ozone.mytools import CSVtoTuple
+from django.shortcuts import render, redirect, reverse
+from .forms import CustomerProfileForm
 
 
-class CSVPart(View):
+class CSVPart(TemplateView):
+    queryset = CustomerProfile.objects.all()
+    ordering = '-pk'
+    template_name = 'customer/customer_db_csv.html'
 
-    def get(self, request):
+    def categorize(self, value, factor=4/12):
+        if value >= 100e6 * factor:
+            return 'Platinum'
+        elif 70e6 * factor <= value < 100e6 * factor:
+            return 'Gold'
+        elif 50e6 * factor <= value < 70e6 * factor:
+            return 'Silver'
+        elif 30e6 * factor <= value < 50e6 * factor:
+            return 'Bronze'
+        elif 10e6 * factor <= value < 30e6 * factor:
+            return 'Basic'
+        elif 1e6 * factor <= value < 10e6 * factor:
+            return 'Normal'
+        elif 0 < value < 1e6 * factor:
+            return 'NYC'
+        elif value == 0:
+            return 'Inactive'
+
+    def get(self, request, **kwargs):
         obj_list = CSVtoTuple(
-            os.path.join(settings.BASE_DIR, 'customer/static/customers.csv')).csv_content(
-            integer=(0,), decimal=(7,)
-        )
+            os.path.join(settings.BASE_DIR, 'customer/static/customers.csv')).csv_content(integer=(0,), decimal=(7,))
         objects = list()
 
         for record in obj_list:
-            month = 4
-            year = 12
-            factor = month/year
-
-            def categorize(value):
-                if value >= 100e6 * factor:
-                    return 'Platinum'
-                elif 70e6 * factor <= value < 100e6 * factor:
-                    return 'Gold'
-                elif 50e6 * factor <= value < 70e6 * factor:
-                    return 'Silver'
-                elif 30e6 * factor <= value < 50e6 * factor:
-                    return 'Bronze'
-                elif 10e6 * factor <= value < 30e6 * factor:
-                    return 'Basic'
-                elif 1e6 * factor <= value < 10e6 * factor:
-                    return 'Normal'
-                elif 0 < value < 1e6 * factor:
-                    return 'NYC'
-                elif value == 0:
-                    return 'Inactive'
 
             object = dict()
             object['id'] = record[0]
@@ -62,14 +63,66 @@ class CSVPart(View):
             object['type'] = record[8]
             object['sales'] = record[7]
             object['freq'] = 'NA'
-            object['category'] = categorize(record[7])
+            object['category'] = self.categorize(record[7])
             object['complete'] = False
             objects.append(object)
 
         context = {
+            'title': 'Customer CSV Data List',
             'objects': objects,
         }
-        return render(request, 'customer/customer_db_csv.html', context)
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        context = {}
+        my_dict = request.POST.copy()
+        my_dict.pop('csrfmiddlewaretoken')
+
+        if my_dict:
+            for key, value in my_dict.items():
+                value = value.split('|')
+                value[5] = '' if value[5] == 'Nil' else value[5]
+                value[8] = 0 if value[8] == 'NA' or value[8] == '' else value[8]
+                qs = CustomerProfile(
+                    business_name=value[0],
+                    business_owner=value[1],
+                    cluster=value[2],
+                    address=value[3],
+                    mobile=value[4],
+                    email=value[5],
+                    sales=float(value[7].replace(',', '')),
+                    category=self.categorize(float(value[7].replace(',', ''))),
+                    freq=int(value[8]),
+                )
+
+                if self.queryset.filter(business_name=value[0]).exists():
+                    msg = 'Record already exist'
+                    context['message'] = msg
+                    return render(request, self.template_name, context)
+                else:
+                    qs.save()
+
+            objects = list()
+            for record in self.queryset.order_by('-pk'):
+                object = dict()
+                object['id'] = record.id
+                object['business'] = record.business_name
+                object['owner'] = record.business_owner
+                object['cluster'] = record.cluster
+                object['address'] = record.address
+                object['mobile'] = record.mobile
+                object['email'] = record.email
+                object['type'] = record.type
+                object['sales'] = record.sales
+                object['freq'] = record.freq
+                object['category'] = record.category
+                objects.append(object)
+            context['objects'] = objects
+            context['title'] = "Customer's Database Record"
+        else:
+            msg = 'No Record added'
+            context['message'] = msg
+        return render(request, self.template_name, context)
 
 
 class CSVCustomerDetail(View):
@@ -154,7 +207,11 @@ class HomeView(TemplateView):
 
 
 class IndexView(TemplateView):
-    template_name = 'customer/index.html'
+    pass
+
+
+class IndexViewTry(TemplateView):
+    pass
 
 
 class CustomerHomeView(TemplateView):
@@ -171,7 +228,7 @@ class CustomerListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(object_list=None, **kwargs)
         context['title'] = 'home'
         if self.get_queryset():
-            context['total'] = CustomerProfile.objects.filter(cluster='TRADE FAIR').count
+            context['total'] = self.get_queryset().filter(cluster='TRADE FAIR').count
             context['last_modified_object'] = self.get_queryset().latest('date_modified')
             context['last_time_modified'] = context['last_modified_object'].date_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
         return context
@@ -182,19 +239,32 @@ class CustomerDetailView(LoginRequiredMixin, DetailView):
 
 
 class CustomerCreateView(LoginRequiredMixin, CreateView):
-    model = CustomerProfile
-    fields = ['business_name',
-              'business_owner',
-              'region',
-              'cluster',
-              'category',
-              'mobile',
-              'email',
-              'address',
-              ]
+    # model = CustomerProfile
+    template_name = 'customer/customerprofile_form.html'
+    success_url = reverse_lazy('customer-list-all')
+    form_class = CustomerProfileForm
+
+    def categorize(self, value, factor=4/12):
+        if value >= 100e6 * factor:
+            return 'Platinum'
+        elif 70e6 * factor <= value < 100e6 * factor:
+            return 'Gold'
+        elif 50e6 * factor <= value < 70e6 * factor:
+            return 'Silver'
+        elif 30e6 * factor <= value < 50e6 * factor:
+            return 'Bronze'
+        elif 10e6 * factor <= value < 30e6 * factor:
+            return 'Basic'
+        elif 1e6 * factor <= value < 10e6 * factor:
+            return 'Normal'
+        elif 0 < value < 1e6 * factor:
+            return 'NYC'
+        elif value == 0:
+            return 'Inactive'
 
     def form_valid(self, form):
-        form.instance.creator = self.request.user
+        sales = form.instance.sales.amount
+        form.instance.category = self.categorize(sales)
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -237,3 +307,7 @@ class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if self.request.user.is_superuser:
             return True
         return False
+
+
+class CSVCustomerView(View):
+    pass

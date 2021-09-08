@@ -1,0 +1,36 @@
+    body {
+        font-family: 'Oswald', sans-serif !important;
+        font-size: 14px;
+        background-size: cover;
+        background-color: #fff7f7;
+        }
+    h3 {
+        font-family: 'fontawesome 5 brand'; font-weight: 400; content: '/f007';
+        color: #426173;
+    }
+
+    nav {
+        font-size: 12px;
+      }
+
+    a:hover {
+        color: red;
+        background-color: transparent;
+        text-decoration: none;
+      }
+
+    .nav-link:hover {
+        cursor: pointer;
+      }
+
+    caption {
+        caption-side: top;
+        font-size: 30px;
+        font-family: cursive
+      }
+
+    tbody, tfoot {
+        font-size: 13px;
+      }
+
+

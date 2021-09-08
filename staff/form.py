@@ -14,3 +14,4 @@ class DebitForm(ModelForm):
         model = DebitNote
         exclude = ('status',)
 
+
