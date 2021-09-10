@@ -6,6 +6,7 @@ from django.urls import reverse
 from apply.models import Applicant
 from djmoney.money import Money
 import datetime
+from ozone import mytools
 
 
 class ActiveEmployeeManager(models.Manager):
@@ -190,7 +191,13 @@ class Payroll(models.Model):
     balance = MoneyField(max_digits=9, default_currency='NGN', decimal_places=2, default=Money(0, 'NGN'))
 
     def __str__(self):
-        return f"{self.staff.fullname()}:{self.period}"
+        return f"{self.staff.fullname()}-{self.period}"
+
+    def period_month(self):
+        month = self.period.split('-')[1]
+        year = self.period.split('-')[0]
+        period_month = mytools.Period.full_months[month]
+        return f'{period_month}, {year}'
 
 
 class Reassign(models.Model):

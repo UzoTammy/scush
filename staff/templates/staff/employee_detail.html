@@ -3,7 +3,7 @@
 {% load custom_templates %}
 
 {% block content %}
-<div class="section mr-2">
+<div class="container-fluid">
     <div class="row">
         <div class="col-3 bg-dark">
             <p class="text-white mt-1">
@@ -59,22 +59,25 @@
                     </a>
                 </li>
                 <hr class="dropdown-divider">
-                <li class="nav-item">
-                    <a class="nav-link"
-                       data-toggle="modal"
-                       data-target="#pdfPayslipModal">
-                        <i class="fa fa-book text-warning"></i>
-                        Payslip
-                    </a>
-                </li>
+                <p class="text-white mt-1">
+                <i class="fa fa-minus text-warning"></i>
+                    Views
+                </p>
                 <li class="nav-item">
                     <a class="nav-link"
                        href="{% url 'payroll-statement' object.pk %}">
                         <i class="fa fa-book text-warning"></i>
-                        Statement
+                        Pay Statement
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <i class="fa fa-book text-warning"></i>
+                        Balance
                     </a>
                 </li>
             </ul>
+            <hr class="dropdown-divider">
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link" href="#">
@@ -83,12 +86,12 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'staff-list' %}">
-                        <i class="fa fa-reply text-warning"></i> Back</a>
+                        <i class="fa fa-reply text-warning"></i> General</a>
                 </li>
             </ul>
         </div>
-        <div class="col-9">
-            <h2 class="text-secondary text-center bg-light">Comprehensive Data Page</h2>
+        <div class="col-9 mt-3">
+            <h2 class="text-secondary text-center bg-light">Individual Data Page</h2>
             <div class="row">
                 <div class="col-sm-12">
                     <div class="media">
@@ -128,7 +131,7 @@
                             <p>Residential Address: {{object.staff.address}}</p>
                         </div>
                         <div class="col-6">
-                            <p class="text-success">Balance (B/F): {{naira}}{{total_balance}}</p>
+                            <p class="text-success">Profile Balance: {{naira}}{{total_balance}}</p>
                             <p class="text-success">Worked For: {{object.date_employed|timesince}}</p>
                             <hr>
                             <p>Date Employed: {{object.date_employed}}</p>
@@ -308,8 +311,8 @@
             </div>
             <div class="modal-body">
                 <div class="container">
-                    <p>Basic Salary: {{object.basic_salary}}</p>
-                    <p>Allowance: {{object.allowance}}</p>
+                    <p>Salary (Basic + Allowance): {{object.salary}}</p>
+
                     <form action="{% url 'employee-salary-change' object.pk %}"
                           method="post">
                     {% csrf_token %}

@@ -979,20 +979,14 @@ class PayrollStatement(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             return True
         return False
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
     def get(self, request, *args, **kwargs):
+        context = dict()
         staff = Employee.active.get(id=kwargs['pk'])
-        objects = self.model.objects.filter(staff=staff.id)
+        payslips = self.get_queryset().filter(staff=staff.id)
 
-        context = {
-            'code': kwargs['pk'],
-            'objects': objects,
-            'totals': 'list',
-        }
-
+        context['code'] = kwargs['pk']
+        context['objects'] = payslips
+        context['totals'] = 'list'
         return render(request, self.template_name, context=context)
 
 

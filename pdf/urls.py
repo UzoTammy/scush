@@ -1,11 +1,5 @@
 from django.urls import path
-from pdf.views import (CustomerView,
-                       PayrollListView,
-                       EmployeeListView,
-                       RejectedApplicantList,
-                       PayslipView,
-                       PoliciesDocView,
-                       StockViewList)
+from pdf.views import *
 
 
 urlpatterns = [
@@ -14,8 +8,8 @@ urlpatterns = [
     path('staff/list/',  EmployeeListView.as_view(), name='pdf-employee-list'),
     path('apply/rejected/', RejectedApplicantList.as_view(), name='pdf-rejected-list'),
     path('payslip/', PayslipView.as_view(), name='pdf-payslip'),
-
-    path('stock/list/', StockViewList.as_view(), name='pdf-stock-list')
+    path('stock/list/', StockViewList.as_view(), name='pdf-stock-list'),
+    path('staff/summary/', EmployeeSummaryView.as_view(), name='pdf-staff-summary')
 ]
 
 urlpatterns += [

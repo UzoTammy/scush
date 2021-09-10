@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.views.generic import (View, ListView, TemplateView)
 from staff.models import Employee, Payroll
 from stock.models import Product
-from django.db.models import Sum
+from django.db.models import Sum, F, Avg
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -79,14 +79,13 @@ class PayrollListView(LoginRequiredMixin, ListView):
 
 
 class EmployeeListView(LoginRequiredMixin, ListView):
-    model = Employee
     template_name = 'pdf/pdf_staff_list.html'
     queryset = Employee.active.all()
 
     def get(self, request, *args, **kwargs):
         context = {
             'employees': self.get_queryset().order_by('id'),
-            'num_male': Employee.active.filter(staff__gender='MALE'),
+            'num_male': self.get_queryset().filter(staff__gender='MALE'),
             'num_female': Employee.active.filter(staff__gender='FEMALE'),
             'num_single': Employee.active.filter(staff__marital_status='SINGLE'),
             'num_married': Employee.active.filter(staff__marital_status='MARRIED'),
@@ -94,6 +93,33 @@ class EmployeeListView(LoginRequiredMixin, ListView):
             'num_non_management': Employee.active.filter(is_management=False),
         }
         return render_to_pdf(self.template_name, context_dict=context)
+
+
+class EmployeeSummaryView(LoginRequiredMixin, ListView):
+    queryset = Employee.active.all()
+    template_name = 'pdf/pdf_staff_summary.html'
+
+    def get(self, request, *args, **kwargs):
+        grads = self.get_queryset().exclude(
+            staff__qualification='NONE').exclude(
+            staff__qualification='ND/NCE').exclude(
+            staff__qualification='PRIMARY').exclude(
+            staff__qualification='SECONDARY')
+
+        salary = self.get_queryset().annotate(total_salary=12*(F('basic_salary') + F('allowance')))
+        context = {
+            'workforce': self.get_queryset(),
+            'num_female': self.get_queryset().filter(staff__gender='FEMALE'),
+            'num_male': self.get_queryset().filter(staff__gender='MALE'),
+            'num_single': self.get_queryset().filter(staff__marital_status='SINGLE'),
+            'num_married': self.get_queryset().filter(staff__marital_status='MARRIED'),
+            'num_management': self.get_queryset().filter(is_management=True),
+            'num_non_management': self.get_queryset().filter(is_management=False),
+            'num_graduates': grads,
+            'total_salary': salary.aggregate(total=Sum('total_salary'))['total'],
+            'average_salary': salary.aggregate(tsa=Avg('total_salary')),
+        }
+        return render_to_pdf(template_src=self.template_name, context_dict=context)
 
 
 class ApplicantListView(LoginRequiredMixin, ListView):

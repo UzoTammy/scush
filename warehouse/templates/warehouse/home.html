@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <div class="row">
 <!--        side menu-->
-        <div class="col-2 bg-dark">
+        <div class="col-3 bg-dark">
             <ul class="nav flex-column">
                 <li class="nav-item mt-3">
                     <a class="nav-link"
@@ -36,7 +36,7 @@
             </ul>
         </div>
 <!--        body of page-->
-        <div class="col-8">
+        <div class="col-9">
             <div class="container mt-2">
                 <div class="row">
                     <div class="col">
@@ -44,7 +44,7 @@
                     </div>
                 </div>
                 <div class="row mt-2">
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Cumulative Values</h5>
@@ -55,17 +55,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-6">
+                    <div class="col-sm-4">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Rent Status</h5>
-                                <p class="card-text">Payable: {{N}}{{total_rent_payable_per_annum|floatformat:2}}</p>
-                                <p class="card-text text-success">Paid: {{N}}{{rent_amount_paid|floatformat:2}}</p>
-                                <p class="card-text text-danger">Pending: {{N}}{{rent_amount_unpaid|floatformat:2}}</p>
-                                <p class="card-text">Paid: <span class="text-success">{{quantity_rent.paid}}</span>
-                                    | Pending: <span class="text-danger">{{quantity_rent.unpaid}}</span>
-                                    | Total: <span>{{stores.count}}</span>
-                                </p>
+                                <p class="card-text">Payable: {{N}}{{total_rent_payable_per_annum|floatformat:2}} (#<span>{{stores.count}}</span>)</p>
+                                <p class="card-text text-success">Paid: {{N}}{{rent_amount_paid|floatformat:2}} (#<span class="text-success">{{quantity_rent.paid}}</span>) </p>
+                                <p class="card-text text-danger">Pending: {{N}}{{rent_amount_unpaid|floatformat:2}} (#<span class="text-danger">{{quantity_rent.unpaid}}</span>) </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Property Use Type</h5>
                                 <p class="card-text">
                                     Office: {{N}}{% if rent.office == None %}0.00{% else %}{{rent.office}}{% endif %}
                                     ({{rent_percentage.office|floatformat:2}}%)

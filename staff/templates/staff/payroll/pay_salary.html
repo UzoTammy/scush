@@ -10,29 +10,12 @@
                  class="rounded-circle"
                  width="70%"
                  alt="">
-            <div class="row mt-5 ml-2">
-                <form method="post">
-                    {% csrf_token %}
-                    <button type="submit"
-                            name="pk"
-                            value="{{object.pk}}"
-                            class="btn btn-sm btn-outline-primary">
-                    Pay Now
-                </button>
-                </form>
-            </div>
-            <div class="row mt-5 ml-2">
-                <a href="{% url 'start-pay' %}"
-                   class="btn btn-sm btn-outline-dark float-right">
-                    Don't pay
-                </a>
-            </div>
         </div>
         <div class="col-6">
-            <h3>{{object}}</h3>
+            <h3>{{object.staff.fullname}}</h3>
             <p class="text-info">Pay Code: {{object.id|zeropadding:3}}-{{object.period}}</p>
             <h5>Staff ID: {{object.staff.id|zeropadding:3}}</h5>
-            <p>Salary for Period: {{object.period}}</p>
+            <p>Salary for Period: {{object.period}} ({{object.period_month}})</p>
             <p>Date Generated: {{object.date_paid}}</p>
             <p>Banker: {{object.staff.banker}}</p>
             <p>Account Number: {{object.staff.account_number|addsep}}</p>
@@ -71,7 +54,33 @@
                 <hr>
 
             <h3 class="text-success">Net Pay: {{object.net_pay}}</h3>
-
+            <div class="row mt-5 ml-2">
+                <div class="col">
+                    <form method="post">
+                    {% csrf_token %}
+                    <button type="submit"
+                            name="pk"
+                            value="{{object.pk}}"
+                            class="btn btn-sm btn-outline-primary">
+                    Pay Now
+                </button>
+                    </form>
+                </div>
+                <div class="col text-center">
+                    <form action="{% url 'pdf-payslip' %}">
+                        <button type="submit"
+                           class="btn btn-outline-primary btn-sm"
+                            name="payCode" value="{{object.staff.id}}-{{object.period}}">PDF & Print
+                    </button>
+                    </form>
+                </div>
+                <div class="col text-right">
+                    <a href="{% url 'start-pay' %}"
+                    class="btn btn-sm btn-outline-dark">
+                    <i class="fa fa-reply"></i>
+                </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

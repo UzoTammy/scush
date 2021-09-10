@@ -2,225 +2,234 @@
 {% load custom_templates %}
 
 {% block content %}
-<!-- Table, Caption, Workforce, Pagination, Side bar, countdown-->
-<div class="row m-2">
-    <div class="col-sm-12">
-        <table data-toggle="table"
-               data-search="true"
-               data-show-columns="true"
-               data-pagination="true"
-               class="table caption-top table-sm">
-            <caption>
-                <div class="row">
-                    <div class="col">
-                        All Employees<small class="text-muted" style="font-size: 20px">(sorted by ID)</small>
-                    </div>
-                    <div class="col text-right">
-                        <!--  links to variety of listings-->
-                        <a href="{% url 'staff-pictures' %}"
-                           class="btn btn-dark btn-sm text-right">
-                            <i class="fa fa-plus text-success"></i>
-                            Photo
-                        </a>
-                        <a href="#"
-                           class="btn btn-dark btn-sm text-right">
-                            <i class="fa fa-plus text-success"></i>
+<div class="container-fluid">
+    <!-- Table, Caption, Workforce, Pagination, Side bar, countdown-->
+    <div class="row">
+        <div class="col mt-3">
+            <h3 class="text-center">General Staff Page</h3>
+        </div>
+    </div>
+    <div class="row m-2">
+        <div class="col-sm-12">
+            <table data-toggle="table"
+                   data-search="true"
+                   data-show-columns="true"
+                   data-pagination="true"
+                   class="table caption-top table-sm">
+                <caption>
+                    <div class="row">
+                        <div class="col">
+                            All Employees<small class="text-muted" style="font-size: 20px">(sorted by ID)</small>
+                        </div>
+                        <div class="col text-right">
+                            <!--  links to variety of listings-->
+                            <a href="{% url 'staff-pictures' %}"
+                               class="btn btn-dark btn-sm text-right">
+                                <i class="fa fa-plus text-success"></i>
+                                Photo
+                            </a>
+                            <a href="#"
+                               class="btn btn-dark btn-sm text-right">
+                                <i class="fa fa-plus text-success"></i>
 
-                        </a>
-                        <a href="#"
-                           class="btn btn-dark btn-sm text-right">
-                            <i class="fa fa-plus text-success"></i>
+                            </a>
+                            <a href="#"
+                               class="btn btn-dark btn-sm text-right">
+                                <i class="fa fa-plus text-success"></i>
 
-                        </a>
-                        <a href="#"
-                           class="btn btn-dark btn-sm text-right">
-                            <i class="fa fa-plus text-success"></i>
+                            </a>
+                            <a href="#"
+                               class="btn btn-dark btn-sm text-right">
+                                <i class="fa fa-plus text-success"></i>
 
-                        </a>
-                        <a href="{% url 'employee-list-private' %}"
-                           class="btn btn-dark btn-sm text-right">
-                            <i class="fa fa-plus text-success"></i>
-                            Private
-                        </a>
-                        <!-- Button trigger modal -->
-                        <button type="button"
-                                class="btn btn-dark btn-sm text-right"
-                                data-toggle="modal"
-                                data-target="#newEmployeeModal">
-                            <i class="fa fa-plus text-success"></i>
-                            New Employee note
-                        </button>
+                            </a>
+                            <a href="{% url 'employee-list-private' %}"
+                               class="btn btn-dark btn-sm text-right">
+                                <i class="fa fa-plus text-success"></i>
+                                Private
+                            </a>
+                            <!-- Button trigger modal -->
+                            <button type="button"
+                                    class="btn btn-dark btn-sm text-right"
+                                    data-toggle="modal"
+                                    data-target="#newEmployeeModal">
+                                <i class="fa fa-plus text-success"></i>
+                                New Employee note
+                            </button>
 
-                        <!-- Modal -->
-                        <div class="text-left modal fade"
-                             id="newEmployeeModal"
-                             tabindex="-1"
-                             aria-labelledby="newEmployeeModalLabel"
-                             aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title"
-                                            id="newEmployeeModalLabel">
-                                            Ozone-SCUsH | New Employment
-                                        </h5>
-                                        <button type="button" class="fa fa-close text-danger" data-dismiss="modal"
-                                                aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <P>A new staff must come through an application process and cannot be added
-                                            directly.
-                                            Therefore, he or she must have completed the application form in the past,
-                                            and to employ such a person, we must go through the detailed page of the
-                                            applicant.
-                                            An employ link is provided to continue data capture of such staff.
-                                            At the top of the menu, click
-                                            <br>
-                                            <span class="text-center text-danger">
+                            <!-- Modal -->
+                            <div class="text-left modal fade"
+                                 id="newEmployeeModal"
+                                 tabindex="-1"
+                                 aria-labelledby="newEmployeeModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"
+                                                id="newEmployeeModalLabel">
+                                                Ozone-SCUsH | New Employment
+                                            </h5>
+                                            <button type="button" class="fa fa-close text-danger" data-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <P>A new staff must come through an application process and cannot be added
+                                                directly.
+                                                Therefore, he or she must have completed the application form in the
+                                                past,
+                                                and to employ such a person, we must go through the detailed page of the
+                                                applicant.
+                                                An employ link is provided to continue data capture of such staff.
+                                                At the top of the menu, click
+                                                <br>
+                                                <span class="text-center text-danger">
                                         applicant --> name link --> employ
                                     </span>
-                                        </P>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+                                            </P>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">OK
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-            </caption>
+                </caption>
 
-            <thead class="bg-success text-white">
-            <tr>
-                <th scope="col">ID</th>
-                <th width="40px" scope="col">Image</th>
-                <th scope="col">Employee</th>
-                <th scope="col">Date Employed</th>
-                <th scope="col">Status</th>
-                <th scope="col">State</th>
-                <th scope="col">Qualification</th>
-                <th scope="col">Course</th>
-                <th scope="col">Mobile</th>
-                <th scope="col">Official Mobile</th>
-                <th scope="col">Age(yrs)</th>
-                <th scope="col">DOB</th>
-                <th scope="col">Position</th>
-                <th scope="col">Department</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for employee in object_list %}
-            <tr>
-                <th scope="row">{{ employee.pk|zeropadding:3 }}</th>
-                <td><a href="{% url 'employee-detail' employee.id %}">
-                    <img src="{{ employee.image.url }}"
-                         class="rounded-circle"
-                         width="50px"
-                         height="50px"
-                         alt=""></a>
-                </td>
-                <td><a href="{% url 'employee-detail' employee.pk %}">{{employee.fullname}}</a></td>
-                <td>{{employee.date_employed}}</td>
-                <td>{{employee.staff.status|yesno:'Active, Terminated, Leave'}}</td>
-                <td>{{employee.is_confirmed|yesno:'Confirmed, Probation'}}</td>
-                <td>{{employee.staff.qualification}}</td>
-                <td>{{employee.staff.course}}</td>
-                <td>{{employee.staff.mobile|addsep}}</td>
-                {% if employee.official_mobile == None %}
-                <td>No Number</td>
-                {% else %}
-                <td>{{employee.official_mobile|addsep}}</td>
-                {% endif %}
-                <td>{{employee.staff.get_age}}</td>
-                <td>{{employee.staff.birth_date}}</td>
-                <td>{{employee.position}}</td>
-                <td>{{employee.department}}</td>
-            </tr>
-            {% endfor %}
-            </tbody>
-            <tfoot>
-
-            </tfoot>
-        </table>
-        <hr>
-        <!--pagination-->
-        <div class="row text-center">
-            <div class="col">
-                {% if is_paginated %}
-                {% if page_obj.has_previous %}
-                <a href="?page=1" class="btn btn-outline-info btn-sm mb-4">
-                    <i class="fa fa-backward"></i>
-                </a>
-                <a href="?page={{ page_obj.previous_page_number }}"
-                   class="btn btn-outline-info btn-sm mb-4">
-                    <i class="fa fa-step-backward"></i>
-                </a>
-                {% endif %}
-                {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                <a href="?page={{num}}" class="btn btn-info btn-sm mb-4">{{num}}</a>
-                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                <a href="?page={{num}}" class="btn btn-outline-info btn-sm mb-4">{{num}}</a>
-                {% endif %}
+                <thead class="bg-success text-white">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th width="40px" scope="col">Image</th>
+                    <th scope="col">Employee</th>
+                    <th scope="col">Date Employed</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">State</th>
+                    <th scope="col">Qualification</th>
+                    <th scope="col">Course</th>
+                    <th scope="col">Mobile</th>
+                    <th scope="col">Official Mobile</th>
+                    <th scope="col">Age(yrs)</th>
+                    <th scope="col">DOB</th>
+                    <th scope="col">Position</th>
+                    <th scope="col">Department</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for employee in object_list %}
+                <tr>
+                    <th scope="row">{{ employee.pk|zeropadding:3 }}</th>
+                    <td><a href="{% url 'employee-detail' employee.id %}">
+                        <img src="{{ employee.image.url }}"
+                             class="rounded-circle"
+                             width="50px"
+                             height="50px"
+                             alt=""></a>
+                    </td>
+                    <td><a href="{% url 'employee-detail' employee.pk %}">{{employee.fullname}}</a></td>
+                    <td>{{employee.date_employed}}</td>
+                    <td>{{employee.staff.status|yesno:'Active, Terminated, Leave'}}</td>
+                    <td>{{employee.is_confirmed|yesno:'Confirmed, Probation'}}</td>
+                    <td>{{employee.staff.qualification}}</td>
+                    <td>{{employee.staff.course}}</td>
+                    <td>{{employee.staff.mobile|addsep}}</td>
+                    {% if employee.official_mobile == None %}
+                    <td>No Number</td>
+                    {% else %}
+                    <td>{{employee.official_mobile|addsep}}</td>
+                    {% endif %}
+                    <td>{{employee.staff.get_age}}</td>
+                    <td>{{employee.staff.birth_date}}</td>
+                    <td>{{employee.position}}</td>
+                    <td>{{employee.department}}</td>
+                </tr>
                 {% endfor %}
-                {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}"
-                   class="btn btn-outline-info btn-sm mb-4">
-                    <i class="fa fa-step-forward"></i>
-                </a>
-                <a href="?page={{ page_obj.paginator.num_pages }}"
-                   class="btn btn-outline-info btn-sm mb-4">
-                    <i class="fa fa-forward"></i>
-                </a>
-                {% endif %}
-                {% endif %}
+                </tbody>
+                <tfoot>
+
+                </tfoot>
+            </table>
+            <hr>
+            <!--pagination-->
+            <div class="row text-center">
+                <div class="col">
+                    {% if is_paginated %}
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1" class="btn btn-outline-info btn-sm mb-4">
+                        <i class="fa fa-backward"></i>
+                    </a>
+                    <a href="?page={{ page_obj.previous_page_number }}"
+                       class="btn btn-outline-info btn-sm mb-4">
+                        <i class="fa fa-step-backward"></i>
+                    </a>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <a href="?page={{num}}" class="btn btn-info btn-sm mb-4">{{num}}</a>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{num}}" class="btn btn-outline-info btn-sm mb-4">{{num}}</a>
+                    {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}"
+                       class="btn btn-outline-info btn-sm mb-4">
+                        <i class="fa fa-step-forward"></i>
+                    </a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}"
+                       class="btn btn-outline-info btn-sm mb-4">
+                        <i class="fa fa-forward"></i>
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                </div>
+                <!---->
             </div>
-            <!---->
         </div>
     </div>
-</div>
-<div class="row">
-    <div class="col-sm-6 mb-3">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                Earliest Employee: {{earliest_employee}} |
-                Latest Employee: {{latest_employee}}
+    <div class="row">
+        <div class="col-sm-6 mb-3">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    Earliest Employee: {{earliest_employee}} |
+                    Latest Employee: {{latest_employee}}
+                </li>
+                <li class="list-group-item text-success">
+                    Oldest Employee: {{youngest_employee}} |
+                    Youngest Employee: {{oldest_employee}}
+                </li>
+                <li class="list-group-item text-warning">
+                    <a href="">Maximum Wage: {{highest_paid}}</a> |
+                    <a href="">Minimum Wage: {{lowest_paid}}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--{{countdown}}-->
+    <div class="col-sm-4 ml-4">
+        <ul>
+            {% for key, value in countdown %}
+            {% if value != 0 %}
+            <li>{{key}}, your birthday comes up in {{value}}
+                day{{value|pluralize}}
             </li>
-            <li class="list-group-item text-success">
-                Oldest Employee: {{youngest_employee}} |
-                Youngest Employee: {{oldest_employee}}
-            </li>
-            <li class="list-group-item text-warning">
-                <a href="">Maximum Wage: {{highest_paid}}</a> |
-                <a href="">Minimum Wage: {{lowest_paid}}</a>
-            </li>
+            {% endif %}
+            {% endfor %}
         </ul>
     </div>
-</div>
-<!--{{countdown}}-->
-<div class="col-sm-4 ml-4">
-            <ul>
-        {% for key, value in countdown %}
-            {% if value != 0 %}
-                    <li>{{key}}, your birthday comes up in {{value}}
-                        day{{value|pluralize}}
-                    </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
+    <!--Return button-->
+    <div class="container">
+        <div class="row mb-5 float-right">
+            <div class="col">
+                <a type="button" class="btn btn-outline-dark"
+                   href="{% url 'staff-home' %}">
+                    <i class="fa fa-reply"></i>
+                </a>
+            </div>
         </div>
-<!--Return button-->
-<div class="container">
-    <div class="row mb-5 float-right">
-    <div class="col">
-        <a type="button" class="btn btn-outline-dark"
-           href="{% url 'staff-home' %}">
-            <i class="fa fa-reply"></i>
-        </a>
     </div>
-</div>
-</div>
 
+</div>
 {% endblock content %}

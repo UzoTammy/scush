@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+{% load custom_templates %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scush-Staff</title>
+    <style type="text/css">
+            body {
+                font-weight: 100;
+                font-size: 14px;
+            }
+            .header {
+                font-size: 20px;
+                font-weight: 100;
+                text-align: center;
+                color: #007cae;
+            }
+            .title {
+                font-size: 22px;
+                font-weight: 100;
+               /* text-align: right;*/
+               padding: 10px 20px 0px 20px;
+            }
+            .title span {
+                color: #007cae;
+            }
+            .details {
+                padding: 10px 20px 0px 20px;
+                text-align: left !important;
+                /*margin-left: 40%;*/
+            }
+            .hrItem {
+                border: none;
+                height: 1px;
+                /* Set the hr color */
+                color: #333; /* old IE */
+                background-color: #fff; /* Modern Browsers */
+            }
+            small {
+                color: #e7aaad;
+            }
+            table, th, td {
+                border: 1px solid #d6d7ce;
+                padding: 3px;
+            }
+            table {
+                width: 100%;
+            }
+            img {
+
+            }
+        </style>
+</head>
+<body>
+<small>Source: Scush Web App as at {% now "d-m-Y H:i" %} WAT</small>
+<div class='wrapper'>
+    <div class='header'>
+        <p class='title'>Ozone: Employee Summary Report</p>
+    </div>
+</div>
+<div style="margin: 9">
+    <p>Workforce: #{{workforce.count}}</p>
+    <p>Male: #{{num_female.count}}</p>
+    <p>Female: #{{num_male.count}}</p>
+    <p>Single: #{{num_single.count}} </p>
+    <p>Married: #{{num_married.count}}</p>
+    <p>Management: #{{num_management.count}}</p>
+    <p>Non-Management: #{{num_non_management.count}}</p>
+    <p>Probation: #{{num_non_management.count}}</p>
+    <p>Terminated: #{{num_non_management.count}}</p>
+    <p>Graduates: #{{num_graduates.count}}</p>
+    <p>Annual Salary: NGN{{total_salary|floatformat:'2g'}}</p>
+    <p>Monthly Average Salary: NGN{{average_salary.tsa|div:12|floatformat:'2g'}}</p>
+</div>
+</body>
+</html>

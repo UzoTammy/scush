@@ -2,7 +2,6 @@ from django import template
 from django.template.defaultfilters import stringfilter
 from ozone.mytools import Month
 from datetime import date
-from ozone import mytools
 
 register = template.Library()
 
@@ -57,3 +56,12 @@ def payroll_period_next(value):
 @register.filter
 def join(value, arg):
     return f'{arg}-{value}'
+
+
+@register.filter(name='div')
+def divide(value, arg):
+    try:
+        return value/arg
+    except (ValueError, ZeroDivisionError):
+        return None
+
