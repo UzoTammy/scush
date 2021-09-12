@@ -38,5 +38,7 @@ urlpatterns += [
     path('payroll/<int:pk>/statement/', PayrollStatement.as_view(), name='payroll-statement'),
     path('payroll/summary/<str:summary_period>/', PayrollSummaryView.as_view(), name='payroll-summary'),
     path('payroll/modify/', ModifyGeneratedPayroll.as_view(), name='payroll-modify'),
-    path('payroll/modify/<int:pk>/outstanding/', MakeOutstandingValueZero.as_view(), name='payroll-modify-outstanding')
+    path('payroll/modify/<int:pk>/outstanding/', MakeOutstandingValueZero.as_view(), name='payroll-modify-outstanding'),
+    path('payroll/update/tax/', UpdateTax.as_view(), name='update-tax'),
+    path('payroll/balance/', BalanceView.as_view(), name='balance-view')
 ]

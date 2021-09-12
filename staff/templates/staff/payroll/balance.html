@@ -1,0 +1,55 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+{% load djmoney %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-center">Profile Balance</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table table-bordered"
+                   data-toggle="table"
+                   data-pagination="true"
+                   data-show-footer="true"
+                   data-search="true">
+                <thead class="text-center">
+                    <tr>
+                        <th>ID</th>
+                        <th>Staff</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Accrued Balance</th>
+                        <th>Value Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for balance in balances %}
+                    <tr>
+                        <td class="text-center">{{balance.staff.id|zeropadding:3}}</td>
+                        <td>{{balance.staff}}</td>
+                        <td>{{balance.date}}</td>
+                        <td>{{balance.description}}</td>
+                        <td class="text-right">{{balance.value.amount}}</td>
+                        <td>{{balance.value_type}}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                    <th>
+                        <tf>Total</tf>
+                    </th>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a href="{% url 'salary' %}"><i class="fa fa-reply"></i> Return</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

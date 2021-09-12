@@ -1,21 +1,9 @@
 from django.urls import path
 from . import views
-from .views import (AboutView,
-                    IndexView,
-                    HomeView,
-                    CustomerHomeView,
-                    CustomerListView,
-                    CustomerDetailView,
-                    CustomerCreateView,
-                    CustomerUpdateView,
-                    CustomerDeleteView,
-                    CSVPart,
-                    CSVCustomerDetail,
-                    IndexViewTry)
-
+from .views import *
 
 urlpatterns = [
-    path('', IndexView.as_view(template_name='customer/index.html'), name='index'),
+    path('', TemplateView.as_view(template_name='customer/index.html'), name='index'),
     path('home/', HomeView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
     path('company/', views.company, name='company'),
@@ -30,5 +18,4 @@ urlpatterns = [
 urlpatterns += [
     path('csv/customers/', CSVPart.as_view(), name='customer-csv'),
     path('csv/<int:id>/customer/', CSVCustomerDetail.as_view(), name='CSV-customer-detail'),
-    path('my-url/', IndexViewTry.as_view(template_name='pyhtml.html'), name='test-url'),
 ]

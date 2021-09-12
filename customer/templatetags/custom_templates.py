@@ -65,3 +65,7 @@ def divide(value, arg):
     except (ValueError, ZeroDivisionError):
         return None
 
+
+@register.filter
+def minus(value, arg):
+    return value - arg

@@ -206,14 +206,6 @@ class HomeView(TemplateView):
         return context
 
 
-class IndexView(TemplateView):
-    pass
-
-
-class IndexViewTry(TemplateView):
-    pass
-
-
 class CustomerHomeView(TemplateView):
     template_name = 'customer/customer_home.html'
 

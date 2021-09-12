@@ -1,3 +1,5 @@
+import decimal
+
 from .models import (Employee,
                      Payroll,
                      CreditNote,
@@ -1331,3 +1333,35 @@ class PKResetPayroll(View):
         #         payroll.filter(pk=y.id).update(id=x)
         messages.success(request, 'Congrats')
         return HttpResponseRedirect(reverse('pk-reset'))
+
+
+class UpdateTax(UpdateView):
+    model = Employee
+
+    def get(self, request, *args, **kwargs):
+
+        return render(request, 'staff/payroll/tax_update.html')
+
+    def post(self, request, *args, **kwargs):
+        employees = self.get_queryset()
+
+        for employee in employees:
+            annual_pay = employee.basic_salary.amount * 12
+            employee.tax_amount = mytools.Taxation.evaluate(annual_pay) / 12
+            employee.save()
+
+        context = {
+            'employees': employees,
+        }
+        messages.success(request, 'Tax updated successfully !!!')
+        return redirect(reverse('update-tax'), context)
+
+
+class BalanceView(TemplateView):
+    template_name = 'staff/payroll/balance.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'balances': EmployeeBalance.objects.all()
+        }
+        return render(request, self.template_name, context)

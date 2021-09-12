@@ -1,9 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Applicant
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
+from django.contrib import messages
 from django.views.generic import (View,
                                   FormView,
                                   TemplateView,
@@ -15,7 +16,7 @@ from django.views.generic import (View,
                                   )
 from .forms import ApplicantForm, MyForm
 import datetime
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
 
 class ApplyListViewPending(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -125,6 +126,17 @@ class ApplyCreateView(CreateView):
                       recipient_list=[form.instance.email],
                       fail_silently=False)
         return super().form_valid(form)
+
+
+class RejectApplicant(View):
+
+    def get(self, request, *args, **kwargs):
+        applicant = get_object_or_404(Applicant, id=kwargs['pk'])
+        if request.GET['result'] == 'Yes':
+            applicant.status = False
+            applicant.save()
+            messages.info(request, f'{applicant} rejected successfully!!!')
+        return redirect(reverse('apply-detail', kwargs={'pk': applicant.id}))
 
 
 class ApplyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):

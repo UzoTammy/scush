@@ -8,7 +8,7 @@ from .views import (ApplyListViewPending,
                     ApplyDeleteView,
                     ApplyUpdateView,
                     ApplyCreateView,
-                    # MyView
+                    RejectApplicant,
                     )
 from pdf.views import ApplicantListView
 
@@ -23,6 +23,7 @@ urlpatterns = [
     path('apply/<int:pk>/update/', ApplyUpdateView.as_view(), name='apply-update'),
     path('apply/<int:pk>/delete/', ApplyDeleteView.as_view(), name='apply-delete'),
     path('pdf/apply/list/', ApplicantListView.as_view(), name='pdf-apply-list'),
+    path('apply/<int:pk>/reject/', RejectApplicant.as_view(), name='apply-reject'),
 
     path('thanks/', views.successful),
     path('test/', views.test_form, name='test')

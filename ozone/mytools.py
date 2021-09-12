@@ -2,6 +2,7 @@ import datetime
 import calendar
 import csv
 import itertools as it
+from decimal import Decimal
 
 
 class DatePeriod:
@@ -346,4 +347,44 @@ class Period:
             self.year += 1
             return f"{self.year}-{str(self.month).zfill(2)}"
         return f"{self.year}-{str(self.month+1).zfill(2)}"
+
+
+class Taxation:
+    """Reliefs included transport, leave allowance, rents"""
+
+    @classmethod
+    def evaluate(cls, annual_taxable_amount):
+        if annual_taxable_amount < 300_000:
+            # 1%
+            return Decimal(1)/Decimal(100) * annual_taxable_amount
+        elif 300_000 <= annual_taxable_amount < 2*300_000:
+            # 7% and 11%
+            first = 300_000 * Decimal(7)/Decimal(100)
+            second = (annual_taxable_amount - 300_000) * Decimal(11)/Decimal(100)
+            return first + second
+        elif 2*300_000 <= annual_taxable_amount < 2*300_000+500_000:
+            # 7%,11% and 15%
+            first = 300_000 * Decimal(7)/Decimal(100)
+            second = 300_000 * Decimal(11)/Decimal(100)
+            third = (annual_taxable_amount - 2 * 300_000) * Decimal(15)/Decimal(100)
+            return first + second + third
+        elif 2*300_000 + 500_000 <= annual_taxable_amount < 2*(300_000+500_000):
+            # 7%, 11%, 15% and 19%
+            first = 300_000 * Decimal(7)/Decimal(100)
+            second = 300_000 * Decimal(11)/Decimal(100)
+            third = 500_000 * Decimal(15)/Decimal(100)
+            forth = (annual_taxable_amount - 2*300_000 - 500_000) * Decimal(19)/Decimal(100)
+            return first + second + third + forth
+        elif 2 * (300_000 + 500_000) <= annual_taxable_amount < 2 * (300_000 + 500_000) + 1_600_000:
+            # 7% + 11% + 15% + 19% + 21%
+            first = 300_000 * Decimal(7)/Decimal(100)
+            second = 300_000 * Decimal(11)/Decimal(100)
+            third = 500_000 * Decimal(15)/Decimal(100)
+            forth = 500_000 * Decimal(19)/Decimal(100)
+            fifth = (annual_taxable_amount - 2*300_000 - 2*500_000) * Decimal(21)/Decimal(100)
+            return first + second + third + forth + fifth
+        else:
+            return annual_taxable_amount * Decimal(24)/Decimal(100)
+
+
 

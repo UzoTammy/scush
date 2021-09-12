@@ -4,8 +4,13 @@
         background-size: cover;
         background-color: #fff7f7;
         }
+
     h3 {
         font-family: 'fontawesome 5 brand'; font-weight: 400; content: '/f007';
+        color: #426173;
+    }
+
+    h6 {
         color: #426173;
     }
 

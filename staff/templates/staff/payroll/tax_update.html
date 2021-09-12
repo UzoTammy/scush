@@ -1,0 +1,100 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+{% load djmoney %}
+
+
+{% block content %}
+<div class="container p-2">
+    <div class="row">
+        <div class="col text-center mt-3">
+            <h3>Tax Update Page</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>Personal Income Tax law as stated by the tax body FIRS on the front page of their website <a
+                    href="https://www.firs.gov.ng/personal-income-tax-pit/">you can check it out</a></p>
+            <ul>
+                <li>Personal Income Tax is guided by the Personal Income Tax Act Cap P8 LFN 2004 (as amended)</li>
+                <li>The tax is imposed on income of Individuals, Corporate sole or body of individuals, Communities,
+                    Families and Trustees or Executors of any settlement- An individual is entitled to a
+                    Consolidated Relief Allowance of N200,000 or 1% of gross income whichever is higher plus 20% of
+                    gross income</li>
+                <li>The rate of the tax ranges from 7% to 24%, depending on the amount of chargeable income-
+                    Individuals are subject to minimum tax of 1% of gross income where the income is less than N300,000
+                    per annum</li>
+                <li>The tax is administered by FCT/States Internal Revenue Service(IRS) in respect of their residents</li>
+                <li>The tax is also administered by FIRS on non-residents, members of the Armed Forces, Police,
+                    Officers of Nigerian Foreign Service</li>
+                <li>The due date for filing returns of the tax is 31st March of every year</li>
+                <li>The due date for remittance of PAYE is 10th day of every succeeding month</li>
+                <li>An employer shall file return of emoluments and tax deducted from the employees in the preceding
+                    year not later than 31st January of every year</li>
+                <li>A person who fails to file a return shall be liable on conviction to a fine of N5,000 and a further
+                    sum of N100 for every day during which the failure continues or imprisonment of six (6) months
+                    or both</li>
+                <li>Any employer who fails to file a return, shall be liable on conviction to a penalty of N500,000 for
+                    body corporate (corporate body they meant) and N50,000 in the case of individual</li>
+            </ul>
+<!--            The tax rate table-->
+            <div class="bg-light row d-flex justify-content-center">
+                <div class="col-6 text-center">
+                    <table class="table table-bordered">
+                        <caption>The Tax Rate Table</caption>
+                <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Rate</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Less than N300,000.00</td>
+                        <td>01%</td>
+                    </tr>
+                    <tr>
+                        <td>First N300,000.00</td>
+                        <td>07%</td>
+                    </tr>
+                    <tr>
+                        <td>Next NGN300,000.00</td>
+                        <td>11%</td>
+                    </tr>
+                    <tr>
+                        <td>Next NGN500,000.00</td>
+                        <td>15%</td>
+                    </tr>
+                    <tr>
+                        <td>Next NGN500,000.00</td>
+                        <td>19%</td>
+                    </tr>
+                    <tr>
+                        <td>Next NGN1, 600,000.00</td>
+                        <td>21%</td>
+                    </tr>
+                    <tr>
+                        <td>Above NGN3,200,000.00</td>
+                        <td>24%</td>
+                    </tr>
+                </tbody>
+            </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row p-3">
+        <form action="" method="post">
+            {% csrf_token %}
+        <div class="col">
+            <input class="btn btn-outline-primary" type="submit" value="Validate Tax">
+        </div>
+        </form>
+        <div class="col text-right">
+            <a class="btn btn-outline-dark"
+               href="{% url 'salary' %}"><i class="fa fa-reply"></i> Return</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

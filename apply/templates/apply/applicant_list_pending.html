@@ -2,7 +2,8 @@
 {% load custom_templates %}
 
 {% block content %}
-<div class="row m-3">
+<div class="container-fluid">
+    <div class="row m-1">
     <div class="col">
         <table data-toggle="table"
            data-search="true"
@@ -65,4 +66,14 @@
 </table>
     </div>
 </div>
+    <div class="row m-1">
+        <div class="col text-right">
+        <a class="btn btn-outline-dark"
+           href="{% url 'home' %}">
+            <i class="fa fa-reply"></i> Home
+        </a>
+    </div>
+    </div>
+</div>
+
 {% endblock %}

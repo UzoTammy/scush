@@ -1,36 +1,52 @@
 {% extends 'users/base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="container mt-3">
     <div class="row">
-        <div class="col">
-            <h3>Company Policies</h3>
+        <div class="col text-center">
+            <img src="{% static 'customer/logo.png' %}"
+                 class="rounded-circle shadow"
+                 width="12%"
+                 alt="">
         </div>
     </div>
     <div class="row">
-        <div style="font-family: Times New Roman; font-size: 12pt"
-             class="col">
+        <div class="col">
+            <h3>1. Human Resource Policy</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-8">
             <p>
                 Company Policies are created to establish expectations and to provide guidance on how to
                 consistently handle workplace situations. Although these policies cannot be all-encompassing, they
                 provide direction regarding what is appropriate as well as inappropriate or unacceptable behaviour.
-                This document help maintain order within the organization and ensure that staff are treated fairly and
-                equally.
+                Therefore, the aim is to provide you with decision, behaviour, actions and processes to take in
+                specific scenarios.
             </p>
             <p>
-                Our aim is to set up easily accessible company policies that is clear and help set behavioral and
-                performance standard within the workplace. This document will help all staff avoid failure and its
+                Easily accessible company policies that is clear and help set behavioral and performance standard
+                within the workplace is inevitable. This document will help all staff avoid failure and its
                 consequences. It will outline rules to abide by and therefore keep management accountable.
-                No matter what, this document is not perfect and will always be subject to reviews from time to time
+                No matter what, this document is not perfect and will always be subject to review from time to time
                 with the intention to make it better as we share experiences together.
             </p>
-            <h5>Employment Policy</h5>
+
+            <p>
+                This company policy is the Human Resource Policy which is divided into sessions
+                and where necessary into sub-sessions as itemized below.
+            </p>
+            <h5>1.1 Employment Policy</h5>
             <p>
                 Any one who intend to work with Ozone, must tender an application letter, fill application
                 form, provide valid and acceptable guarantor. With the application and the forms filled, he/she will be
-                granted interview and be considered for employment or rejection. Should we discover wrong information
-                or intention to deceive management, your employment will be terminated immediately no matter the level
-                and the benefit you must have attained.
+                granted interview and be considered for employment or not. Should we discover wrong and misleading
+                information in your application or any other form filled for employment, your employment will be
+                terminated
+                immediately with no benefits whatsoever and no matter the level you may have attained or the time you
+                must
+                have spent with us.
             </p>
             <p>
                 Congratulations!!! Now, you are part of us and must have received your employment letter, whatever is
@@ -38,10 +54,10 @@
                 remainder of our policies, our procedures and our rules of engagement and any other necessary document
                 that will help you succeed.
             </p>
-            <h5>Punctuality Policy</h5>
-            <ul>
+            <h5>1.2. Punctuality Policy</h5>
+            <ol>
                 <li>
-                <b>Late to Work Policy:</b> Resumption time is 7:45am and closing time is 5:45pm. You are advised to
+                    <b>Late to Work Policy:</b> Resumption time is 7:45am and closing time is 5:45pm. You are advised to
                     resume before time and depart after closing time. However, If you must be late, send a
                     <i class="text-success">written message</i> (not excluding SMS or chat) to HRM giving your
                     reason. If approved permission can then be granted in man-hours.
@@ -53,46 +69,80 @@
                     to HRM through your line head who is to recommend to the HRM whether to approve or not.
                     The HRM will receive this application seven(7) days before the commencement date and will have to
                     approve it three(3) days to the commencement date. However, only on an emergency case can we waive
-                    the durations. In both situations, approval notice document must be obtained else the request is null
+                    the durations. In both situations, approval notice document must be obtained else the request is
+                    null
                     and void. A staff must take over the role pending your return and handover of the role back to you.
                 </li>
-            </ul>
-            <p class="text-center bg-dark text-warning">Note that permission given are in man-hours and will affect your
-                punctuality score
-            </p>
-            <h5>Probation Period Policy</h5>
-            <p>
-            Every staff is given ninety(90) days probation period to prove him or herself. Within this period the
-            company reserves the right to terminate your employment and also you have the right to terminate your
-            employment. A one week notice by either party is required and doing so, company will pay you your accrued
-            pay but if there is no prior notice or less than a week notice, you will loose your accrued salary. Also,
-            within this period, you are not entitled to any bonus or incentive payable by the company, except on
-            express approval by management.
-            </p>
-            <h5>Reassignment Policy</h5>
+            </ol>
+            <h5>1.3. Probation Period Policy</h5>
+            <ol>
+                <li><b>Primary Probation:</b>
+                Every newly staff is given ninety(90) days probation period to prove him or herself. Within this period the
+                company reserves the right to terminate your employment also, you have the right to terminate your
+                employment. A one week notice by either party is required and doing so, company will pay you your
+                accrued
+                pay but if there is no prior notice or less than a week notice, you will loose your accrued salary.
+                Also,
+                within this period, you are not entitled to any bonus or incentive payable by the company, except on
+                express approval by management.</li>
+                <li><b>Secondary Probation:</b> Old staff can be reassigned to a higher position
+                and as such, he or she will enter a probation period stated in the assignment brief.
+                During this period, the staff is still entitled to all benefits as usual but will not get a raise in
+                salary until confirmed into such position. Except otherwise approved by MD</li>
+            </ol>
+            <h5>1.4. Reassignment Policy</h5>
             <p>
                 This involves moving you from one position and/or branch to another this occurs from time to time as
                 necessary to ensure smooth operation of the company. Be reminded that our employment policy do not
                 specifically pin you into a particular position or branch, therefore, we expect you to be ready to take
                 up any reassignment designated to you at any time.
             </p>
-            <h5>Resignation Policy</h5>
+            <h5>1.5. Suspension Policy</h5>
+            <p>Suspension can be served to any staff as a result of misconduct, policy and procedure bridge. Suspension
+            will be served from the HR department or from the MD directly. It is meant to serve as warning and deterrent
+            The details of such suspension will be contained in the suspension letter.</p>
+            <h5>1.6. Resignation Policy</h5>
             <p>
-                When you decide to resign your appointment, You must tender your resignation letter at least fourteen (14)
+                When you decide to resign your appointment, You must tender your resignation letter at least fourteen
+                (14)
                 days from your last date at work. During this period, you are expected to return all company properties
-                in your custody and do carry out your designated tasks as usual. You must obtain clearance from your line
+                in your custody and do carry out your designated tasks as usual. You must obtain clearance from your
+                line
                 head and every other necessary parties involved with you in carrying out your duties as a staff of this
                 company. Quitting your job without communicating us in written
             </p>
-            <h5>Termination Policy</h5>
+            <h5>1.7. Termination Policy</h5>
             <p>
                 This company reserves the right to terminate your appointment at any time deemed necessary the
-                company will state the time of your last day at work. If termination is within the month and it is not
+                company will state the time of your last day at work. If termination is within the month and it is
+                <i>NOT</i>
                 related to fraud and gross misconduct, you will be paid in full your current basic salary at the end of
                 the month and after due confirmation and clearance, any reserved bonuses accrued to you will be paid
-                much later when company is certain that there are no outstanding liabilities in your name. However,
-                you will incur immediate sack with no time to spare and no benefits whatsoever.
+                much later when company is certain that there are no outstanding liabilities in your name. However, if
+                the termination is related to fraud/crime you will incur immediate sack with no time to spare and no
+                benefits whatsoever and a possible prosecution.
             </p>
+        </div>
+        <div class="col-sm-4">
+            <ul class="list-group">
+                <li class="list-group-item active">List of Misconducts (You must NOT do)</li>
+                <li class="list-group-item">Keep malice</li>
+                <li class="list-group-item">Fight at workplace or anywhere around the workplace</li>
+                <li class="list-group-item">Discriminate including tribal, religious and gender</li>
+                <li class="list-group-item">Join or create any unofficial group</li>
+                <li class="list-group-item">Misuse or abuse company's properties</li>
+                <li class="list-group-item">Disrespect your fellow staff especially your superior</li>
+                <li class="list-group-item">Take company's property without due approval</li>
+                <li class="list-group-item">Cover up or aid fraud/crime</li>
+                <li class="list-group-item">Accept inducement from customers</li>
+                <li class="list-group-item">Disrespect or abuse customers</li>
+                <li class="list-group-item">Operating or engaged in a parallel business operating
+                    within work hours
+                </li>
+                <li class="list-group-item">Addicted to social media platform while at work</li>
+                <li class="list-group-item">Use of face cap, headset/earpiece is prohibited</li>
+                <li class="list-group-item">Keeping untidy and bushy hair and/or indecent dressing</li>
+            </ul>
         </div>
     </div>
 </div>

@@ -5,10 +5,10 @@
 
 {% block content %}
 
-<div class="container mt-3">
+<div class="container mt-5">
 <!--    The detailed view-->
     <div class="row">
-        <div class="col">
+        <div class="col d-flex justify-content-center">
             <div class="card mb-3" style="max-width: 540px;">
                 <div class="row g-0">
                     <div class="col-md-4 text-center">
@@ -44,9 +44,28 @@
 
                 <!--The buttons-->
                 <div class="row ml-2 mb-2">
-                    <!--        update-->
+                    <!--        Employ-->
                     <div class="col">
-                        <a href="{% url 'apply-update' object.id %}" class="btn btn-info btn-sm">Update</a>
+                        {% if object.status is None %}
+                            <a href="{% url 'employee-create' object.pk %}" class="btn btn-success btn-sm">
+                                Employ</a>
+                        {% else %}
+                            <a href="{% url 'employee-create' object.pk %}" class="btn btn-secondary btn-sm"
+                               style="pointer-events: none;">
+                                Employ</a>
+                        {% endif %}
+
+                    </div>
+
+                    <!--Reject-->
+                    <div class="col">
+                        <a href="#"
+                           data-target="#rejectModal"
+                           data-toggle="modal"
+                           tabindex="-1"
+                           class="btn btn-info btn-sm">
+                            Reject
+                        </a>
                     </div>
                     <!--       Delete -->
                     <!-- Button trigger modal -->
@@ -65,22 +84,8 @@
                         <a href="{% url 'apply' %}" class="btn btn-secondary btn-sm">
                             <i class="fa fa-reply text-danger"></i></a>
                     </div>
-                    <!--        Employ-->
-                    <div class="col">
-                        {% if object.status is None %}
-                            <a href="{% url 'employee-create' object.pk %}" class="btn btn-success btn-sm">
-                                Employ</a>
-                        {% else %}
-                            <a href="{% url 'employee-create' object.pk %}" class="btn btn-secondary btn-sm"
-                               style="pointer-events: none;">
-                                Employ</a>
-                        {% endif %}
-
-                    </div>
-
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -114,5 +119,34 @@
     </div>
   </div>
 </div>
-
+<!--For Reject-->
+<div class="modal fade"
+     id="rejectModal"
+     tabindex="-1"
+     aria-labelledby="rejectModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rejectModalLabel">Reject - {{object}}</h5>
+        <button type="button"
+                class="btn-close"
+                data-dismiss="modal"
+                aria-label="Close">
+            <i class="fa fa-close text-danger"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to reject this applicant?
+      </div>
+        <form action="{% url 'apply-reject' object.id %}">
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-danger" name="result" value="Yes">Yes</button>
+        <button
+           type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

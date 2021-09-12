@@ -51,39 +51,47 @@
         <div class="col-3 bg-light">
             <ul class="list-group list-group-flush">
             <!--Employee-->
-          <li class="list-group-item">
-              <div class="row mb-1">
-                <a class="ml-1" href="{% url 'staff-list' %}">
-                    Employee
-                </a>
-                </div>
-          </li>
-        <!--                 Pdf employee summary-->
-          <li class="list-group-item">
-              <div class="row mb-1">
-                <a class="ml-1" href="{% url 'pdf-staff-summary' %}">Employee(PDF)</a>
-              </div>
-          </li>
-            <!--Payroll-->
-          <li class="list-group-item">
-              <div class="row mb-1">
-                <a class="ml-1" href="{% url 'salary' %}">Payroll</a>
-              </div>
-          </li>
-            <!--Policies-->
-          <li class="list-group-item"><div class="row mb-1">
-                        <a class="ml-1" href="{% url 'staff-policies' %}">Policies</a>
-                    </div></li>
-            <!--Procedures-->
-          <li class="list-group-item"><div class="row mb-1">
-                        <a class="ml-1" href="">Procedure</a>
-                    </div></li>
-            <!--    SCUSH-->
-          <li class="list-group-item"><div class="row mb-1">
-                        <a class="ml-1" href="{% url 'staff-scush' %}">Progress with SCUSH</a>
-                    </div></li>
-<!--                Return Home-->
-            <li class="list-group-item">
+              <li class="list-group-item">
+                  <div class="row mb-1">
+                    <a class="ml-1" href="{% url 'staff-list' %}">
+                        Employee
+                    </a>
+                    </div>
+              </li>
+            <!-- Pdf employee summary-->
+              <li class="list-group-item">
+                  <div class="row mb-1">
+                    <a class="ml-1" href="{% url 'pdf-staff-summary' %}">Employee(PDF)</a>
+                  </div>
+              </li>
+                <!--Payroll-->
+              <li class="list-group-item">
+                  <div class="row mb-1">
+                    <a class="ml-1" href="{% url 'salary' %}">Payroll</a>
+                  </div>
+              </li>
+<!--                Profile balance-->
+              <li class="list-group-item">
+                  <div class="row mb-1">
+                    <a class="ml-1" href="{% url 'balance-view' %}">
+                        Profile Balance
+                    </a>
+                    </div>
+              </li>
+                <!--Policies-->
+              <li class="list-group-item"><div class="row mb-1">
+                            <a class="ml-1" href="{% url 'staff-policies' %}">Policies</a>
+                        </div></li>
+                <!--Procedures-->
+              <li class="list-group-item"><div class="row mb-1">
+                            <a class="ml-1" href="">Procedure</a>
+                        </div></li>
+                <!--    SCUSH-->
+              <li class="list-group-item"><div class="row mb-1">
+                            <a class="ml-1" href="{% url 'staff-scush' %}">Progress with SCUSH</a>
+                        </div></li>
+                <!--                Return Home-->
+                <li class="list-group-item">
                 <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
             </li>
         </ul>

@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.views.generic import (View, ListView, TemplateView)
 from staff.models import Employee, Payroll
 from stock.models import Product
-from django.db.models import Sum, F, Avg
+from django.db.models import Sum, F, Avg, Min
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -106,8 +106,10 @@ class EmployeeSummaryView(LoginRequiredMixin, ListView):
             staff__qualification='PRIMARY').exclude(
             staff__qualification='SECONDARY')
 
-        salary = self.get_queryset().annotate(total_salary=12*(F('basic_salary') + F('allowance')))
+        annual_salary = self.get_queryset().annotate(total_salary=12*(F('basic_salary') + F('allowance')))
+        monthly_salary = self.get_queryset().annotate(total_salary=F('basic_salary') + F('allowance'))
         context = {
+            'now': datetime.datetime.now(),
             'workforce': self.get_queryset(),
             'num_female': self.get_queryset().filter(staff__gender='FEMALE'),
             'num_male': self.get_queryset().filter(staff__gender='MALE'),
@@ -115,9 +117,15 @@ class EmployeeSummaryView(LoginRequiredMixin, ListView):
             'num_married': self.get_queryset().filter(staff__marital_status='MARRIED'),
             'num_management': self.get_queryset().filter(is_management=True),
             'num_non_management': self.get_queryset().filter(is_management=False),
+            'num_all_time': Employee.objects.count(),
+            'num_probation': self.get_queryset().filter(is_confirmed=False),
             'num_graduates': grads,
-            'total_salary': salary.aggregate(total=Sum('total_salary'))['total'],
-            'average_salary': salary.aggregate(tsa=Avg('total_salary')),
+            'total_salary': annual_salary.aggregate(total=Sum('total_salary'))['total'],
+            'average_salary': monthly_salary.aggregate(tsa=Avg('total_salary')),
+            'total_net_pay': Payroll.objects.aggregate(total=Sum('net_pay')),
+            'minimum_wage': monthly_salary.aggregate(value=Min('total_salary')),
+            'youngest': self.get_queryset().latest('staff__birth_date').staff.birth_date,
+            'oldest': self.get_queryset().earliest('staff__birth_date').staff.birth_date,
         }
         return render_to_pdf(template_src=self.template_name, context_dict=context)
 
