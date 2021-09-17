@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.db import models
 from djmoney.models.fields import MoneyField
 from django.utils import timezone
-
+from staff.models import Employee
 
 class ActiveStoreManager(models.Manager):
     """"To work those stores that are not disabled"""
@@ -47,3 +47,10 @@ class Renewal(models.Model):
                              decimal_places=2,
                              default_currency='NGN')
     expiry_date = models.DateField()
+
+
+class BankAccount(models.Model):
+    store = models.OneToOneField(Stores, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    account_number = models.CharField(max_length=10)
+    bank = models.CharField(max_length=10, choices=Employee.BANKS)

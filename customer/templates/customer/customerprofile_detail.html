@@ -43,14 +43,14 @@
                 <a href="{% url 'customer-delete' object.id %}" class="btn btn-danger btn-sm">Delete</a>
             </div>
             <div class="col">
-                <a href="{% url 'customer-list' %}" class="btn btn-secondary btn-sm">
+                <a href="{% url 'customer-list-all' %}" class="btn btn-secondary btn-sm">
                     <i class="fa fa-reply text-danger"></i> Return</a>
             </div>
         </div>
         {% else %}
         <div class="row mt-3">
             <div class="col">
-                <a href="{% url 'customer-list' %}" class="btn btn-secondary btn-sm">
+                <a href="{% url 'customer-list-all' %}" class="btn btn-secondary btn-sm">
                     <i class="fa fa-reply text-danger"></i> Return</a>
             </div>
         </div>

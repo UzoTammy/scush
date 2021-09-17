@@ -1,12 +1,13 @@
 {% extends 'users/base.html' %}
 
 {% block content %}
-<div class="row m-2">
-    <div class="col-sm-12">
+<div class="container-fluid">
+    <div class="row m-2">
+        <div class="col-sm-12">
         <table data-search="true"
                    data-pagination="true"
                    data-toggle="table"
-                   class="table caption-top table-bordered table-sm">
+                   class="table table-bordered table-info caption-top table-bordered table-sm">
                 <caption>
                     <div class="row">
                         <div class="col text-center">
@@ -45,11 +46,50 @@
             {% endfor %}
                 </tbody>
             </table>
-        <div class="row float-right">
+
+    </div>
+    </div>
+
+    <div class="row m-2 bg-light">
+        <div class="col">
+            <table data-search="true"
+                   data-pagination="true"
+                   data-toggle="table"
+                   class="table table-bordered caption-top table-info table-sm">
+                <caption>
+                    <div class="row">
+                        <div class="col text-center">
+                            Bank Details
+                        </div>
+                    </div>
+                </caption>
+                <thead class="bg-dark text-white">
+                <tr>
+                    <th scope="col">Store</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Number</th>
+                    <th scope="col">Bank</th>
+                </tr>
+                </thead>
+                <tbody>
+            {% for object in stores_bank %}
+                <tr>
+                    <th scope="row"><a href="{% url 'warehouse-bank-update' object.pk %}">{{object.store.name}}</a></th>
+                    <td>{{object.name}}</td>
+                    <td>{{object.account_number}}</td>
+                    <td>{{object.bank}}</td>
+                </tr>
+            {% endfor %}
+                </tbody>
+            </table>
+            {{banks}}
+        </div>
+    </div>
+
+    <div class="row m-2 float-right">
         <div class="col">
             <a type="button" class="btn btn-outline-dark" href="{% url 'warehouse-home' %}"><i class="fa fa-reply"></i></a>
         </div>
-    </div>
     </div>
 </div>
 {% endblock %}

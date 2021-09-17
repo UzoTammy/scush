@@ -9,14 +9,21 @@
                 <li class="nav-item mt-3">
                     <a class="nav-link"
                        href="{% url 'warehouse-list-all' %}">
-                        <i class="fa fa-eye-slash text-warning"></i> All
+                        <i class="fa fa-eye-slash text-warning"></i> View Stores
                     </a>
                 </li>
             </ul>
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'warehouse-create' %}">
-                        <i class="fa fa-plus text-warning"></i> Add
+                        <i class="fa fa-plus text-warning"></i> Add Store
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'warehouse-bank-create' %}">
+                        <i class="fa fa-plus text-warning"></i> Add Bank Account
                     </a>
                 </li>
             </ul>

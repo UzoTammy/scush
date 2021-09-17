@@ -2,7 +2,7 @@ import datetime
 import calendar
 from django.urls import reverse_lazy
 from django.views.generic import (View, TemplateView, ListView, CreateView, UpdateView, DetailView)
-from .models import Stores, Renewal
+from .models import Stores, Renewal, BankAccount
 from .form import StoreForm
 from django.db.models import Sum
 from django.shortcuts import redirect
@@ -79,6 +79,11 @@ class StoresListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(StoresListView, self).get_context_data(**kwargs)
+        context['stores_bank'] = BankAccount.objects.all()
+        return context
 
 
 class StoreHelpView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -193,3 +198,25 @@ class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         # the message
         messages.success(request, f'Rent renewal saved successfully !!!')
         return redirect('warehouse-detail', pk=kwargs['pk'])
+
+
+class BankAccountCreate(CreateView):
+    model = BankAccount
+    success_url = reverse_lazy('warehouse-home')
+    fields = '__all__'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Add'
+        return context
+
+
+class BankAccountUpdate(UpdateView):
+    model = BankAccount
+    success_url = reverse_lazy('warehouse-home')
+    fields = '__all__'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Update'
+        return context
