@@ -1,0 +1,50 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <table data-toggle="table"
+                    data-pagination="true"
+                    data-search="true"
+                    class="table table-bordered">
+                <caption>Trade Table</caption>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Period</th>
+                    <th>Year</th>
+                    <th>Opening Stock</th>
+                    <th>Sales</th>
+                    <th>Purchase</th>
+                    <th>Expenses</th>
+                    <th>Closing Stock</th>
+                    <th>Gross Profit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr>
+                    <td><a href="{% url 'trade-detail' object.pk %}">{{object.id|zeropadding:3}}</a></td>
+                    <td>{{object.period}}</td>
+                    <td>{{object.year|stringformat:'i'}}</td>
+                    <td>{{object.opening_value}}</td>
+                    <td>{{object.sales}}</td>
+                    <td>{{object.purchase}}</td>
+                    <td>{{object.expenses}}</td>
+                    <td>{{object.closing_value}}</td>
+                    <td>{{object.gross_profit}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col text-right">
+            <a class="btn btn-outline-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i> Trade Home</a>
+        </div>
+    </div>
+</div>
+{% endblock content%}

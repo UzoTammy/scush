@@ -1,0 +1,34 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-3">
+        <div class="col text-center">
+            <h3>Details for {{object}}</h3>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <ul class="list-group">
+                <li class="list-group-item">ID: {{object.id|zeropadding:3}}</li>
+                <li class="list-group-item">Year: {{object.year|stringformat:'d'}}</li>
+                <li class="list-group-item">Month: {{object.period}}</li>
+                <li class="list-group-item">Sales: {{object.sales}}</li>
+                <li class="list-group-item">Purchase: {{object.purchase}}</li>
+                <li class="list-group-item">Expenses: {{object.expenses}}</li>
+                <li class="list-group-item">Opening Stock Value: {{object.opening_value}}</li>
+                <li class="list-group-item">Closing Stock Value: {{object.closing_value}}</li>
+            </ul>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <a class="btn btn-outline-dark" href="{% url 'trade-update' object.pk %}">Update</a>
+        </div>
+        <div class="col text-right">
+            <a class="btn btn-outline-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i> Trade Home</a>
+        </div>
+    </div>
+</div>
+{% endblock content%}
