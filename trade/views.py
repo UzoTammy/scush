@@ -1,5 +1,5 @@
 import datetime
-from django.db.models.expressions import OrderBy
+from .form import TradeMonthlyForm
 from django.shortcuts import redirect, render
 from django.views.generic import (TemplateView, 
                                     CreateView,
@@ -24,25 +24,27 @@ class TradeHome(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.monthly_trade.exists():
+            df = 10_000 # decimal factor
             net_profit_qs = self.monthly_trade.annotate(net_profit=(F('gross_profit') - F('expenses')))
+            
             percent_margin_qs = self.monthly_trade.annotate(
-                percent_margin=ExpressionWrapper(100*F('gross_profit') / F('sales'), 
-                                                output_field=DecimalField()
+                percent_margin=ExpressionWrapper(100*df*F('gross_profit') / F('sales'), 
+                                                output_field=DecimalField(decimal_places=2)
                                                 )
             )
             percent_sales_qs = self.monthly_trade.annotate(
-                percent_sales=ExpressionWrapper(100*F('expenses') / F('sales'), 
-                                                output_field=DecimalField()
+                percent_sales=ExpressionWrapper(100*df*F('expenses') / F('sales'), 
+                                                output_field=DecimalField(decimal_places=2)
                                                 )
             )
             percent_gross_qs = self.monthly_trade.annotate(
-                percent_gross=ExpressionWrapper(100*F('expenses') / F('gross_profit'), 
-                                                output_field=DecimalField()
+                percent_gross=ExpressionWrapper(100*df*F('expenses') / F('gross_profit'), 
+                                                output_field=DecimalField(decimal_places=2)
                                                 )
             )
             percent_purchase_qs = self.monthly_trade.annotate(
-                percent_purchase=ExpressionWrapper(100*F('expenses') / F('purchase'), 
-                                                output_field=DecimalField()
+                percent_purchase=ExpressionWrapper(100*df*F('expenses') / F('purchase'), 
+                                                output_field=DecimalField(decimal_places=2)
                                                 )
             )
             
@@ -54,10 +56,10 @@ class TradeHome(TemplateView):
                 'expenses': self.monthly_trade.aggregate(total=Sum('expenses'))['total'],
                 'gross_profit': self.monthly_trade.aggregate(total=Sum('gross_profit'))['total'],
                 'net_profit': net_profit_qs.aggregate(total=Sum('net_profit'))['total'],
-                'percent_margin': percent_margin_qs.aggregate(total=Sum('percent_margin'))['total'],
-                'percent_sales': percent_sales_qs.aggregate(total=Sum('percent_sales'))['total'],
-                'percent_gross': percent_gross_qs.aggregate(total=Sum('percent_gross'))['total'],
-                'percent_purchase': percent_purchase_qs.aggregate(total=Sum('percent_purchase'))['total'],
+                'percent_margin': percent_margin_qs.aggregate(total=Avg('percent_margin'))['total']/df,
+                'percent_sales': percent_sales_qs.aggregate(total=Avg('percent_sales'))['total']/df,
+                'percent_gross': percent_gross_qs.aggregate(total=Avg('percent_gross'))['total']/df,
+                'percent_purchase': percent_purchase_qs.aggregate(total=Avg('percent_purchase'))['total']/df,
                 }
             context['current_year_average'] = {
                 'sales': self.monthly_trade.aggregate(average=Avg('sales'))['average'],
@@ -65,10 +67,10 @@ class TradeHome(TemplateView):
                 'expenses': self.monthly_trade.aggregate(average=Avg('expenses'))['average'],
                 'gross_profit': self.monthly_trade.aggregate(average=Avg('gross_profit'))['average'],
                 'net_profit': net_profit_qs.aggregate(average=Avg('net_profit'))['average'],
-                'percent_margin': percent_margin_qs.aggregate(average=Avg('percent_margin'))['average'],
-                'percent_sales': percent_sales_qs.aggregate(average=Avg('percent_sales'))['average'],
-                'percent_gross': percent_gross_qs.aggregate(average=Avg('percent_gross'))['average'],
-                'percent_purchase': percent_purchase_qs.aggregate(average=Avg('percent_purchase'))['average'],
+                'percent_margin': percent_margin_qs.aggregate(average=Avg('percent_margin'))['average']/df,
+                'percent_sales': percent_sales_qs.aggregate(average=Avg('percent_sales'))['average']/df,
+                'percent_gross': percent_gross_qs.aggregate(average=Avg('percent_gross'))['average']/df,
+                'percent_purchase': percent_purchase_qs.aggregate(average=Avg('percent_purchase'))['average']/df,
                 }
 
             current_month = self.monthly_trade.last().period
@@ -84,10 +86,10 @@ class TradeHome(TemplateView):
                 'expenses': current_month_qs.expenses.amount,
                 'gross_profit': current_month_qs.gross_profit.amount,
                 'net_profit': net_profit_qs.get(period=current_month).net_profit,
-                'percent_margin': percent_margin_qs.get(period=current_month).percent_margin,
-                'percent_sales': percent_sales_qs.get(period=current_month).percent_sales,
-                'percent_gross': percent_gross_qs.get(period=current_month).percent_gross,
-                'percent_purchase': percent_purchase_qs.get(period=current_month).percent_purchase,
+                'percent_margin': percent_margin_qs.get(period=current_month).percent_margin/df,
+                'percent_sales': percent_sales_qs.get(period=current_month).percent_sales/df,
+                'percent_gross': percent_gross_qs.get(period=current_month).percent_gross/df,
+                'percent_purchase': percent_purchase_qs.get(period=current_month).percent_purchase/df,
                 }
         
         return context
@@ -95,13 +97,14 @@ class TradeHome(TemplateView):
 
 class TradeCreate(CreateView):
     model = TradeMonthly
+    form_class = TradeMonthlyForm
     success_url = reverse_lazy('trade-home')
-    fields = '__all__'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Add'
-        if self.get_queryset().filter(id=3).exists():
+
+        if self.get_queryset().exists():
             context['queryset_exist'] = True
             last_record_year = self.get_queryset().last().year
             last_record_month = self.get_queryset().last().period
@@ -122,17 +125,23 @@ class TradeCreate(CreateView):
             context['query_set'] = False 
         return context
 
+    
+    def form_valid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        form.instance.year = context['last_record']['year']
+        form.instance.period = context['last_record']['month']
+        return super().form_valid(form)
+
 
 class TradeDetail(DetailView):
     model = TradeMonthly
-    
+
 
 class TradeList(ListView):
     model = TradeMonthly
     ordering = '-id'
     
 
-    
 class TradeUpdate(UpdateView):
     model = TradeMonthly
     fields = '__all__'

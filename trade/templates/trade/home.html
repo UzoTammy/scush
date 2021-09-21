@@ -48,16 +48,16 @@
                 {% if current_year_total %}
                 <div class="col-md-4 mt-2">
                     <ul class="list-group">
-                        <li class="list-group-item list-group-item-dark text-center">Current Year Total({{naira}}) as at {{month}}</li>
+                        <li class="list-group-item list-group-item-dark text-center">Current Year Total ({{naira}}) as at {{month}}</li>
                         <li class="list-group-item">Sales: {{current_year_total.sales|floatformat:'2g'}}</li>
                         <li class="list-group-item">Purchases: {{current_year_total.purchase|floatformat:'2g'}}</li>
                         <li class="list-group-item">Expenses: {{current_year_total.expenses|floatformat:'2g'}}</li>
                         <li class="list-group-item">Gross Profit: {{current_year_total.gross_profit|floatformat:'2g'}}</li>
                         <li class="list-group-item">Net Profit: {{current_year_total.net_profit|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Percent Margin: {{current_year_total.percent_margin|floatformat:'2'}}%</li>
-                        <li class="list-group-item">Percent Expense: Sales: {{current_year_total.percent_sales|floatformat:'2'}}%, 
-                            Gross: {{current_year_total.percent_gross|floatformat:'2'}}%,
-                            Purchase: {{current_year_total.percent_purchase|floatformat:'2'}}%
+                        <li class="list-group-item">Percent Margin: {{current_year_total.percent_margin|floatformat:'3'}}%</li>
+                        <li class="list-group-item">Percent Expense: Sales: {{current_year_total.percent_sales|floatformat:'3'}}%, 
+                            Gross: {{current_year_total.percent_gross|floatformat:'3'}}%,
+                            Purchase: {{current_year_total.percent_purchase|floatformat:'3'}}%
                         </li>
                     </ul>
                 </div>
@@ -69,10 +69,10 @@
                         <li class="list-group-item">Expenses: {{current_year_average.expenses|floatformat:'2g'}}</li>
                         <li class="list-group-item">Gross Profit: {{current_year_average.gross_profit|floatformat:'2g'}}</li>
                         <li class="list-group-item">Net Profit: {{current_year_average.net_profit|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Percent Margin: {{current_year_average.percent_margin|floatformat:'2'}}%</li>
-                        <li class="list-group-item">Percent Expense: Sales: {{current_year_average.percent_sales|floatformat:'2'}}%, 
-                            Gross: {{current_year_average.percent_gross|floatformat:'2'}}%,
-                            Purchase: {{current_year_average.percent_purchase|floatformat:'2'}}%
+                        <li class="list-group-item">Percent Margin: {{current_year_average.percent_margin|floatformat:'3'}}%</li>
+                        <li class="list-group-item">Percent Expense: Sales: {{current_year_average.percent_sales|floatformat:'3'}}%, 
+                            Gross: {{current_year_average.percent_gross|floatformat:'3'}}%,
+                            Purchase: {{current_year_average.percent_purchase|floatformat:'3'}}%
                         </li>
                     </ul>
                 </div>
@@ -84,10 +84,10 @@
                         <li class="list-group-item">Expenses: {{current_month.expenses}}</li>
                         <li class="list-group-item">Gross Profit: {{current_month.gross_profit}}</li>
                         <li class="list-group-item">Net Profit: {{current_month.net_profit|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Percent Margin: {{current_month.percent_margin|floatformat:'2'}}%</li>
-                        <li class="list-group-item">Percent Expense: Sales: {{current_month.percent_sales|floatformat:'2'}}%, 
-                            Gross: {{current_month.percent_gross|floatformat:'2'}}%,
-                            Purchase: {{current_month.percent_purchase|floatformat:'2'}}%
+                        <li class="list-group-item">Percent Margin: {{current_month.percent_margin|floatformat:'3'}}%</li>
+                        <li class="list-group-item">Percent Expense: Sales: {{current_month.percent_sales|floatformat:'3'}}%, 
+                            Gross: {{current_month.percent_gross|floatformat:'3'}}%,
+                            Purchase: {{current_month.percent_purchase|floatformat:'3'}}%
                         </li>
                     </ul>
                 </div>
