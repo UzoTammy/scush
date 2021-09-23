@@ -13,10 +13,13 @@
             <ul class="list-group">
                 <li class="list-group-item">ID: {{object.id|zeropadding:3}}</li>
                 <li class="list-group-item">Year: {{object.year|stringformat:'d'}}</li>
-                <li class="list-group-item">Month: {{object.period}}</li>
+                <li class="list-group-item">Month: {{object.month}}</li>
                 <li class="list-group-item">Sales: {{object.sales}}</li>
                 <li class="list-group-item">Purchase: {{object.purchase}}</li>
-                <li class="list-group-item">Expenses: {{object.expenses}}</li>
+                <li class="list-group-item">Indirect Expenses: {{object.indirect_expenses}}</li>
+                <li class="list-group-item">Direct Expenses: {{object.direct_expenses}}</li>
+                <li class="list-group-item">Indirect Income: {{object.indirect_income}}</li>
+                <li class="list-group-item">Direct Income: {{object.direct_income}}</li>
                 <li class="list-group-item">Opening Stock Value: {{object.opening_value}}</li>
                 <li class="list-group-item">Closing Stock Value: {{object.closing_value}}</li>
             </ul>

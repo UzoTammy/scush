@@ -183,7 +183,7 @@ class TradeCreate(CreateView):
         if self.get_queryset().exists():
             context['queryset_exist'] = True
             last_record_year = self.get_queryset().last().year
-            last_record_month = self.get_queryset().last().period
+            last_record_month = self.get_queryset().last().month
             
             tuple_month = tuple(calendar.month_name)
             for i in tuple_month:
@@ -205,7 +205,7 @@ class TradeCreate(CreateView):
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
         form.instance.year = context['last_record']['year']
-        form.instance.period = context['last_record']['month']
+        form.instance.month = context['last_record']['month']
         return super().form_valid(form)
 
 

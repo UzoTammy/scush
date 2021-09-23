@@ -13,12 +13,13 @@
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Period</th>
+                    <th>Month</th>
                     <th>Year</th>
                     <th>Opening Stock</th>
                     <th>Sales</th>
                     <th>Purchase</th>
-                    <th>Expenses</th>
+                    <th>Direct Expenses</th>
+                    <th>Indirect Expenses</th>
                     <th>Closing Stock</th>
                     <th>Gross Profit</th>
                 </tr>
@@ -27,12 +28,13 @@
                 {% for object in object_list %}
                 <tr>
                     <td><a href="{% url 'trade-detail' object.pk %}">{{object.id|zeropadding:3}}</a></td>
-                    <td>{{object.period}}</td>
+                    <td>{{object.month}}</td>
                     <td>{{object.year|stringformat:'i'}}</td>
                     <td>{{object.opening_value}}</td>
                     <td>{{object.sales}}</td>
                     <td>{{object.purchase}}</td>
-                    <td>{{object.expenses}}</td>
+                    <td>{{object.direct_expenses}}</td>
+                    <td>{{object.indirect_expenses}}</td>
                     <td>{{object.closing_value}}</td>
                     <td>{{object.gross_profit}}</td>
                 </tr>

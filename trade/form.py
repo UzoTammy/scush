@@ -5,7 +5,7 @@ from .models import TradeMonthly
 
 class TradeMonthlyForm(ModelForm):
     year = forms.IntegerField(required=False)
-    period = forms.CharField(max_length=20, required=False)
+    month = forms.CharField(max_length=20, required=False)
     class Meta:
         model = TradeMonthly
         fields = '__all__'
