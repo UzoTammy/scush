@@ -25,73 +25,149 @@ class TradeHome(TemplateView):
         context = super().get_context_data(**kwargs)
         if self.monthly_trade.exists():
             df = 10_000 # decimal factor
-            net_profit_qs = self.monthly_trade.annotate(net_profit=(F('gross_profit') - F('expenses')))
+
+            """Adding derivatives: direct expenses, net Profit, percent margin"""
             
-            percent_margin_qs = self.monthly_trade.annotate(
+            qs = self.monthly_trade.annotate(expenses=F('direct_expenses') + F('indirect_expenses'))
+            
+            qs = qs.annotate(net_profit=(F('gross_profit') - F('indirect_expenses')))
+            
+            qs = qs.annotate(
                 percent_margin=ExpressionWrapper(100*df*F('gross_profit') / F('sales'), 
                                                 output_field=DecimalField(decimal_places=2)
                                                 )
             )
-            percent_sales_qs = self.monthly_trade.annotate(
-                percent_sales=ExpressionWrapper(100*df*F('expenses') / F('sales'), 
+
+            qs = qs.annotate(
+                percent_sales=ExpressionWrapper(100*df*F('indirect_expenses') / F('sales'), 
                                                 output_field=DecimalField(decimal_places=2)
                                                 )
             )
-            percent_gross_qs = self.monthly_trade.annotate(
-                percent_gross=ExpressionWrapper(100*df*F('expenses') / F('gross_profit'), 
+            qs = qs.annotate(
+                percent_gross=ExpressionWrapper(100*df*F('indirect_expenses') / F('gross_profit'), 
                                                 output_field=DecimalField(decimal_places=2)
                                                 )
             )
-            percent_purchase_qs = self.monthly_trade.annotate(
-                percent_purchase=ExpressionWrapper(100*df*F('expenses') / F('purchase'), 
+            qs = qs.annotate(
+                percent_gross=ExpressionWrapper(100*df*F('indirect_expenses') / F('gross_profit'), 
+                                                output_field=DecimalField(decimal_places=2)
+                                                )
+            )
+            qs = qs.annotate(
+                percent_purchase=ExpressionWrapper(100*df*F('indirect_expenses') / F('purchase'), 
                                                 output_field=DecimalField(decimal_places=2)
                                                 )
             )
             
-            context['naira'] = chr(8358)
-            context['record'] = self.monthly_trade.last().period,
-            context['current_year_total'] = {
-                'sales': self.monthly_trade.aggregate(total=Sum('sales'))['total'],
-                'purchase': self.monthly_trade.aggregate(total=Sum('purchase'))['total'],
-                'expenses': self.monthly_trade.aggregate(total=Sum('expenses'))['total'],
-                'gross_profit': self.monthly_trade.aggregate(total=Sum('gross_profit'))['total'],
-                'net_profit': net_profit_qs.aggregate(total=Sum('net_profit'))['total'],
-                'percent_margin': percent_margin_qs.aggregate(total=Avg('percent_margin'))['total']/df,
-                'percent_sales': percent_sales_qs.aggregate(total=Avg('percent_sales'))['total']/df,
-                'percent_gross': percent_gross_qs.aggregate(total=Avg('percent_gross'))['total']/df,
-                'percent_purchase': percent_purchase_qs.aggregate(total=Avg('percent_purchase'))['total']/df,
-                }
-            context['current_year_average'] = {
-                'sales': self.monthly_trade.aggregate(average=Avg('sales'))['average'],
-                'purchase': self.monthly_trade.aggregate(average=Avg('purchase'))['average'],
-                'expenses': self.monthly_trade.aggregate(average=Avg('expenses'))['average'],
-                'gross_profit': self.monthly_trade.aggregate(average=Avg('gross_profit'))['average'],
-                'net_profit': net_profit_qs.aggregate(average=Avg('net_profit'))['average'],
-                'percent_margin': percent_margin_qs.aggregate(average=Avg('percent_margin'))['average']/df,
-                'percent_sales': percent_sales_qs.aggregate(average=Avg('percent_sales'))['average']/df,
-                'percent_gross': percent_gross_qs.aggregate(average=Avg('percent_gross'))['average']/df,
-                'percent_purchase': percent_purchase_qs.aggregate(average=Avg('percent_purchase'))['average']/df,
-                }
+            naira = chr(8358)
+            current_month = qs.last().month
 
-            current_month = self.monthly_trade.last().period
+            current_month_qs = qs.get(month=current_month)
+
+            current_year_total = {
+                'heading': f"Current Year Total ({naira}) as at {current_month}, {self.current_year}",
+                'opening_stock': qs.get(month='January').opening_value,
+                'purchase': qs.aggregate(total=Sum('purchase'))['total'],
+                'direct_expenses': qs.aggregate(total=Sum('direct_expenses'))['total'],
+                'gross_profit': qs.aggregate(total=Sum('gross_profit'))['total'],
+                
+                'first_total': qs.get(month='January').opening_value.amount + 
+                qs.aggregate(total=Sum('purchase'))['total'] + 
+                qs.aggregate(total=Sum('direct_expenses'))['total'] + 
+                qs.aggregate(total=Sum('gross_profit'))['total'],
+                
+                'sales': qs.aggregate(total=Sum('sales'))['total'],
+                'direct_income': qs.aggregate(total=Sum('direct_income'))['total'],
+                'closing_stock': qs.last().closing_value.amount,
+                
+                'second_total': qs.last().closing_value.amount + 
+                qs.aggregate(total=Sum('sales'))['total'] + 
+                qs.aggregate(total=Sum('direct_income'))['total'], 
+                
+                'indirect_expenses': qs.aggregate(total=Sum('indirect_expenses'))['total'],
+                'net_profit': qs.aggregate(total=Sum('net_profit'))['total'],
+                'indirect_income': qs.aggregate(total=Sum('indirect_income'))['total'],
+                
+                'percent_margin': qs.aggregate(total=Avg('percent_margin'))['total']/df,
+                'percent_sales': qs.aggregate(total=Avg('percent_sales'))['total']/df,
+                'percent_gross': qs.aggregate(total=Avg('percent_gross'))['total']/df,
+                'percent_purchase': qs.aggregate(total=Avg('percent_purchase'))['total']/df,
+
+                'expenses': qs.aggregate(total=Sum('expenses'))['total'],
+                
+                }
             
-            current_month_qs = self.monthly_trade.get(period=current_month)
+            if qs.count() >= 2:
+                last_record_id = qs.last().id
+                previous_record_id = last_record_id - 1
+                previous_month_qs = qs.get(id=previous_record_id)
 
-            context['month'] = current_month
-            context['year'] = self.current_year
+                previous_month = {
+                'heading': f'Previous Month {previous_month_qs.month} ({naira})',
+                'opening_stock': previous_month_qs.opening_value,
+                'purchase': previous_month_qs.purchase.amount,
+                'direct_expenses': previous_month_qs.direct_expenses.amount,
+                'gross_profit': previous_month_qs.gross_profit.amount,
 
-            context['current_month'] = {
-                'sales': current_month_qs.sales.amount,
+                'first_total':  previous_month_qs.opening_value.amount + 
+                previous_month_qs.purchase.amount + 
+                previous_month_qs.direct_expenses.amount + 
+                previous_month_qs.gross_profit.amount,
+                
+                'sales': previous_month_qs.sales.amount,
+                'direct_income': previous_month_qs.direct_income.amount,
+                'closing_stock': previous_month_qs.closing_value.amount,
+
+                'second_total':previous_month_qs.sales.amount + 
+                previous_month_qs.direct_income.amount + 
+                previous_month_qs.closing_value.amount,
+
+                'indirect_expenses': previous_month_qs.indirect_expenses.amount,
+                'net_profit': previous_month_qs.net_profit,
+                'indirect_income': previous_month_qs.indirect_income.amount,
+                
+                'percent_margin': previous_month_qs.percent_margin/df,
+                'percent_sales': previous_month_qs.percent_sales/df,
+                'percent_gross': previous_month_qs.percent_gross/df,
+                'percent_purchase': previous_month_qs.percent_purchase/df,
+
+                'expenses': previous_month_qs.expenses,
+                
+                }
+            
+            current_month = {
+                'heading': f'Current Month {current_month} ({naira})',
+                'opening_stock': current_month_qs.opening_value,
                 'purchase': current_month_qs.purchase.amount,
-                'expenses': current_month_qs.expenses.amount,
+                'direct_expenses': current_month_qs.direct_expenses.amount,
                 'gross_profit': current_month_qs.gross_profit.amount,
-                'net_profit': net_profit_qs.get(period=current_month).net_profit,
-                'percent_margin': percent_margin_qs.get(period=current_month).percent_margin/df,
-                'percent_sales': percent_sales_qs.get(period=current_month).percent_sales/df,
-                'percent_gross': percent_gross_qs.get(period=current_month).percent_gross/df,
-                'percent_purchase': percent_purchase_qs.get(period=current_month).percent_purchase/df,
+
+                'first_total':  current_month_qs.opening_value.amount + 
+                current_month_qs.purchase.amount + 
+                current_month_qs.direct_expenses.amount + 
+                current_month_qs.gross_profit.amount,
+                
+                'sales': current_month_qs.sales.amount,
+                'direct_income': current_month_qs.direct_income.amount,
+                'closing_stock': current_month_qs.closing_value.amount,
+
+                'second_total':current_month_qs.sales.amount + 
+                current_month_qs.direct_income.amount + 
+                current_month_qs.closing_value.amount,
+
+                'indirect_expenses': current_month_qs.indirect_expenses.amount,
+                'net_profit': current_month_qs.net_profit,
+                'indirect_income': current_month_qs.indirect_income.amount,
+                
+                'percent_margin': current_month_qs.percent_margin/df,
+                'percent_sales': current_month_qs.percent_sales/df,
+                'percent_gross': current_month_qs.percent_gross/df,
+                'percent_purchase': current_month_qs.percent_purchase/df,
+
+                'expenses': current_month_qs.expenses,
+                
                 }
-        
+            context['recordset'] = [current_year_total, previous_month, current_month]
         return context
     
 

@@ -45,28 +45,62 @@
         <!--        body of page-->
         <div class="col-9">
             <div class="row">
-                {% if current_year_total %}
-                <div class="col-md-4 mt-2">
+                {% if True %}
+                
+                {% for record in recordset %}
+                
+                <div class="col-md-4 mt-2">    
                     <ul class="list-group">
-                        <li class="list-group-item list-group-item-dark text-center">Current Year Total ({{naira}}) as at {{month}}</li>
-                        <li class="list-group-item">Sales: {{current_year_total.sales|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Purchases: {{current_year_total.purchase|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Expenses: {{current_year_total.expenses|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Gross Profit: {{current_year_total.gross_profit|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Net Profit: {{current_year_total.net_profit|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Percent Margin: {{current_year_total.percent_margin|floatformat:'3'}}%</li>
-                        <li class="list-group-item">Percent Expense: Sales: {{current_year_total.percent_sales|floatformat:'3'}}%, 
-                            Gross: {{current_year_total.percent_gross|floatformat:'3'}}%,
-                            Purchase: {{current_year_total.percent_purchase|floatformat:'3'}}%
+                        <li class="list-group-item list-group-item-info text-center">{{record.heading}}</li>
+                        <li class="list-group-item">
+                            <p>Opening Stock: {{record.opening_stock.amount|floatformat:'2g'}}</p> 
+                            <p>Purchases: {{record.purchase|floatformat:'2g'}}</p>
+                            <p>Direct Expenses: {{record.direct_expenses|floatformat:'2g'}}</p>
+                            <p>Gross Profit: {{record.gross_profit|floatformat:'2g'}}</p>    
                         </li>
+
+                        <li class="list-group-item list-group-item-secondary text-right">
+                            Total: {{record.first_total|floatformat:'2g'}}
+                        </li>
+                        <li class="list-group-item">
+                            <p>Sales: {{record.sales|floatformat:'2g'}}</p> 
+                            <p>Direct Income: {{record.direct_income|floatformat:'2g'}}</p>
+                            <p>Closing Stock:{{record.closing_stock|floatformat:'2g'}}</p>
+                        </li>
+                        <li class="list-group-item list-group-item-secondary text-right">Total: {{record.second_total|floatformat:'2g'}}</li>
+                        
+                        <li class="list-group-item"> 
+                            <p>Indirect Expenses: {{record.indirect_expenses|floatformat:'2g'}}</p>
+                            <p>Net Profit: {{record.net_profit|floatformat:'2g'}}</p>
+                            <p>Indirect Income: {{record.indirect_income|floatformat:'2g'}}</p>
+                        </li>
+                        <li class="list-group-item">Gross Margin: {{record.percent_margin|floatformat:'3'}}%</li>
+                        <li class="list-group-item">Total Expenses: {{record.expenses|floatformat:'2g'}}</li>
+                        
+                        <li class="list-group-item">
+                            Percent Expenses WRT
+                            <ul>
+                                <li>Sales: {{record.percent_sales|floatformat:'3'}}%</li>
+                                <li>Gross: {{record.percent_gross|floatformat:'3'}}%</li> 
+                                <li>Purchase: {{record.percent_purchase|floatformat:'3'}}%</li>
+                            </ul> 
+                        </li>
+                        
                     </ul>
                 </div>
-                <div class="col-md-4 mt-2">
+                <!-- <div class="col-md-4 mt-2">
                     <ul class="list-group">
                         <li class="list-group-item list-group-item-info text-center">Current Year Average ({{naira}}) as at {{month}}</li>
                         <li class="list-group-item">Sales: {{current_year_average.sales|floatformat:'2g'}}</li>
                         <li class="list-group-item">Purchases: {{current_year_average.purchase|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Expenses: {{current_year_average.expenses|floatformat:'2g'}}</li>
+                        <li class="list-group-item">    
+                            <ul>
+                                <li>Direct Expenses:</li>
+                                <li>Indirect Expenses:</li>
+                            </ul>
+                            Expenses: {{current_year_average.expenses|floatformat:'2g'}}
+                        </li>
+                        
                         <li class="list-group-item">Gross Profit: {{current_year_average.gross_profit|floatformat:'2g'}}</li>
                         <li class="list-group-item">Net Profit: {{current_year_average.net_profit|floatformat:'2g'}}</li>
                         <li class="list-group-item">Percent Margin: {{current_year_average.percent_margin|floatformat:'3'}}%</li>
@@ -75,8 +109,8 @@
                             Purchase: {{current_year_average.percent_purchase|floatformat:'3'}}%
                         </li>
                     </ul>
-                </div>
-                <div class="col-md-4 mt-2">
+                </div> -->
+                <!-- <div class="col-md-4 mt-2">
                     <ul class="list-group">
                         <li class="list-group-item list-group-item-success text-center">Current Month ({{naira}}) as at {{month}}</li>
                         <li class="list-group-item">Sales: {{current_month.sales}}</li>
@@ -90,12 +124,14 @@
                             Purchase: {{current_month.percent_purchase|floatformat:'3'}}%
                         </li>
                     </ul>
-                </div>
+                </div> -->
+                {% endfor %}
                 {% else %}
                     <div class="col mt-2">
                         <h3>No Record Available</h3>
                     </div>
                 {% endif %}
+                
             </div>
         </div>
     </div>

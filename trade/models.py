@@ -6,7 +6,7 @@ from django.urls.base import reverse
 
 
 class TradeMonthly(models.Model):
-    period = models.CharField(max_length=20, 
+    month = models.CharField(max_length=20, 
             choices=[
                 ('January', 'January'),
                 ('February', 'February'),
@@ -27,14 +27,17 @@ class TradeMonthly(models.Model):
                                                                                 (date.today().year+1, str(date.today().year+1))])
     sales = MoneyField(max_digits=12, decimal_places=2)
     purchase = MoneyField(max_digits=12, decimal_places=2)
-    expenses = MoneyField(max_digits=12, decimal_places=2)
+    direct_expenses = MoneyField(max_digits=12, decimal_places=2, default=Money(0.00, 'NGN'))
+    indirect_expenses = MoneyField(max_digits=12, decimal_places=2, default=Money(0.00, 'NGN'))
     opening_value = MoneyField(max_digits=12, decimal_places=2)
     closing_value = MoneyField(max_digits=12, decimal_places=2)
     gross_profit = MoneyField(max_digits=12, decimal_places=2)
-    
+    direct_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0.00, 'NGN'))
+    indirect_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0.00, 'NGN'))
+
 
     def __str__(self):
-        return f'{self.period}, {self.year}'
+        return f'{self.month}, {self.year}'
 
     def get_absolute_url(self):
         return reverse('trade-detail', kwargs={'pk': self.pk})

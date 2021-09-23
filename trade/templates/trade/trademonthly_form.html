@@ -49,10 +49,18 @@
                     </div>
                     <div class="form-row">
                         <div class="form-group col-sm-6 mb-0">
-                            {{ form.expenses|as_crispy_field }}
+                            {{ form.direct_expenses|as_crispy_field }}
                         </div>
                         <div class="form-group col-sm-6 mb-0">
                             {{ form.gross_profit|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-sm-6 mb-0">
+                            {{ form.direct_income|as_crispy_field }}
+                        </div>
+                        <div class="form-group col-sm-6 mb-0">
+                            {{ form.indirect_income|as_crispy_field }}
                         </div>
                     </div>
                 </fieldset>
