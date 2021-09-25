@@ -74,15 +74,39 @@
                             <p>Net Profit: {{record.net_profit|floatformat:'2g'}}</p>
                             <p>Indirect Income: {{record.indirect_income|floatformat:'2g'}}</p>
                         </li>
-                        <li class="list-group-item">Gross Margin: {{record.percent_margin|floatformat:'3'}}%</li>
+                        <li class="list-group-item">Gross Margin: {{record.percent_margin|floatformat:'3'}}%
+                            {% if record.gross_margin_arrow %}
+                                <i class="fa fa-long-arrow-up text-success"></i>
+                            {% elif record.gross_margin_arrow == False %}
+                                <i class="fa fa-long-arrow-down text-danger"></i>
+                            {% else %}{% endif %}
+                        </li>
                         <li class="list-group-item">Total Expenses: {{record.expenses|floatformat:'2g'}}</li>
                         
                         <li class="list-group-item">
                             Percent Expenses WRT
                             <ul>
-                                <li>Sales: {{record.percent_sales|floatformat:'3'}}%</li>
-                                <li>Gross: {{record.percent_gross|floatformat:'3'}}%</li> 
-                                <li>Purchase: {{record.percent_purchase|floatformat:'3'}}%</li>
+                                <li>Sales: {{record.percent_sales|floatformat:'3'}}%
+                                    {% if record.sales_arrow %}
+                                        <i class="fa fa-long-arrow-up text-success"></i>
+                                    {% elif record.sales_arrow == False %}
+                                        <i class="fa fa-long-arrow-down text-danger"></i>
+                                    {% else %}{% endif %}
+                                </li>
+                                <li>Gross: {{record.percent_gross|floatformat:'3'}}%
+                                    {% if record.gross_arrow %}
+                                        <i class="fa fa-long-arrow-up text-success"></i>
+                                    {% elif record.gross_arrow == False %}
+                                        <i class="fa fa-long-arrow-down text-danger"></i>
+                                    {% else %}{% endif %}
+                                </li> 
+                                <li>Purchase: {{record.percent_purchase|floatformat:'3'}}%
+                                    {% if record.purchase_arrow %}
+                                        <i class="fa fa-long-arrow-up text-success"></i>
+                                    {% elif record.purchase_arrow == False %}
+                                        <i class="fa fa-long-arrow-down text-danger"></i>
+                                    {% else %}{% endif %}
+                                </li>
                             </ul> 
                         </li>
                         

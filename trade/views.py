@@ -163,11 +163,25 @@ class TradeHome(TemplateView):
                 'percent_sales': current_month_qs.percent_sales/df,
                 'percent_gross': current_month_qs.percent_gross/df,
                 'percent_purchase': current_month_qs.percent_purchase/df,
-
+                
                 'expenses': current_month_qs.expenses,
                 
                 }
+            
+            previous_month['gross_margin_arrow'] = previous_month['percent_margin'] > current_year_total['percent_margin']
+            current_month['gross_margin_arrow'] = current_month['percent_margin'] > previous_month['percent_margin']
+
+            previous_month['sales_arrow'] = previous_month['percent_sales'] < current_year_total['percent_sales']
+            current_month['sales_arrow'] = current_month['percent_sales'] < previous_month['percent_sales']
+
+            previous_month['gross_arrow'] = previous_month['percent_gross'] < current_year_total['percent_gross']
+            current_month['gross_arrow'] = current_month['percent_gross'] < previous_month['percent_gross']
+
+            previous_month['purchase_arrow'] = previous_month['percent_purchase'] < current_year_total['percent_purchase']
+            current_month['purchase_arrow'] = current_month['percent_purchase'] < previous_month['percent_purchase']
+
             context['recordset'] = [current_year_total, previous_month, current_month]
+
         return context
     
 
