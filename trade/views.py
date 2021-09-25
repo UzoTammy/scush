@@ -39,17 +39,17 @@ class TradeHome(TemplateView):
             )
 
             qs = qs.annotate(
-                percent_sales=ExpressionWrapper(100*df*F('indirect_expenses') / F('sales'), 
+                percent_sales=ExpressionWrapper(100*df*(F('indirect_expenses') + F('direct_expenses')) / F('sales'), 
                                                 output_field=DecimalField(decimal_places=2)
                                                 )
             )
             qs = qs.annotate(
-                percent_gross=ExpressionWrapper(100*df*F('indirect_expenses') / F('gross_profit'), 
+                percent_gross=ExpressionWrapper(100*df*(F('indirect_expenses') + F('direct_expenses')) / F('gross_profit'), 
                                                 output_field=DecimalField(decimal_places=2)
                                                 )
             )
             qs = qs.annotate(
-                percent_gross=ExpressionWrapper(100*df*F('indirect_expenses') / F('gross_profit'), 
+                percent_gross=ExpressionWrapper(100*df*(F('indirect_expenses') + F('direct_expenses')) / F('gross_profit'), 
                                                 output_field=DecimalField(decimal_places=2)
                                                 )
             )

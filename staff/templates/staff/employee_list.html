@@ -106,7 +106,6 @@
                     <th width="40px" scope="col">Image</th>
                     <th scope="col">Employee</th>
                     <th scope="col">Date Employed</th>
-                    <th scope="col">Status</th>
                     <th scope="col">State</th>
                     <th scope="col">Qualification</th>
                     <th scope="col">Course</th>
@@ -127,11 +126,11 @@
                              class="rounded-circle"
                              width="50px"
                              height="50px"
-                             alt=""></a>
+                             alt="">
+                        </a>
                     </td>
                     <td><a href="{% url 'employee-detail' employee.pk %}">{{employee.fullname}}</a></td>
                     <td>{{employee.date_employed}}</td>
-                    <td>{{employee.staff.status|yesno:'Active, Terminated, Leave'}}</td>
                     <td>{{employee.is_confirmed|yesno:'Confirmed, Probation'}}</td>
                     <td>{{employee.staff.qualification}}</td>
                     <td>{{employee.staff.course}}</td>
@@ -187,24 +186,6 @@
                 </div>
                 <!---->
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-6 mb-3">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    Earliest Employee: {{earliest_employee}} |
-                    Latest Employee: {{latest_employee}}
-                </li>
-                <li class="list-group-item text-success">
-                    Oldest Employee: {{youngest_employee}} |
-                    Youngest Employee: {{oldest_employee}}
-                </li>
-                <li class="list-group-item text-warning">
-                    <a href="">Maximum Wage: {{highest_paid}}</a> |
-                    <a href="">Minimum Wage: {{lowest_paid}}</a>
-                </li>
-            </ul>
         </div>
     </div>
     <!--{{countdown}}-->

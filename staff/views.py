@@ -1324,13 +1324,6 @@ class PKResetView(TemplateView):
 class PKResetPayroll(View):
 
     def get(self, request):
-        # if Payroll.objects.exists():
-        #     payroll = Payroll.objects.all()
-        #     num = range(1, payroll.count() + 1)
-
-        # for x, y in zip(num, payroll):
-        #     if x != y.id:
-        #         payroll.filter(pk=y.id).update(id=x)
         messages.success(request, 'Congrats')
         return HttpResponseRedirect(reverse('pk-reset'))
 
@@ -1358,6 +1351,7 @@ class UpdateTax(UpdateView):
 
 
 class BalanceView(TemplateView):
+
     template_name = 'staff/payroll/balance.html'
 
     def get(self, request, *args, **kwargs):
@@ -1365,3 +1359,12 @@ class BalanceView(TemplateView):
             'balances': EmployeeBalance.objects.all()
         }
         return render(request, self.template_name, context)
+
+
+class TaxList(ListView):
+    model = Employee
+    
+
+    def get_template_names(self):
+        
+        return ['staff/payroll/tax_list.html']

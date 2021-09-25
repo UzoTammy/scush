@@ -40,5 +40,6 @@ urlpatterns += [
     path('payroll/modify/', ModifyGeneratedPayroll.as_view(), name='payroll-modify'),
     path('payroll/modify/<int:pk>/outstanding/', MakeOutstandingValueZero.as_view(), name='payroll-modify-outstanding'),
     path('payroll/update/tax/', UpdateTax.as_view(), name='update-tax'),
-    path('payroll/balance/', BalanceView.as_view(), name='balance-view')
+    path('payroll/balance/', BalanceView.as_view(), name='balance-view'),
+    path('payroll/tax/list/', TaxList.as_view(), name='tax-list'),
 ]

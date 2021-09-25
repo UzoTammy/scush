@@ -1,4 +1,5 @@
 {% extends 'users/base.html' %}
+{% load custom_templates %}
 <head>
     <style>
     body {
@@ -18,7 +19,7 @@
                 <caption>Credit Note List</caption>
                 <thead class="bg-success text-white">
                     <tr>
-                        <th scope="col">S/N</th>
+                        <th scope="col">ID</th>
                         <th scope="col">Date</th>
                         <th scope="col">Staff</th>
                         <th scope="col">Remark</th>
@@ -29,9 +30,9 @@
                 <tbody>
                 {% for object in object_list %}
                     <tr>
-                        <td scope="col">{{ forloop.counter}}</td>
+                        <td scope="col">{{ object.id|zeropadding:3 }}</td>
                         <td scope="col">{{object.credit_date|date:'d-m-Y'}}</td>
-                        <td scope="col"><a href="#">{{object}}</a></td>
+                        <td scope="col">{{object}}</td>
                         <td scope="col">{{object.remark}}</td>
                         <td scope="col">{{object.value}}</td>
                         <td scope="col">{{object.status|yesno:'Taken, Pending'}}</td>

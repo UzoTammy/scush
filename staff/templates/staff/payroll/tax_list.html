@@ -1,0 +1,45 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+
+<div class="container mt-3">
+    <div class="row">
+        <div class="col text-center">
+            <h3>Tax List</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table data-toggle="table" 
+                data-pagination="true"
+                data-search="true"
+                class="table table-bordered">
+                <thead>
+                    <tr class="text-center">
+                        <th >ID</th>
+                        <th>Staff</th>
+                        <th>Tax Payable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                    <tr class="text-center">
+                        <td>{{object.id|zeropadding:3}}</td>
+                        <td>{{object.fullname}}</td>
+                        <td>{{object.tax_amount}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+            <div class="row">
+                <div class="col text-right">
+                    <a class="btn btn-dark" href="{% url 'salary' %}"><i class="fa fa-reply"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock%}
