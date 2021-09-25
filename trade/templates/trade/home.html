@@ -88,23 +88,23 @@
                             <ul>
                                 <li>Sales: {{record.percent_sales|floatformat:'3'}}%
                                     {% if record.sales_arrow %}
-                                        <i class="fa fa-long-arrow-up text-success"></i>
+                                        <i class="fa fa-long-arrow-up text-danger"></i>
                                     {% elif record.sales_arrow == False %}
-                                        <i class="fa fa-long-arrow-down text-danger"></i>
+                                        <i class="fa fa-long-arrow-down text-success"></i>
                                     {% else %}{% endif %}
                                 </li>
                                 <li>Gross: {{record.percent_gross|floatformat:'3'}}%
                                     {% if record.gross_arrow %}
-                                        <i class="fa fa-long-arrow-up text-success"></i>
+                                        <i class="fa fa-long-arrow-up text-danger"></i>
                                     {% elif record.gross_arrow == False %}
-                                        <i class="fa fa-long-arrow-down text-danger"></i>
+                                        <i class="fa fa-long-arrow-down text-success"></i>
                                     {% else %}{% endif %}
                                 </li> 
                                 <li>Purchase: {{record.percent_purchase|floatformat:'3'}}%
                                     {% if record.purchase_arrow %}
-                                        <i class="fa fa-long-arrow-up text-success"></i>
+                                        <i class="fa fa-long-arrow-up text-danger"></i>
                                     {% elif record.purchase_arrow == False %}
-                                        <i class="fa fa-long-arrow-down text-danger"></i>
+                                        <i class="fa fa-long-arrow-down text-success"></i>
                                     {% else %}{% endif %}
                                 </li>
                             </ul> 
