@@ -10,6 +10,7 @@ customer/static/customer/csv_sqlite3_apply.csv
 ozone-files.txt
 /staticfiles
 historyCLI.txt
+aa.txt
 customer/static/json/
 
 # Byte-compiled / optimized / DLL files

@@ -1,0 +1,146 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="jumbotron text-white" style="background-color:rgb(18, 51, 82);">
+        <h1 class="display-5">Trading, Profit & Loss Account for 2021</h1>
+        <p class="lead">It is a final account that gives idea about profitability and financial position
+            to its management, owners and interested parties.
+        </p>
+        <hr class="my-3">
+        <p>The Net Profit {{np_bool|yesno:'increased, decreased'}} by 
+            {{np_percent|abs}}% 
+            with {{expense_bool|yesno:'an additional, a reduced'}} expenses of {{N}}{{expense_value|abs|floatformat:'2g'}} over the previous month.
+            The GP ratio is {% with recordset|last as last %}{{last.percent_margin}}{%endwith%}%, the Landing Cost ratio is {{lc_ratio|floatformat:'3'}}%,
+            while the Administrative Cost Ratio is {{ac_ratio|floatformat:'3'}}%.
+        </p>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-4 text-center">
+            <img src="data:image/png;base64,{{sales_graph}}" 
+            width="400"
+            height="auto"
+            alt="">
+        </div>    
+        <div class="col-md-4 text-center">
+            <img src="data:image/png;base64,{{purchase_graph}}"
+            width="400"
+            height="auto"
+            alt="">        
+        </div>
+        <div class="col-md-4 text-center">
+            <img src="data:image/png;base64,{{gp_ratio_graph}}"
+            width="400"
+            height="auto"
+            alt="">
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col">
+            <a href="#" class="btn btn-warning btn-lg btn-block active" role="button" aria-pressed="true">Daily</a>
+        </div>
+        <div class="col">
+            <a href="#" class="btn btn-success btn-lg btn-block active" role="button" aria-pressed="true">Weekly</a>
+        </div>
+        <div class="col">
+            <a href="#" class="btn btn-primary btn-lg btn-block active" role="button" aria-pressed="true">Quarterly</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!--        body of page-->
+        <div class="col">
+            <div class="row">
+                {% if True %}
+                
+                {% for record in recordset %}
+                
+                <div class="col-md-4 mt-2">    
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-info text-center">{{record.heading}}</li>
+                        <li class="list-group-item">
+                            <p>Opening Stock: {{record.opening_stock.amount|floatformat:'2g'}}</p> 
+                            <p>Purchases: {{record.purchase|floatformat:'2g'}}</p>
+                            <p>Direct Expenses: {{record.direct_expenses|floatformat:'2g'}}</p>
+                            <p>Gross Profit: {{record.gross_profit|floatformat:'2g'}}</p>    
+                        </li>
+
+                        <li class="list-group-item list-group-item-secondary text-right">
+                            Total: {{record.first_total|floatformat:'2g'}}
+                        </li>
+                        <li class="list-group-item">
+                            <p>Sales: {{record.sales|floatformat:'2g'}}</p> 
+                            <p>Direct Income: {{record.direct_income|floatformat:'2g'}}</p>
+                            <p>Closing Stock:{{record.closing_stock|floatformat:'2g'}}</p>
+                        </li>
+                        <li class="list-group-item list-group-item-secondary text-right">Total: {{record.second_total|floatformat:'2g'}}</li>
+                        
+                        <li class="list-group-item"> 
+                            <p>Indirect Expenses: {{record.indirect_expenses|floatformat:'2g'}}</p>
+                            <p>Net Profit: {{record.net_profit|floatformat:'2g'}}</p>
+                            <p>Indirect Income: {{record.indirect_income|floatformat:'2g'}}</p>
+                        </li>
+                        <li class="list-group-item">Gross Margin: {{record.percent_margin|floatformat:'3'}}%
+                            {% if record.gross_margin_arrow %}
+                                <i class="fa fa-long-arrow-up text-success"></i>
+                            {% elif record.gross_margin_arrow == False %}
+                                <i class="fa fa-long-arrow-down text-danger"></i>
+                            {% else %}{% endif %}
+                        </li>
+                        <li class="list-group-item">Total Expenses: {{record.expenses|floatformat:'2g'}}</li>
+                        
+                        <li class="list-group-item">
+                            Percent Expenses WRT
+                            <ul>
+                                <li>Sales: {{record.percent_sales|floatformat:'3'}}%
+                                    {% if record.sales_arrow %}
+                                        <i class="fa fa-long-arrow-up text-danger"></i>
+                                    {% elif record.sales_arrow == False %}
+                                        <i class="fa fa-long-arrow-down text-success"></i>
+                                    {% else %}{% endif %}
+                                </li>
+                                <li>Gross: {{record.percent_gross|floatformat:'3'}}%
+                                    {% if record.gross_arrow %}
+                                        <i class="fa fa-long-arrow-up text-danger"></i>
+                                    {% elif record.gross_arrow == False %}
+                                        <i class="fa fa-long-arrow-down text-success"></i>
+                                    {% else %}{% endif %}
+                                </li> 
+                                <li>Purchase: {{record.percent_purchase|floatformat:'3'}}%
+                                    {% if record.purchase_arrow %}
+                                        <i class="fa fa-long-arrow-up text-danger"></i>
+                                    {% elif record.purchase_arrow == False %}
+                                        <i class="fa fa-long-arrow-down text-success"></i>
+                                    {% else %}{% endif %}
+                                </li>
+                            </ul> 
+                        </li>
+                        
+                    </ul>
+                </div>
+                {% endfor %}
+                {% else %}
+                    <div class="col mt-2">
+                        <h3>No Record Available</h3>
+                    </div>
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-right">
+            <a class="btn btn-dark m-3" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+
+
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover({
+            container: 'body'
+        })
+    })
+</script>
+{% endblock content%}

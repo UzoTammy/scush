@@ -1,6 +1,6 @@
 from django.db import models
 from djmoney.models.fields import MoneyField, Money
-from datetime import date
+from datetime import date, timezone
 from django.urls.base import reverse
 
 
@@ -27,13 +27,13 @@ class TradeMonthly(models.Model):
                                                                                 (date.today().year+1, str(date.today().year+1))])
     sales = MoneyField(max_digits=12, decimal_places=2)
     purchase = MoneyField(max_digits=12, decimal_places=2)
-    direct_expenses = MoneyField(max_digits=12, decimal_places=2, default=Money(0.00, 'NGN'))
-    indirect_expenses = MoneyField(max_digits=12, decimal_places=2, default=Money(0.00, 'NGN'))
+    direct_expenses = MoneyField(max_digits=12, decimal_places=2)
+    indirect_expenses = MoneyField(max_digits=12, decimal_places=2)
     opening_value = MoneyField(max_digits=12, decimal_places=2)
     closing_value = MoneyField(max_digits=12, decimal_places=2)
     gross_profit = MoneyField(max_digits=12, decimal_places=2)
-    direct_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0.00, 'NGN'))
-    indirect_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0.00, 'NGN'))
+    direct_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
+    indirect_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
 
 
     def __str__(self):
@@ -41,3 +41,23 @@ class TradeMonthly(models.Model):
 
     def get_absolute_url(self):
         return reverse('trade-detail', kwargs={'pk': self.pk})
+
+
+class TradeDaily(models.Model):
+    date = models.DateField(default=date.today)
+    sales = MoneyField(max_digits=12, decimal_places=2)
+    purchase = MoneyField(max_digits=12, decimal_places=2)
+    direct_expenses = MoneyField(max_digits=12, decimal_places=2)
+    indirect_expenses = MoneyField(max_digits=12, decimal_places=2)
+    opening_value = MoneyField(max_digits=12, decimal_places=2)
+    closing_value = MoneyField(max_digits=12, decimal_places=2)
+    gross_profit = MoneyField(max_digits=12, decimal_places=2)
+    direct_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
+    indirect_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
+
+
+    def __str__(self):
+        return f'{self.date}'
+
+    # def get_absolute_url(self):
+        # return reverse('trade-detail', kwargs={'pk': self.pk})

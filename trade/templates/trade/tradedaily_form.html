@@ -9,29 +9,13 @@
             <form method="POST">
                 {% csrf_token %}
                 <fieldset>
-                    <legend>{{title}} Trade Form</legend>
-                    {% if queryset_exist %}
-                        <div class="row">
-                            <div class="col">
-                                <p class="text-info">The year (<span class="text-danger">{{last_record.year|stringformat:'d'}}</span>) and period 
-                                    (<span class="text-danger">{{last_record.month}}</span>) will be added automatically. 
-                                    Kindly proceed to fill other fields below accordingly. 
-                                </p>
-                            </div>
-                        </div>    
-                    {% else %}
+                    <legend>{{title}} Trading, Profit and Loss Form</legend>
+                    
                         <div class="form-row">
                             <div class="form-group col-sm-6 mb-0">
-                                {{ form.year|as_crispy_field }}
+                                {{ form.date|as_crispy_field }}
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group col-sm-6 mb-0">
-                                {{ form.month|as_crispy_field }}
-                            </div>
-                        </div>
-                    {% endif %}
-                        
                     <div class="form-row">
                         <div class="form-group col-md-6 mb-0">
                             {{ form.sales|as_crispy_field }}

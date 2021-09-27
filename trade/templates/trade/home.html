@@ -5,28 +5,65 @@
     <div class="row">
         <!--        side menu-->
         <div class="col-3 bg-dark">
-            <ul class="nav flex-column">
-                <li class="nav-item mt-3">
+            <ul class="nav flex-column mt-3">
+                <li class="text-white">Trading, P & L</li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                        href="{% url 'trade-trading-account' %}">
+                        <i class="fa fa-book text-warning"></i> Report
+                    </a>
+                </li>
+                <li class="text-success ml-2">Monthly</li>
+                
+                <li class="nav-item">
                     <a class="nav-link"
                         href="{% url 'trade-list' %}">
                         <i class="fa fa-eye-slash text-warning"></i> View
                     </a>
                 </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'trade-create' %}">
+                        <i class="fa fa-plus text-warning"></i> Add
+                    </a>
+                </li>
+                <li class="text-success ml-2">Daily</li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                        href="{% url 'trade-daily-list' %}">
+                        <i class="fa fa-eye-slash text-warning"></i> View
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'trade-daily-create' %}">
+                        <i class="fa fa-plus text-warning"></i> Add
+                    </a>
+                </li>
             </ul>
+            
             <ul class="nav flex-column">
+                <li class="text-white">Balance Sheet</li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                        href="{% url 'trade-trading-account' %}">
+                        <i class="fa fa-book text-warning"></i> Report
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                        href="{% url 'trade-list' %}">
+                        <i class="fa fa-eye-slash text-warning"></i> View
+                    </a>
+                </li>
+                
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'trade-create' %}">
                         <i class="fa fa-plus text-warning"></i> Add
                     </a>
                 </li>
             </ul>
-            <!-- <ul class="nav flex-column"> -->
-                <!-- <li class="nav-item"> -->
-                    <!-- <a class="nav-link" href="#"> -->
-                        <!-- <i class="fa fa-plus text-warning"></i> XXX -->
-                    <!-- </a> -->
-                <!-- </li> -->
-            <!-- </ul> -->
+            
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link" href="#">
@@ -43,121 +80,10 @@
             </ul>
         </div>
         <!--        body of page-->
-        <div class="col-9">
-            <div class="row">
-                {% if True %}
-                
-                {% for record in recordset %}
-                
-                <div class="col-md-4 mt-2">    
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-info text-center">{{record.heading}}</li>
-                        <li class="list-group-item">
-                            <p>Opening Stock: {{record.opening_stock.amount|floatformat:'2g'}}</p> 
-                            <p>Purchases: {{record.purchase|floatformat:'2g'}}</p>
-                            <p>Direct Expenses: {{record.direct_expenses|floatformat:'2g'}}</p>
-                            <p>Gross Profit: {{record.gross_profit|floatformat:'2g'}}</p>    
-                        </li>
-
-                        <li class="list-group-item list-group-item-secondary text-right">
-                            Total: {{record.first_total|floatformat:'2g'}}
-                        </li>
-                        <li class="list-group-item">
-                            <p>Sales: {{record.sales|floatformat:'2g'}}</p> 
-                            <p>Direct Income: {{record.direct_income|floatformat:'2g'}}</p>
-                            <p>Closing Stock:{{record.closing_stock|floatformat:'2g'}}</p>
-                        </li>
-                        <li class="list-group-item list-group-item-secondary text-right">Total: {{record.second_total|floatformat:'2g'}}</li>
-                        
-                        <li class="list-group-item"> 
-                            <p>Indirect Expenses: {{record.indirect_expenses|floatformat:'2g'}}</p>
-                            <p>Net Profit: {{record.net_profit|floatformat:'2g'}}</p>
-                            <p>Indirect Income: {{record.indirect_income|floatformat:'2g'}}</p>
-                        </li>
-                        <li class="list-group-item">Gross Margin: {{record.percent_margin|floatformat:'3'}}%
-                            {% if record.gross_margin_arrow %}
-                                <i class="fa fa-long-arrow-up text-success"></i>
-                            {% elif record.gross_margin_arrow == False %}
-                                <i class="fa fa-long-arrow-down text-danger"></i>
-                            {% else %}{% endif %}
-                        </li>
-                        <li class="list-group-item">Total Expenses: {{record.expenses|floatformat:'2g'}}</li>
-                        
-                        <li class="list-group-item">
-                            Percent Expenses WRT
-                            <ul>
-                                <li>Sales: {{record.percent_sales|floatformat:'3'}}%
-                                    {% if record.sales_arrow %}
-                                        <i class="fa fa-long-arrow-up text-danger"></i>
-                                    {% elif record.sales_arrow == False %}
-                                        <i class="fa fa-long-arrow-down text-success"></i>
-                                    {% else %}{% endif %}
-                                </li>
-                                <li>Gross: {{record.percent_gross|floatformat:'3'}}%
-                                    {% if record.gross_arrow %}
-                                        <i class="fa fa-long-arrow-up text-danger"></i>
-                                    {% elif record.gross_arrow == False %}
-                                        <i class="fa fa-long-arrow-down text-success"></i>
-                                    {% else %}{% endif %}
-                                </li> 
-                                <li>Purchase: {{record.percent_purchase|floatformat:'3'}}%
-                                    {% if record.purchase_arrow %}
-                                        <i class="fa fa-long-arrow-up text-danger"></i>
-                                    {% elif record.purchase_arrow == False %}
-                                        <i class="fa fa-long-arrow-down text-success"></i>
-                                    {% else %}{% endif %}
-                                </li>
-                            </ul> 
-                        </li>
-                        
-                    </ul>
-                </div>
-                <!-- <div class="col-md-4 mt-2">
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-info text-center">Current Year Average ({{naira}}) as at {{month}}</li>
-                        <li class="list-group-item">Sales: {{current_year_average.sales|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Purchases: {{current_year_average.purchase|floatformat:'2g'}}</li>
-                        <li class="list-group-item">    
-                            <ul>
-                                <li>Direct Expenses:</li>
-                                <li>Indirect Expenses:</li>
-                            </ul>
-                            Expenses: {{current_year_average.expenses|floatformat:'2g'}}
-                        </li>
-                        
-                        <li class="list-group-item">Gross Profit: {{current_year_average.gross_profit|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Net Profit: {{current_year_average.net_profit|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Percent Margin: {{current_year_average.percent_margin|floatformat:'3'}}%</li>
-                        <li class="list-group-item">Percent Expense: Sales: {{current_year_average.percent_sales|floatformat:'3'}}%, 
-                            Gross: {{current_year_average.percent_gross|floatformat:'3'}}%,
-                            Purchase: {{current_year_average.percent_purchase|floatformat:'3'}}%
-                        </li>
-                    </ul>
-                </div> -->
-                <!-- <div class="col-md-4 mt-2">
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-success text-center">Current Month ({{naira}}) as at {{month}}</li>
-                        <li class="list-group-item">Sales: {{current_month.sales}}</li>
-                        <li class="list-group-item">Purchases: {{current_month.purchase}}</li>
-                        <li class="list-group-item">Expenses: {{current_month.expenses}}</li>
-                        <li class="list-group-item">Gross Profit: {{current_month.gross_profit}}</li>
-                        <li class="list-group-item">Net Profit: {{current_month.net_profit|floatformat:'2g'}}</li>
-                        <li class="list-group-item">Percent Margin: {{current_month.percent_margin|floatformat:'3'}}%</li>
-                        <li class="list-group-item">Percent Expense: Sales: {{current_month.percent_sales|floatformat:'3'}}%, 
-                            Gross: {{current_month.percent_gross|floatformat:'3'}}%,
-                            Purchase: {{current_month.percent_purchase|floatformat:'3'}}%
-                        </li>
-                    </ul>
-                </div> -->
-                {% endfor %}
-                {% else %}
-                    <div class="col mt-2">
-                        <h3>No Record Available</h3>
-                    </div>
-                {% endif %}
-                
-            </div>
+        <div class="col-9 mt-3">
+            <h3>Business Analysis: Current Year</h3>
+            
         </div>
     </div>
 </div>
-{% endblock content%}
+{% endblock content %}

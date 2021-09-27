@@ -19,6 +19,7 @@ docutils = "*"
 django-session-timeout = "*"
 django-on-heroku = "*"
 gunicorn = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.8"
