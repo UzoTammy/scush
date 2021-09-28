@@ -1,5 +1,6 @@
 import datetime
 import calendar
+from django.http.response import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import (View, TemplateView, ListView, CreateView, UpdateView, DetailView)
 from .models import Stores, Renewal, BankAccount
@@ -115,7 +116,7 @@ class StoresDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 class StoresCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = StoreForm
     template_name = 'warehouse/stores_form.html'
-    success_url = reverse_lazy('warehouse-home')
+    # success_url = reverse_lazy('warehouse-home')
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -141,8 +142,7 @@ class StoresUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
               'rent_amount',
               'capacity',
               'expiry_date')
-    success_url = reverse_lazy('warehouse-home')
-
+    
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
         if self.request.user.groups.filter(name='HRD').exists():
@@ -154,6 +154,13 @@ class StoresUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context['title'] = 'Update'
         return context
 
+        
+    def post(self, request, *args, **kwargs):
+        # the message
+        messages.success(request, f'Changes Made Successfully !!!')
+        return super().post(request, *args, **kwargs)
+
+    
 
 class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Stores

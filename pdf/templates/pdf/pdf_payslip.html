@@ -15,7 +15,7 @@
 <div class="details">
     <p>Dispatch Date: {% now "d-M-Y" %}</p>
     <p>Pay Date: {{ person.date_paid }}</p>
-    <p>Pay Code: <span id="standout">{{ paycode }}</span></p>
+    <p>Pay Code: <span style="color: chocolate;">{{ paycode }}</span></p>
     <hr>
     <table>
         <tbody>
@@ -45,11 +45,15 @@
                 <td>Deduction: {{person.deduction}}</td>
                 <td>Outstanding: {{person.outstanding}}</td>
             </tr>
+            <tr>
+                <td>Retained Balance: <span style="color:green;">NGN{{ balance|floatformat:'2g' }}</span></td>
+                <td>Payment Status: {{person.status|yesno:'Paid, Not Paid'}}</td>    
+            </tr>
         </tbody>
     </table>
     <hr width="100%">
-    <p style="color:grey">We are committed to pay duly to all staff</p>
-    <p style="color:red">Confidential document!!!</p>
+    <p style="color:grey">It pays to work hard</p>
+    <p style="color:red; text-align: center;">Confidential document!!!</p>
 
 </div>
 

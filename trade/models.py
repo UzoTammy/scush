@@ -40,7 +40,7 @@ class TradeMonthly(models.Model):
         return f'{self.month}, {self.year}'
 
     def get_absolute_url(self):
-        return reverse('trade-detail', kwargs={'pk': self.pk})
+        return reverse('trade-daily-detail', kwargs={'pk': self.pk})
 
 
 class TradeDaily(models.Model):
@@ -59,5 +59,5 @@ class TradeDaily(models.Model):
     def __str__(self):
         return f'{self.date}'
 
-    # def get_absolute_url(self):
-        # return reverse('trade-detail', kwargs={'pk': self.pk})
+    def get_absolute_url(self):
+        return reverse('trade-detail', kwargs={'pk': self.pk})

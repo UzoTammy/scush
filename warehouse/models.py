@@ -5,6 +5,7 @@ from djmoney.models.fields import MoneyField
 from django.utils import timezone
 from staff.models import Employee
 
+
 class ActiveStoreManager(models.Manager):
     """"To work those stores that are not disabled"""
     def get_queryset(self):
@@ -37,6 +38,7 @@ class Stores(models.Model):
         return self.name
 
     def get_absolute_url(self):
+
         return reverse('warehouse-detail', kwargs={'pk': self.pk})
 
 

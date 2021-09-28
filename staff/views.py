@@ -42,6 +42,7 @@ from django.db.models import (F,
                               ExpressionWrapper)
 
 
+
 class Salary:
     """
 x = amount to pay
@@ -959,6 +960,13 @@ class Payslip(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        staff = get_object_or_404(Employee, pk=kwargs['object'].staff_id)
+        month = int(kwargs['object'].period.split('-')[1])
+
+        balance = EmployeeBalance.objects.filter(staff=staff).filter(date__month=month).aggregate(total=Sum('value'))['total']
+        balance = decimal.Decimal('0') if balance is None else balance
+        context['balance'] = balance
+        
         return context
 
     def post(self, request, pk):
@@ -967,7 +975,7 @@ class Payslip(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         staff.status = True
         staff.date_paid = datetime.date.today()
         staff.save()
-        messages.success(request, f"{staff} paid successfully !!!",)
+        messages.success(request, f"{staff} paid successfully !!!")
         return HttpResponseRedirect(reverse('start-pay'))
 
 
@@ -1295,9 +1303,9 @@ class AddStaffBalance(View):
                                                  description=request.POST.get('comment')
                                                  )
         balance.save()
-        messages.success(request, 'Applied successfully !!!')
+        messages.success(request, 'Profile Balance changed successfully !!!')
         return redirect(staff)
-
+        
 
 class PKResetView(TemplateView):
     template_name = 'staff/pk_reset.html'

@@ -1,11 +1,12 @@
 import datetime
+import decimal
 from django.http import HttpResponse
 from pdf.utils import render_to_pdf
 from customer.models import CustomerProfile
 from apply.models import Applicant
 from django.contrib.auth.models import User
 from django.views.generic import (View, ListView, TemplateView)
-from staff.models import Employee, Payroll
+from staff.models import Employee, Payroll, EmployeeBalance
 from stock.models import Product
 from django.db.models import Sum, F, Avg, Min
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -177,13 +178,18 @@ class PayslipView(LoginRequiredMixin, TemplateView):
             person = Payroll.objects.filter(period=period).get(staff_id=staff_id)
             year, month = int(user_input_list[1]), int(user_input_list[2])
             date = datetime.date(year, month, 1)
-            month = date.strftime('%B')
 
+            month = date.strftime('%B')
+            
+            balance = EmployeeBalance.objects.filter(staff=staff_id).filter(date__month=int(user_input_list[2])).aggregate(total=Sum('value'))['total']
+            balance = decimal.Decimal('0') if balance is None else balance
+            
             context = {
                 'title': 'Payslip',
                 'period_month': f"{month}, {year}",
                 'paycode': request.GET['payCode'],
                 'person': person,
+                'balance': balance
             }
             pdf = render_to_pdf(self.template_name, context)
             if pdf:

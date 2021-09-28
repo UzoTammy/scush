@@ -125,7 +125,7 @@
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="{% url 'warehouse-home' %}">Stores</a>
                     <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'trade-home' %}">Financial</a>
+                    <a class="dropdown-item" href="{% url 'trade-home' %}">Financials</a>
                     <hr class="dropdown-divider">
 
             </li>
@@ -152,8 +152,6 @@
                        data-target="#pdfPayrollModal">
                         Payroll for Bank
                     </a>
-                    <a class="dropdown-item" data-toggle="modal"
-                       data-target="#pdfPayslipModal">Payslip</a>
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'pdf-customers-list' %}">Customers</a>
                     <a class="dropdown-item text-muted">Stock</a>
@@ -325,52 +323,6 @@
                                type="text" disabled>
                     </div>
                     <div class="modal-footer">
-                        <input value="OK" type="submit" class="btn btn-primary">
-                        <button type="button"
-                                class="btn btn-secondary"
-                                data-dismiss="modal">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<!--PDF Payslip-->
-<div class="modal fade"
-     id="pdfPayslipModal"
-     tabindex="-1"
-     aria-labelledby="pdfPayslipModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark text-white">
-            <div class="modal-header">
-                <h5 class="modal-title"
-                    id="pdfPayslipModalLabel">
-                    Payslip in PDF Format
-                </h5>
-                <button type="button"
-                        class="btn-close"
-                        data-dismiss="modal"
-                        aria-label="Close">
-                    <i class="fa fa-close"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form action="{% url 'pdf-payslip' %}" method="GET">
-                    <div class="form-group">
-                        <label class="text-primary"
-                               for="inputPayCode">Pay Code</label>
-                        <input id="inputPayCode"
-                               class="form-control"
-                               name="payCode"
-                               value=""
-                               placeholder="0ID-YYYY-MM"
-                               type="text">
-                    </div>
-                    <div class="modal-footer">
-                        <!--          <a type="submit" href="#" class="btn btn-primary">OK</a>-->
                         <input value="OK" type="submit" class="btn btn-primary">
                         <button type="button"
                                 class="btn btn-secondary"

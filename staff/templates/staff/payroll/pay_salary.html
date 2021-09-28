@@ -37,23 +37,23 @@
                 <span class="text-dark">{{object.outstanding}}</span>
                 {% endif %}
             </p>
-                <hr>
+                
                 <p>Credit: {{object.credit_amount}}</p>
                 <p>Debit: {{object.debit_amount}}</p>
-
+                <hr>
+                <h6 class="text-success">Net Pay: {{object.net_pay}}</h3>
             </div>
             <div class="col-sm-6">
-            <p>Basic Salary: {{object.staff.basic_salary}}</p>
-            <p>Allowance: {{object.staff.allowance}}</p>
-            <p>Salary: {{object.staff.salary}}</p>
+                <p>Basic Salary: {{object.staff.basic_salary}}</p>
+                <p>Allowance: {{object.staff.allowance}}</p>
+                <p>Salary: {{object.staff.salary}}</p>
+                <p>Tax Payable: {{object.staff.tax_amount}}</p>
+                <p>Gross Pay: {{object.staff.gross_pay}}</p>
                 <hr>
-            <p>Tax Payable: {{object.staff.tax_amount}}</p>
-            <p>Gross Pay: {{object.staff.gross_pay}}</p>
+                <h6 class="text-secondary">Retained Bonus: NGN{{balance|floatformat:'2g'}}</h3>
             </div>
             </div>
-                <hr>
 
-            <h3 class="text-success">Net Pay: {{object.net_pay}}</h3>
             <div class="row mt-5 ml-2">
                 <div class="col">
                     <form method="post">
@@ -75,7 +75,7 @@
                     </form>
                 </div>
                 <div class="col text-right">
-                    <a href="{% url 'start-pay' %}"
+                    <a href="{% url 'employee-detail' object.staff.pk %}"
                     class="btn btn-sm btn-outline-dark">
                     <i class="fa fa-reply"></i>
                 </a>

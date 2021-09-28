@@ -71,13 +71,9 @@ class TradeTradingReport(TemplateView):
 
         period = monthly_trade.values_list('month', flat=True)
 
-
         def sales_bar(self):
             sales = self.monthly_trade.values_list('sales', flat=True)
-            plt.bar(np.array(self.period), np.array(sales), width=0.4, 
-            color=(
-                '#addba5', '#efef9c', '#addfef'
-            ))
+            plt.bar(np.array(self.period), sales, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             plt.xlabel('Period')
             plt.ylabel('Sales Value')
             plt.figtext(.5, .9, f'Sales Volume ({chr(8358)})', fontsize=20, ha='center')
@@ -90,10 +86,7 @@ class TradeTradingReport(TemplateView):
 
         def purchase_bar(self):
             purchase = self.monthly_trade.values_list('purchase', flat=True)
-            plt.bar(np.array(self.period), np.array(purchase), width=0.4, 
-            color=(
-                '#addba5', '#efef9c', '#addfef'
-            ))
+            plt.bar(np.array(self.period), purchase, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             plt.xlabel('Period')
             plt.ylabel('Purchase Value')
             plt.figtext(.5, .9, f'Purchase Volume ({chr(8358)})', fontsize=20, ha='center')
@@ -105,30 +98,29 @@ class TradeTradingReport(TemplateView):
             return purchase_graph
 
         def gp_ratio_pie(self):
-            
             average = round(self.qs.aggregate(average=Avg('percent_margin'))['average'], 2)
-
+            
             if self.qs.count() >= 2:
                 previous_record_id = self.qs.last().id - 1
                 previous = round(self.qs.get(id=previous_record_id).percent_margin, 2)
-            current = round(self.qs.get(id=self.qs.last().id).percent_margin, 2)
-
-            plt.pie([average, previous, current],
-                    labels=['Cumm. Avg.', 'Past Month', 'Present Month'],
-                    colors=['#addba5', '#efef9c', '#addfef'],
-                    autopct="%1.2f%%",
-                    explode=(0, 0, 0.1),
-                    shadow=True,
-                    startangle=90,
-                    wedgeprops={'linewidth': 2, 'edgecolor': '#000000'},
-                    textprops={'color': 'b'},
-                    )
-            plt.figtext(.5, .9, 'Gross Profit Ratio', fontsize=20, ha='center')
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png', dpi=300)
-            gp_ratio_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
-            buf.close()
-            plt.close()
+                current = round(self.qs.get(id=self.qs.last().id).percent_margin, 2)
+                
+                plt.pie([average, previous, current],
+                        labels=['Cumm. Avg.', list(self.period)[-2], self.period.last()],
+                        colors=['#addba5', '#efef9c', '#addfef'],
+                        autopct="%1.2f%%",
+                        explode=(0, 0, 0.1),
+                        shadow=True,
+                        startangle=90,
+                        wedgeprops={'linewidth': 2, 'edgecolor': '#b5b27b'},
+                        textprops={'color': 'b'},
+                        )
+                plt.figtext(.5, .9, 'Gross Profit Ratio', fontsize=20, ha='center')
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', dpi=300)
+                gp_ratio_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+                buf.close()
+                plt.close()
             return gp_ratio_graph
 
         

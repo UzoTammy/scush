@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container-fluid">
     <div class="jumbotron text-white" style="background-color:rgb(18, 51, 82);">
-        <h1 class="display-5">Trading, Profit & Loss Account for 2021</h1>
+        <h1 class="display-5">Trading, Profit & Loss Account for {% now 'Y' %}</h1>
         <p class="lead">It is a final account that gives idea about profitability and financial position
             to its management, owners and interested parties.
         </p>
@@ -12,8 +12,8 @@
         <p>The Net Profit {{np_bool|yesno:'increased, decreased'}} by 
             {{np_percent|abs}}% 
             with {{expense_bool|yesno:'an additional, a reduced'}} expenses of {{N}}{{expense_value|abs|floatformat:'2g'}} over the previous month.
-            The GP ratio is {% with recordset|last as last %}{{last.percent_margin}}{%endwith%}%, the Landing Cost ratio is {{lc_ratio|floatformat:'3'}}%,
-            while the Administrative Cost Ratio is {{ac_ratio|floatformat:'3'}}%.
+            The GP ratio is {% with recordset|last as last %}{{last.percent_margin|floatformat:'3'}}{%endwith%}%, 
+            the Landing Cost ratio is {{lc_ratio|floatformat:'3'}}%, while the Administrative Cost ratio is {{ac_ratio|floatformat:'3'}}%.
         </p>
     </div>
     <div class="row mb-3">
