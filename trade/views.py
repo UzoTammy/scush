@@ -1,12 +1,7 @@
 import datetime
-from .form import TradeMonthlyForm, TradeDailyForm
+from django.http.response import HttpResponseRedirect
+from .forms import TradeMonthlyForm, TradeDailyForm
 from django.shortcuts import redirect, render
-from django.views.generic import (TemplateView, 
-                                    CreateView,
-                                    ListView,
-                                    DetailView,
-                                    UpdateView,
-                                )                            
 from .models import *
 from staff.models import Payroll
 from django.urls.base import reverse_lazy
@@ -17,7 +12,7 @@ import base64
 from matplotlib import pyplot as plt
 import matplotlib
 import numpy as np
-
+from django.views.generic import (View, TemplateView, CreateView, ListView, DetailView, UpdateView)                            
 
 
 matplotlib.use('Agg')
@@ -328,13 +323,13 @@ class TradeMonthlyUpdateView(UpdateView):
 class TradeDailyCreateView(CreateView):
     model = TradeDaily
     form_class = TradeDailyForm
-    success_url = reverse_lazy('trade-home')
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'New Daily'
         return context
-
+    
+    
 
 class TradeDailyDetailView(DetailView):
     model = TradeDaily
@@ -353,3 +348,5 @@ class TradeDailyUpdateView(UpdateView):
         context['title'] = 'Daily Update'
         return context
 
+    
+    

@@ -60,4 +60,4 @@ class TradeDaily(models.Model):
         return f'{self.date}'
 
     def get_absolute_url(self):
-        return reverse('trade-detail', kwargs={'pk': self.pk})
+        return reverse('trade-daily-detail', kwargs={'pk': self.pk})
