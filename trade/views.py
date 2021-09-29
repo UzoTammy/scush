@@ -36,10 +36,10 @@ class TradeHome(TemplateView):
             sales = qs.values_list('sales', flat=True)
             purchase = qs.values_list('purchase', flat=True)
             
-            if len(days) >= 15:
-                days = days[len(days)-15:]
-                sales = sales[len(days)-15:]
-                purchase = purchase[len(days):]
+            # if len(days) >= 1:
+                # days = days[len(days)-1:]
+                # sales = sales[len(days)-1:]
+                # purchase = purchase[len(days):]
 
             plt.bar(np.array(days), sales, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             plt.xlabel(f"{today.strftime('%B')}")
@@ -51,7 +51,6 @@ class TradeHome(TemplateView):
             sales_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
             buf.close()
             plt.close()
-            
             
 
             plt.bar(np.array(days), purchase, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
