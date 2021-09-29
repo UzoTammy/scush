@@ -54,7 +54,7 @@ class TradeHome(TemplateView):
             
             
 
-            plt.bar(np.array(days), , width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            plt.bar(np.array(days), purchase, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             plt.xlabel(f"{today.strftime('%B')}")
             plt.ylabel('Purchase Value')
             plt.figtext(.5, .9, f'Purchase Volume ({chr(8358)})', fontsize=20, ha='center')
