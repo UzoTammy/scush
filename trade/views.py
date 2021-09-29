@@ -8,6 +8,7 @@ from django.urls.base import reverse_lazy
 from django.db.models import Sum, F, Avg, ExpressionWrapper, DecimalField
 import calendar
 import io
+from ozone import mytools
 import base64
 from matplotlib import pyplot as plt
 import matplotlib
@@ -21,15 +22,60 @@ matplotlib.use('Agg')
 # Monthly Model
 class TradeHome(TemplateView):
     template_name = 'trade/home.html'
-    data = TradeMonthly.objects.filter(year=datetime.date.today().year)
-        
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        if TradeDaily.objects.exists():
+            
+            today = datetime.date.today()
+            year = today.year
+            month = today.month
+            qs = TradeDaily.objects.filter(date__year=year).filter(date__month=month) 
+            
+            days = [str(i.day) for i in qs.values_list('date', flat=True)]
+            sales = qs.values_list('sales', flat=True)
+            purchase = qs.values_list('purchase', flat=True)
+            
+            if len(days) >= 15:
+                days = days[len(days)-15:]
+                sales = sales[len(days)-15:]
+                purchase = purchase[len(days):]
 
-        
+            plt.bar(np.array(days), sales, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            plt.xlabel(f"{today.strftime('%B')}")
+            plt.ylabel('Sales Value')
+            plt.figtext(.5, .9, f'Sales Volume ({chr(8358)})', fontsize=20, ha='center')
+            
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', dpi=300)
+            sales_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+            buf.close()
+            plt.close()
+            
+            
+
+            plt.bar(np.array(days), , width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            plt.xlabel(f"{today.strftime('%B')}")
+            plt.ylabel('Purchase Value')
+            plt.figtext(.5, .9, f'Purchase Volume ({chr(8358)})', fontsize=20, ha='center')
+            
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', dpi=300)
+            purchase_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+            buf.close()
+            plt.close()
+             
+            
+            context['total_sales'] = qs.aggregate(Sum('sales'))['sales__sum']
+            context['sales_average'] = qs.aggregate(Avg('sales'))['sales__avg']
+            context['total_purchase'] = qs.aggregate(Sum('purchase'))['purchase__sum']
+            context['purchase_average'] = qs.aggregate(Avg('purchase'))['purchase__avg']
+
+            context['sales_graph'] = sales_graph
+            context['purchase_graph'] = purchase_graph
         return context
     
+
 
 class TradeTradingReport(TemplateView):
     df = 10_000 # decimal factor
@@ -329,7 +375,6 @@ class TradeDailyCreateView(CreateView):
         context['title'] = 'New Daily'
         return context
     
-    
 
 class TradeDailyDetailView(DetailView):
     model = TradeDaily
@@ -338,6 +383,7 @@ class TradeDailyDetailView(DetailView):
 class TradeDailyListView(ListView):
     model = TradeDaily
     ordering = '-pk'
+
 
 class TradeDailyUpdateView(UpdateView):
     model = TradeDaily

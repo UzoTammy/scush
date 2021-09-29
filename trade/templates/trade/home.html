@@ -80,8 +80,42 @@
             </ul>
         </div>
         <!--        body of page-->
-        <div class="col-9 mt-3">
-            <h3>Business Analysis: Current Year</h3>
+        <div class="col-9 mt-3 bg-white">
+            <h3>Business Result: {% now 'F Y' %}</h3>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+                <div class="col-md-3 p-2 d-flex justify-content-center">
+                    <div class="card" style="max-width: 540px;">
+                        <img src="data:image/png;base64,{{sales_graph}}"
+                             class="card-img-top img-thumbnail mx-auto d-block"
+                             style="height: 250px"
+                             alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">Daily Sales Record</h5>
+                            <p class="card-text">Sales Cummulative: {{total_sales|floatformat:'2g'}}</p>
+                            <p class="card-text">Daily Sales Average: {{sales_average|floatformat:'2g'}}</p>
+                            <p class="card-text"><small class="text-muted">Graph shows sales of the past one week</small></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 p-2 d-flex justify-content-center">
+                    <div class="card" style="max-width: 540px;">
+                        <img src="data:image/png;base64,{{purchase_graph}}"
+                             class="card-img-top img-thumbnail mx-auto d-block"
+                             style="height: 250px"
+                             alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">Daily Purchase Record</h5>
+                            <p class="card-text">Purchase Cummulative: {{total_purchase|floatformat:'2g'}}</p>
+                            <p class="card-text">Daily Purchase Average: {{purchase_average|floatformat:'2g'}}</p>
+                            <p class="card-text"><small class="text-muted">Graph shows sales of the past one week</small></p>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            
             
         </div>
     </div>
