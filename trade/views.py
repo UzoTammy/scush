@@ -10,38 +10,54 @@ import calendar
 import io
 from ozone import mytools
 import base64
-from matplotlib import pyplot as plt
+from matplotlib import colors, pyplot as plt
 import matplotlib
 import numpy as np
 from django.views.generic import (View, TemplateView, CreateView, ListView, DetailView, UpdateView)                            
+from datetime import timedelta
 
 
 matplotlib.use('Agg')
-# plt.style.use('fivethirtyeight')
 
 # Monthly Model
-class TradeHome(TemplateView):
+class TradeHome(TemplateView): 
     template_name = 'trade/home.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if TradeDaily.objects.exists():
+        
+        # today is three days ago
+        today = datetime.date.today() - timedelta(days=240)
+
+        year = today.year
+        month = today.month
+        qs = TradeDaily.objects.filter(date__year=year, date__month=month) 
             
-            today = datetime.date.today()
-            year = today.year
-            month = today.month
-            qs = TradeDaily.objects.filter(date__year=year).filter(date__month=month) 
+        if qs.exists():
+            qs = qs.annotate(expenses=F('direct_expenses') + F('indirect_expenses'))
+            qs = qs.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
+            qs = qs.annotate(net_ratio=ExpressionWrapper(100*F('net_profit')/F('gross_profit'), output_field=DecimalField(decimal_places=3)))
+            qs = qs.annotate(gp_ratio=ExpressionWrapper(100*F('gross_profit')/F('sales'), output_field=DecimalField(decimal_places=3)))
             
+            # need to know why landing_ratio gives zero
+            # qs = qs.annotate(landing_ratio=ExpressionWrapper(100 * (F('direct_expenses') / F('purchase')), output_field=DecimalField()))
+            # qs = qs.annotate(admin_ratio=ExpressionWrapper(100 * (F('indirect_expenses') / F('sales')), output_field=DecimalField()))
+            
+            latest_record = qs.latest('date')
+            landing_ratio = 100 * latest_record.direct_expenses/latest_record.purchase
+            admin_ratio = 100 * latest_record.indirect_expenses/latest_record.sales
+            gross_profit_ratio = 100 * latest_record.gross_profit/latest_record.sales
+
             days = [str(i.day) for i in qs.values_list('date', flat=True)]
             sales = qs.values_list('sales', flat=True)
             purchase = qs.values_list('purchase', flat=True)
-            
-            # if len(days) >= 1:
-                # days = days[len(days)-1:]
-                # sales = sales[len(days)-1:]
-                # purchase = purchase[len(days):]
+            expenses = qs.values_list('expenses', flat=True)
+            gross_profit = qs.values_list('gross_profit', flat=True)
+            np_plot_y = qs.values_list('net_ratio', flat=True)
+            gp_plot_y = qs.values_list('gp_ratio', flat=True)
 
             plt.bar(np.array(days), sales, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            
             plt.xlabel(f"{today.strftime('%B')}")
             plt.ylabel('Sales Value')
             plt.figtext(.5, .9, f'Sales Volume ({chr(8358)})', fontsize=20, ha='center')
@@ -52,7 +68,6 @@ class TradeHome(TemplateView):
             buf.close()
             plt.close()
             
-
             plt.bar(np.array(days), purchase, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             plt.xlabel(f"{today.strftime('%B')}")
             plt.ylabel('Purchase Value')
@@ -63,15 +78,90 @@ class TradeHome(TemplateView):
             purchase_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
             buf.close()
             plt.close()
-             
+
+            plt.bar(np.array(days), expenses, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            plt.xlabel(f"{today.strftime('%B')}")
+            plt.ylabel('Expenses Value')
+            plt.figtext(.5, .9, f'Expenses Incurred ({chr(8358)})', fontsize=20, ha='center')
+            
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', dpi=300)
+            expenses_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+            buf.close()
+            plt.close()
+
+            plt.bar(np.array(days), gross_profit, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            plt.xlabel(f"{today.strftime('%B')}")
+            plt.ylabel('Gross Profit Value')
+            plt.figtext(.5, .9, f'Gross Profit ({chr(8358)})', fontsize=20, ha='center')
+            
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', dpi=300)
+            gross_profit_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+            buf.close()
+            plt.close()
+
+            
+            plt.pie([landing_ratio, admin_ratio],
+                    colors=['#ff1800', '#10d7ff'],
+                    autopct="%1.2f%%",
+                    explode=(0, 0.1),
+                    shadow=True,
+                    startangle=90,
+                    wedgeprops={'linewidth': 2, 'edgecolor': '#b5b27b'},
+                    textprops={'color':'0'},
+                    )
+            plt.legend([f'{landing_ratio:,.3f}', f'{admin_ratio:,.3f}'], 
+            ncol=2, bbox_to_anchor=(0.75, 1.0))
+            plt.figtext(.5, .9, 'Landing and Admin Cost Ratios', fontsize=20, ha='center')
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', dpi=300)
+            expenses_ratio_pie = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+            buf.close()
+            plt.close() 
+            
+            plt.plot(days, np_plot_y)
+            plt.figtext(.5, .9, 'Net Profit Ratio', fontsize=20, ha='center')
+            plt.grid()
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', dpi=300)
+            np_plot = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+            buf.close()
+            plt.close() 
+
+            plt.plot(days, gp_plot_y, color='y')
+            plt.figtext(.5, .9, 'Gross Profit Ratio', fontsize=20, ha='center')
+            plt.grid()
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', dpi=300)
+            gp_plot = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+            buf.close()
+            plt.close() 
+            
             
             context['total_sales'] = qs.aggregate(Sum('sales'))['sales__sum']
             context['sales_average'] = qs.aggregate(Avg('sales'))['sales__avg']
+
             context['total_purchase'] = qs.aggregate(Sum('purchase'))['purchase__sum']
             context['purchase_average'] = qs.aggregate(Avg('purchase'))['purchase__avg']
 
+            context['total_expenses'] = qs.aggregate(Sum('expenses'))['expenses__sum']
+            context['expenses_average'] = qs.aggregate(Avg('expenses'))['expenses__avg']
+
+            context['total_gross'] = qs.aggregate(Sum('gross_profit'))['gross_profit__sum']
+            context['gross_average'] = qs.aggregate(Avg('gross_profit'))['gross_profit__avg']
+
             context['sales_graph'] = sales_graph
             context['purchase_graph'] = purchase_graph
+            context['expenses_graph'] = expenses_graph
+            context['gross_profit_graph'] = gross_profit_graph
+            context['expenses_ratio_pie'] = expenses_ratio_pie
+            context['gross_profit_ratio'] = gross_profit_ratio
+            context['np_plot'] = np_plot
+            context['gp_plot'] = gp_plot
+
+            
+            context['dataset'] = latest_record
         return context
     
 
