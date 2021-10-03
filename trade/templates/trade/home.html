@@ -1,4 +1,5 @@
 {% extends 'users/base.html' %}
+{% load custom_templates %}
 
 {% block content %}
 <div class="container-fluid">
@@ -7,12 +8,7 @@
         <div class="col-3 bg-dark">
             <ul class="nav flex-column mt-3">
                 <li class="text-white">Trading, P & L</li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                        href="{% url 'trade-trading-account' %}">
-                        <i class="fa fa-book text-warning"></i> Report
-                    </a>
-                </li>
+                
                 <li class="text-success ml-2">Monthly</li>
                 
                 <li class="nav-item">
@@ -28,6 +24,7 @@
                     </a>
                 </li>
                 <li class="text-success ml-2">Daily</li>
+                
                 <li class="nav-item">
                     <a class="nav-link"
                         href="{% url 'trade-daily-list' %}">
@@ -79,131 +76,169 @@
                 </li>
             </ul>
         </div>
+   
         <!--        body of page-->
-        {% if dataset %}
         <div class="col-9 mt-3 bg-white">
-                <h3>Daily Business Result: {{dataset.date|date:'F Y'}}</h3>
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
-                    <!-- Sales -->
-                    <div class="col-md-3 p-2 d-flex justify-content-center">
-                        <div class="card" style="max-width: 540px;">
-                            <img src="data:image/png;base64,{{sales_graph}}"
-                                class="card-img-top mx-auto d-block"
-                                style="height:250px;"
-                                alt="...">
-                            <div class="card-body">
-                                <h5 class="card-title text-info">Sales</h5>
-                                <p class="card-text">Cummulative Sales: {{total_sales|floatformat:'2g'}}</p>
-                                <p class="card-text">Daily Sales Average: {{sales_average|floatformat:'2g'}}</p>
-                                <img src="data:image/png;base64,{{np_plot}}"
-                                class="card-img-top mx-auto d-block"
-                                style="height:200px;"
-                                alt="...">
-                            </div>
+            <h3>Business Summary</h3>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    {% if daily %}
+                    <div class="card border-primary mb-3" style="max-width: 18rem;">
+                        <div class="card-header">Daily - {{daily.date|date:'jS F, Y'}}</div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Sales
+                                    <span class="badge badge-primary badge-pill">{{daily.sales.amount}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Purchase
+                                    <span class="badge badge-success badge-pill">{{daily.purchase.amount}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Direct Expenses
+                                    <span class="badge badge-danger badge-pill">{{daily.direct_expenses.amount}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Indirect Expenses
+                                    <span class="badge badge-warning badge-pill">{{daily.indirect_expenses.amount}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    GP Ratio
+                                    <span class="badge badge-info badge-pill">{{ daily.gp_ratio|dividedby:1000|floatformat:'3' }}%</span>
+                                </li>
+                            </ul>
+                          <div class="row">
+                              <div class="col text-right">
+                                <a class="btn btn-outline-primary btn-sm" href="{% url 'daily-pl-report' %}">Report</a>  
+                              </div>
+                          </div>
                         </div>
                     </div>
-                    <!-- Purchase -->
-                    <div class="col-md-3 p-2 d-flex justify-content-center">
-                        <div class="card" style="max-width: 540px;">
-                            <img src="data:image/png;base64,{{purchase_graph}}"
-                                class="card-img-top mx-auto d-block"
-                                style="height: 250px"
-                                alt="...">
-                            <div class="card-body">
-                                <h5 class="card-title text-warning">Purchase</h5>
-                                <p class="card-text">Cummulative Purchase: {{total_purchase|floatformat:'2g'}}</p>
-                                <p class="card-text">Daily Purchase Average: {{purchase_average|floatformat:'2g'}}</p>
-
-                                <img src="data:image/png;base64,{{gp_plot}}"
-                                class="card-img-top mx-auto d-block"
-                                style="height: 200px"
-                                alt="...">
-                            
-                            </div>
-                        </div>
+                    {% else %}
+                    <h6>No Daily record yet</h6>
+                    {% endif %}
+                </div>
+                {% if quarter_one %}
+                <div class="col-md-4">
+                    <div class="card border-success mb-3" style="max-width: 18rem;">
+                        <div class="card-header">Monthly - {{monthly}}</div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Sales
+                                    <span class="badge badge-primary badge-pill">{{monthly.sales.amount}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Purchase
+                                    <span class="badge badge-success badge-pill">{{monthly.purchase.amount}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Direct Expenses
+                                    <span class="badge badge-danger badge-pill">{{monthly.direct_expenses.amount}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Indirect Expenses
+                                    <span class="badge badge-warning badge-pill">{{monthly.indirect_expenses.amount}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    GP Ratio
+                                    <span class="badge badge-info badge-pill">{{monthly.gp_ratio|dividedby:1000|floatformat:'3'}}%</span>
+                                </li>
+                            </ul>
+                          <div class="row">
+                              <div class="col text-right">
+                                <a class="btn btn-outline-success btn-sm" href="{% url 'trade-trading-account' %}">Report</a>  
+                              </div>
+                          </div>
                     </div>
-                    <!-- Expenses -->
-                    <div class="col-md-3 p-2 d-flex justify-content-center">
-                        <div class="card" style="max-width: 540px;">
-                            <img src="data:image/png;base64,{{expenses_graph}}"
-                                class="card-img-top mx-auto d-block"
-                                style="height: 250px"
-                                alt="...">
-                            <div class="card-body">
-                                <h5 class="card-title text-primary">Expenses</h5>
-                                <p class="card-text">Cummulative Expenses: {{total_expenses|floatformat:'2g'}}</p>
-                                <p class="card-text">Daily Expenses Average: {{expenses_average|floatformat:'2g'}}</p>
-                                <img src="data:image/png;base64,{{expenses_ratio_pie}}"
-                                class="card-img-top mx-auto d-block"
-                                style="height: 200px;"
-                                alt="...">
-                                <table class="table table-bordered table-sm">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th><small>Date</small></th>
-                                            <th><small>Direct</small></th>
-                                            <th><small>Indirect</small></th>
-                                        </tr>
-                                        
-                                    </thead>
-                                    <tbody>
-                                        <tr class="text-center">
-                                            <th><small>{{dataset.date|date:'jS'}}</small></th>
-                                            <th><small>{{dataset.direct_expenses.amount}}</small></th>
-                                            <th><small>{{dataset.indirect_expenses.amount}}</small></th>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                
-                            </div>
-
-                        </div>
-                    </div>
-                    <!-- Gross Profit -->
-                    <div class="col-md-3 p-2 d-flex justify-content-center">
-                        <div class="card" style="max-width: 540px;">
-                            <img src="data:image/png;base64,{{gross_profit_graph}}"
-                                class="card-img-top mx-auto d-block"
-                                style="height: 250px"
-                                alt="...">
-                            <div class="card-body">
-                                <h5 class="card-title text-danger">Gross Profit</h5>
-                                <p class="card-text">Cummulative Gross Profit: {{total_gross|floatformat:'2g'}}</p>
-                                <p class="card-text">Daily Average Gross Profit: {{gross_average|floatformat:'2g'}}</p>
-                                
-                                <sup class="text-danger">As at {{dataset.date|date:'jS'}}</sup>
-
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Gross Profit   
-                                      <span class="badge badge-danger badge-pill">{{dataset.gross_profit.amount}}</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Net Profit
-                                      <span class="badge badge-primary badge-pill">{{dataset.net_profit|floatformat:'2g'}}</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        GP Ratio 
-                                        <span class="text-muted"><sup><i class="fa fa-long-arrow-right"></i>4.00%</sup></span>
-                                        <span class="badge badge-warning badge-pill">{{gross_profit_ratio|floatformat:'2'}}%</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        NP Ratio
-                                        <span class="text-muted"><sup> >=75.00%</sup></span>
-                                      <span class="badge badge-info badge-pill">{{dataset.net_ratio|floatformat:'2'}}%</span>
-                                    </li>
-                                  </ul>
-                            </div>
-                        </div>
-                    </div>  
                 </div>
                 
+                </div>
+                {% else %}
+                    <h6>No Monthly record yet</h6>
+                {% endif %}
+                <div class="col-md-4">
+                    {% if quarter_one %}
+                    <div class="card border-danger mb-3" style="max-width: 18rem;">
+                        <div class="card-header">Quarterly - {{quarter}}</div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Sales
+                                    <span class="badge badge-primary badge-pill">{{quarter_one.sales}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Purchase
+                                    <span class="badge badge-success badge-pill">{{quarter_one.purchase}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Direct Expenses
+                                    <span class="badge badge-danger badge-pill">{{quarter_one.direct_expenses}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Indirect Expenses
+                                    <span class="badge badge-warning badge-pill">{{quarter_one.indirect_expenses}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    GP Ratio
+                                    <span class="badge badge-info badge-pill">{{quarter_one.gp_ratio|dividedby:1000|floatformat:'3'}}%</span>
+                                </li>
+                            </ul>
+                          <div class="row">
+                              <div class="col text-right">
+                                <a class="btn btn-outline-danger btn-sm" href="{% url 'daily-pl-report' %}">Report</a>  
+                              </div>
+                          </div>
+                    </div>
+                    </div>
+                    {% else %}
+                        <h6>No quarterly record yet</h6>
+                    {% endif %}
+                
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-warning mb-3" style="max-width: 18rem;">
+                        <div class="card-header">Yearly - </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Sales
+                                    <span class="badge badge-primary badge-pill">{{sales|floatformat:'2g'}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Purchase
+                                    <span class="badge badge-success badge-pill">{{purchase|floatformat:'2g'}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Direct Expenses
+                                    <span class="badge badge-danger badge-pill">{{direct_expenses|floatformat:'2g'}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    Indirect Expenses
+                                    <span class="badge badge-warning badge-pill">{{indirect_expenses|floatformat:'2g'}}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    GP Ratio
+                                    <span class="badge badge-info badge-pill">{{gp_ratio|dividedby:1000|floatformat:'3'}}%</span>
+                                </li>
+                            </ul>
+                          <div class="row">
+                              <div class="col text-right">
+                                <a class="btn btn-outline-warning btn-sm" href="{% url 'daily-pl-report' %}">Report</a>  
+                              </div>
+                          </div>
+                    </div>
+                </div>
+                
+                
+                </div>
+            </div>
+
         </div>
-        {% else %}
-        <div class="col-9 mt-3 bg-white">
-            <h4>No record to display</h4>
-        </div>
-        {% endif %}
+        
     </div>
 </div>
 {% endblock content %}

@@ -15,4 +15,5 @@ urlpatterns += [
         path('daily/list/', TradeDailyListView.as_view(), name='trade-daily-list'),
         path('daily/<int:pk>/detail/', TradeDailyDetailView.as_view(), name='trade-daily-detail'),
         path('daily/<int:pk>/update/', TradeDailyUpdateView.as_view(), name='trade-daily-update'),
+        path('daily/PL/report/', PLDailyReportView.as_view(), name='daily-pl-report'),
 ]

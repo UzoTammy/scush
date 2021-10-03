@@ -1,4 +1,6 @@
 import datetime
+from django.db.models.fields import FloatField
+from django.db.models.query_utils import Q
 from django.http.response import HttpResponseRedirect
 from .forms import TradeMonthlyForm, TradeDailyForm
 from django.shortcuts import redirect, render
@@ -7,27 +9,87 @@ from staff.models import Payroll
 from django.urls.base import reverse_lazy
 from django.db.models import Sum, F, Avg, ExpressionWrapper, DecimalField
 import calendar
-import io
-from ozone import mytools
-import base64
-from matplotlib import colors, pyplot as plt
+import io, base64
+from matplotlib import pyplot as plt
 import matplotlib
 import numpy as np
 from django.views.generic import (View, TemplateView, CreateView, ListView, DetailView, UpdateView)                            
 from datetime import timedelta
+from ozone import mytools
 
 
 matplotlib.use('Agg')
 
-# Monthly Model
+
 class TradeHome(TemplateView): 
     template_name = 'trade/home.html'
 
+    def quarter_group(self, queryset, year, quarter):
+        qs_list = list()
+        for month in quarter:
+            qs_list.append(queryset.filter(year=year, month=month))
+        
+        qs_union = qs_list[0]|qs_list[1]|qs_list[2]
+        sales, purchase, direct, indirect, gp = 0, 0, 0, 0, 0
+        
+        for obj in qs_union:
+            sales += obj.sales.amount
+            purchase += obj.purchase.amount
+            direct += obj.direct_expenses.amount
+            indirect += obj.indirect_expenses.amount
+            gp += obj.gp_ratio
+        return sales, purchase, direct, indirect, gp, qs_union.count()
+
+    def get_context_data(self, **kwargs):
+        
+        context = super().get_context_data(**kwargs)
+        year = datetime.date.today().year
+
+        daily_qs = TradeDaily.objects.annotate(gp_ratio=ExpressionWrapper(100*1000*F('gross_profit')/F('sales'), output_field=DecimalField()))
+        daily = daily_qs.latest('date')
+
+        monthly_qs = TradeMonthly.objects.filter(year=year).annotate(gp_ratio=ExpressionWrapper(100*1000*F('gross_profit')/F('sales'), output_field=DecimalField()))
+        monthly = monthly_qs.last()
+
+        if monthly_qs.filter(month='October').exists():
+            quarter = self.quarter_group(monthly_qs, year, ['October', 'November', 'December'])
+            context['quarter'] = 'Q4'
+        elif monthly_qs.filter(month='July').exists():
+            quarter = self.quarter_group(monthly_qs, year, ['July', 'August', 'September'])
+            context['quarter'] = 'Q3'
+        elif monthly_qs.filter(month='April').exists():
+            quarter = self.quarter_group(monthly_qs, year, ['April', 'May', 'June'])
+            context['quarter'] = 'Q2'
+        else:
+            quarter = self.quarter_group(monthly_qs, year, ['January', 'February', 'March'])
+            context['quarter'] = 'Q1'
+
+        context['sales'] = monthly_qs.aggregate(total=Sum('sales'))['total']
+        context['purchase'] = monthly_qs.aggregate(total=Sum('purchase'))['total']
+        context['direct_expenses'] = monthly_qs.aggregate(total=Sum('direct_expenses'))['total']
+        context['indirect_expenses'] = monthly_qs.aggregate(total=Sum('indirect_expenses'))['total']
+        context['gp_ratio'] = monthly_qs.aggregate(total=Avg('gp_ratio'))['total']
+
+        
+        # context['sales'] = sales
+        context['daily'] = daily
+        context['monthly'] = monthly
+
+        context['quarter_one'] = {'sales': quarter[0], 
+        'purchase': quarter[1], 
+        'direct_expenses': quarter[2],
+        'indirect_expenses': quarter[3], 
+        'gp_ratio': quarter[4]/quarter[5]}
+        return context
+  
+class PLDailyReportView(TemplateView):
+    template_name = 'trade/PL_daily_report.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+  
         # today is three days ago
-        today = datetime.date.today() - timedelta(days=240)
+        today = datetime.date.today() - timedelta(days=4)
 
         year = today.year
         month = today.month
@@ -49,17 +111,25 @@ class TradeHome(TemplateView):
             gross_profit_ratio = 100 * latest_record.gross_profit/latest_record.sales
 
             days = [str(i.day) for i in qs.values_list('date', flat=True)]
+            
             sales = qs.values_list('sales', flat=True)
             purchase = qs.values_list('purchase', flat=True)
             expenses = qs.values_list('expenses', flat=True)
             gross_profit = qs.values_list('gross_profit', flat=True)
-            np_plot_y = qs.values_list('net_ratio', flat=True)
-            gp_plot_y = qs.values_list('gp_ratio', flat=True)
+            np_plot = qs.values_list('net_ratio', flat=True)
+            gp_plot = qs.values_list('gp_ratio', flat=True)
+            
+            cut_off = 15
+            days_x = days[len(days)-cut_off:]
 
-            plt.bar(np.array(days), sales, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            if len(days) > cut_off:
+                sales_y = sales[len(days)-cut_off:]
+                plt.bar(days_x, sales_y, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            else:
+                plt.bar(days, sales, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             
             plt.xlabel(f"{today.strftime('%B')}")
-            plt.ylabel('Sales Value')
+            plt.ylabel(f'Sales Value')
             plt.figtext(.5, .9, f'Sales Volume ({chr(8358)})', fontsize=20, ha='center')
             
             buf = io.BytesIO()
@@ -67,10 +137,16 @@ class TradeHome(TemplateView):
             sales_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
             buf.close()
             plt.close()
+            context['sales_graph'] = sales_graph
+
+            if len(days) > cut_off:
+                purchase_y = purchase[len(days)-cut_off:]
+                plt.bar(days_x, purchase_y, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            else:
+                plt.bar(days, purchase, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             
-            plt.bar(np.array(days), purchase, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             plt.xlabel(f"{today.strftime('%B')}")
-            plt.ylabel('Purchase Value')
+            plt.ylabel(f'Purchase Value')
             plt.figtext(.5, .9, f'Purchase Volume ({chr(8358)})', fontsize=20, ha='center')
             
             buf = io.BytesIO()
@@ -78,8 +154,14 @@ class TradeHome(TemplateView):
             purchase_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
             buf.close()
             plt.close()
-
-            plt.bar(np.array(days), expenses, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            context['purchase_graph'] = purchase_graph
+            
+            if len(days) > cut_off:
+                expenses_y = expenses[len(days)-cut_off:]
+                plt.bar(days_x, expenses_y, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            else:
+                plt.bar(days, expenses, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            
             plt.xlabel(f"{today.strftime('%B')}")
             plt.ylabel('Expenses Value')
             plt.figtext(.5, .9, f'Expenses Incurred ({chr(8358)})', fontsize=20, ha='center')
@@ -89,8 +171,14 @@ class TradeHome(TemplateView):
             expenses_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
             buf.close()
             plt.close()
-
-            plt.bar(np.array(days), gross_profit, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            context['expenses_graph'] = expenses_graph
+            
+            if len(days) > cut_off:
+                gross_profit_y = gross_profit[len(days)-cut_off:]
+                plt.bar(days_x, gross_profit_y, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            else:
+                plt.bar(days, gross_profit, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            
             plt.xlabel(f"{today.strftime('%B')}")
             plt.ylabel('Gross Profit Value')
             plt.figtext(.5, .9, f'Gross Profit ({chr(8358)})', fontsize=20, ha='center')
@@ -100,7 +188,7 @@ class TradeHome(TemplateView):
             gross_profit_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
             buf.close()
             plt.close()
-
+            context['gross_profit_graph'] = gross_profit_graph
             
             plt.pie([landing_ratio, admin_ratio],
                     colors=['#ff1800', '#10d7ff'],
@@ -119,8 +207,30 @@ class TradeHome(TemplateView):
             expenses_ratio_pie = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
             buf.close()
             plt.close() 
+            context['expenses_ratio_pie'] = expenses_ratio_pie
+
+
+            if len(days) > cut_off:
+                gp_plot_y = gp_plot[len(days)-cut_off:]
+                plt.plot(days_x, gp_plot_y, color='y')
+            else:
+                plt.plot(days, gp_plot, color='y')
+            plt.figtext(.5, .9, 'Gross Profit Ratio', fontsize=20, ha='center')
+            plt.grid()
+
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png', dpi=300)
+            gp_plot = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+            buf.close()
+            plt.close() 
+            context['gp_plot'] = gp_plot
             
-            plt.plot(days, np_plot_y)
+
+            if len(days) > cut_off:
+                np_plot_y = np_plot[len(days)-cut_off:]
+                plt.plot(days_x, np_plot_y)
+            else:
+                plt.plot(days, np_plot)
             plt.figtext(.5, .9, 'Net Profit Ratio', fontsize=20, ha='center')
             plt.grid()
             buf = io.BytesIO()
@@ -128,15 +238,7 @@ class TradeHome(TemplateView):
             np_plot = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
             buf.close()
             plt.close() 
-
-            plt.plot(days, gp_plot_y, color='y')
-            plt.figtext(.5, .9, 'Gross Profit Ratio', fontsize=20, ha='center')
-            plt.grid()
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png', dpi=300)
-            gp_plot = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
-            buf.close()
-            plt.close() 
+            context['np_plot'] = np_plot
             
             
             context['total_sales'] = qs.aggregate(Sum('sales'))['sales__sum']
@@ -151,21 +253,11 @@ class TradeHome(TemplateView):
             context['total_gross'] = qs.aggregate(Sum('gross_profit'))['gross_profit__sum']
             context['gross_average'] = qs.aggregate(Avg('gross_profit'))['gross_profit__avg']
 
-            context['sales_graph'] = sales_graph
-            context['purchase_graph'] = purchase_graph
-            context['expenses_graph'] = expenses_graph
-            context['gross_profit_graph'] = gross_profit_graph
-            context['expenses_ratio_pie'] = expenses_ratio_pie
-            context['gross_profit_ratio'] = gross_profit_ratio
-            context['np_plot'] = np_plot
-            context['gp_plot'] = gp_plot
-
-            
+            context['gross_profit_ratio'] =  gross_profit_ratio
             context['dataset'] = latest_record
         return context
     
-
-
+    
 class TradeTradingReport(TemplateView):
     df = 10_000 # decimal factor
 
@@ -200,10 +292,11 @@ class TradeTradingReport(TemplateView):
                                                     ))
 
         period = monthly_trade.values_list('month', flat=True)
-
+        period_label = list(i[0:3] for i in period)
+        
         def sales_bar(self):
             sales = self.monthly_trade.values_list('sales', flat=True)
-            plt.bar(np.array(self.period), sales, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            plt.bar(np.array(self.period_label), sales, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             plt.xlabel('Period')
             plt.ylabel('Sales Value')
             plt.figtext(.5, .9, f'Sales Volume ({chr(8358)})', fontsize=20, ha='center')
@@ -216,7 +309,7 @@ class TradeTradingReport(TemplateView):
 
         def purchase_bar(self):
             purchase = self.monthly_trade.values_list('purchase', flat=True)
-            plt.bar(np.array(self.period), purchase, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            plt.bar(np.array(self.period_label), purchase, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             plt.xlabel('Period')
             plt.ylabel('Purchase Value')
             plt.figtext(.5, .9, f'Purchase Volume ({chr(8358)})', fontsize=20, ha='center')
