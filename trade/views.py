@@ -74,7 +74,7 @@ class TradeHome(TemplateView):
         # context['sales'] = sales
         context['daily'] = daily
         context['monthly'] = monthly
-        context['year'] = year
+        context['year'] = f'{year}'
 
         context['quarter_one'] = {'sales': quarter[0], 
         'purchase': quarter[1], 
