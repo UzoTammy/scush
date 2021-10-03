@@ -74,12 +74,14 @@ class TradeHome(TemplateView):
         # context['sales'] = sales
         context['daily'] = daily
         context['monthly'] = monthly
+        context['year'] = year
 
         context['quarter_one'] = {'sales': quarter[0], 
         'purchase': quarter[1], 
         'direct_expenses': quarter[2],
         'indirect_expenses': quarter[3], 
         'gp_ratio': quarter[4]/quarter[5]}
+
         return context
   
 class PLDailyReportView(TemplateView):
@@ -89,8 +91,9 @@ class PLDailyReportView(TemplateView):
         context = super().get_context_data(**kwargs)
   
         # today is three days ago
-        today = datetime.date.today() - timedelta(days=4)
+        today = datetime.date.today() - timedelta(days=200)
 
+        
         year = today.year
         month = today.month
         qs = TradeDaily.objects.filter(date__year=year, date__month=month) 
