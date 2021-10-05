@@ -249,6 +249,13 @@ class Month:
                 return n_month
 
     @classmethod
+    def previous_month_letter(cls, month):
+        cycle = it.cycle(range(13, 1, -1))
+        if list(calendar.month_name).index(month) in cycle:
+            result = calendar.month_name[next(cycle)] 
+        return result
+
+    @classmethod
     def number_of_working_days(cls, year, month):
         days_in_month = calendar.monthrange(year, month)
         month_range = range(1, days_in_month[1]+1)
