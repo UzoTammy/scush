@@ -1,0 +1,13 @@
+{% extends 'users/base.html' %}
+
+{% block content%}
+<div class="container">
+    <div class="row text-center">
+        <div class="col">
+            <h3>{{message}}</h3>
+            <a class="btn btn-outline-dark" href="{% url return_to %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+    
+</div>
+{% endblock%}

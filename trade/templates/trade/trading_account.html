@@ -3,8 +3,9 @@
 
 {% block content %}
 <div class="container-fluid">
+    
     <div class="jumbotron text-white" style="background-color:rgb(18, 51, 82);">
-        <h1 class="display-5">Trading, Profit & Loss Account for {% now 'Y' %}</h1>
+        <h1 class="display-5">Trading, Profit & Loss Account for {{ monthly|first }}</h1>
         <p class="lead">It is a final account that gives idea about profitability and financial position
             to its management, owners and interested parties.
         </p>
@@ -41,7 +42,7 @@
         <!--        body of page-->
         <div class="col">
             <div class="row">
-                {% if True %}
+                {% if monthly %}
                 
                 {% for record in recordset %}
                 
@@ -118,12 +119,25 @@
             </div>
         </div>
     </div>
+    
     <div class="row">
-        <div class="col text-right">
-            <a class="btn btn-dark m-3" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i></a>
+        <div class="col-9 mt-2">
+            <form class="form-inline">
+                <div class="form-group mb-2 mr-2">
+                    <select type="text" name="year" class="form-control" placeholder="year">
+                        <option value="2021"><--2021--></option>
+                        <option value="2020"><--2020--></option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-outline-primary mb-2">OK</button>
+            </form>
+        </div>
+        
+        <div class="col-3 text-right">
+            <a class="btn btn-dark mt-2" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i></a>
         </div>
     </div>
-
+    
 
 <script>
     $(function () {
