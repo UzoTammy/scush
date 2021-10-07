@@ -154,8 +154,8 @@ class TradeTradingReport(TemplateView):
             current_year = datetime.date.today().year
         else:
             current_year = datetime.date(int(request.GET['year']), 1, 1).year
-        print(current_year)
         monthly_trade = TradeMonthly.objects.filter(year=current_year)
+        
         context['monthly'] = monthly_trade
         
         if monthly_trade.exists():
@@ -175,37 +175,44 @@ class TradeTradingReport(TemplateView):
             qs = qs.annotate(percent_gross=ExpressionWrapper(100*self.df*(F('indirect_expenses') + F('direct_expenses')) / F('gross_profit'), 
                                                         output_field=DecimalField(decimal_places=2)
                                                         ))
-            qs = qs.annotate(percent_gross=ExpressionWrapper(100*self.df*(F('indirect_expenses') + F('direct_expenses')) / F('gross_profit'), 
-                                                        output_field=DecimalField(decimal_places=2)
-                                                        ))
+            # qs = qs.annotate(percent_gross=ExpressionWrapper(100*self.df*(F('indirect_expenses') + F('direct_expenses')) / F('gross_profit'), 
+                                                        # output_field=DecimalField(decimal_places=2)
+                                                        # ))
             qs = qs.annotate(percent_purchase=ExpressionWrapper(100*self.df*F('indirect_expenses') / F('purchase'), 
                                                         output_field=DecimalField(decimal_places=2)
                                                         ))
-            
+            qs = qs.annotate(lc_ratio=ExpressionWrapper(100*self.df*F('indirect_expenses') / F('purchase'), 
+                                                        output_field=DecimalField(decimal_places=2)
+                                                        ))
+                
             period = monthly_trade.values_list('month', flat=True)
             period_label = list(i[0:3] for i in period)
-        
             sales = monthly_trade.values_list('sales', flat=True)
-            plt.bar(np.array(period_label), sales, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
-            plt.xlabel('Period')
-            plt.ylabel('Sales Value')
-            plt.figtext(.5, .9, f'Sales Volume ({chr(8358)})', fontsize=20, ha='center')
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png', dpi=300)
-            sales_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
-            buf.close()
-            plt.close()
 
-            purchase = monthly_trade.values_list('purchase', flat=True)
-            plt.bar(np.array(period_label), purchase, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
-            plt.xlabel('Period')
-            plt.ylabel('Purchase Value')
-            plt.figtext(.5, .9, f'Purchase Volume ({chr(8358)})', fontsize=20, ha='center')
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png', dpi=300)
-            purchase_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
-            buf.close()
-            plt.close()
+            
+
+            # plt.bar(np.array(period_label), sales, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            # plt.xlabel('Period')
+            # plt.ylabel('Sales Value')
+            # plt.figtext(.5, .9, f'Sales Volume ({chr(8358)})', fontsize=20, ha='center')
+       
+            # buf = io.BytesIO()
+            # plt.savefig(buf, format='png', dpi=300)
+            # sales_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+            # buf.close()
+            # plt.close()
+
+            # purchase = monthly_trade.values_list('purchase', flat=True)
+            # plt.bar(np.array(period_label), purchase, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
+            # plt.xlabel('Period')
+            # plt.ylabel('Purchase Value')
+            # plt.figtext(.5, .9, f'Purchase Volume ({chr(8358)})', fontsize=20, ha='center')
+            # buf = io.BytesIO()
+            # plt.savefig(buf, format='png', dpi=300)
+            # purchase_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+            # buf.close()
+            # plt.close()
+
 
             current_month = qs.last().month
             current_month_qs = qs.get(month=current_month)
@@ -253,22 +260,22 @@ class TradeTradingReport(TemplateView):
                 previous = round(qs.get(id=previous_record_id).percent_margin, 2)
                 current = round(qs.get(id=qs.last().id).percent_margin, 2)
                 
-                plt.pie([average, previous, current],
-                        labels=['Cumm. Avg.', list(period)[-2], period.last()],
-                        colors=['#addba5', '#efef9c', '#addfef'],
-                        autopct="%1.2f%%",
-                        explode=(0, 0, 0.1),
-                        shadow=True,
-                        startangle=90,
-                        wedgeprops={'linewidth': 2, 'edgecolor': '#b5b27b'},
-                        textprops={'color': 'b'},
-                        )
-                plt.figtext(.5, .9, 'Gross Profit Ratio', fontsize=20, ha='center')
-                buf = io.BytesIO()
-                plt.savefig(buf, format='png', dpi=300)
-                gp_ratio_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
-                buf.close()
-                plt.close()
+                # plt.pie([average, previous, current],
+                #         labels=['Cumm. Avg.', list(period)[-2], period.last()],
+                #         colors=['#addba5', '#efef9c', '#addfef'],
+                #         autopct="%1.2f%%",
+                #         explode=(0, 0, 0.1),
+                #         shadow=True,
+                #         startangle=90,
+                #         wedgeprops={'linewidth': 2, 'edgecolor': '#b5b27b'},
+                #         textprops={'color': 'b'},
+                #         )
+                # plt.figtext(.5, .9, 'Gross Profit Ratio', fontsize=20, ha='center')
+                # buf = io.BytesIO()
+                # plt.savefig(buf, format='png', dpi=300)
+                # gp_ratio_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+                # buf.close()
+                # plt.close()
                 previous_month = {
                 'heading': f'Previous Month {previous_month_qs.month} ({naira})',
                 'opening_stock': previous_month_qs.opening_value,
@@ -354,12 +361,12 @@ class TradeTradingReport(TemplateView):
                 
                 context['lc_ratio'] = 100*(current_month['indirect_expenses']/current_month['purchase']) # landing cost ratio
                 context['ac_ratio'] = 100*(current_month['direct_expenses']/current_month['sales']) # administrative cost ratio
-                
+            
                 context['recordset'] = [current_year_total, previous_month, current_month]
-
-            context['sales_graph'] = sales_graph
-            context['purchase_graph'] = purchase_graph
-            context['gp_ratio_graph'] = gp_ratio_graph
+                context['dataset'] = qs
+            # context['sales_graph'] = sales_graph
+            # context['purchase_graph'] = purchase_graph
+            # context['gp_ratio_graph'] = gp_ratio_graph
 
             context['N'] = naira
         
@@ -406,7 +413,7 @@ class PLDailyReportView(TemplateView):
         context = dict()
         # today is three days ago
         if request.GET == {}:
-            today = datetime.date.today() - timedelta(days=7)
+            today = datetime.date.today() - timedelta(days=180)
             end_date = today.strftime('%Y-%m-%d')    
         else:
             end_date = request.GET['date']

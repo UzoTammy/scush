@@ -19,22 +19,76 @@
     </div>
     <div class="row mb-3">
         <div class="col-md-4 text-center">
-            <img src="data:image/png;base64,{{sales_graph}}" 
-            width="400"
-            height="auto"
-            alt="">
+            <table class="table table-sm" data-toggle="table">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Sales</th>
+                        <th>Purchase</th>
+                        <th>Gross Profit</th>
+                        <th>Net Profit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in dataset %}
+                    <tr>
+                        <th>{{record.month|slice:':3'}}</th>
+                        <th>{{record.sales.amount|floatformat:'2g'}}</th>
+                        <th>{{record.purchase.amount|floatformat:'2g'}}</th>
+                        <th>{{record.gross_profit.amount|floatformat:'2g'}}</th>
+                        <th>{{record.net_profit|floatformat:'2g'}}</th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>    
         <div class="col-md-4 text-center">
-            <img src="data:image/png;base64,{{purchase_graph}}"
-            width="400"
-            height="auto"
-            alt="">        
+            <table class="table table-sm" data-toggle="table">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>D. Expenses</th>
+                        <th>I. Expenses</th>
+                        <th>D. Income</th>
+                        <th>I. Income</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in dataset %}
+                    <tr>
+                        <th>{{record.month|slice:':3'}}</th>
+                        <th>{{record.direct_expenses.amount|floatformat:'2g'}}</th>
+                        <th>{{record.indirect_expenses.amount|floatformat:'2g'}}</th>
+                        <th>{{record.direct_income.amount|floatformat:'2g'}}</th>
+                        <th>{{record.indirect_income.amount|floatformat:'2g'}}</th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>        
         </div>
         <div class="col-md-4 text-center">
-            <img src="data:image/png;base64,{{gp_ratio_graph}}"
-            width="400"
-            height="auto"
-            alt="">
+            <table class="table table-sm" data-toggle="table">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Sales</th>
+                        <th>Purchase</th>
+                        <th>Gross </th>
+                        <th>Margin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in dataset %}
+                    <tr>
+                        <th>{{record.month|slice:':3'}}</th>
+                        <th>{{record.percent_sales|dividedby:10000|floatformat:'3'}}</th>
+                        <th>{{record.percent_purchase|dividedby:10000|floatformat:'3'}}</th>
+                        <th>{{record.percent_gross|dividedby:10000|floatformat:'3'}}</th>
+                        <th class="text-info">{{record.percent_margin|dividedby:10000|floatformat:'3'}}</th>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
     
