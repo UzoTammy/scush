@@ -74,3 +74,4 @@ def minus(value, arg):
 @register.filter
 def dividedby(value, arg):
     return value/arg
+

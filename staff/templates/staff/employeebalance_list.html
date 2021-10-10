@@ -1,0 +1,59 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <table data-toggle="table" 
+                   data-search="true"
+                   data-show-columns="true"
+                   data-pagination="true"
+                    class="table table-sm table-striped table-bordered mydatatable"
+                    style="width: 100%"
+                    >
+                    <caption>Profile Balance List</caption>
+                <thead>
+                    <tr class="text-center">
+                        <th>Staff</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Value</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in object_list %}
+                    <tr class="text-center">
+                        <td><a href="{% url 'employee-balance-detail' record.id %}">{{record.staff}}</a></td>
+                        <td>{{record.date|date:'d-m-Y'}}</td>
+                        <td>{{record.description}}</td>
+                        {% if record.value_type == 'Dr' %}
+                        <td class='text-right text-danger'>{{record.value.amount}}</td>
+                        {% else %}
+                        <td class='text-right'>{{record.value.amount}}</td>
+                        {% endif %}
+                        <td>{{record.value_type}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {{views.kwargs}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {% if return == 'detail' %}
+            <a class=" btn btn-outline-dark float-right" href="{% url 'employee-detail' view.kwargs.pk %}">
+            {% else %}
+            <a class=" btn btn-outline-dark float-right" href="{% url 'staff-home' %}">
+            {% endif %}
+                <i class="fa fa-reply"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock content%}
+
+<script>
+    $('.mydatatable').DataTable();
+</script>

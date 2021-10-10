@@ -405,6 +405,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['suspensions'] = Suspend.objects.filter(staff_id=person)
         context['salary_changed'] = SalaryChange.objects.filter(staff_id=person)
         context['total_balance'] = total_balance
+        context['payout'] = Payroll.objects.filter(staff_id=self.kwargs['pk']).aggregate(total=Sum('net_pay'))['total']
         return context
 
 
@@ -1358,21 +1359,34 @@ class UpdateTax(UpdateView):
         return redirect(reverse('update-tax'), context)
 
 
-class BalanceView(TemplateView):
+class BalanceView(ListView):
+    # template_name = 'staff/balance.html'
 
-    template_name = 'staff/payroll/balance.html'
-
-    def get(self, request, *args, **kwargs):
-        context = {
-            'balances': EmployeeBalance.objects.all()
-        }
-        return render(request, self.template_name, context)
-
+    def get_queryset(self):
+        return EmployeeBalance.objects.filter(staff_id=self.kwargs['pk'])
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['return'] = 'detail'
+        return context
 
 class TaxList(ListView):
     model = Employee
     
-
     def get_template_names(self):
         
         return ['staff/payroll/tax_list.html']
+
+class EmployeeBalanceListView(ListView):
+    model = EmployeeBalance
+
+
+class EmployeeBalanceDetailView(DetailView):
+    model = EmployeeBalance
+
+class EmployeeBalanceUpdateView(UpdateView):
+    model = EmployeeBalance
+    fields = '__all__'
+    
+    def get_success_url(self):
+        return reverse_lazy('employee-balance-detail', kwargs={'pk': self.kwargs['pk']})

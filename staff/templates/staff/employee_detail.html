@@ -67,11 +67,11 @@
                     <a class="nav-link"
                        href="{% url 'payroll-statement' object.pk %}">
                         <i class="fa fa-book text-warning"></i>
-                        Pay Statement
+                        Payslip
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="{% url 'balance-view' object.pk %}">
                         <i class="fa fa-book text-warning"></i>
                         Balance
                     </a>
@@ -86,11 +86,11 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'staff-list' %}">
-                        <i class="fa fa-reply text-warning"></i> General</a>
+                        <i class="fa fa-reply text-warning"></i> Staff List</a>
                 </li>
             </ul>
         </div>
-        <div class="col-9 mt-3">
+        <div class="col-9 mt-4">
             <h2 class="text-secondary text-center bg-light">Individual Data Page</h2>
             <div class="row">
                 <div class="col-sm-12">
@@ -109,6 +109,8 @@
                         <div class="col-6">
                             <p class="text-success">Full Salary: {{object.salary}}</p>
                             <p class="text-success">Age: {{object.staff.birth_date|timesince}}</p>
+                            <p class="text-success">Payout (since June 2021): {{naira}}{{payout|floatformat:'2g'}}</p>
+            
                             <hr>
                             <p>First Name: {{object.staff.first_name}}</p>
                             <p>Second Name: {{object.staff.second_name}}</p>

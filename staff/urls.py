@@ -20,7 +20,11 @@ urlpatterns = [
     path('home/<str:staff_category>/', StaffViews.as_view(), name='terminated'),
     path('pk-reset/', PKResetView.as_view(), name='pk-reset'),
     path('pk-reset/payroll/', PKResetPayroll.as_view(), name='pk-reset-payroll'),
+    
     path('employee/<int:pk>/balance/', AddStaffBalance.as_view(), name='employee-balance'),
+    path('employee/balance/list/', EmployeeBalanceListView.as_view(), name='employee-balance-list'),
+    path('employee/balance/<int:pk>/detail/', EmployeeBalanceDetailView.as_view(), name='employee-balance-detail'),
+    path('employee/balance/<int:pk>/update/', EmployeeBalanceUpdateView.as_view(), name='employee-balance-update'),
     ]
 
 urlpatterns += [
@@ -40,6 +44,6 @@ urlpatterns += [
     path('payroll/modify/', ModifyGeneratedPayroll.as_view(), name='payroll-modify'),
     path('payroll/modify/<int:pk>/outstanding/', MakeOutstandingValueZero.as_view(), name='payroll-modify-outstanding'),
     path('payroll/update/tax/', UpdateTax.as_view(), name='update-tax'),
-    path('payroll/balance/', BalanceView.as_view(), name='balance-view'),
+    path('payroll/<int:pk>/balance/', BalanceView.as_view(), name='balance-view'),
     path('payroll/tax/list/', TaxList.as_view(), name='tax-list'),
 ]

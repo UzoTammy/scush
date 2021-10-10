@@ -1,0 +1,26 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-3">
+        <div class="col">
+            <h3 class="text-center">{{object.staff}}</h3>
+            <ul class="list-group">
+                <li class="list-group-item">Staff: {{object.staff}}</li>
+                <li class="list-group-item">Date: {{object.date}}</li>
+                <li class="list-group-item">Description: {{object.description}}</li>
+                <li class="list-group-item">Value: {{object.value}}</li>
+                <li class="list-group-item">Type: {{object.value_type}}</li>
+            </ul>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col text-right">
+            <a class="btn btn-outline-primary" href="{%url 'employee-balance-update' object.pk %}">Update</a>
+            <a class="btn btn-outline-dark" href="{% url 'employee-balance-list' %}">
+                <i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+</div>
+    
+{% endblock %}

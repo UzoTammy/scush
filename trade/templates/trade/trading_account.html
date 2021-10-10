@@ -20,6 +20,7 @@
     <div class="row mb-3">
         <div class="col-md-4 text-center">
             <table class="table table-sm" data-toggle="table">
+                <caption>Trade</caption>
                 <thead>
                     <tr>
                         <th>Month</th>
@@ -44,6 +45,7 @@
         </div>    
         <div class="col-md-4 text-center">
             <table class="table table-sm" data-toggle="table">
+                <caption><span class="text-danger">Expenses</span> & <span class="text-success">Income</span></caption>
                 <thead>
                     <tr>
                         <th>Month</th>
@@ -67,13 +69,15 @@
             </table>        
         </div>
         <div class="col-md-4 text-center">
-            <table class="table table-sm" data-toggle="table">
+            <table id="tab" class="table table-sm" data-toggle="table">
+                <caption>Ratios</caption>
                 <thead>
                     <tr>
                         <th>Month</th>
                         <th>Sales</th>
                         <th>Purchase</th>
-                        <th>Gross </th>
+                        <th>Gross</th>
+                        <th>Trade</th>
                         <th>Margin</th>
                     </tr>
                 </thead>
@@ -81,10 +85,15 @@
                     {% for record in dataset %}
                     <tr>
                         <th>{{record.month|slice:':3'}}</th>
-                        <th>{{record.percent_sales|dividedby:10000|floatformat:'3'}}</th>
-                        <th>{{record.percent_purchase|dividedby:10000|floatformat:'3'}}</th>
-                        <th>{{record.percent_gross|dividedby:10000|floatformat:'3'}}</th>
-                        <th class="text-info">{{record.percent_margin|dividedby:10000|floatformat:'3'}}</th>
+                        <th>{{record.sales_ratio|dividedby:10000|floatformat:'3'}}</th>
+                        <th>{{record.purchase_ratio|dividedby:10000|floatformat:'3'}}</th>
+                        <th>{{record.gross_ratio|dividedby:10000|floatformat:'3'}}</th>
+                        <th>{{record.trade_ratio|dividedby:10000|floatformat:'3'}}</th>
+                        <th class="text-secondary">{{record.gross_margin_ratio|dividedby:10000|floatformat:'3'}}
+                            {% if forloop.counter == 2 %}
+                            {{forloop.first}}
+                            {% endif %}
+                        </th>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -92,11 +101,11 @@
         </div>
     </div>
     
-    <div class="row">
-        <!--        body of page-->
+     <div class="row">
+               <!-- body of page -->
         <div class="col">
             <div class="row">
-                {% if monthly %}
+                {% if monthly %} 
                 
                 {% for record in recordset %}
                 
@@ -122,8 +131,8 @@
                         
                         <li class="list-group-item"> 
                             <p>Indirect Expenses: {{record.indirect_expenses|floatformat:'2g'}}</p>
-                            <p>Net Profit: {{record.net_profit|floatformat:'2g'}}</p>
-                            <p>Indirect Income: {{record.indirect_income|floatformat:'2g'}}</p>
+                            <p>Net Profit: {{record.net_profit|floatformat:'2g'}}</p> 
+                            <p>Indirect Income: {{record.indirect_income|floatformat:'2g'}}</p> 
                         </li>
                         <li class="list-group-item">Gross Margin: {{record.percent_margin|floatformat:'3'}}%
                             {% if record.gross_margin_arrow %}
@@ -172,7 +181,7 @@
                 
             </div>
         </div>
-    </div>
+    </div> 
     
     <div class="row">
         <div class="col-9 mt-2">
@@ -191,13 +200,10 @@
             <a class="btn btn-dark mt-2" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i></a>
         </div>
     </div>
-    
-
 <script>
-    $(function () {
-        $('[data-toggle="popover"]').popover({
-            container: 'body'
-        })
-    })
+    
+    var row = $(this).getElementById('tab').closest('tr')
+    var prev = row.prev()
+    console.log(prev)
 </script>
 {% endblock content%}
