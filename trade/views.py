@@ -361,7 +361,8 @@ class TradeTradingReport(TemplateView):
                 # context['ac_ratio'] = 100*(current_month['direct_expenses']/current_month['sales']) # administrative cost ratio
             
                 context['recordset'] = [current_year_total] #, previous_month, current_month]
-                context['dataset'] = qs
+                context['dataset'] = qs.order_by('pk')
+
             # context['sales_graph'] = sales_graph
             # context['purchase_graph'] = purchase_graph
             # context['gp_ratio_graph'] = gp_ratio_graph
@@ -370,8 +371,7 @@ class TradeTradingReport(TemplateView):
         
             return render(request, self.template_name, context)
         
-        return render(request, 'trade/no_record.html', {'return_to': 'trade-trading-account',
-        'message': f'No Trading and P & L Record for {current_year}'})
+        return render(request, 'trade/no_record.html', {'message': f'No Trading and P & L Record for {current_year}'})
 
 # Daily Model
 class TradeDailyCreateView(CreateView):
@@ -404,6 +404,7 @@ class TradeDailyUpdateView(UpdateView):
 
 
 class PLDailyReportView(TemplateView):
+    queryset = TradeDaily.objects.all()
     template_name = 'trade/PL_daily_report.html'
 
     def get(self, request, *args, **kwargs):
@@ -411,7 +412,7 @@ class PLDailyReportView(TemplateView):
         context = dict()
         # today is three days ago
         if request.GET == {}:
-            today = datetime.date.today() - timedelta(days=180)
+            today = self.queryset.latest('date').date
             end_date = today.strftime('%Y-%m-%d')    
         else:
             end_date = request.GET['date']
@@ -553,5 +554,4 @@ class PLDailyReportView(TemplateView):
             context['gross_profit_ratio'] =  gross_profit_ratio
             context['dataset'] = latest_record
             return render(request, self.template_name, context)
-        return render(request, 'trade/no_record.html', {'return_to': 'daily-pl-report',
-        'message': f'No Daily Record to Report from {from_date} to {to_date}'})
+        return render(request, 'trade/no_record.html', {'message': f'No Daily Record to Report from {from_date} to {to_date}'})

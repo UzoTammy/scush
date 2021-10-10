@@ -83,6 +83,7 @@
                 </thead>
                 <tbody>
                     {% for record in dataset %}
+                    
                     <tr>
                         <th>{{record.month|slice:':3'}}</th>
                         <th>{{record.sales_ratio|dividedby:10000|floatformat:'3'}}</th>
@@ -90,8 +91,18 @@
                         <th>{{record.gross_ratio|dividedby:10000|floatformat:'3'}}</th>
                         <th>{{record.trade_ratio|dividedby:10000|floatformat:'3'}}</th>
                         <th class="text-secondary">{{record.gross_margin_ratio|dividedby:10000|floatformat:'3'}}
-                            {% if forloop.counter == 2 %}
-                            {{forloop.first}}
+                            {% if forloop.counter != 1 %}
+                            {% with dataset|array:forloop.counter0 as previous %}
+                                {% with previous.gross_margin_ratio|dividedby:10000|floatformat:'3' as previous_value %}
+                                    {% if record.gross_margin_ratio|dividedby:10000|floatformat:'3' > previous_value %}
+                                        <i class="fa fa-caret-up text-success" ></i>
+                                    {%else%}
+                                    <i class="fa fa-caret-down text-danger" ></i>
+                                    {%endif%}
+                                {% endwith %}
+                            {% endwith %}
+                            {%else%}
+                            <i class="fa fa-minus text-warning"></i>
                             {% endif %}
                         </th>
                     </tr>
