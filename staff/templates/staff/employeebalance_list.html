@@ -9,9 +9,14 @@
                    data-show-columns="true"
                    data-pagination="true"
                     class="table table-sm table-striped table-bordered mydatatable"
-                    style="width: 100%"
-                    >
-                    <caption>Profile Balance List</caption>
+                    style="width: 100%">
+                    <caption>Profile Balance List 
+                        {% if total_value >= 0 %}
+                        <span class="float-right text-success">NGN{{total_value|floatformat:'2g'}}</span>
+                        {% else %}
+                        <span class="float-right text-danger">{{total_value|floatformat:'2g'}}</span>
+                        {% endif%}
+                    </caption>
                 <thead>
                     <tr class="text-center">
                         <th>Staff</th>
@@ -37,7 +42,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-            {{views.kwargs}}
+            
         </div>
     </div>
     <div class="row">

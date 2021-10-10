@@ -5,7 +5,7 @@
 <div class="container-fluid">
     
     <div class="jumbotron text-white" style="background-color:rgb(18, 51, 82);">
-        <h1 class="display-5">Trading, Profit & Loss Account for {{ monthly|first }}</h1>
+        <h1 class="display-5">Trading, Profit & Loss Account for {{ monthly}}</h1>
         <p class="lead">It is a final account that gives idea about profitability and financial position
             to its management, owners and interested parties.
         </p>
@@ -93,8 +93,8 @@
                         <th class="text-secondary">{{record.gross_margin_ratio|dividedby:10000|floatformat:'3'}}
                             {% if forloop.counter != 1 %}
                             {% with dataset|array:forloop.counter0 as previous %}
-                                {% with previous.gross_margin_ratio|dividedby:10000|floatformat:'3' as previous_value %}
-                                    {% if record.gross_margin_ratio|dividedby:10000|floatformat:'3' > previous_value %}
+                                {% with previous.gross_margin_ratio as previous_value %}
+                                    {% if record.gross_margin_ratio > previous_value %}
                                         <i class="fa fa-caret-up text-success" ></i>
                                     {%else%}
                                     <i class="fa fa-caret-down text-danger" ></i>

@@ -1367,6 +1367,11 @@ class BalanceView(ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        cr = self.get_queryset().filter(value_type='Cr').aggregate(total=Sum('value'))['total']
+        dr = self.get_queryset().filter(value_type='Dr').aggregate(total=Sum('value'))['total']
+        cr = cr if cr is not None  else Decimal('0')
+        dr = dr if dr is not None else Decimal('0')
+        context['total_value'] = cr - dr
         context['return'] = 'detail'
         return context
 
@@ -1379,6 +1384,15 @@ class TaxList(ListView):
 
 class EmployeeBalanceListView(ListView):
     model = EmployeeBalance
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cr = self.get_queryset().filter(value_type='Cr').aggregate(total=Sum('value'))['total']
+        dr = self.get_queryset().filter(value_type='Dr').aggregate(total=Sum('value'))['total']
+        cr = cr if cr is not None  else Decimal('0')
+        dr = dr if dr is not None else Decimal('0')
+        context['total_value'] = cr - dr
+        return context
 
 
 class EmployeeBalanceDetailView(DetailView):

@@ -109,6 +109,9 @@ class EmployeeSummaryView(LoginRequiredMixin, ListView):
 
         annual_salary = self.get_queryset().annotate(total_salary=12*(F('basic_salary') + F('allowance')))
         monthly_salary = self.get_queryset().annotate(total_salary=F('basic_salary') + F('allowance'))
+        cr = EmployeeBalance.objects.filter(value_type='Cr').aggregate(total=Sum('value'))['total']
+        dr = EmployeeBalance.objects.filter(value_type='Dr').aggregate(total=Sum('value'))['total']
+        
         context = {
             'now': datetime.datetime.now(),
             'workforce': self.get_queryset(),
@@ -122,6 +125,7 @@ class EmployeeSummaryView(LoginRequiredMixin, ListView):
             'num_probation': self.get_queryset().filter(is_confirmed=False),
             'num_graduates': grads,
             'total_salary': annual_salary.aggregate(total=Sum('total_salary'))['total'],
+            'balance': cr - dr,
             'average_salary': monthly_salary.aggregate(tsa=Avg('total_salary')),
             'total_net_pay': Payroll.objects.aggregate(total=Sum('net_pay')),
             'minimum_wage': monthly_salary.aggregate(value=Min('total_salary')),

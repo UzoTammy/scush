@@ -157,7 +157,7 @@ class TradeTradingReport(TemplateView):
         
         monthly_trade = TradeMonthly.objects.filter(year=current_year)
         
-        context['monthly'] = monthly_trade
+        context['monthly'] = str(current_year)
         
         if monthly_trade.exists():
         
