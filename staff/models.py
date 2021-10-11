@@ -272,6 +272,7 @@ class EmployeeBalance(models.Model):
     value = MoneyField(max_digits=10, decimal_places=2, default=Money(0, 'NGN'))
     value_type = models.CharField(max_length=2, default='Cr')
     description = models.CharField(max_length=50)
+    title = models.CharField(max_length=30, default='0821-Sales')
 
 
     def __str__(self):

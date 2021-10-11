@@ -10,7 +10,10 @@
                    data-pagination="true"
                     class="table table-sm table-striped table-bordered mydatatable"
                     style="width: 100%">
-                    <caption>Profile Balance List 
+                    <caption>Profile Balance List for 
+                        {% with object_list|first as object %}
+                        {{object.staff}}
+                        {%endwith%}
                         {% if total_value >= 0 %}
                         <span class="float-right text-success">NGN{{total_value|floatformat:'2g'}}</span>
                         {% else %}
@@ -19,7 +22,7 @@
                     </caption>
                 <thead>
                     <tr class="text-center">
-                        <th>Staff</th>
+                        <th>Title</th>
                         <th>Date</th>
                         <th>Description</th>
                         <th>Value</th>
@@ -29,7 +32,7 @@
                 <tbody>
                     {% for record in object_list %}
                     <tr class="text-center">
-                        <td><a href="{% url 'employee-balance-detail' record.id %}">{{record.staff}}</a></td>
+                        <td><a href="{% url 'employee-balance-detail' record.id %}">{{record.title}}</a></td>
                         <td>{{record.date|date:'d-m-Y'}}</td>
                         <td>{{record.description}}</td>
                         {% if record.value_type == 'Dr' %}

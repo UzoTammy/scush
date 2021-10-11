@@ -1300,7 +1300,8 @@ class AddStaffBalance(View):
         balance = EmployeeBalance.objects.create(staff=staff,
                                                  value=value,
                                                  value_type=request.POST.get('CrDr'),
-                                                 description=request.POST.get('comment')
+                                                 description=request.POST.get('comment'),
+                                                 title=request.POST.get('title')
                                                  )
         balance.save()
         messages.success(request, 'Profile Balance changed successfully !!!')
@@ -1362,7 +1363,7 @@ class BalanceView(ListView):
     # template_name = 'staff/balance.html'
 
     def get_queryset(self):
-        return EmployeeBalance.objects.filter(staff_id=self.kwargs['pk'])
+        return EmployeeBalance.objects.filter(staff_id=self.kwargs['pk']).order_by('-date')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1382,8 +1383,10 @@ class TaxList(ListView):
         
         return ['staff/payroll/tax_list.html']
 
+
 class EmployeeBalanceListView(ListView):
     model = EmployeeBalance
+    ordering = ['-date']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1397,6 +1400,7 @@ class EmployeeBalanceListView(ListView):
 
 class EmployeeBalanceDetailView(DetailView):
     model = EmployeeBalance
+
 
 class EmployeeBalanceUpdateView(UpdateView):
     model = EmployeeBalance
