@@ -135,6 +135,9 @@
                         <div class="col-6">
                             <p class="text-success">Profile Balance: {{naira}}{{total_balance}}</p>
                             <p class="text-success">Worked For: {{object.date_employed|timesince}}</p>
+                            {% if consumed_days > 0 %}
+                            <p class="text-danger">Permissions: {{consumed_days}} Day{{consumed_days|pluralize}}</p>
+                            {% else %} <p class="text-success">Permissions: None</p>{%endif%}
                             <hr>
                             <p>Date Employed: {{object.date_employed}}</p>
                             <p>Official Email: {{object.official_email}}</p>

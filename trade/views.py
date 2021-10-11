@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import datetime
 from django.db.models.fields import FloatField
 from django.db.models.query_utils import Q
@@ -20,9 +21,18 @@ from ozone import mytools
 
 matplotlib.use('Agg')
 
+GROUP_NAME = 'Administrator'
 
-class TradeHome(TemplateView): 
+
+class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView): 
     template_name = 'trade/home.html'
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
+
 
     def quarter_group(self, queryset, year, quarter):
         qs_list = list()
@@ -85,11 +95,18 @@ class TradeHome(TemplateView):
         return context
   
 
-class TradeMonthlyCreateView(CreateView):
+class TradeMonthlyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = TradeMonthly
     form_class = TradeMonthlyForm
     success_url = reverse_lazy('trade-home')
     
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Add'
@@ -123,28 +140,51 @@ class TradeMonthlyCreateView(CreateView):
         return super().form_valid(form)
 
 
-class TradeMonthlyDetailView(DetailView):
+class TradeMonthlyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = TradeMonthly
 
+    def test_func(self):
+        """if user is a member of the group Admin then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
 
-class TradeMonthlyListView(ListView):
+class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = TradeMonthly
     ordering = '-id'
     
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
 
-class TradeMonthlyUpdateView(UpdateView):
+
+class TradeMonthlyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = TradeMonthly
     fields = '__all__'
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Update'
         return context
 
-class TradeTradingReport(TemplateView):
+class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     df = 10_000 # decimal factor
     template_name = 'trade/trading_account.html'
-        
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
+    
     def get(self, request, *args, **kwargs):
         
         context = dict()
@@ -357,10 +397,11 @@ class TradeTradingReport(TemplateView):
                 context['expense_value'] = current_month['expenses'] - previous_month['expenses']
                 context['expense_bool'] = current_month['expenses'] > previous_month['expenses']
                 
-                # context['lc_ratio'] = 100*(current_month['indirect_expenses']/current_month['purchase']) # landing cost ratio
-                # context['ac_ratio'] = 100*(current_month['direct_expenses']/current_month['sales']) # administrative cost ratio
-            
-                context['recordset'] = [current_year_total] #, previous_month, current_month]
+                context['lc_ratio'] = 100*(current_month['indirect_expenses']/current_month['purchase']) # landing cost ratio
+                context['ac_ratio'] = 100*(current_month['direct_expenses']/current_month['sales']) # administrative cost ratio
+                context['gp_ratio'] = current_month.get('percent_margin')
+                
+                context['recordset'] = (current_year_total,) # previous_month, current_month)
                 context['dataset'] = qs.order_by('pk')
 
             # context['sales_graph'] = sales_graph
@@ -374,28 +415,52 @@ class TradeTradingReport(TemplateView):
         return render(request, 'trade/no_record.html', {'message': f'No Trading and P & L Record for {current_year}'})
 
 # Daily Model
-class TradeDailyCreateView(CreateView):
+class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = TradeDaily
     form_class = TradeDailyForm
     
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'New Daily'
         return context
     
 
-class TradeDailyDetailView(DetailView):
+class TradeDailyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = TradeDaily
     
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
 
-class TradeDailyListView(ListView):
+
+class TradeDailyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = TradeDaily
     ordering = '-pk'
 
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
 
-class TradeDailyUpdateView(UpdateView):
+
+class TradeDailyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = TradeDaily
     form_class = TradeDailyForm
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -403,9 +468,15 @@ class TradeDailyUpdateView(UpdateView):
         return context
 
 
-class PLDailyReportView(TemplateView):
+class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     queryset = TradeDaily.objects.all()
     template_name = 'trade/PL_daily_report.html'
+
+    def test_func(self):
+        """if user is a member of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
 
     def get(self, request, *args, **kwargs):
 

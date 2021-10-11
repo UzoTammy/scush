@@ -376,9 +376,8 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         permit = Permit.objects.filter(staff_id=person)
 
         if permit.exists():
-            results = permit.annotate(delta=F('ending_at') - F('starting_from'))
-            total_days = sum(result.delta.days for result in results)
-            days_consumed = int(total_days)
+            permit = permit.annotate(delta=F('ending_at') - F('starting_from'))
+            days_consumed = permit.aggregate(total=Sum('delta'))['total'].days
         else:
             days_consumed = 0
 
@@ -1374,6 +1373,7 @@ class BalanceView(ListView):
         context['total_value'] = cr - dr
         context['return'] = 'detail'
         return context
+
 
 class TaxList(ListView):
     model = Employee
