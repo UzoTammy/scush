@@ -91,7 +91,7 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         'direct_expenses': quarter[2],
         'indirect_expenses': quarter[3], 
         'gp_ratio': quarter[4]/quarter[5]}
-
+        
         return context
   
 
@@ -148,6 +148,7 @@ class TradeMonthlyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
             return True
         return False
+
 
 class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = TradeMonthly

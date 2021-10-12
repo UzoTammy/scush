@@ -368,18 +368,52 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         allocation = 0.04  # 4% of full_year_workdays
         return int(full_year_workdays * allocation)
 
+    def permit_days(self, start_date, end_date):
+        end_date = end_date.date()
+        start_date = start_date.date()
+        number_days_between = (end_date - start_date).days
+
+        if number_days_between > 1:
+            date_range = [start_date]
+            for i in range(number_days_between-1):
+                date_range.append((start_date + datetime.timedelta(days=i+1)))
+            for i in date_range:
+                if calendar.weekday(i.year, i.month, i.day) == calendar.SUNDAY:
+                    date_range.remove(i)
+            return len(date_range)
+        elif number_days_between == 1:
+            return 1
+        else:
+            return 0
+
+        # for i in range(len(weekly)-1):
+        #     if len(weekly) > 1:
+        #         L = list()
+        #         monday = weekly[i]
+        #         n_monday = weekly[i + 1]
+        #         sunday = n_monday - timedelta(days=1)
+        #         L.append(monday)
+        #         L.append(sunday)
+        #         print(tuple(L))
+      
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         person = self.get_queryset().get(pk=kwargs['object'].pk)
         leave = (1 - person.date_employed.month / 12) * self.leave() if person.date_employed.year == datetime.date.today().year else self.leave()
+        
 
         permit = Permit.objects.filter(staff_id=person)
 
         if permit.exists():
-            permit = permit.annotate(delta=F('ending_at') - F('starting_from'))
-            days_consumed = permit.aggregate(total=Sum('delta'))['total'].days
-        else:
-            days_consumed = 0
+            dd = list()
+            for p in permit:
+                dd.append(self.permit_days(p.starting_from, p.ending_at))
+            days_consumed = sum(dd)
+            # permit = permit.annotate(delta=F('ending_at') - F('starting_from'))
+            # days_consumed = permit.aggregate(total=Sum('delta'))['total'].days
+        # else:
+            # days_consumed = 0
 
         balance = EmployeeBalance.objects.filter(staff_id=person)
         if balance.exists():
