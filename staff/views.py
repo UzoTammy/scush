@@ -412,8 +412,8 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             days_consumed = sum(dd)
             # permit = permit.annotate(delta=F('ending_at') - F('starting_from'))
             # days_consumed = permit.aggregate(total=Sum('delta'))['total'].days
-        # else:
-            # days_consumed = 0
+        else:
+            days_consumed = 0
 
         balance = EmployeeBalance.objects.filter(staff_id=person)
         if balance.exists():
