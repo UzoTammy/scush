@@ -106,7 +106,8 @@
                 <tbody>
                 {% for employee in object_list %}
                 <tr>
-                    <th scope="row">{{ employee.pk|zeropadding:3 }}</th>
+                    <th {% if employee.is_confirmed == False %} class="text-danger" {%endif%}
+                     scope="row">{{ employee.pk|zeropadding:3 }}</th>
                     <td><a href="{% url 'employee-detail' employee.id %}">
                         <img src="{{ employee.image.url }}"
                              class="rounded-circle"

@@ -1,5 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import datetime
+from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
 from django.db.models.query_utils import Q
 from django.http.response import HttpResponse, HttpResponseRedirect
@@ -137,6 +138,10 @@ class TradeMonthlyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
         context = self.get_context_data(**kwargs)
         form.instance.year = context['last_record']['year']
         form.instance.month = context['last_record']['month']
+        # if form.instance.sales == Money(0, 'NGN'):
+        #     form.instance.sales = Money(1000, 'NGN')
+        # if form.instance.purchase == Money(0, 'NGN'):
+        #     form.instance.purchase = Money(1000, 'NGN')    
         return super().form_valid(form)
 
 
@@ -176,6 +181,14 @@ class TradeMonthlyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView
         context['title'] = 'Update'
         return context
 
+    def form_valid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        # print(context)
+        # form.instance.year = context['last_record']['year']
+        # form.instance.month = context['last_record']['month']
+        return super().form_valid(form)
+
+
 class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     df = 10_000 # decimal factor
     template_name = 'trade/trading_account.html'
@@ -207,23 +220,34 @@ class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             qs = monthly_trade.annotate(expenses=F('direct_expenses') + F('indirect_expenses'))
                     
             qs = qs.annotate(net_profit=(F('gross_profit') - F('indirect_expenses')))
-                    
-            qs = qs.annotate(gross_margin_ratio=ExpressionWrapper(100*self.df*F('gross_profit') / F('sales'), 
-                                                        output_field=DecimalField(decimal_places=2)
-                                                        ))
-            qs = qs.annotate(sales_ratio=ExpressionWrapper(100*self.df*F('indirect_expenses') / F('sales'), 
-                                                        output_field=DecimalField(decimal_places=2)
-                                                        ))
+
+            template = '%(function)s(%(expressions)s AS FLOAT)'
+
+            gp = Func(F('gross_profit'), function='CAST', template=template)
+            ide = Func(F('gross_profit'), function='CAST', template=template)
+            sales = Func(F('sales'), function='CAST', template=template)
+            
+            qs = qs.annotate(gross_margin_ratio=ExpressionWrapper(100* self.df* gp/sales, output_field=FloatField()))
+            
+            qs = qs.annotate(sales_ratio=ExpressionWrapper(100* self.df* ide/sales, output_field=FloatField()))
+            
+
+            # qs = qs.annotate(gross_margin_ratio=ExpressionWrapper(100*self.df*F('gross_profit') / F('sales'), 
+            #                                             output_field=DecimalField()
+            #                                             ))
+            # qs = qs.annotate(sales_ratio=ExpressionWrapper(100*self.df*F('indirect_expenses') / F('sales'), 
+            #                                             output_field=DecimalField()
+            #                                             ))
             qs = qs.annotate(gross_ratio=ExpressionWrapper(100*self.df*(F('indirect_expenses') + F('direct_expenses')) / F('gross_profit'), 
-                                                        output_field=DecimalField(decimal_places=2)
+                                                        output_field=DecimalField()
                                                         ))
             qs = qs.annotate(purchase_ratio=ExpressionWrapper(100*self.df*F('indirect_expenses') / F('purchase'), 
-                                                        output_field=DecimalField(decimal_places=2)
+                                                        output_field=DecimalField()
                                                         ))
             qs = qs.annotate(trade_ratio=ExpressionWrapper(100*self.df*F('expenses') / (F('purchase') + F('sales')), 
-                                                        output_field=DecimalField(decimal_places=2)
+                                                        output_field=DecimalField()
                                                         ))
-            
+            # qs.exclude(sales=Money(0, 'NGN'))
             qs.order_by('id')
                 
             period = monthly_trade.values_list('month', flat=True)
@@ -430,7 +454,13 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'New Daily'
         return context
-    
+
+    def form_valid(self, form):
+        # if form.instance.sales == Money(0, 'NGN'):
+        #     form.instance.sales = Money(1, 'NGN')
+        # if form.instance.purchase == Money(0, 'NGN'):
+        #     form.instance.purchase = Money(1, 'NGN')
+        return super().form_valid(form)
 
 class TradeDailyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = TradeDaily
@@ -480,7 +510,7 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return False
 
     def get(self, request, *args, **kwargs):
-
+        
         context = dict()
         # today is three days ago
         if request.GET == {}:
@@ -503,11 +533,13 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             qs = qs.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
             qs = qs.annotate(net_ratio=ExpressionWrapper(100*F('net_profit')/F('gross_profit'), output_field=DecimalField(decimal_places=3)))
             qs = qs.annotate(gp_ratio=ExpressionWrapper(100*F('gross_profit')/F('sales'), output_field=DecimalField(decimal_places=3)))
+            qs.order_by('date')
             
             latest_record = qs.latest('date') 
-            landing_ratio = 100 * latest_record.direct_expenses/latest_record.purchase
-            admin_ratio = 100 * latest_record.indirect_expenses/latest_record.sales
-            gross_profit_ratio = 100 * latest_record.gross_profit/latest_record.sales
+
+            landing_ratio = 100 * latest_record.direct_expenses/latest_record.purchase if latest_record.purchase.amount != 0 else 0
+            admin_ratio = 100 * latest_record.indirect_expenses/latest_record.sales if latest_record.sales.amount != 0 else 0
+            gross_profit_ratio = 100 * latest_record.gross_profit/latest_record.sales if latest_record.sales.amount != 0 else 0
 
             days = [str(i.day) for i in qs.values_list('date', flat=True)]
             
@@ -570,23 +602,24 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             plt.close()
             context['gross_profit_graph'] = gross_profit_graph
             
-            plt.pie([landing_ratio, admin_ratio],
-                    colors=['#ff1800', '#10d7ff'],
-                    autopct="%1.2f%%",
-                    explode=(0, 0.1),
-                    shadow=True,
-                    startangle=90,
-                    wedgeprops={'linewidth': 2, 'edgecolor': '#b5b27b'},
-                    textprops={'color':'0'},
-                    )
-            plt.legend([f'{landing_ratio:,.3f}', f'{admin_ratio:,.3f}'], loc='upper right')
-            plt.figtext(.5, .9, 'Landing and Admin Cost Ratios', fontsize=20, ha='center')
-            buf = io.BytesIO()
-            plt.savefig(buf, format='png', dpi=300)
-            expenses_ratio_pie = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
-            buf.close()
-            plt.close() 
-            context['expenses_ratio_pie'] = expenses_ratio_pie
+            if landing_ratio != 0 and admin_ratio != 0:
+                plt.pie([landing_ratio, admin_ratio],
+                        colors=['#ff1800', '#10d7ff'],
+                        autopct="%1.2f%%",
+                        explode=(0, 0.1),
+                        shadow=True,
+                        startangle=90,
+                        wedgeprops={'linewidth': 2, 'edgecolor': '#b5b27b'},
+                        textprops={'color':'0'},
+                        )
+                plt.legend([f'{landing_ratio:,.3f}', f'{admin_ratio:,.3f}'], loc='upper right')
+                plt.figtext(.5, .9, 'Landing and Admin Cost Ratios', fontsize=20, ha='center')
+                buf = io.BytesIO()
+                plt.savefig(buf, format='png', dpi=300)
+                expenses_ratio_pie = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+                buf.close()
+                plt.close() 
+                context['expenses_ratio_pie'] = expenses_ratio_pie
 
             plt.plot(days, gp_plot, color='y')
             plt.figtext(.5, .9, 'Gross Profit Ratio', fontsize=20, ha='center')

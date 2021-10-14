@@ -2,6 +2,7 @@ from django.db import models
 from djmoney.models.fields import MoneyField, Money
 from datetime import date, timezone
 from django.urls.base import reverse
+from djmoney.models.validators import MinMoneyValidator
 
 
 
@@ -40,7 +41,7 @@ class TradeMonthly(models.Model):
         return f'{self.month}, {self.year}'
 
     def get_absolute_url(self):
-        return reverse('trade-daily-detail', kwargs={'pk': self.pk})
+        return reverse('trade-detail', kwargs={'pk': self.pk})
 
 
 class TradeDaily(models.Model):

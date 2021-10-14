@@ -43,19 +43,19 @@
                 <li class="text-white">Balance Sheet</li>
                 <li class="nav-item">
                     <a class="nav-link"
-                        href="{% url 'trade-trading-account' %}">
+                        href="#">
                         <i class="fa fa-book text-warning"></i> Report
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
-                        href="{% url 'trade-list' %}">
+                        href="#">
                         <i class="fa fa-eye-slash text-warning"></i> View
                     </a>
                 </li>
                 
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'trade-create' %}">
+                    <a class="nav-link" href="#">
                         <i class="fa fa-plus text-warning"></i> Add
                     </a>
                 </li>
@@ -106,8 +106,17 @@
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     GP Ratio
-                                    <span class="badge badge-info badge-pill">{{ daily.gp_ratio|dividedby:1000|floatformat:'3' }}%</span>
+                                    <span class="badge badge-info badge-pill">
+                                        {% if daily.sales.amount != 0 %}
+                                        {{ daily.gp_ratio|dividedby:1000|floatformat:'3' }}
+                                        {% else %}
+                                        0.000
+                                        {% endif %}
+                                        %
+                                    </span>
+
                                 </li>
+
                             </ul>
                           <div class="row">
                               <div class="col text-right">

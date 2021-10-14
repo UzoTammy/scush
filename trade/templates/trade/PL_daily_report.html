@@ -71,10 +71,12 @@
                             <h5 class="card-title text-primary">Expenses</h5>
                             <p class="card-text">Cummulative Expenses: {{total_expenses|floatformat:'2g'}}</p>
                             <p class="card-text">Daily Expenses Average: {{expenses_average|floatformat:'2g'}}</p>
+                            {% if dataset.sales.amount != 0 and dataset.purchase.amount != 0 %}
                             <img src="data:image/png;base64,{{expenses_ratio_pie}}"
                             class="card-img-top mx-auto d-block"
                             style="height: 200px;"
                             alt="...">
+                            {% endif %}
                             <table class="table table-bordered table-sm">
                                 <thead>
                                     <tr class="text-center">

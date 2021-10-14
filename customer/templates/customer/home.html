@@ -7,11 +7,8 @@
 {% block content %}
 
 <div class="row">
-    <div
-        class="col bg-secondary text-center text-white"
-        style="height:180px;
-        background: url('{% static 'customer/background/bluesky.jpeg' %}')"
-        >
+    <div class="col bg-secondary text-center text-white" style="height:180px;
+        background: url('{% static 'customer/background/bluesky.jpeg' %}')">
         <h1 class="mt-4 m-0">SCUSH</h1>
         <h5>Ozone Online Platform — in one web interface</h5>
         {% if not user.is_authenticated %}
@@ -379,6 +376,7 @@
         };
     };
 </script>
+
 
 <script type="text/javascript">
 <!--    function fetchToken() {-->
