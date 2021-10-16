@@ -1,16 +1,16 @@
-    body {
-    background-color:#7d7d85;
-      }
+body {
+    background-color: #ffffff;
+  }
 
-    #login {
-        background-color:#bbccdf;
-            }
+#login {
+    background-color:#bbccdf;
+        }
 
-    #sidebar {
-        display: none;
-        color: red
-            }
+#sidebar {
+    display: none;
+    color: red
+        }
 
-    #navmain {
-        display: none;
-            }
+#navmain {
+    display: none;
+        }

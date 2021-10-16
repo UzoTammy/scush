@@ -70,13 +70,21 @@
     <p>Probation: #{{num_probation.count}}</p>
     <p>Terminated: #{{num_all_time|minus:workforce.count}}</p>
     <p>Graduates: #{{num_graduates.count}}</p>
-    <p>Annual Salary: NGN{{total_salary|floatformat:'2g'}}</p>
+    <p>Salary: NGN{{total_salary|floatformat:'2g'}} per annum
+       <span style="color: #007cae;">(NGN{{total_salary|dividedby:12|floatformat:'2g'}} per month)</span> 
+    </p>
     <p>Accummulated profile Balnce: NGN{{balance|floatformat:'2g'}}</p>
     <p>Monthly Average Salary: NGN{{average_salary.tsa|floatformat:'2g'}}</p>
     <p>Total Pay Out: NGN{{total_net_pay.total|floatformat:'2g'}} <span style="color:grey;">(since june 2021)</span></p>
     <p>Minimum Wage: NGN{{minimum_wage.value|floatformat:'2g'}}</p>
     <p>Youngest Staff: {{youngest|timesince:now}} old</p>
     <p>Oldest Staff: {{oldest|timesince:now}} old</p>
+    <h3>The Business</h3>
+    <p>Previous Year Revenue: NGN{{sales_last_year|default_if_none:0|floatformat:'2g'}} and Gross Margin: 
+        {{gross_margin_last_year|default_if_none:0|floatformat:'3'}}%</p>
+    <p>Current Year Revenue: NGN{{sales_year|default_if_none:0|floatformat:'2g'}} and Gross Margin: 
+        {{gross_margin_year|default_if_none:0|floatformat:'3'}}%</p>
+    <p>{{xx}}</p>
 </div>
 </body>
 </html>

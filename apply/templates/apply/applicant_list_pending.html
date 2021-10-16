@@ -47,7 +47,7 @@
 </thead>
 <tbody>
 {% for applicant in applicants_pending %}
-<tr>
+<tr class="text-center">
 <th scope="row">{{ applicant.id|zeropadding:3 }}</th>
 <td><a href="{% url 'apply-detail' applicant.pk %}">{{applicant}}</a></td>
 <td>{{applicant.apply_date|date:'d-m-Y'}}</td>

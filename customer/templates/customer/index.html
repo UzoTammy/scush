@@ -25,38 +25,60 @@
 </head>
 <body>
 
-<div class="container ml-5">
-    <div class="row m-3">
-        <div class="col">
-            <h2>The SCusH Web App</h2>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm ml-3 mb-3">
+            <div class="row m-3">
+                <div class="col">
+                    <h2>The SCusH Web App</h2>
+                </div>
+            </div>
+            <div class="row p-3">
+                <img src="{% static 'customer/logo.png' %}"
+                     class="rounded-circle shadow-lg"
+                     alt="">
+            </div>
+            <div class="row">
+                <h3>
+                    <font
+                        face="cursive">Welcome to Ozone F & L
+                        <span class="text-danger">(Happy Zone)</span> -
+                        A Distribution Company
+                    </font>
+                </h3>
+            </div>
+            <div class="row">
+                    <h5>We add value to other businesses
+                        <i class="fa fa-pagelines fa-2x text-success"></i></h5>
+                </div>
+            <div class="row">
+                {% if user.is_authenticated %}
+                <div class="col"><a href="{% url 'home' %}"><i class="fa fa-home fa-2x"></i></a></div>
+                {% else %}
+                <div class="col"><a href="{% url 'login' %}"><i class="fa fa-sign-in fa-2x"></i></a></div>
+                {% endif %}
+                <!-- <div class="col"><a href="{% url 'about' %}">Join Us</a></div> -->
+            </div>
+        </div>
+        <div class="col-sm bg-white text-center">
+            <img src="{% static 'customer/background/login.jpeg' %}" height="auto" alt="">
+            <div class="row">
+                <div class="col">
+                    <img src="{% static 'customer/photo/redbull.jpeg' %}" height="100px" alt="">
+                </div>
+                <div class="col">
+                    <img src="{% static 'customer/brands/malta-guinness.jpeg' %}" height="100px" alt="">
+                </div>
+                <div class="col">
+                    <img src="{% static 'customer/brands/jonnywalker.jpeg' %}" height="100px" alt="">
+                </div>
+                <div class="col">
+                    <img src="{% static 'customer/brands/amstel-malta.jpeg' %}" height="100px" alt="">
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row p-3">
-        <img src="{% static 'customer/logo.png' %}"
-             class="rounded-circle shadow-lg"
-             alt="">
-    </div>
-    <div class="row">
-        <h3>
-            <font
-                face="cursive">Welcome to Ozone F & L
-                <span class="text-danger">(Happy Zone)</span> -
-                A Distribution Company
-            </font>
-        </h3>
-    </div>
-    <div class="row">
-            <h5>We add value to other businesses
-                <i class="fa fa-pagelines fa-2x text-success"></i></h5>
-        </div>
-    <div class="row">
-        {% if user.is_authenticated %}
-        <div class="col"><a href="{% url 'home' %}"><i class="fa fa-home fa-2x"></i></a></div>
-        {% else %}
-        <div class="col"><a href="{% url 'login' %}">Sign In</a></div>
-        {% endif %}
-        <div class="col"><a href="{% url 'about' %}">Join Us</a></div>
-    </div>
+    
 </div>
 
 <!-- Option 2: Separate Popper and Bootstrap JS -->

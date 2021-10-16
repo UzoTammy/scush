@@ -7,8 +7,9 @@ from apply.models import Applicant
 from django.contrib.auth.models import User
 from django.views.generic import (View, ListView, TemplateView)
 from staff.models import Employee, Payroll, EmployeeBalance
+from trade.models import TradeMonthly
 from stock.models import Product
-from django.db.models import Sum, F, Avg, Min
+from django.db.models import Sum, F, Avg, Min, ExpressionWrapper, DecimalField
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
@@ -131,7 +132,20 @@ class EmployeeSummaryView(LoginRequiredMixin, ListView):
             'minimum_wage': monthly_salary.aggregate(value=Min('total_salary')),
             'youngest': self.get_queryset().latest('staff__birth_date').staff.birth_date,
             'oldest': self.get_queryset().earliest('staff__birth_date').staff.birth_date,
+            'sales_last_year': TradeMonthly.objects.filter(year=f'{datetime.date.today().year-1}').aggregate(Sum('sales'))['sales__sum'],
+            'sales_year': TradeMonthly.objects.filter(year=f'{datetime.date.today().year}').aggregate(Sum('sales'))['sales__sum'],
         }
+        
+        context['gross_margin_last_year'] = TradeMonthly.objects.filter(year=f'{datetime.date.today().year-1}').aggregate(Sum('gross_profit'))['gross_profit__sum']
+        context['gross_margin_year'] = TradeMonthly.objects.filter(year=f'{datetime.date.today().year}').aggregate(Sum('gross_profit'))['gross_profit__sum']
+        if context['sales_last_year'] != None:
+            context['gross_margin_last_year'] = 100 * context['gross_margin_last_year']/context['sales_last_year']
+        if context['sales_year'] != None:
+            context['gross_margin_year'] = 100 * context['gross_margin_year']/context['sales_year']
+        
+        
+        monthly_qs = TradeMonthly.objects.filter(year=str(datetime.date.today().year)).annotate(gp_ratio=ExpressionWrapper(100*F('gross_profit')/F('sales'), output_field=DecimalField()))
+        context['xx'] = monthly_qs.aggregate(Sum('gross_profit'))
         return render_to_pdf(template_src=self.template_name, context_dict=context)
 
 

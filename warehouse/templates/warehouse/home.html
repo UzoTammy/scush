@@ -1,4 +1,5 @@
 {% extends 'users/base.html' %}
+{% load custom_templates %}
 
 {% block content %}
 <div class="container-fluid">
@@ -106,10 +107,17 @@
                                 <th scope="col">Time left</th>
                             </tr>
                             </thead>
+                            
                             <tbody>
                             {% for store in stores %}
-                                <tr>
-                                <th scope="row">{{store.id}}</th>
+                                    
+                            <tr>     
+                                {% now "Y" as current_year %}
+                                {% if store.expiry_date|date:"Y" == current_year %}
+                                <th scope="row">{{store.id|zeropadding:2}} <i class="fa fa-bolt text-danger"></i></th>
+                                {% else %}
+                                <th scope="row">{{store.id|zeropadding:2}}</th>
+                                {% endif %}
                                 <td>{{store.name}}</td>
                                 <td>{{store.expiry_date}}</td>
                                    {% if store.expiry_date > today %}

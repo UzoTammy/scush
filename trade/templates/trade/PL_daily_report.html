@@ -12,11 +12,11 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <input name="date" class="form-control" type="date">
+                            <input id="entry_date" name="date" class="form-control" type="date" onfocusout=myFunction()>
                         </div>
                     </div>
                     <div class="col">
-                        <input class="btn btn-outline-secondary" type="submit" value="OK">
+                        <input id="ok" class="btn btn-outline-secondary" type="submit" value="OK" disabled>
                     </div>
                 </div>
             </form>    
@@ -144,4 +144,17 @@
         </div>
     </div>
 </div>
+<script>
+    function myFunction() {
+        let OK = document.getElementById('ok')
+        let entryDate = document.getElementById('entry_date')
+        if (OK.disabled == true && entryDate.value != '') {
+            OK.disabled = false;
+        } else {
+                OK.disabled = true;
+            }
+        }
+        
+    
+</script>
 {% endblock content %}

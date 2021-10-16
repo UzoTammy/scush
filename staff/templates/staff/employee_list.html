@@ -105,7 +105,7 @@
                 </thead>
                 <tbody>
                 {% for employee in object_list %}
-                <tr>
+                <tr class="text-center">
                     <th {% if employee.is_confirmed == False %} class="text-danger" {%endif%}
                      scope="row">{{ employee.pk|zeropadding:3 }}</th>
                     <td><a href="{% url 'employee-detail' employee.id %}">
@@ -122,12 +122,8 @@
                     <td>{{employee.staff.qualification}}</td>
                     <td>{{employee.staff.course}}</td>
                     <td>{{employee.staff.mobile|addsep}}</td>
-                    {% if employee.official_mobile == None %}
-                    <td>No Number</td>
-                    {% else %}
-                    <td>{{employee.official_mobile|addsep}}</td>
-                    {% endif %}
-                    <td>{{employee.staff.get_age}}</td>
+                    <td>{{employee.official_mobile|default_if_none:"########"|addsep}}</td>
+                    <td> {{employee.staff.get_age}}</td>
                     <td>{{employee.staff.birth_date}}</td>
                     <td>{{employee.position}}</td>
                     <td>{{employee.department}}</td>

@@ -183,9 +183,9 @@ class TradeMonthlyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView
 
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
-        # print(context)
-        # form.instance.year = context['last_record']['year']
-        # form.instance.month = context['last_record']['month']
+        print(context)
+        form.instance.year = context['last_record']['year']
+        form.instance.month = context['last_record']['month']
         return super().form_valid(form)
 
 

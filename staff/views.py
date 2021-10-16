@@ -576,7 +576,7 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
 
         payroll = Payroll.objects.all()
         if payroll.exists():
-            last = Payroll.objects.all().last()
+            last = Payroll.objects.last()
             context['last_period_generated'] = last.period
 
             """If payroll record exist, then get the last record's period and convert to integer"""
@@ -614,6 +614,7 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
+    
         if request.GET:
             period = f"{request.GET['year']}-{request.GET['month']}"
             return redirect('generate-payroll', period=period)
@@ -743,9 +744,8 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             record['outstanding'] = result[2]
             data.append(record)
 
-        x = kwargs['period'].split('-')
-        year = x[0]
-        month = datetime.date(int(year), int(x[1]), 1).strftime('%B')
+        year = kwargs['period'].split('-')[0]
+        month = datetime.date(int(year), int(kwargs['period'].split('-')[1]), 1).strftime('%B')
 
         context["naira"] = chr(8358)
         context["records"] = data

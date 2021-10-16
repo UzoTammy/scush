@@ -19,6 +19,16 @@ from users import views as user_views
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
+from staff.models import Employee
+from random import randint
+
+class Log(auth_views.LoginView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = Employee.objects.all()
+        number = randint(1, obj.count())
+        context['staff'] = obj.get(pk=number)
+        return context
 
 urlpatterns = [
     path('admin/doc/', include('django.contrib.admindocs.urls')),
@@ -35,7 +45,7 @@ urlpatterns = [
     path('register/', user_views.register, name='register'),
     path('register/<slug:token>/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),
-    path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
+    path('login/', Log.as_view(template_name='users/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
     path('password-reset/',
          auth_views.PasswordResetView.as_view(template_name='users/password_reset.html'),
