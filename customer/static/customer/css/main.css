@@ -37,5 +37,14 @@
     tbody, tfoot {
         font-size: 13px;
       }
+    
+      
+    ul {
+      list-style-type: circle; 
+    }
+
+    li::marker {
+      color: red;
+    } 
 
 

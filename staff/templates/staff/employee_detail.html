@@ -47,7 +47,7 @@
                        data-toggle="modal"
                        data-target="#staffBalance">
                         <i class="fa fa-book text-warning"></i>
-                        Profile Balance
+                        Profile Balance (Gratuity)
                     </a>
                 </li>
                 <li class="nav-item">
@@ -73,7 +73,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'balance-view' object.pk %}">
                         <i class="fa fa-book text-warning"></i>
-                        Balance
+                        Gratuity
                     </a>
                 </li>
             </ul>
@@ -372,7 +372,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title">
-                    Profile Balance(<span style="font-size: 11pt">
+                    Gratuity(<span style="font-size: 11pt">
                     {{view.kwargs.pk|zeropadding:3}} - {{object}}
                 </span>)
                 </h3>
@@ -389,7 +389,13 @@
                     <form action="{% url 'employee-balance' object.pk %}" method="post">
                     {% csrf_token %}
                     <div class="row">
-                        <div class="col">
+                        <div class="col-5">
+                            <div class="form-group">
+                                <label for="period">Period</label>
+                                <input class="form-control" name="period" id="period" type="text" value="{% now 'Y-m' %}">
+                            </div>
+                        </div>
+                        <div class="col-7">
                             <div class="form-group">
                                 <label for="title">Title</label>
                                 <input class="form-control" name="title" id="title" type="text">
@@ -830,8 +836,6 @@
     document.getElementById('dateField').innerHTML = 'Entry Date: ' + date.toDateString();
     function lostFocus() {
         if (document.getElementById("reassign").value=='A') {
-            <!--show duration field with default of 60 days -->
-            console.log('hello')
             document.getElementById("divDuration").hidden = false;
         }
         else {

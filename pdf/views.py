@@ -1,5 +1,9 @@
 import datetime
 import decimal
+import os
+import base64
+import random
+from io import BytesIO
 from django.http import HttpResponse
 from pdf.utils import render_to_pdf
 from customer.models import CustomerProfile
@@ -11,6 +15,7 @@ from trade.models import TradeMonthly
 from stock.models import Product
 from django.db.models import Sum, F, Avg, Min, ExpressionWrapper, DecimalField
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
 
 
 class CustomerView(LoginRequiredMixin, View):
@@ -43,7 +48,15 @@ class PayrollListView(LoginRequiredMixin, ListView):
     context_object_name = 'employees'
 
     def get(self, request, *args, **kwargs):
-        period = self.request.GET.get('period')
+        path = os.path.join(settings.BASE_DIR, 'customer/static/customer/logo.png')
+        with open(path, 'rb') as rf:
+            content = rf.read()
+        buf = BytesIO(content)
+        logo = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+        buf.close()
+            
+        # file = base64.b64encode(content.getvalue()).decode('utf-8').replace('\n', '')
+        period = kwargs['period']
         queryset = self.get_queryset().filter(period=period)
         if queryset.exists():
             if period:
@@ -57,23 +70,26 @@ class PayrollListView(LoginRequiredMixin, ListView):
 
             context = {
                 'N': 'NGN',
-                'credentials': f"Authorized by: {request.user.first_name} {request.user.last_name}",
+                'credentials': f"{request.user.first_name} {request.user.last_name}",
+                'approval': Employee.active.first(),
                 'today': datetime.datetime.now(),
                 'period': period,
                 'period_month': period_word,
-                'employees': queryset.order_by('staff'),
+                'employees': queryset.order_by('-staff'),
                 'total_net_pay': queryset.aggregate(sum=Sum('net_pay')),
                 'total_debit': queryset.aggregate(sum=Sum('debit_amount')),
                 'total_credit': queryset.aggregate(sum=Sum('credit_amount')),
                 'total_deduction': queryset.aggregate(sum=Sum('deduction')),
                 'total_outstanding': queryset.aggregate(sum=Sum('outstanding')),
+                'logo_image': logo
+            
                 # 'total_salary': queryset.aggregate(sum=Sum('salary')),
                 # 'total_tax': queryset.aggregate(sum=Sum('tax')),
             }
             pdf = render_to_pdf(self.template_name, context)
             if pdf:
                 response = HttpResponse(pdf, content_type='application/pdf')
-                response['Content-Disposition'] = f'filename="payroll-{period}.pdf"'
+                response['Content-Disposition'] = f'filename="payroll-{period}{random.randint(1, 10000)}.pdf"'
                 return response
         return HttpResponse(f"""<div style=padding:20;><h1>Payroll period {period} do not exist</h1>
 <p>Either the period is not in database or the period is yet to be generated
@@ -187,7 +203,16 @@ class PayslipView(LoginRequiredMixin, TemplateView):
     template_name = 'pdf/pdf_payslip.html'
 
     def get(self, request, *args, **kwargs):
+
+        path = os.path.join(settings.BASE_DIR, 'customer/static/customer/logo.png')
+        with open(path, 'rb') as rf:
+            content = rf.read()
+        buf = BytesIO(content)
+        logo = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+        buf.close()
+
         user_input = request.GET['payCode']
+    
         try:
             user_input_list = user_input.split('-')
             period = user_input_list[1] + '-' + user_input_list[2]
@@ -199,15 +224,18 @@ class PayslipView(LoginRequiredMixin, TemplateView):
 
             month = date.strftime('%B')
             
-            balance = EmployeeBalance.objects.filter(staff=staff_id).filter(date__month=int(user_input_list[2])).aggregate(total=Sum('value'))['total']
-            balance = decimal.Decimal('0') if balance is None else balance
+            cr = EmployeeBalance.objects.filter(staff=staff_id, period=period, value_type='Cr').aggregate(Sum('value'))['value__sum']
+            dr = EmployeeBalance.objects.filter(staff=staff_id, period=period, value_type='Dr').aggregate(Sum('value'))['value__sum']
+            Cr = decimal.Decimal('0') if cr is None else cr
+            Dr = decimal.Decimal('0') if dr is None else dr
             
             context = {
                 'title': 'Payslip',
                 'period_month': f"{month}, {year}",
                 'paycode': request.GET['payCode'],
                 'person': person,
-                'balance': balance
+                'logo_image': logo,
+                'gratuity': Cr - Dr
             }
             pdf = render_to_pdf(self.template_name, context)
             if pdf:
@@ -219,10 +247,9 @@ class PayslipView(LoginRequiredMixin, TemplateView):
         except:
             return HttpResponse(
                 """<div style="padding:20;">
-                <h2 style="color:red;">Incorrect user input</h2>
+                <h2 style="color:red;">Possible Errors</h2>
                 <ul><li>Either the pay code do not exist</li>
-                <li>or the user input is entered incorrectly</li>
-                <li>Kindly return and check your input</li>
+                <li>Server connection not established, check your internet</li>
                 </ul>
                 <a href="/home/">Home</a>
                 </div>"""

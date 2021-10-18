@@ -267,16 +267,19 @@ class SalaryChange(models.Model):
 
 
 class EmployeeBalance(models.Model):
+    today = datetime.date.today()
+    period = models.CharField(max_length=7, default=f'{today.year}-{str(today.month).zfill(2)}')
+    title = models.CharField(max_length=30, default=f'0821-Sales')
     staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now)
     value = MoneyField(max_digits=10, decimal_places=2, default=Money(0, 'NGN'))
     value_type = models.CharField(max_length=2, default='Cr')
     description = models.CharField(max_length=50)
-    title = models.CharField(max_length=30, default='0821-Sales')
+    
 
 
     def __str__(self):
-        return f'{self.staff}-{self.date}'
+        return f'{self.staff}-{self.period}'
     
     def get_absolute_url(self):
         return reverse('employeebalance-detail', kwargs={'pk': self.pk})

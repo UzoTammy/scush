@@ -23,6 +23,7 @@
                 <thead>
                     <tr class="text-center">
                         <th>Title</th>
+                        <th>Period</th>
                         <th>Date</th>
                         <th>Description</th>
                         <th>Value</th>
@@ -33,6 +34,7 @@
                     {% for record in object_list %}
                     <tr class="text-center">
                         <td><a href="{% url 'employee-balance-detail' record.id %}">{{record.title}}</a></td>
+                        <td>{{record.period}}</td>
                         <td>{{record.date|date:'d-m-Y'}}</td>
                         <td>{{record.description}}</td>
                         {% if record.value_type == 'Dr' %}

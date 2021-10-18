@@ -61,6 +61,7 @@
                     </a>
                 </li>
             </ul>
+            
         </div>
         <div class="col-9">
             <!--   Body of Page     -->
@@ -87,7 +88,6 @@
                                 <tr class="bg-dark text-white">
                                     <th>Code</th>
                                     <th>Staff</th>
-                                    <th>Balance</th>
                                     <th>Salary</th>
                                     <th>Tax</th>
                                     <th>Credit</th>
@@ -103,7 +103,6 @@
                                 <tr>
                                     <td>{{pay.staff.id|zeropadding:3}}</td>
                                     <td>{{pay.staff.fullname}}</td>
-                                    <td>{{pay.balance.amount}}</td>
                                     <td class="text-right">{{pay.salary.amount}}</td>
                                     <td class="text-right">{{pay.tax.amount}}</td>
                                     <td class="text-right">{{pay.credit_amount.amount}}</td>
@@ -126,16 +125,30 @@
                             </table>
                         </div>
                     </div>
-                    {% else %}
-                    <h3>No Payroll for this period to display</h3>
-                    {% endif %}
                     <div class="row p-3">
+                        <div class="col">
+                            {% with payroll|first as first_record %}
+                            <a class="btn btn-outline-primary" href="{% url 'pdf-payroll-list' first_record.period %}">PDF & Print</a>
+                            {%endwith%}
+                        </div>
                         <div class="col">
                             <a type="button"
                                class="btn btn-outline-dark float-right"
                                href="{% url 'salary' %}"><i class="fa fa-reply"></i></a>
                         </div>
                     </div>
+                    {% else %}
+                    <h3>No Payroll for this period to display</h3>
+                    <div class="row p-3">
+                        
+                        <div class="col">
+                            <a type="button"
+                               class="btn btn-outline-dark float-right"
+                               href="{% url 'salary' %}"><i class="fa fa-reply"></i></a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
                 </div>
             </div>
         </div>

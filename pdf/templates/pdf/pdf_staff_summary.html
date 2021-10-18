@@ -56,35 +56,32 @@
 <small>Source: Scush Web App as at {% now "d-m-Y H:i" %} WAT</small>
 <div class='wrapper'>
     <div class='header'>
-        <p class='title'>Ozone: Employee Summary Report</p>
+        <p class='title'>Ozone: Company Profile</p>
     </div>
 </div>
-<div style="margin: 9">
+<div style="margin: 8">
+    <h5>The Staff</h5>
     <p>Workforce: #{{workforce.count}}</p>
-    <p>Male: #{{num_female.count}}</p>
-    <p>Female: #{{num_male.count}}</p>
-    <p>Single: #{{num_single.count}} </p>
-    <p>Married: #{{num_married.count}}</p>
-    <p>Management: #{{num_management.count}}</p>
-    <p>Non-Management: #{{num_non_management.count}}</p>
-    <p>Probation: #{{num_probation.count}}</p>
-    <p>Terminated: #{{num_all_time|minus:workforce.count}}</p>
+    <p>Male: #{{num_female.count}} | Female: #{{num_male.count}}</p>
+    <p>Single: #{{num_single.count}} | Married: #{{num_married.count}}</p>
+    <p>Management: #{{num_management.count}} | Non-Management: #{{num_non_management.count}}</p>
+    <p>Probation: #{{num_probation.count}} | Terminated: #{{num_all_time|minus:workforce.count}}</p>
     <p>Graduates: #{{num_graduates.count}}</p>
     <p>Salary: NGN{{total_salary|floatformat:'2g'}} per annum
        <span style="color: #007cae;">(NGN{{total_salary|dividedby:12|floatformat:'2g'}} per month)</span> 
     </p>
-    <p>Accummulated profile Balnce: NGN{{balance|floatformat:'2g'}}</p>
+    <p>Gratuity: NGN{{balance|floatformat:'2g'}}</p>
     <p>Monthly Average Salary: NGN{{average_salary.tsa|floatformat:'2g'}}</p>
     <p>Total Pay Out: NGN{{total_net_pay.total|floatformat:'2g'}} <span style="color:grey;">(since june 2021)</span></p>
     <p>Minimum Wage: NGN{{minimum_wage.value|floatformat:'2g'}}</p>
-    <p>Youngest Staff: {{youngest|timesince:now}} old</p>
-    <p>Oldest Staff: {{oldest|timesince:now}} old</p>
+    <p>Youngest Staff: {{youngest|timesince:now}} old | Oldest Staff: {{oldest|timesince:now}} old</p>
+    <hr style="margin-top: 1em;">
     <h3>The Business</h3>
     <p>Previous Year Revenue: NGN{{sales_last_year|default_if_none:0|floatformat:'2g'}} and Gross Margin: 
         {{gross_margin_last_year|default_if_none:0|floatformat:'3'}}%</p>
     <p>Current Year Revenue: NGN{{sales_year|default_if_none:0|floatformat:'2g'}} and Gross Margin: 
         {{gross_margin_year|default_if_none:0|floatformat:'3'}}%</p>
-    <p>{{xx}}</p>
+    
 </div>
 </body>
 </html>

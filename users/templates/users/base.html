@@ -149,10 +149,7 @@
                     <a class="dropdown-item" href="{% url 'pdf-rejected-list'%}">Rejected Applicant</a>
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'pdf-employee-list' %}">Staff Profile</a>
-                    <a class="dropdown-item" data-toggle="modal"
-                       data-target="#pdfPayrollModal">
-                        Payroll for Bank
-                    </a>
+                    
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'pdf-customers-list' %}">Customers</a>
                     <a class="dropdown-item text-muted">Stock</a>
@@ -166,6 +163,8 @@
                     <a class="dropdown-item" href="{% url 'pdf-employee-list' %}">Staff</a>
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'policies-docs' %}">Policies and Procedures</a>
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="{% url 'pdf-staff-summary' %}">Company Summary</a>
                 </div>
             </li>
             <li class="nav-item">
@@ -240,83 +239,6 @@
 
 {% block content %} {% endblock %}
 
-<!--PDF Payroll-->
-<div class="modal fade"
-     id="pdfPayrollModal"
-     tabindex="-1"
-     aria-labelledby="pdfPayrollModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark text-white">
-            <div class="modal-header">
-                <h5 class="modal-title"
-                    id="pdfPayrollModalLabel">
-                    Payroll Period Options
-                </h5>
-                <button type="button"
-                        class="btn-close"
-                        data-dismiss="modal"
-                        aria-label="Close">
-                    <i class="fa fa-close"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form action="{% url 'pdf-payroll-list' %}" method="GET">
-                    <div class="form-check">
-                        <input class="form-check-input"
-                               type="radio"
-                               name="period"
-                               value="{{none|last_month_payroll_period}}"
-                               id="radio1" checked>
-                        <label class="form-check-label"
-                               for="radio1">
-                            {{none|last_month_payroll_period}}
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input"
-                               type="radio"
-                               name="period"
-                               value="{% now 'Y-m'%}"
-                               id="radio2">
-                        <label class="form-check-label"
-                               for="radio2">
-                            {% now 'Y-m' %}
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input"
-                               type="radio"
-                               name="period"
-                               value="{{none|next_month_payroll_period}}"
-                               id="radio3">
-                        <label class="form-check-label"
-                               for="radio3">
-                            {{none|next_month_payroll_period}}
-                        </label>
-                    </div>
-                    <hr class="bg-light">
-                    <div class="form-group">
-                        <label class="text-primary"
-                               for="inputPeriod">Period</label>
-                        <input id="inputPeriod"
-                               class="form-control"
-                               placeholder="This option not yet available"
-                               type="text" disabled>
-                    </div>
-                    <div class="modal-footer">
-                        <input value="OK" type="submit" class="btn btn-primary">
-                        <button type="button"
-                                class="btn btn-secondary"
-                                data-dismiss="modal">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 <!--List of Banks-->
 <div class="modal fade"
      id="bankList"

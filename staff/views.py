@@ -113,7 +113,14 @@ class StaffPoliciesView(TemplateView):
     template_name = 'staff/policies.html'
 
 
-class StaffMainPageView(View):
+class StaffMainPageView(LoginRequiredMixin, UserPassesTestMixin, View):
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
     template_name = 'staff/home_page.html'
     messages_one = f"""Employees remain the most important asset of this company.
 Their combined effort is the result of what we have today. However, for the purpose of leadership and direction,
@@ -563,25 +570,16 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
         context['current_month'] = str(today.month).zfill(2)
         context['years'] = (str(today.year-1), str(today.year), str(today.year+1))
 
-        # year = today.year
-        # month = today.month
-        # last_month = mytools.Month.last_month()
-        # next_month = mytools.Month.next_month()
-        # context['last_month'] = datetime.date(year, last_month, calendar.mdays[last_month]).strftime('%B')
-        # context['this_month'] = today.strftime('%B')
-        # context['next_month'] = datetime.date(year, next_month, calendar.mdays[next_month]).strftime('%B')
-        # context['last_period'] = f"{year}-{str(month - 1).zfill(2)}"
-        # context['current_period'] = f"{year}-{str(month).zfill(2)}"
-        # context['next_period'] = f"{year}-{str(month + 1).zfill(2)}"
-
+        
         payroll = Payroll.objects.all()
         if payroll.exists():
             last = Payroll.objects.last()
-            context['last_period_generated'] = last.period
 
             """If payroll record exist, then get the last record's period and convert to integer"""
             month_in_period = int(last.period.split('-')[1])
             year_in_period = int(last.period.split('-')[0])
+            
+            context['last_period_generated'] = f'{calendar.month_name[month_in_period]}, {year_in_period}'
             """Get the last six recent periods into a list object, starting from the period of 
             the last record in payroll"""
             periods = [last.period]
@@ -671,7 +669,7 @@ class PayrollViews(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context = {
             'title': 'view payroll',
             'heading': {'year': year, 'month': mytools.Period.full_months.get(month)},
-            'payroll': self.get_queryset().filter(period=period),
+            'payroll': self.get_queryset().filter(period=period).order_by('-staff'),
             'salary': self.get_queryset().filter(period=period).aggregate(sum=Sum('net_pay')),
             'naira': chr(8358),
             'periods_months': self.recent_months(self.get_queryset().last().period),
@@ -997,11 +995,19 @@ class Payslip(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         staff = get_object_or_404(Employee, pk=kwargs['object'].staff_id)
-        month = int(kwargs['object'].period.split('-')[1])
+        period = kwargs['object'].period
+        month = int(period.split('-')[1])
 
-        balance = EmployeeBalance.objects.filter(staff=staff).filter(date__month=month).aggregate(total=Sum('value'))['total']
-        balance = decimal.Decimal('0') if balance is None else balance
-        context['balance'] = balance
+        # balance = EmployeeBalance.objects.filter(staff=staff).filter(date__month=month).aggregate(total=Sum('value'))['total']
+        # balance = decimal.Decimal('0') if balance is None else balance
+
+        cr = EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Cr').aggregate(Sum('value'))['value__sum']
+        dr = EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Dr').aggregate(Sum('value'))['value__sum']
+        Cr = decimal.Decimal('0') if cr is None else cr
+        Dr = decimal.Decimal('0') if dr is None else dr
+            
+
+        context['balance'] = Cr - Dr
         
         return context
 
@@ -1028,10 +1034,10 @@ class PayrollStatement(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     def get(self, request, *args, **kwargs):
         context = dict()
         staff = Employee.active.get(id=kwargs['pk'])
-        payslips = self.get_queryset().filter(staff=staff.id)
-
+        payslip = self.get_queryset().filter(staff=staff.id)
+        
         context['code'] = kwargs['pk']
-        context['objects'] = payslips
+        context['objects'] = payslip
         context['totals'] = 'list'
         return render(request, self.template_name, context=context)
 

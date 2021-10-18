@@ -1,10 +1,10 @@
 {% extends "pdf/base.html" %}
+{% load custom_templates %}
 
 {% block content %}
-<small>Scush Web App </small>
 <div class="wrapper">
     <div class="header">
-        <p class="title">Payslip from Ozone F & L</p>
+        <p class="title">Payslip</p>
     </div>
 
     <div class="subheader">
@@ -16,7 +16,7 @@
     <p>Dispatch Date: {% now "d-M-Y" %}</p>
     <p>Pay Date: {{ person.date_paid }}</p>
     <p>Pay Code: <span style="color: chocolate;">{{ paycode }}</span></p>
-    <hr>
+    
     <table>
         <tbody>
             <tr>
@@ -32,13 +32,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Balance:
-                    {% if person.balance.amount >= 0 %}
-                    <span>{{ person.balance }}</span>
-                    {% else %}
-                    <span style="color:red;">{{ person.balance }}</span>
-                    {%endif%}
-                </td>
+                <td>Allowance: {{person.staff.allowance}}</td>
                 <td style="color:green">Net Pay: {{ person.net_pay }}</td>
             </tr>
             <tr>
@@ -46,13 +40,18 @@
                 <td>Outstanding: {{person.outstanding}}</td>
             </tr>
             <tr>
-                <td>Gratuity: <span style="color:green;">NGN{{ balance|floatformat:'2g' }}</span></td>
+                <td>Retained Bonus: {% if gratuity >= 0 %}
+                    <span style="color:green;">NGN{{ gratuity|floatformat:'2g' }}</span>
+                    {%else%}
+                    <span style="color:rgb(248, 6, 6);">NGN{{ gratuity|abs|floatformat:'2g' }}</span>
+                    {% endif %}
+                </td>
                 <td>Payment Status: {{person.status|yesno:'Paid, Not Paid'}}</td>    
             </tr>
         </tbody>
     </table>
-    <hr width="100%">
-    <p style="color:grey">It pays to work hard</p>
+    
+    <p style="color:grey">We believe in Dignity of Labour</p>
     <p style="color:red; text-align: center;">Confidential document!!!</p>
 
 </div>

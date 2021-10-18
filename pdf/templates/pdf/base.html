@@ -11,55 +11,73 @@
 
     <title>Report-{{title}}</title>
     <style type="text/css">
-            body {
-                font-weight: 100;
-                font-size: 14px;
-            }
-            .header {
-                font-size: 30px;
-                font-weight: 100;
-                text-align: center;
-                color: #007cae;
-            }
-            .subheader {
-                font-size: 20px;
-                font-weight: 100;
-                text-align: left;
-                color: #844131;
-            }
-            .title {
-                font-size: 22px;
-                font-weight: 100;
-               /* text-align: right;*/
-               padding: 10px 20px 0px 20px;
-            }
-            .title span {
-                color: #007cae;
-            }
-            .details {
-                padding: 10px 20px 0px 20px;
-                text-align: left !important;
-                /*margin-left: 40%;*/
-            }
-            .hrItem {
-                border: none;
-                height: 1px;
-                /* Set the hr color */
-                color: #333; /* old IE */
-                background-color: #fff; /* Modern Browsers */
-            }
-            #standout {
-              background-color: #844131;
-              color: #fff;
-            }
-            small {
-                color: #e7aaad;
-            }
-        </style>
+        body {
+            font-weight: 100;
+            font-size: 14px;
+        }
+        .header {
+            font-size: 30px;
+            font-weight: 100;
+            text-align: center;
+            color: #007cae;
+        }
+        .subheader {
+            font-size: 20px;
+            font-weight: 100;
+            text-align: left;
+            color: #844131;
+        }
+        .title {
+            font-size: 22px;
+            font-weight: 100;
+            /* text-align: right;*/
+            padding: 10px 20px 0px 20px;
+        }
+        .title span {
+            color: #007cae;
+        }
+        .details {
+            padding: 10px 20px 0px 20px;
+            text-align: left !important;
+            /*margin-left: 40%;*/
+        }
+        .hrItem {
+            border: none;
+            height: 1px;
+            /* Set the hr color */
+            color: #333; /* old IE */
+            background-color: #fff; /* Modern Browsers */
+        }
+        
+        small {
+            color: #e7aaad;
+        }
+        table, th, td {
+            border: 1px solid #d6d7ce;
+            padding: 3px;
+        }
+        table {
+            width: 100%;
+        }
+        img {
+            height: 70px;
+            width: 100px;
+        }
+        .img-1 {
+            border-radius: 50%;
+        }
+        
+    </style>
   </head>
   <body>
-  {% block content %}{% endblock%}
-
+    <img src="data:image/png;base64,{{logo_image}}"
+    class="img-1" 
+    alt="logo">
+    <p>Ozone F & L Trading Co. Ltd., <br> GOB 1-4 Zamfara Plaza, <br> Trade Fair, Lagos. <br> <small>https://scush.com.ng</small></p>
+    
+  {% block content %}
+  
+  {% endblock%}
 
     <!-- Optional JavaScript; choose one of the two! -->
 

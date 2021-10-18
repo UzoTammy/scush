@@ -100,26 +100,7 @@
                 </li>
             </ul>
             {% endif %}
-            <hr class="dropdown-divider">
-            <p class="m-2 text-white">
-                <i class="fa fa-file-pdf-o text-warning"></i>
-                PDF
-            </p>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="modal"
-                       data-target="#pdfPayrollModal">
-                        Payroll for Bank
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                       data-toggle="modal"
-                       data-target="#pdfPayslipModal">
-                        Payslip
-                    </a>
-                </li>
-            </ul>
+            
             <hr class="dropdown-divider">
             <ul class="nav flex-column">
                 <li class="nav-item">
@@ -133,100 +114,47 @@
         </div>
         <div class="col-9 mt-3">
             <h3 class="text-center">Payroll Page</h3>
-            <p>Payroll Process</p>
+            <p class="text-danger text-right">Current Date: {% now 'jS \o\f M, Y' %}</p>
+            <h5>The Payroll Process</h5>
+            <p>This is established to manage payroll effectively by the Human Resource Department (HRD).</p>
+            <p>The Payroll is of two parts: Salaries and Gratuity</p>
+            <p>Salaries are processed every calendar month and includes:</p>
             <ul>
-                <li>Ensure Staff Profile is updated</li>
-                <li><b>Add</b> Debit and Credit accordingly</li>
-                <li><b>Generate</b> Payroll</li>
-                <li>If exemptions are granted, use <b>modify</b> to update payroll</li>
-                <li>If staff profile is to be changed after payroll is generated,
-                you can go ahead and update the profile and then <b>regenerate</b> payroll</li>
+                <li>Taxes (PIT)</li>
+                <li>Credit, Incentives and Bonus if any</li>
+                <li>Salary</li>
+                <li>Debit and Shortages and Repayments</li>
             </ul>
-            <p>
-                It is recommended you generate payroll between 25th and before the end of the month.
-                Before you generate payroll, you must update the employee profile, and add credits or debits where
-                necessary. <span class="text-danger">However, should there be need for adjustment of the payroll,
-                then you can regenerate.</span> Payrolls are categorized according to period. A period is one month.
+            <p>Meanwhile, Gratuity (Money accrued for a staff pending resignation or retirement) is a reserve earned 
+                from performance and kept in a seperate database. Even though, it is recorded during salary payment, it is a seperated
+                account but can only be processed under the payroll system. 
             </p>
-
-            <p class="text-danger">Current Date: {% now 'jS \o\f M, Y' %}</p>
-
+            
             {% if last_period_generated %}
-            <p>Last Period Generated: {{last_period_generated}}</p>
+            <p class="text-danger text-right">Last Period Generated: {{last_period_generated}}</p>
             {% else %}
             <h4 class="text-primary">No Record in Payroll Database</h4>
             <hr>
             {% endif %}
 
+            <p>Steps required for a successful payroll implementation</p>
+            <ol>
+                <li>Ensure Staff Profile is updated</li>
+                <li><b>Add</b> Debit and Credit accordingly</li>
+                <li><b>Update</b> tax</li>
+                <li><b>Generate</b> Payroll</li>
+                <li>If there are outstanding amount to be moved to Net Pay, and if approval is granted, use 
+                    <b>modify</b> to implement staff by staff.</li>
+                <li>If there is need to change any of the above before generate, then you will need to <b>regenerate</b>
+                upon approval to do.</li>
+            </ol>
+            
+            <p>
+                It is recommended you generate payroll between 25th and before the end of the month.
+                Payrolls are categorized according to period. A period is one month.
+            </p>
+
         </div>
     </div>
-</div>
-
-
-<!-- Modal -->
-<div class="modal fade"
-     id="initialModal"
-     tabindex="-1"
-     data-backdrop="static"
-     aria-labelledby="initialModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content bg-dark text-white">
-      <div class="modal-header">
-        <h5 class="modal-title"
-            id="initialModalLabel">
-            Period for Payroll
-        </h5>
-        <button type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close"></i>
-        </button>
-      </div>
-    <form action="">
-        <div class="modal-body">
-            <div class="row">
-                <div class="col form-group">
-                <label class="" for="formYear">Year</label>
-                <select class="form-control form-control-sm" name="year" id="formYear">
-                    {% for year in years %}
-                    {% if forloop.counter == 2 %}
-                    <option value="{{year}}" selected>{{year}}</option>
-                    {% else %}
-                    <option value="{{year}}">{{year}}</option>
-                    {% endif %}
-                    {% endfor %}
-                </select>
-            </div>
-                <div class="col form-group">
-                <label for="formMonth">Month</label>
-                <select class="form-control form-control-sm" name="month" id="formMonth">
-                    {% for key, value in months.items %}
-                    {% if key == current_month %}
-                        <option value="{{key}}" selected>{{value}}</option>
-                    {% else %}
-                        <option value="{{key}}">{{value}}</option>
-                    {% endif %}
-                    {% endfor %}
-                </select>
-            </div>
-            </div>
-
-        </div>
-        <div class="modal-footer">
-            <button type="submit"
-                    class="btn btn-danger">
-                Proceed
-            </button>
-            <button type="button"
-                    class="btn btn-secondary"
-                    data-dismiss="modal">
-                Cancel
-            </button>
-        </div>
-    </form>
-    </div>
-  </div>
 </div>
 {% endblock %}

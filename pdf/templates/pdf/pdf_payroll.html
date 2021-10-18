@@ -1,61 +1,16 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html> -->
+{% extends 'pdf/base.html' %}
 {% load static %}
 {% load custom_templates %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Ozone-Payroll</title>
-    <style type="text/css">
-            body {
-                font-weight: 100;
-                font-size: 14px;
-            }
-            .header {
-                font-size: 20px;
-                font-weight: 100;
-                text-align: center;
-                color: #007cae;
-            }
-            .title {
-                font-size: 22px;
-                font-weight: 100;
-               /* text-align: right;*/
-               padding: 10px 20px 0px 20px;
-            }
-            .title span {
-                color: #007cae;
-            }
-            .details {
-                padding: 10px 20px 0px 20px;
-                text-align: left !important;
-                /*margin-left: 40%;*/
-            }
-            .hrItem {
-                border: none;
-                height: 1px;
-                /* Set the hr color */
-                color: #333; /* old IE */
-                background-color: #fff; /* Modern Browsers */
-            }
-            small {
-                color: #e7aaad;
-            }
-            table, th, td {
-                border: 1px solid #d6d7ce;
-                padding: 3px;
-            }
-            table {
-                width: 100%;
-            }
 
-        </style>
-</head>
-<body>
-<small>Scush Web App </small>
+
+{% block content %}
+ 
+
 <div class='wrapper'>
-    <div class='header'>
-        <h1 class='title'>Ozone F & L: Payroll Report for {{period_month}}</h1>
+    <div class='header'>    
+        <h1 class='title'>Payroll Report for {{period_month}}</h1>
     </div>
 </div>
 <div class='details'>
@@ -119,11 +74,9 @@
 <div class="row">
     <br>
     <div class="col">
-        <p>{{credentials}}</p>
+        <p>Administered By: {{credentials}} and Approved By: {{approval}}</p>
         <small>note: WAT -> West African Time (GMT+1).</small><br>
         <small>All figures are currencies in Nigerian naira</small>
     </div>
 </div>
-
-</body>
-</html>
+{% endblock %}

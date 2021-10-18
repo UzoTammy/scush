@@ -22,13 +22,7 @@
             <hr>
             <div class="row">
             <div class="col-sm-6">
-            <p>Balance (B/F):
-                {% if object.staff.balance.amount < 0 %}
-                <span class="text-danger">{{object.staff.balance|abs}}</span>
-                {% else %}
-                <span class="text-dark">{{object.staff.balance}}</span>
-                {% endif %}
-            </p>
+            <p class="text-secondary">Retained bonus: NGN{{balance|floatformat:'2g'}}</p>
             <p>Deduction: {{object.deduction}}</p>
             <p>Outstanding (B/D):
                 {% if object.outstanding.amount < 0 %}
@@ -37,11 +31,10 @@
                 <span class="text-dark">{{object.outstanding}}</span>
                 {% endif %}
             </p>
-                
                 <p>Credit: {{object.credit_amount}}</p>
                 <p>Debit: {{object.debit_amount}}</p>
                 <hr>
-                <h6 class="text-success">Net Pay: {{object.net_pay}}</h3>
+                
             </div>
             <div class="col-sm-6">
                 <p>Basic Salary: {{object.staff.basic_salary}}</p>
@@ -50,7 +43,7 @@
                 <p>Tax Payable: {{object.staff.tax_amount}}</p>
                 <p>Gross Pay: {{object.staff.gross_pay}}</p>
                 <hr>
-                <h6 class="text-secondary">Retained Bonus: NGN{{balance|floatformat:'2g'}}</h3>
+                <h6 class="text-success">Net Pay: {{object.net_pay}}</h3>
             </div>
             </div>
 
@@ -75,7 +68,7 @@
                     </form>
                 </div>
                 <div class="col text-right">
-                    <a href="{% url 'employee-detail' object.staff.pk %}"
+                    <a href="{% url 'payroll-statement' object.staff.pk %}"
                     class="btn btn-sm btn-outline-dark">
                     <i class="fa fa-reply"></i>
                 </a>

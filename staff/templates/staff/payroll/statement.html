@@ -20,9 +20,10 @@
               <th scope="col">Date</th>
               <th scope="col">Period</th>
               <th scope="col">Month</th>
-              <th scope="col">Salary Paid</th>
+              <th scope="col">Salary</th>
               <th scope="col">Credit</th>
               <th scope="col">Debit</th>
+              <th scope="col">Net Pay</th>
               <th scope="col">Deduction</th>
               <th scope="col">Outstanding</th>
             </tr>
@@ -34,9 +35,10 @@
                     <td scope="row">{{object.date_paid|date:'d-m-Y'}}</td>
                     <td scope="row">{{object.period}}</td>
                     <td scope="row">{{object.period_month}}</td>
-                    <td class="text-right">{{object.net_pay}}</td>
+                    <td class="text-right">{{object.salary}}</td>
                     <td class="text-right">{{object.credit_amount}}</td>
                     <td class="text-right">{{object.debit_amount}}</td>
+                    <td class="text-right">{{object.net_pay}}</td>
                     <td class="text-right">{{object.deduction}}</td>
                     <td scope="row" class="text-right">{{object.outstanding}}</td>
                 </tr>

@@ -4,7 +4,7 @@ from pdf.views import *
 
 urlpatterns = [
     path('customers/list/', CustomerView.as_view(), name='pdf-customers-list'),
-    path('payroll/list/', PayrollListView.as_view(), name='pdf-payroll-list'),
+    path('payroll/list/<str:period>/', PayrollListView.as_view(), name='pdf-payroll-list'),
     path('staff/list/',  EmployeeListView.as_view(), name='pdf-employee-list'),
     path('apply/rejected/', RejectedApplicantList.as_view(), name='pdf-rejected-list'),
     path('payslip/', PayslipView.as_view(), name='pdf-payslip'),
