@@ -1,0 +1,54 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container  px-lg-5">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
+        <div class="col mt-2">
+            {% if net_pay == None or net_profit == None %}
+                <p>None value involved</p>
+            {%else%}
+                <div class="card text-white bg-primary" 
+                style="max-width: 18rem; border-radius: 50px 100px 50px 100px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Workforce Productivity</h5>
+                        <p class="card-text text-right">{{net_profit|dividedby:net_pay|floatformat:'2g'}}</p>
+                    </div>
+              </div>
+            {%endif%}
+        </div>
+        <div class="col mt-2">
+            <div class="card text-white bg-warning" 
+                style="max-width: 18rem; border-radius: 50px 100px 50px 100px;">
+                <div class="card-body">
+                    <h5 class="card-title">Gross Margin Ratio <small>(as at {{day|date:'d-m-Y'}})</small></h5>
+                    <p class="card-text text-right">{{gp_ratio|floatformat:'3'}}% 
+                        <small class="text-muted text-right">(Sales:{{sales.amount}})</small></p>
+                </div>
+            </div>
+        </div>
+        <div class="col mt-2">
+            <div class="card text-white bg-danger" 
+                style="max-width: 18rem; border-radius: 50px 100px 50px 100px;">
+                    <div class="card-body">
+                        <!-- <h5 class="card-title">Workforce|Products</h5> -->
+                        <p class="card-title">Workforce:{{workforce}}</p>
+                        <p class="cart-text text-right">Customers:{{customers}} <br> Products:{{products}}</p>
+                        <!-- <p class="cart-text text-right"></p> -->
+                    </div>
+            </div>
+        </div>
+        <div class="col mt-2">
+            <div class="card text-white bg-info" 
+                style="max-width: 18rem; border-radius: 50px 100px 50px 100px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Salaries and Rent</h5>
+                        <p class="card-text text-right">Salary Paid: {{salaries|floatformat:'2g'}} <br> Rent Payable: {{rent|floatformat:'2g'}}</p>
+                    </div>
+              </div>
+        
+        </div>
+        
+    </div>
+</div>
+{% endblock content %}

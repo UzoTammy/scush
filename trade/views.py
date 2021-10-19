@@ -7,7 +7,9 @@ from django.http.response import HttpResponse, HttpResponseRedirect
 from .forms import TradeMonthlyForm, TradeDailyForm
 from django.shortcuts import redirect, render
 from .models import *
-from staff.models import Payroll
+from staff.models import Employee, Payroll
+from stock.models import Product
+from customer.models import CustomerProfile
 from django.urls.base import reverse_lazy
 from django.db.models import Sum, F, Avg, ExpressionWrapper, DecimalField
 import calendar
@@ -500,6 +502,7 @@ class TradeDailyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+
     queryset = TradeDaily.objects.all()
     template_name = 'trade/PL_daily_report.html'
 
@@ -660,3 +663,41 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['dataset'] = latest_record
             return render(request, self.template_name, context)
         return render(request, 'trade/no_record.html', {'message': f'No Daily Record to Report from {from_date} to {to_date}'})
+
+
+class DashBoardView(TemplateView):
+    template_name = 'trade/dashboard.html'
+
+    
+    def get_context_data(self, **kwargs):
+
+        return super().get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        """let us consider the year of the last record"""
+        if TradeMonthly.objects.exists():
+            qs_last = TradeMonthly.objects.last()
+            year = qs_last.year
+            month = qs_last.month
+            m = (str(index).zfill(2) for index, i in enumerate(calendar.month_name) if i == month)
+            period = f'{year}-{next(m)}'
+            net_pay = Payroll.objects.filter(period=period).aggregate(Sum('net_pay'))['net_pay__sum']
+            qs = TradeMonthly.objects.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
+            net_profit = qs.filter(year=year, month=month).aggregate(Sum('net_profit'))['net_profit__sum']
+            context['net_profit'] = net_profit
+            context['net_pay'] = net_pay
+            qs_daily_last = TradeDaily.objects.last()
+            try:
+                context['gp_ratio'] = 100*qs_daily_last.gross_profit/qs_daily_last.sales
+            except:
+                context['gp_ratio'] = 0
+            context['sales'] = qs_daily_last.sales
+            context['day'] = qs_daily_last.date
+        context['workforce'] = Employee.active.count()
+        context['products'] = Product.objects.count()
+        context['customers'] = CustomerProfile.objects.count()
+        context['salaries'] = Payroll.objects.aggregate(Sum('net_pay'))['net_pay__sum']
+        from warehouse.models import Stores
+        context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
+        return render(request, self.template_name, context)

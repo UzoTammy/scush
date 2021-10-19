@@ -10,10 +10,8 @@
                    data-pagination="true"
                     class="table table-sm table-striped table-bordered mydatatable"
                     style="width: 100%">
-                    <caption>Profile Balance List for 
-                        {% with object_list|first as object %}
-                        {{object.staff}}
-                        {%endwith%}
+                    <caption>Gratuity List
+                        
                         {% if total_value >= 0 %}
                         <span class="float-right text-success">NGN{{total_value|floatformat:'2g'}}</span>
                         {% else %}
