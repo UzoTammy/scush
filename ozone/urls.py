@@ -25,7 +25,7 @@ from random import randint
 class Log(auth_views.LoginView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        obj = Employee.objects.all()
+        obj = Employee.active.all()
         number = randint(1, obj.count())
         context['staff'] = obj.get(pk=number)
         return context

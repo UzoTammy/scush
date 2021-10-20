@@ -1,3 +1,4 @@
+import decimal
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import datetime
 from django.db.models.expressions import Func
@@ -94,7 +95,19 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         'direct_expenses': quarter[2],
         'indirect_expenses': quarter[3], 
         'gp_ratio': quarter[4]/quarter[5]}
-        
+
+        # The Sales Table
+        sales_list = list()
+        for key, value in mytools.Period.full_months.items():
+            result = dict()
+            sum_day = daily_qs.filter(date__month=int(key)).aggregate(Sum('sales'))['sales__sum']
+            q_month = monthly_qs.filter(year=monthly.year, month=value) 
+            result['period'] = value
+            result['daily'] = sum_day if sum_day is not None else decimal.Decimal('0')
+            result['monthly'] = q_month.get().sales.amount if q_month.exists() else decimal.Decimal('0')
+            result['delta'] = result['monthly'] - result['daily']
+            sales_list.append(result)
+        context['sales_table'] = sales_list
         return context
   
 

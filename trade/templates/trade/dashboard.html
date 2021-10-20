@@ -3,16 +3,21 @@
 
 {% block content %}
 <div class="container  px-lg-5">
+    
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
         <div class="col mt-2">
             {% if net_pay == None or net_profit == None %}
                 <p>None value involved</p>
             {%else%}
-                <div class="card text-white bg-primary" 
+                <div data-toggle="tooltip"
+                data-placement="top" 
+                title='"Workforce Productivity is the net profit made per unit of salary paid over a payment period (monthly)"'
+                class="card text-white bg-primary" 
                 style="max-width: 18rem; border-radius: 50px 100px 50px 100px;">
                     <div class="card-body">
                         <h5 class="card-title">Workforce Productivity</h5>
                         <p class="card-text text-right">{{net_profit|dividedby:net_pay|floatformat:'2g'}}</p>
+            
                     </div>
               </div>
             {%endif%}
@@ -51,4 +56,5 @@
         
     </div>
 </div>
+
 {% endblock content %}

@@ -81,8 +81,8 @@
         <div class="col-9 mt-3 bg-white">
             <h3>Business Summary</h3>
             
-            <div class="row">
-                <div class="col-md-4">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
+                <div class="col">
                     {% if daily %}
                     <div class="card border-primary mb-3" style="max-width: 18rem;">
                         <div class="card-header">Daily - {{daily.date|date:'jS F, Y'}}</div>
@@ -130,7 +130,7 @@
                     {% endif %}
                 </div>
                 {% if quarter_one %}
-                <div class="col-md-4">
+                <div class="col">
                     <div class="card border-success mb-3" style="max-width: 18rem;">
                         <div class="card-header">Monthly - {{monthly}}</div>
                         <div class="card-body">
@@ -168,7 +168,7 @@
                 {% else %}
                     <h6>No Monthly record yet</h6>
                 {% endif %}
-                <div class="col-md-4">
+                <div class="col">
                     {% if quarter_one %}
                     <div class="card border-danger mb-3" style="max-width: 18rem;">
                         <div class="card-header">Quarterly - {{quarter}}</div>
@@ -208,7 +208,7 @@
                 
                 </div>
 
-                <div class="col-md-4">
+                <div class="col">
                     <div class="card border-warning mb-3" style="max-width: 18rem;">
                         <div class="card-header">Yearly - {{year}}</div>
                         <div class="card-body">
@@ -245,11 +245,40 @@
                 
                 </div>
             </div>
-            {% for i in qs %}
-                {{i}}
-            {% endfor %}
+            <div class="row">
+                <div class="col mb-3">
+                    <table class="table table-bordered table-sm" 
+                    data-toggle="table"
+                    data-pagination="true"
+                    data-caption="true"
+    
+                    >
+                    <caption>Sales</caption>
+                        <thead>
+                            <tr>
+                                <th>Period</th>
+                                <th>Daily</th>
+                                <th>Monthly</th>
+                                <th>Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+    
+                            {% for data in sales_table %}
+                            <tr>
+                                <td style="width: 10%;">{{data.period}}</td>
+                                <td class="text-right">{{data.daily|floatformat:'2g'}}</td>
+                                <td class="text-right">{{data.monthly|floatformat:'2g'}}</td>
+                                <td class="text-right">{{data.delta|floatformat:'2g'}}</td>
+                            </tr>
+                            {%endfor%}
+                        </tbody>
+    
+                    </table>
+                </div>
+                
+            </div>
         </div>
-        
     </div>
 </div>
 {% endblock content %}
