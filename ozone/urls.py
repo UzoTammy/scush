@@ -20,13 +20,14 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 from staff.models import Employee
-from random import randint
+import random
 
 class Log(auth_views.LoginView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = Employee.active.all()
-        number = randint(1, obj.count())
+        numbers = obj.values_list('id', flat=True)
+        number = random.choice(numbers)
         context['staff'] = obj.get(pk=number)
         return context
 

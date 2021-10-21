@@ -1,11 +1,5 @@
 from django.urls import path
-from .views import (MyFirstView,
-                    ProductHomeView,
-                    ProductListView,
-                    ProductDetailedView,
-                    ProductCreateView,
-                    ProductUpdateView,
-                    ProductDeleteView)
+from .views import *
 
 urlpatterns = [
     path('see-me/', MyFirstView.as_view(), name='see-me'),
@@ -15,4 +9,7 @@ urlpatterns = [
     path('product/new/', ProductCreateView.as_view(), name='product-create'),
     path('product/<int:pk>/update/', ProductUpdateView.as_view(), name='product-update'),
     path('product/<int:pk>/delete/', ProductDeleteView.as_view(), name='product-delete'),
+    path('product/price/list/', PricePageView.as_view(), name='price-list'),
+    path('product/<int:pk>/detail/', PriceUpdate.as_view(), name='price-update'),
+    
 ]

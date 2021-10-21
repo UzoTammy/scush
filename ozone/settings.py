@@ -29,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG_VALUE', default=False, cast=bool)
 # DEBUG = True
 
-ALLOWED_HOSTS = ['scush.herokuapp.com', '127.0.0.1', '.localhost']
+ALLOWED_HOSTS = ['https://scush.com.ng', 'scush.herokuapp.com', '127.0.0.1', '.localhost']
 
 # Application definition
 INSTALLED_APPS = [

@@ -3,9 +3,44 @@
 {% load custom_templates %}
 
 {% block content %}
-<div class="p-4">
+<div class="container p-4">
     <h2 class="text-secondary text-center">Product Detail Page</h2>
     <div class="row">
+        <div class="col-sm-4">
+            <!--Side menu-->
+            <div class="row mb-5 mt-3">
+                <div class="col bg-light">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a href="#" 
+                            data-toggle="modal" 
+                            data-target="#priceReview">Price Update</a></li>
+                        <li class="list-group-item"><a href="{% url 'product-update' object.pk %}">Update</a></li>
+                        {% if user.is_superuser %}
+                        <li class="list-group-item"><a href="{% url 'product-delete' object.pk %}">Delete</a></li>
+                        {% endif %}
+                        <li class="list-group-item"><a href="{% url 'product-home' %}"><i class="fa fa-reply text-danger"></i> Return</a></li>
+                    </ul>
+                </div>
+            </div>
+            <!--derived data-->
+            <div class="row">
+                <div class="col">
+                    <button type="button"
+                    class="list-group-item list-group-item-action bg-light text-center"
+                    aria-current="true">
+                <b>Derived Data Section</b>
+            </button>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item text-info">Sourced: Quantity Value</li>
+                        <li class="list-group-item text-success">Sold: Quantity Value</li>
+<!--                        <li class="list-group-item">C</li>-->
+<!--                        <li class="list-group-item">D</li>-->
+<!--                        <li class="list-group-item text-danger">E</li>-->
+                    </ul>
+                </div>
+            </div>
+        </div>
         <div class="col-sm-8">
             <div class="media">
               <img src="{{object.image.url}}"
@@ -47,37 +82,44 @@
                     </div>
                 </div>
         </div>
-        <div class="col-sm-4">
-            <!--Side menu-->
-            <div class="row mb-5 mt-3">
-                <div class="col bg-light">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item"><a href="{% url 'product-update' object.pk %}">Update</a></li>
-                        {% if user.is_superuser %}
-                        <li class="list-group-item"><a href="{% url 'product-delete' object.pk %}">Delete</a></li>
-                        {% endif %}
-                        <li class="list-group-item"><a href="{% url 'product-list' %}"><i class="fa fa-reply text-danger"></i> Return</a></li>
-                    </ul>
-                </div>
-            </div>
-            <!--derived data-->
-            <div class="row">
-                <div class="col">
-                    <button type="button"
-                    class="list-group-item list-group-item-action bg-light text-center"
-                    aria-current="true">
-                <b>Derived Data Section</b>
-            </button>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item text-info">Sourced: Quantity Value</li>
-                        <li class="list-group-item text-success">Sold: Quantity Value</li>
-<!--                        <li class="list-group-item">C</li>-->
-<!--                        <li class="list-group-item">D</li>-->
-<!--                        <li class="list-group-item text-danger">E</li>-->
-                    </ul>
-                </div>
-            </div>
-        </div>
+        
     </div>
 </div>
+
+<!-- Price Update Modal -->
+<div class="modal fade" id="priceReview" data-backdrop="static" tabindex="-1">
+    <form action="{% url 'product-detail' object.pk %}" method="post">{% csrf_token %}
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{object}}</h5>
+          <button type="button" 
+          class="close" 
+          data-dismiss="modal" 
+          aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <fieldset>
+              <p>Currently selling at <span class="text-primary">{{object.unit_price}}</span> from 
+                <span class="text-primary">{{object.source}}</span>. 
+                Category is 
+                <span class="text-primary">{{object.category}}</span></p>
+              <div class="form-group">
+                <label for="sell">Enter New Selling Price Below</label>  
+                <input type="number" 
+                class="form-control" 
+                name="selling" value="">
+              </div>
+          </fieldset>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary">Update</button>  
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+    </form>
+  </div>
 {% endblock content %}

@@ -1,9 +1,13 @@
-from django.shortcuts import render
+from django.db import models
+from django.shortcuts import redirect, render
+from django.urls.base import reverse_lazy
+from django.views.generic.base import TemplateView
 from .models import Product
 from delivery.models import DeliveryNote
 from django.views.generic import View
 from django.template.loader import get_template
 from django.http import HttpResponse
+from django.urls import reverse
 from django.db.models import F, Sum
 from django.contrib import messages
 from django.views.generic import (ListView,
@@ -207,3 +211,17 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         return False
 
+
+class PricePageView(LoginRequiredMixin, ListView):
+    model = Product
+    template_name = 'stock/prices.html'
+
+class PriceUpdate(LoginRequiredMixin, UpdateView):
+    model = Product
+    
+    # def get_success_url(self):
+    #     print(self.kwargs)
+    #     return super().get_success_url()
+    # def (self, request, *args, **kwargs):
+    #     print(kwargs)
+    #     return redirect(reverse_lazy('product-update'))
