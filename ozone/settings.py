@@ -56,8 +56,7 @@ INSTALLED_APPS = [
     'warehouse.apps.WarehouseConfig',
     'trade.apps.TradeConfig',
     'outlet.apps.OutletConfig',
-    'target.apps.TargetConfig',
-    
+    'target.apps.TargetConfig', 
 ]
 
 MIDDLEWARE = [
