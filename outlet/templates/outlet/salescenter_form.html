@@ -1,0 +1,26 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %} 
+<div class="container">
+    <form action="" method="post">{% csrf_token %}
+        <div class="row mt-3">
+            <div class="col">
+                    <legend>Create or Update Form</legend>
+                    <fieldset>
+                        {{form|crispy}}
+                    </fieldset>
+                
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col text-center">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+            <div class="col text-center">
+                <a type="button" class="btn btn-outline-dark" href="{% url 'sales-center-list' %}"><i class="fa fa-reply"></i></a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

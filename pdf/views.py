@@ -9,13 +9,25 @@ from pdf.utils import render_to_pdf
 from customer.models import CustomerProfile
 from apply.models import Applicant
 from django.contrib.auth.models import User
-from django.views.generic import (View, ListView, TemplateView)
+from django.views.generic import (View, ListView, DetailView, TemplateView)
 from staff.models import Employee, Payroll, EmployeeBalance
 from trade.models import TradeMonthly
 from stock.models import Product
 from django.db.models import Sum, F, Avg, Min, ExpressionWrapper, DecimalField
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+
+
+class Ozone:
+
+    def logo():
+        path = os.path.join(settings.BASE_DIR, 'customer/static/customer/logo.png')
+        with open(path, 'rb') as rf:
+            content = rf.read()
+        buf = BytesIO(content)
+        logo = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
+        buf.close()
+        return logo
 
 
 class CustomerView(LoginRequiredMixin, View):
@@ -203,14 +215,7 @@ class PayslipView(LoginRequiredMixin, TemplateView):
     template_name = 'pdf/pdf_payslip.html'
 
     def get(self, request, *args, **kwargs):
-
-        path = os.path.join(settings.BASE_DIR, 'customer/static/customer/logo.png')
-        with open(path, 'rb') as rf:
-            content = rf.read()
-        buf = BytesIO(content)
-        logo = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
-        buf.close()
-
+        
         user_input = request.GET['payCode']
     
         try:
@@ -234,7 +239,7 @@ class PayslipView(LoginRequiredMixin, TemplateView):
                 'period_month': f"{month}, {year}",
                 'paycode': request.GET['payCode'],
                 'person': person,
-                'logo_image': logo,
+                'logo_image': Ozone.logo(),
                 'gratuity': Cr - Dr
             }
             pdf = render_to_pdf(self.template_name, context)
@@ -243,7 +248,7 @@ class PayslipView(LoginRequiredMixin, TemplateView):
                 response['Content-Disposition'] = f'filename="payslip-{user_input}.pdf"'
                 return response
             return HttpResponse(f"""<div style=padding:20;><h1>Payslip {user_input} do not exist</h1>
-<p><a href='/home/'>Return Home</a></p></div>""")
+                <p><a href='/home/'>Return Home</a></p></div>""")
         except:
             return HttpResponse(
                 """<div style="padding:20;">
@@ -271,3 +276,45 @@ class StockViewList(LoginRequiredMixin, ListView):
             return response
         return HttpResponse("""No such file
         <a href="/home/">Home</a>""")
+
+
+        
+
+class ProductBySource(LoginRequiredMixin, TemplateView):
+    template_name = 'pdf/current_price.html'
+
+    def get(self, request, *args, **kwargs):
+        products = Product.objects.filter(active=True)
+        if kwargs['source'] == 'Others':
+            products = products.exclude(source='NB').exclude(source='GN').exclude(source='IB')
+        elif kwargs['source'] == 'All':
+            pass
+        else:
+            products = products.filter(source=kwargs['source'])
+        
+        if kwargs['source'] == 'NB':
+            title = "Nigerian Breweries"
+        elif kwargs['source'] == 'GN':
+            title = 'Guinness Nigeria Plc'
+        elif kwargs['source'] == 'IB':
+            title = 'International Breweries'
+        elif kwargs['source'] == 'Others':
+            title = 'Others'
+        else:
+            title = 'All'
+
+        context = {
+            'products': products,
+            'logo_image': Ozone.logo(),
+            'title': title 
+            
+        }
+        pdf = render_to_pdf(self.template_name, context_dict=context)
+        
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            today = datetime.date.today().strftime('%d%m%Y')
+            response['Content-Disposition'] = f'filename="{kwargs.get("source").lower()}-price-{today}.pdf"'
+            return response
+        return HttpResponse('Error')
+    

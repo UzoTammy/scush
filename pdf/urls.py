@@ -15,3 +15,7 @@ urlpatterns = [
 urlpatterns += [
     path('pdf/policies/docs/', PoliciesDocView.as_view(), name='policies-docs'),
 ]
+
+urlpatterns += [
+    path('price/<str:source>/', ProductBySource.as_view(), name='pdf-prices')
+]

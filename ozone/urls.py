@@ -43,6 +43,8 @@ urlpatterns = [
     path('staff/', include('staff.urls')),
     path('trade/', include('trade.urls')),
     path('', include('mails.urls')),
+    path('outlet/', include('outlet.urls')),
+    path('target/', include('target.urls')),
     path('register/', user_views.register, name='register'),
     path('register/<slug:token>/', user_views.register, name='register'),
     path('profile/', user_views.profile, name='profile'),

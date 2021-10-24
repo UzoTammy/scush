@@ -19,7 +19,18 @@
                     <li class="list-group-item">
                         <a href="{% url 'delivery-home' %}">Deliveries</a>
                     </li>
-                    
+                
+                    <li class="list-group-item">
+                        Products by Source (PDF)
+                        <ol>
+                            <li><a href="{% url 'pdf-prices' 'NB' %}">NB</a></li>
+                            <li><a href="{% url 'pdf-prices' 'GN' %}">GN</a></li>
+                            <li><a href="{% url 'pdf-prices' 'IB' %}">IB</a></li>
+                            <li><a href="{% url 'pdf-prices' 'Others' %}">Others</a></li>
+                            <li><a href="{% url 'pdf-prices' 'All' %}">All</a></li>
+                        </ol>
+                        
+                    </li>
                     <li class="list-group-item">
                         <a href="{% url 'home' %}">Home</a>
                     </li>

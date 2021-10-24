@@ -1,0 +1,40 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %} 
+<div class="container">
+    <div class="row mt-3">
+        <div class="col">
+            <table class="table" data-toggle="table">
+                <caption>List of Sales Center</caption>
+                <thead>
+                    <tr class="text-center bg-primary text-white">
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Sales Center Manager</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                    <tr class="text-center">
+                        <td>{{object.pk|zeropadding:2}}</td>
+                        <td><a href="{% url 'sales-center-detail' object.pk %}">{{object.name}}</a> </td>
+                        <td>{{object.address}}</td>
+                        <td>{{object.staff}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col text-center">
+            <a type="button" href="{% url 'sales-center-create' %}">Create</a>
+        </div>
+        <div class="col text-center">
+            <a type="button" href="{% url 'home' %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock %}

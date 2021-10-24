@@ -1,5 +1,5 @@
 from django.db import models
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls.base import reverse_lazy
 from django.views.generic.base import TemplateView
 from .models import Product
@@ -218,10 +218,9 @@ class PricePageView(LoginRequiredMixin, ListView):
 
 class PriceUpdate(LoginRequiredMixin, UpdateView):
     model = Product
-    
-    # def get_success_url(self):
-    #     print(self.kwargs)
-    #     return super().get_success_url()
-    # def (self, request, *args, **kwargs):
-    #     print(kwargs)
-    #     return redirect(reverse_lazy('product-update'))
+
+    def post(self, request, *args, **kwargs):
+        product = get_object_or_404(Product, pk=kwargs['pk'])
+        product.unit_price = request.POST['selling']
+        product.save()
+        return redirect(product)

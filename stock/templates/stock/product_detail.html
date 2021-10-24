@@ -87,8 +87,12 @@
 </div>
 
 <!-- Price Update Modal -->
-<div class="modal fade" id="priceReview" data-backdrop="static" tabindex="-1">
-    <form action="{% url 'product-detail' object.pk %}" method="post">{% csrf_token %}
+<div class="modal fade" 
+id="priceReview" 
+data-backdrop="static"
+role="dialog" 
+tabindex="-1">
+    <form action="{% url 'price-update' object.pk %}" method="post">{% csrf_token %}
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -115,8 +119,8 @@
           </fieldset>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-primary">Update</button>  
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Update</button>  
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>

@@ -1,0 +1,30 @@
+{% extends 'users/base.html' %}
+
+{% block content %} 
+<div class="container">
+    <div class="row mt-3">
+        <div class="col">
+            <h3>Detailed View - {{object}}</h3>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <div class="list-group">
+                <ul>
+                    <li class="list-group-item">Name: {{object.name}}</li>
+                    <li class="list-group-item">Address: {{object.address}}</li>
+                    <li class="list-group-item">Sales Center Manager: {{object.staff}}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col text-center">
+            <a type="button" href="{% url 'sales-center-update' object.pk %}">Update</a>
+        </div>
+        <div class="col text-center">
+            <a type="button" href="{% url 'sales-center-list' %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock %}
