@@ -1,0 +1,44 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %} 
+<div class="container">
+    <div class="row mt-3">
+        <div class="col">
+            <table class="table" data-toggle="table">
+                <caption>Sales Target</caption>
+                <thead>
+                    <tr class="text-center bg-primary text-white">
+                        <th>ID</th>
+                        <th>Period</th>
+                        <th>Date Created</th>
+                        <th>Target</th>
+                        <th>Achieved</th>
+                        <th>Sales Center</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                    <tr class="text-center">
+                        <td>{{object.pk|zeropadding:2}}</td>
+                        <td><a href="{% url 'sales-detail' object.pk %}">{{object.period}}</a> </td>
+                        <td>{{object.date_created}}</td>
+                        <td>{{object.target}}</td>
+                        <td>{{object.achieved}}</td>
+                        <td>{{object.sales_center}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col text-center">
+            <a type="button" href="{% url 'sales-create' %}">Create</a>
+        </div>
+        <div class="col text-center">
+            <a type="button" href="{% url 'home' %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock %}
