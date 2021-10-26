@@ -566,10 +566,6 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         today = datetime.date.today()
-        context['months'] = mytools.Period.full_months
-        context['current_month'] = str(today.month).zfill(2)
-        context['years'] = (str(today.year-1), str(today.year), str(today.year+1))
-
         
         payroll = Payroll.objects.all()
         if payroll.exists():
@@ -580,41 +576,23 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
             year_in_period = int(last.period.split('-')[0])
             
             context['last_period_generated'] = f'{calendar.month_name[month_in_period]}, {year_in_period}'
-            """Get the last six recent periods into a list object, starting from the period of 
-            the last record in payroll"""
-            periods = [last.period]
-            for i in range(3):
-                payroll_periods = mytools.Period(year_in_period, month_in_period - i)
-                periods.append(payroll_periods.previous())
-            """From the list of periods, get the name of the months"""
-            recent_months = list()
-            for period in periods:
-                year = int(period.split('-')[0])
-                month = int(period.split('-')[1])
-                days = calendar.mdays[month]
-                recent_months.append((year, datetime.date(year, month, days).strftime('%B')))
-
-            all_periods_queryset = set(i.period for i in Payroll.objects.all())
-            all_periods_dict = list({'year': i.split('-')[0],
-                                     'month': i.split('-')[1],
-                                     'month_in_words': mytools.Period.full_months[i.split('-')[1]]
-                                     } for i in all_periods_queryset)
-            period_by_year = itertools.groupby(all_periods_dict, lambda p: p['year'])
-            years, months = list(), list()
-            for key, group in period_by_year:
-                years.append(key)
-                for year in group:
-                    months.append(year['month_in_words'])
-
-            context['recent_months'] = recent_months
+            context['next_period'] = mytools.Period(year_in_period, month_in_period).next()
             context['payroll_current_period'] = Payroll.objects.last().period
+        else:
+            context['next_period'] = f'{today.year}-{str(today.month).zfill(2)}'
+        next_month = context['next_period'].split('-')[1]
+        the_year = context['next_period'].split('-')[0]
+
+        context['next_month'] = mytools.Period.full_months[next_month]
+        context['the_year'] = the_year
+
         return context
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-    
+
         if request.GET:
-            period = f"{request.GET['year']}-{request.GET['month']}"
+            period = request.GET['period']
             return redirect('generate-payroll', period=period)
         return render(request, self.template_name, context=context)
 

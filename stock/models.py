@@ -1,6 +1,8 @@
 from django.db import models
 from djmoney.models.fields import MoneyField
 from django.shortcuts import reverse
+from django.utils import timezone
+
 
 SOURCES = [('NB', 'NBPlc'),
            ('GN', 'GNPlc'),
@@ -78,7 +80,9 @@ class Product(models.Model):
                                          ('VALUE', 'Absolute Value'),
                                          ('RATIO', 'Qty Ratio')
                                      ], default='PP')
+    date_modified = models.DateTimeField(default=timezone.now)
 
+    
     def __str__(self):
         return f"{self.name} {self.parameter} {self.unit_type}~{self.size_value}{self.size_value_unit}x{self.quantity_per_pack}{self.pack_type}"
 
@@ -90,3 +94,6 @@ class Product(models.Model):
 
     def percentage_margin(self):
         return 100*(self.unit_price/self.cost_price - 1)
+
+
+    

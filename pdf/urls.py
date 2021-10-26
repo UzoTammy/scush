@@ -1,5 +1,5 @@
 from django.urls import path
-from pdf.views import *
+from .views import *
 
 
 urlpatterns = [
@@ -17,5 +17,6 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path('price/<str:source>/', ProductBySource.as_view(), name='pdf-prices')
+    path('price/<str:source>/', ProductBySource.as_view(), name='pdf-prices'),
+    path('change/price/', PriceChange.as_view(), name='pdf-price-change')
 ]

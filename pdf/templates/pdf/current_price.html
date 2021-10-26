@@ -79,9 +79,7 @@
         <div class="row">
             <div class="col">
                 <table class="table caption-top">
-                    {%with products|first as first %}
-                    <caption></caption>
-                    {% endwith%}
+                    
                     <thead>
                     <tr>
                         <th width="40px" scope="col">ID</th>
@@ -89,6 +87,7 @@
                         <th scope="col">Source</th>
                         <th scope="col">Category</th>
                         <th scope="col">Price (NGN)</th>
+    
                     </tr>
                     </thead>
                     <tbody>
@@ -99,6 +98,7 @@
                         <td style="text-align:center;">{{stock.source}}</td>
                         <td style="text-align:center;">{{stock.category}}</td>
                         <td style="text-align:right;">{{stock.unit_price.amount}}</td>
+                        
                     </tr>
                     {% endfor %}
 

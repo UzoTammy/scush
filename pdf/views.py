@@ -16,7 +16,7 @@ from stock.models import Product
 from django.db.models import Sum, F, Avg, Min, ExpressionWrapper, DecimalField
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
-
+from django.utils import timezone
 
 class Ozone:
 
@@ -278,7 +278,27 @@ class StockViewList(LoginRequiredMixin, ListView):
         <a href="/home/">Home</a>""")
 
 
+class PriceChange(LoginRequiredMixin, TemplateView):
+    template_name = 'pdf/current_price.html'
+
+    def get(self, request, *args, **kwargs):
+        products = Product.objects.filter(active=True)
+        products = products.filter(date_modified__date=timezone.now())
         
+        context = {
+            'products': products,
+            'logo_image': Ozone.logo(),
+            'title': 'Recently Updated Prices'
+        }
+        pdf = render_to_pdf(self.template_name, context_dict=context)
+        
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            today = datetime.date.today().strftime('%d%m%Y')
+            response['Content-Disposition'] = f'filename="change-price-{today}.pdf"'
+            return response
+        return HttpResponse('Error')
+    
 
 class ProductBySource(LoginRequiredMixin, TemplateView):
     template_name = 'pdf/current_price.html'
@@ -318,3 +338,4 @@ class ProductBySource(LoginRequiredMixin, TemplateView):
             return response
         return HttpResponse('Error')
     
+
