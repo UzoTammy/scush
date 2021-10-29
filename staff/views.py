@@ -549,10 +549,6 @@ class DebitNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             return True
         return False
 
-    def post(self, request, *args, **kwargs):
-        messages.success(request, 'Saved Successfully !!!')
-        return redirect(self.get_success_url())
-
 
 class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'staff/payroll/salary.html'
@@ -568,6 +564,7 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
         today = datetime.date.today()
         
         payroll = Payroll.objects.all()
+
         if payroll.exists():
             last = Payroll.objects.last()
 

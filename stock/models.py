@@ -93,6 +93,8 @@ class Product(models.Model):
         return self.unit_price - self.cost_price
 
     def percentage_margin(self):
+        if self.cost_price == 0:
+            return None
         return 100*(self.unit_price/self.cost_price - 1)
 
 

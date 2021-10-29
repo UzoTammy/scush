@@ -19,19 +19,7 @@
                     <i class="fa fa-plus text-success"></i>
                     Add New Product
                 </a>
-                    <a href="#"
-                       class="btn btn-dark btn-sm text-right">
-                        <i class="fa fa-plus text-success"></i>
-                    </a>
-                    <a href="#"
-                       class="btn btn-dark btn-sm text-right">
-                        <i class="fa fa-plus text-success"></i>
-                    </a>
-                    <a href="#"
-                       class="btn btn-dark btn-sm text-right">
-                        <i class="fa fa-plus text-success"></i>
-                    </a>
-<!--                </div>-->
+                    
             </div>
                     </div>
                 </caption>
@@ -73,7 +61,11 @@
 
                 </tfoot>
             </table>
-            <p>{{total_margin.total_margin}}</p>
+            <div class="row">
+                <div class="col">
+                    <a class="btn btn-outline-dark float-right" href="{% url 'product-home' %}"><i class="fa fa-reply"></i></a>
+                </div>
+            </div>
         </div>
 </div>
 

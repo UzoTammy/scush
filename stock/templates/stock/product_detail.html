@@ -19,7 +19,7 @@
                         {% if user.is_superuser %}
                         <li class="list-group-item"><a href="{% url 'product-delete' object.pk %}">Delete</a></li>
                         {% endif %}
-                        <li class="list-group-item"><a href="{% url 'product-home' %}"><i class="fa fa-reply text-danger"></i> Return</a></li>
+                        <li class="list-group-item"><a href="{% url 'product-list' %}"><i class="fa fa-reply"></i> Return</a></li>
                     </ul>
                 </div>
             </div>

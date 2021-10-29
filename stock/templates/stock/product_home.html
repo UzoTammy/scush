@@ -22,20 +22,20 @@
                 
                     <li class="list-group-item">
                         Products by Source (PDF)
-                        <ol>
+                        <ul>
                             <li><a href="{% url 'pdf-prices' 'NB' %}">NB</a></li>
                             <li><a href="{% url 'pdf-prices' 'GN' %}">GN</a></li>
                             <li><a href="{% url 'pdf-prices' 'IB' %}">IB</a></li>
                             <li><a href="{% url 'pdf-prices' 'Others' %}">Others</a></li>
                             <li><a href="{% url 'pdf-prices' 'All' %}">All</a></li>
-                        </ol>
+                        </ul>
                         
                     </li>
                     <li class="list-group-item">
                         <a href="{% url 'pdf-price-change' %}">Today's Price Update (PDF)</a>
                     </li>
                     <li class="list-group-item">
-                        <a href="{% url 'home' %}">Home</a>
+                        <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
                     </li>
                 </ul>
             </div>
