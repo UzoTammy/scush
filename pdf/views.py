@@ -5,6 +5,7 @@ import base64
 import random
 from io import BytesIO
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from pdf.utils import render_to_pdf
 from customer.models import CustomerProfile
 from apply.models import Applicant
@@ -286,10 +287,16 @@ class PriceChange(LoginRequiredMixin, TemplateView):
         products = Product.objects.filter(active=True)
         products = products.filter(date_modified__date=timezone.now())
         
+        try:
+            with open('extrafiles/price-update-footnote.txt', 'r') as rf:
+                content = rf.read()
+        except:
+            content = 'Footnote file not found'
         context = {
             'products': products,
             'logo_image': Ozone.logo(),
-            'title': 'Recently Updated Prices'
+            'title': 'Recently Updated Prices',
+            'price_update_footnote': content
         }
         pdf = render_to_pdf(self.template_name, context_dict=context)
         
@@ -303,6 +310,9 @@ class PriceChange(LoginRequiredMixin, TemplateView):
 
 class ProductBySource(LoginRequiredMixin, TemplateView):
     template_name = 'pdf/current_price.html'
+
+    # def footnote():
+    #     with open()
 
     def get(self, request, *args, **kwargs):
         products = Product.objects.filter(active=True)
@@ -344,8 +354,9 @@ class TodayPostPdf(LoginRequiredMixin, TemplateView):
     template_name = 'pdf/today_post.html'
 
     def get(self, request, *args, **kwargs):
+        posts = Post.objects.filter(date_created=datetime.date.today())
         context = {
-            'posts': Post.objects.filter(date_created=datetime.date.today()),
+            'posts': posts.order_by('-pk'),
             'logo_image': Ozone.logo()
         }
         pdf = render_to_pdf(self.template_name, context_dict=context)
@@ -357,3 +368,10 @@ class TodayPostPdf(LoginRequiredMixin, TemplateView):
             return response
         return HttpResponse('Error')
     
+
+class PriceUpdateFootNote(View):
+    def get(self, request, *args, **kwargs):
+        content = request.GET['footnote']
+        with open('extrafiles/price-update-footnote.txt', 'w') as wf:
+            wf.write(content)
+        return redirect('product-home')

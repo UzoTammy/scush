@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container">
     <div class="row mt-2">
-        <div class="col-6">
+        <div class="col-sm-6">
             <h5>{{object.title}}</h5>
             <small class="text-muted">Created by {{object.author}} on {{object.date_created}} <br> reference number {{object.pk|zeropadding:3}}</small>
             <p>{{object.content}}</p>

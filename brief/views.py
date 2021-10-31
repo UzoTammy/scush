@@ -8,6 +8,7 @@ from .models import Post
 class PostListView(ListView):
     model = Post
     ordering = ['-pk']
+    paginate_by = 4
 
 
 class PostCreateView(CreateView):

@@ -1,17 +1,12 @@
 import datetime
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.views.generic.base import TemplateView
 from .models import Product
 from delivery.models import DeliveryNote
 from django.views.generic import View
 from django.template.loader import get_template
 from django.http import HttpResponse
-# from django.db import models
-# from django.urls.base import reverse_lazy
-# from django.views.generic.base import TemplateView
-# from django.urls import reverse
-# from django.db.models import F, Sum
-# from django.contrib import messages
 from django.views.generic import (ListView,
                                   DetailView,
                                   CreateView,
@@ -231,3 +226,5 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
         product.date_modified = timezone.now()
         product.save()
         return redirect(product)
+
+
