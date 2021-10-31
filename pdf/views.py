@@ -13,6 +13,7 @@ from django.views.generic import (View, ListView, DetailView, TemplateView)
 from staff.models import Employee, Payroll, EmployeeBalance
 from trade.models import TradeMonthly
 from stock.models import Product
+from brief.models import Post
 from django.db.models import Sum, F, Avg, Min, ExpressionWrapper, DecimalField
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
@@ -339,3 +340,20 @@ class ProductBySource(LoginRequiredMixin, TemplateView):
         return HttpResponse('Error')
     
 
+class TodayPostPdf(LoginRequiredMixin, TemplateView):
+    template_name = 'pdf/today_post.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'posts': Post.objects.filter(date_created=datetime.date.today()),
+            'logo_image': Ozone.logo()
+        }
+        pdf = render_to_pdf(self.template_name, context_dict=context)
+        
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            today = datetime.date.today().strftime('%d%m%Y')
+            response['Content-Disposition'] = f'filename="daily-brief-{today}.pdf"'
+            return response
+        return HttpResponse('Error')
+    

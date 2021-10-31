@@ -20,3 +20,7 @@ urlpatterns += [
     path('price/<str:source>/', ProductBySource.as_view(), name='pdf-prices'),
     path('change/price/', PriceChange.as_view(), name='pdf-price-change')
 ]
+
+urlpatterns += [
+    path('daily/post/', TodayPostPdf.as_view(), name='pdf-daily-post')
+]

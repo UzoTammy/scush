@@ -1,4 +1,5 @@
 {% extends 'users/base.html' %}
+{% load custom_templates %}
 
 {% block content %}
 <div class="container-fluid">
@@ -21,26 +22,29 @@
                 <thead>
                     <tr class="text-center">
                         <th>Title</th>
+                        <th>Code</th>
+                        <th>Staff</th>
                         <th>Period</th>
                         <th>Date</th>
                         <th>Description</th>
                         <th>Value</th>
-                        <th>Type</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for record in object_list %}
                     <tr class="text-center">
-                        <td><a href="{% url 'employee-balance-detail' record.id %}">{{record.title}}</a></td>
+                        <td>{{record.title}}</td>
+                        <td>{{record.id|zeropadding:4}}</td>
+                        <th><a href="{% url 'employee-balance-detail' record.id %}">{{record.staff}}</a></th>
                         <td>{{record.period}}</td>
                         <td>{{record.date|date:'d-m-Y'}}</td>
                         <td>{{record.description}}</td>
                         {% if record.value_type == 'Dr' %}
-                        <td class='text-right text-danger'>{{record.value.amount}}</td>
+                        <td class='text-right text-danger'>{{record.value.amount}}{{record.value_type}}</td>
                         {% else %}
-                        <td class='text-right'>{{record.value.amount}}</td>
+                        <td class='text-right'>{{record.value.amount}}{{record.value_type}}</td>
                         {% endif %}
-                        <td>{{record.value_type}}</td>
+                        <!-- <td>{{record.value_type}}</td> -->
                     </tr>
                     {% endfor %}
                 </tbody>

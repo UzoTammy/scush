@@ -8,7 +8,7 @@ from django.http.response import HttpResponse, HttpResponseRedirect
 from .forms import TradeMonthlyForm, TradeDailyForm
 from django.shortcuts import redirect, render
 from .models import *
-from staff.models import Employee, Payroll
+from staff.models import Employee, EmployeeBalance, Payroll
 from stock.models import Product
 from customer.models import CustomerProfile
 from django.urls.base import reverse_lazy
@@ -712,4 +712,6 @@ class DashBoardView(TemplateView):
         context['salaries'] = Payroll.objects.aggregate(Sum('net_pay'))['net_pay__sum']
         from warehouse.models import Stores
         context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
+        context['gratuity_value'] = EmployeeBalance.objects.aggregate(Sum('value'))['value__sum']
+        # context['gratuity_number'] = EmployeeBalance.objects.count()
         return render(request, self.template_name, context)

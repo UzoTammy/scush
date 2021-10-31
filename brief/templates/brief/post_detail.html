@@ -1,0 +1,17 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-2">
+        <div class="col-6">
+            <h5>{{object.title}}</h5>
+            <small class="text-muted">Created by {{object.author}} on {{object.date_created}} <br> reference number {{object.pk|zeropadding:3}}</small>
+            <p>{{object.content}}</p>
+        
+            <a class="btn btn-primary btn-sm" href="{% url 'post-update'  object.pk %}">Update</a>
+            <a class="btn btn-outline-dark float-right btn-sm" href="{% url 'post-list' %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

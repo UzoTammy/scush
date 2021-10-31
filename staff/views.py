@@ -62,7 +62,7 @@ outstanding is the amount the company is willing to reserve for the staff
     def regime(salary_payable, salary_less_tax):
         if salary_payable > 2 * salary_less_tax:
             """condition 1: if what your earned is greater than twice 
-            your salary pay 150% of salary"""
+            your salary. pay 150% of salary"""
             deduction = Money(0, 'NGN')
             outstanding = salary_payable - 1.5 * salary_less_tax
             salary_payable = 1.5 * salary_less_tax
@@ -95,7 +95,7 @@ outstanding is the amount the company is willing to reserve for the staff
             pay, get less than your gross pay"""
             deduction = salary_payable
             outstanding = Money(0, 'NGN')
-            salary_payable = salary_less_tax - salary_payable
+            salary_payable = Money(0, 'NGN') #salary_less_tax - salary_payable
         else:
             """condition 5: Too bad that is when amount to pay goes negative,
             cease and deduct gross salary"""
@@ -694,6 +694,7 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             # implement salary regime function to obtain net pay, deductions
             # and outstanding
             result = Salary.regime(amount_to_pay, employee.gross_pay())
+            
 
             record['code'] = employee.id
             record['staff'] = employee.fullname()
@@ -1403,7 +1404,7 @@ class TaxList(ListView):
 
 class EmployeeBalanceListView(ListView):
     model = EmployeeBalance
-    ordering = ['-date']
+    ordering = ['-date', 'pk']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'trade.apps.TradeConfig',
     'outlet.apps.OutletConfig',
     'target.apps.TargetConfig', 
+    'brief.apps.BriefConfig',
 ]
 
 MIDDLEWARE = [

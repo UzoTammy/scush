@@ -1,0 +1,29 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+<form action="" method="post">
+    {% csrf_token %}
+    <legend>Add Post</legend>
+    <fieldset>
+    <div class="row mt-3">
+        <div class="col">
+            {{form|crispy}}
+        </div>
+    </div>
+    </fieldset>
+    <div class="row mt-3 mb-3">
+        <div class="col">
+            <button type="submit" 
+            class="btn btn-primary">Submit</button>
+            <a class="btn btn-outline-dark float-right" 
+            href="{% url 'post-list' %}">
+                <i class="fa fa-reply"></i>
+            </a>
+        </div>
+    </div>
+</form>    
+
+</div>
+{% endblock content %}
