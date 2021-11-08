@@ -1,8 +1,10 @@
 from django.db import models
 from django.db.models import fields
+from django.http.response import HttpResponse
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, TemplateView
 from .models import Post
+from staff.models import Employee
 
 
 class PostListView(ListView):
@@ -13,7 +15,15 @@ class PostListView(ListView):
 
 class PostCreateView(CreateView):
     model = Post
-    fields = '__all__'
+    fields = ('title', 'content')
+
+    def form_valid(self, form):
+        try:
+            id = int(self.request.user.username.split('-')[1])
+        except:
+            id = Employee.active.first().id
+        form.instance.author = Employee.active.get(id=id)
+        return super().form_valid(form)
 
 
 class PostDetailView(DetailView):

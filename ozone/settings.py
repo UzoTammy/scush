@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'outlet.apps.OutletConfig',
     'target.apps.TargetConfig', 
     'brief.apps.BriefConfig',
+    'material.apps.MaterialConfig',
 ]
 
 MIDDLEWARE = [

@@ -46,6 +46,10 @@ urlpatterns = [
     path('outlet/', include('outlet.urls')),
     path('target/', include('target.urls')),
     path('post/', include('brief.urls')),
+    path('users/', include('users.urls')),
+    path('material/', include('material.urls')),
+    path('model/choices/', user_views.add_choice, name='xx'),
+
 
     # users
     path('register/', user_views.register, name='register'),
@@ -69,3 +73,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

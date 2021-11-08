@@ -712,6 +712,9 @@ class DashBoardView(TemplateView):
         context['salaries'] = Payroll.objects.aggregate(Sum('net_pay'))['net_pay__sum']
         from warehouse.models import Stores
         context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
-        context['gratuity_value'] = EmployeeBalance.objects.aggregate(Sum('value'))['value__sum']
+        
+        positive_grat = EmployeeBalance.objects.filter(value_type='Cr').aggregate(Sum('value'))['value__sum']
+        negative_grat = EmployeeBalance.objects.filter(value_type='Dr').aggregate(Sum('value'))['value__sum']
+        context['gratuity_value'] = positive_grat - negative_grat
         # context['gratuity_number'] = EmployeeBalance.objects.count()
         return render(request, self.template_name, context)

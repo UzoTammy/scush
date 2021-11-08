@@ -7,6 +7,19 @@ from apply.models import Applicant
 from djmoney.money import Money
 import datetime
 from ozone import mytools
+import json
+
+
+with open('extrafiles/choices.json') as jsf:
+        content = json.load(jsf)
+
+BANKS = sorted(list((i, i) for i in content['banks']))
+
+BRANCHES = sorted(list((i, i) for i in content['branches']))
+
+POSITIONS = sorted(list((i, i) for i in content['positions']))
+
+DEPARTMENTS = sorted(list((i, i) for i in content['departments']))
 
 
 class ActiveEmployeeManager(models.Manager):
@@ -17,46 +30,12 @@ class ActiveEmployeeManager(models.Manager):
 
 class Employee(models.Model):
 
-    DUTY_CHOICE = [('Nil', 'Nil'),
-                   ('Leave', 'Leave'),
-                   ('Training', 'Training'),
-                   ('Suspension', 'Suspension'),
-                   ('Terminated', 'Terminated')]
-    BANKS = [('UBA', 'UBA'),
-             ('GTB', "GTB"),
-             ('FCMB', "FCMB"),
-             ('First Bank', 'First Bank'),
-             ('Union Bank', 'Union Bank'), ('Access', 'Access'), ('Sterling', 'Sterling'), ('Polaris', 'Polaris'),
-             ('Heritage', 'Heritage'), ('Stanbic', 'Stanbic'), ('Fidelity', 'Fidelity'), ('Ecobank', 'Ecobank'),
-             ('Zenith', 'Zenith'), ('Unity', 'Unity'), ('Wema', 'Wema')
-             ]
-    POSITIONS = [["Cashier", "Cashier"],
-                 ["Store-Keeper", "Store-Keeper"],
-                 ["Stock-Keeper", "Stock-Keeper"],
-                 ["Accounts-Clerk", "Accounts-Clerk"],
-                 ["Sales-Clerk", "Sales-Clerk"],
-                 ["Accountant", "Accountant"],
-                 ["HRM", "HRM"],
-                 ["SCM", "SCM"],
-                 ["GSM", "GSM"],
-                 ["MD", "Managing Director"],
-                 ["Analyst", "Analyst"],
-                 ["Sales Rep", "Sales Rep"],
-                 ["Marketing Manager", "Marketing Manager"],
-                 ['Driver', 'Driver']
-                 ]
-    BRANCHES = [("HQ", "HQ"), ("FG", "FG"), ("Genesis", "Genesis"),
-                ('Stardom', 'Stardom'), ('Vino', 'Vino'), ('Island', 'Island'),
-                ('Badagry', 'Badagry')]
-    DEPARTMENTS = [("Sales", "Sales"),
-                   ('Marketing', 'Marketing'),
-                   ('Admin', 'Admin'),
-                   ('Accounts', 'Accounts'),
-                   ("HR", "HR")]
-
-    size = lambda BANKS: BANKS[1]
-    BANKS.sort(key=size)
-
+    # DUTY_CHOICE = [('Nil', 'Nil'),
+                #    ('Leave', 'Leave'),
+                #    ('Training', 'Training'),
+                #    ('Suspension', 'Suspension'),
+                #    ('Terminated', 'Terminated')]
+    
     staff = models.ForeignKey(Applicant, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='staff_pics', blank=True)
     date_employed = models.DateField(default=timezone.now,
@@ -66,13 +45,10 @@ class Employee(models.Model):
     official_mobile = models.CharField(max_length=11, blank=True, null=True)
     is_management = models.BooleanField(default=False)
     is_confirmed = models.BooleanField(default=False)
-    position = models.CharField(max_length=30, null=True, blank=True,
-                                choices=POSITIONS)
-    department = models.CharField(max_length=30, null=True, blank=True,
-                                  choices=DEPARTMENTS)
-    branch = models.CharField(max_length=30, null=True, blank=True,
-                              choices=BRANCHES)
-    banker = models.CharField(max_length=20, choices=BANKS, default='UBA')
+    position = models.CharField(max_length=30, null=True, blank=True)
+    department = models.CharField(max_length=30, null=True, blank=True)
+    branch = models.CharField(max_length=30, null=True, blank=True)
+    banker = models.CharField(max_length=20)
     account_number = models.CharField(max_length=10)
     basic_salary = MoneyField(max_digits=8,
                               decimal_places=2,
@@ -208,9 +184,9 @@ class Reassign(models.Model):
                                               ('C', 'Confirmed')]
                                      )
     from_position = models.CharField(max_length=30, null=True, blank=True)
-    to_position = models.CharField(max_length=30, choices=Employee.POSITIONS, null=True, blank=True)
+    to_position = models.CharField(max_length=30, choices=POSITIONS, null=True, blank=True)
     from_branch = models.CharField(max_length=30, null=True, blank=True)
-    to_branch = models.CharField(max_length=30, choices=Employee.BRANCHES, null=True, blank=True)
+    to_branch = models.CharField(max_length=30, choices=BRANCHES, null=True, blank=True)
     start_date = models.DateField(default=timezone.now)
     duration = models.SmallIntegerField(default=0)
     remark = models.CharField(max_length=100)

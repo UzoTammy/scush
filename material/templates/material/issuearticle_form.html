@@ -1,0 +1,26 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row p-3 d-flex justify-content-center">
+        <div class="col-sm-8 shadow">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <legend class="text-warning">Approve & Issue Article</legend>
+                <fieldset class="bg-light">
+                    <div class="ml-2">{{ form|crispy }}</div>
+                </fieldset>
+                <div class="form-group p-2">
+                    <button class="btn btn-outline-primary" type="submit">Approve</button>
+                    <a href="{% url 'article-list' %}" class="btn btn-outline-dark float-right">
+                        <i class="fa fa-reply"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

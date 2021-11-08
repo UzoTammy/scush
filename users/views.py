@@ -1,9 +1,12 @@
+from django.db import models
 from django.shortcuts import render, redirect
 from .forms import UserRegisterForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import UserUpdateForm, ProfileUpdateForm
-
+import json
+from django.views.generic import ListView
+from django.contrib.auth.models import User
 
 def allow_admin(user):
     if user.groups.filter(name='Administrator').exists():
@@ -56,3 +59,37 @@ def profile(request):
         'p_form': p_form,
     }
     return render(request, 'users/profile.html', context)
+
+
+@login_required
+def add_choice(request):
+    with open('extrafiles/choices.json') as rf:
+        content = json.load(rf)
+    if request.GET['choiceValue'] != '':
+        if request.GET['choiceType'] == 'bank':
+            banks = content['banks']
+            banks.append(request.GET['choiceValue'])
+            content['banks'] = banks
+        elif request.GET['choiceType'] == 'branch':
+            branches = content['branches']
+            branches.append(request.GET['choiceValue'])
+            content['branches'] = branches
+        elif request.GET['choiceType'] == 'department':
+            departments = content['departments']
+            departments.append(request.GET['choiceValue'])
+            content['departments'] = departments
+        else:
+            positions = content['positions']
+            positions.append(request.GET['choiceValue'])
+            content['positions'] = positions
+
+        with open('extrafiles/choices.json', 'w') as wf:
+            json.dump(content, wf, indent=2)
+    else:
+        messages.info(request, 'no choice value to add')
+    return redirect('home')
+
+
+class UsersListView(ListView):
+    model = User
+    

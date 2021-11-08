@@ -1,0 +1,41 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <table class="table" data-toggle="table">
+                <caption>Users</caption>
+                <thead><tr>
+                    <th>User</th>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Fist Name</th>
+                    <th>Last Name</th>
+                    <th>Last Login</th>
+                    <th>Date Joined</th>
+                </tr>
+                </thead>
+            {% for user in user_list %}
+               <tr>
+                   <td>{{user}}: 
+                       <span class="text-info">{{user.is_active|yesno:'Active, Not Active'}}</span>
+                       <span class="text-info">{{user.is_staff|yesno:'Staff, Not Staff'}}</span>
+                       <span class="text-info">{{user.is_superuser|yesno:'SU, Not SU'}}</span>
+                    </td>
+                    <td>{{user.id}}</td>
+                   <td>{{user.email}}</td>
+                   <td>{{user.first_name}}</td>
+                   <td>{{user.last_name}}</td>
+                   <td>{{user.last_login|date:'d-m-Y @ H'}}</td>
+                   <td>{{user.date_joined|date:'d-m-Y'}}</td>
+                </tr>
+            {% endfor %}
+            </table>
+            <a type="button" href="#" class="btn btn-dark float-right mt-3">
+                <i class="fa fa-plus"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

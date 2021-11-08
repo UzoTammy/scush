@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.forms import fields
 from .models import Profile
 from django.contrib.auth.forms import UserCreationForm
 import datetime
@@ -66,10 +67,10 @@ class UserRegisterForm(UserCreationForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
 
-    class Meta:
+    class Meta(UserCreationForm.Meta):
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
-
+        # fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
+        fields = UserCreationForm.Meta.fields
 
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()

@@ -1,0 +1,140 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-3">
+        <div class="col">
+            <a class="btn btn-outline-dark float-right ml-1" href="{% url 'article-create' %}">Add Article</a>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col shadow-lg">
+            <table class="table table-sm table-primary" 
+            data-pagination="true"
+            data-toggle="table">
+                <caption>Available Articles List</caption>
+                <thead class="bg-white">
+                    <tr>
+                        <th>Item #</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Value</th>
+                        <th>Quantity</th>
+                        <th>Source</th>
+                        <th>Status</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                    <tr>
+                        <td><a href="{% url 'article-update' object.pk %}">
+                            <i class="fa fa-edit"></i></a> 
+                            {{object.pk|zeropadding:3}}
+                        </td>
+                        <td>{{object.name}}</td>
+                        <td>{{object.description}}</td>
+                        <td>{{object.value}}</td>
+                        <td>{{object.quantity_in}}</td>
+                        <td>{{object.source}}</td>
+                        <td>{{object.status|yesno:'A, NA'}}</td>
+                        <td>{{object.quantity_balance}}</td>
+                    </tr>
+                    
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>   
+    </div>
+
+    <!-- <div class="row mt-3">
+        <div class="col">
+            <a class="btn btn-outline-dark float-right ml-1" href="{% url 'request-create' %}">Request Article</a>
+        </div>
+    </div> -->
+    <div class="row mt-2">
+        <div class="col shadow-lg">
+            <table class="table table-sm table-primary" 
+            data-pagination="true"
+            data-toggle="table">
+                <caption>Request List</caption>
+                <thead class="bg-white">
+                    <tr>
+                        <th>Request #</th>
+                        <th>Date</th>
+                        <th>Article</th>
+                        <th>Quantity</th>
+                        <th>Request By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in requests %}
+                    <tr>
+                        <td><a href="#">
+                            <i class="fa fa-edit"></i></a> 
+                            {{object.pk|zeropadding:3}}
+                        </td>
+                        <td>{{object.date}}</td>
+                        <td>{{object.article}}</td>
+                        <td>{{object.quantity}}</td>
+                        <td>{{object.request_by}}</td>
+                        
+                        
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+        </div>   
+    </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <a class="btn btn-outline-dark float-right ml-1" href="{% url 'issue-create' %}">Issue Article</a>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col shadow-lg">
+            <table class="table table-sm table-primary" 
+            data-pagination="true"
+            data-toggle="table">
+                <caption>Approval & Issue List</caption>
+                <thead class="bg-white">
+                    <tr>
+                        <th>Issue #</th>
+                        <th>Request #</th>
+                        <th>Date</th>
+                        <th>Article</th>
+                        <th>Quantity</th>
+                        <th>Issued To</th>
+                        <th>Approved By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in issues %}
+                    <tr>
+                        <td><a href="#">
+                            <i class="fa fa-edit"></i></a> 
+                            {{object.pk|zeropadding:3}}
+                        </td>
+                        <td>{{object.the_request.id|zeropadding:3}}</td>
+                        <td>{{object.out_date}}</td>
+                        <td>{{object.the_request.article.name}}</td>
+                        <td>{{object.the_request.quantity}}</td>
+                        <td>{{object.the_request.request_by}}</td>
+                        <td>{{object.approved_by}}</td>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>ghhg</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>   
+    </div>
+    
+    <a class="btn btn-outline-dark float-right m-3" href="{% url 'home' %}">Home</a>
+        
+</div>
+{% endblock content %}
