@@ -134,8 +134,6 @@
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'post-list' %}">Morning Briefs</a>  
                     <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'users-list' %}">List of Users</a> 
-                    <hr class="dropdown-divider"> 
                     <a class="dropdown-item" href="{% url 'article-list' %}">Materials</a>        
             </li>
             <li class="nav-item dropdown">
@@ -207,6 +205,7 @@
             </li>
         </ul>
         <ul class="navbar-nav">
+            
             {% if user.is_authenticated %}
             <li class="nav-item">
                 <a class="nav-link active text-light" href="{% url 'profile' %}">
@@ -215,6 +214,11 @@
                          class="rounded-circle bg-white"
                          alt="">
                     {{user.username|title}} | Your Info
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active text-light" href="{% url 'users-list' %}">
+                    <i class="fa fa-users"></i> Users
                 </a>
             </li>
             <li class="nav-item">

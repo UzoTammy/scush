@@ -1,13 +1,8 @@
-<!-- <!DOCTYPE html> -->
 {% extends 'pdf/base.html' %}
-{% load static %}
 {% load custom_templates %}
 
-
-
+<body>
 {% block content %}
- 
-
 <div class='wrapper'>
     <div class='header'>    
         <h1 class='title'>Payroll Report for {{period_month}}</h1>
@@ -70,13 +65,6 @@
         </tr>
     </tfoot>
 </table>
-<!--        footnote-->
-<div class="row">
-    <br>
-    <div class="col">
-        <p>Administered By: {{credentials}} and Approved By: {{approval}}</p>
-        <small>note: WAT -> West African Time (GMT+1).</small><br>
-        <small>All figures are currencies in Nigerian naira</small>
-    </div>
-</div>
+
 {% endblock %}
+</body>

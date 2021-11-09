@@ -13,45 +13,25 @@
     <div class="container">
         <div class="row p-4">
             <div class="col-sm-3 ml-2">
-            <img src="{% static 'customer/logo.png' %}"
+            
+            </div>
+            <div class="col-sm-8 p-3 shadow-lg">
+                <img src="{% static 'customer/logo.png' %}"
                  class="rounded-circle shadow"
                  width="70px"
-                 alt="">
-                <br><br>
+                 alt=""> <i class="text-danger">F & L Trading Co Ltd, A Distribution Company</i><br><br>
                 <i class="fa fa-info-circle text-info"></i>
-                <p class="text-primary">
+                <i class="text-primary">
                     You will receive a confirmation email with the email address
-                    provided to us on this form. kindly ensure a valid email address
+                    provided to us on this form. Kindly ensure a valid email address
                     is provided and do check your inbox soon after submission
-                </p>
-            </div>
-            <div class="col-sm-8 shadow">
-                <div class="row">
-                    <div class="col-auto">
-                        <div class="card bg-warning">
-                            <div class="card-body shadow">
-                                <h5 class="card-title">
-                                    <i class="fa fa-warning text-danger"></i>Take Note
-                                </h5>
-                                <p class="card-text">
-                                    Ensure that the information provided by
-                                    you is correct. Any confirmation to the
-                                    contrary will result in termination
-                                    of contract with you if any.
-                                </p>
-                            </div>
-                            <div class="card-footer bg-white">
-                                <p class="text-muted text-center">Information provided to use is for employment
-                                    purposes only
-                                </p>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </i>
+                <hr>
                 <form method="POST">{% csrf_token %}
                     <fieldset class="form-group bg-light">
-                        <legend class="text-info p-3">{{ title }} Application Form</legend>
+                        <legend class="text-info"><i>{{ title }} Application</i>
+                            <small class="text-muted float-right">{% now 'd-m-Y@h:mA' %}</small>
+                        </legend>
                         <div class="row">
                             <div class="col-auto">
                                 <span class="">First Name </span>
@@ -88,7 +68,7 @@
                                     </div>
                                     <div class="mb-2">{{form.qualification}}</div>
                                 </div>
-                                <div class="col-auto">
+                                <div class="col text-center">
                                     <div class="form-label">
                                         Date of Birth<span class="text-danger">*</span>
                                     </div>
@@ -145,13 +125,13 @@
                             <div class="col-7">
                             <button class="btn btn-outline-info"
                                     type="submit">
-                                <small>Submit
+                                <small>
                                     {%  if title == 'Update' %}
-                                        {{ title }}d
-                                    {% else %}
                                         {{ title }}
+                                    {% else %}
+                                        Apply Now
                                     {% endif %}
-                                Form</small>
+                                </small>
                             </button>
                         </div>
                             <div class="col d-flex justify-content-end">
@@ -168,7 +148,30 @@
                         </div>
                     </div>
                 </form>
+                <div class="row">
+                    <div class="col-auto">
+                        <div class="card bg-warning">
+                            <div class="card-body shadow">
+                                <h5 class="card-title">
+                                    <i class="fa fa-warning text-danger"></i>Warning
+                                </h5>
+                                <p class="card-text">
+                                    Ensure that the information provided
+                                    is correct. Any confirmation to the
+                                    contrary will result in rejection of 
+                                    your application or termination
+                                    of your employment without notice and benefits.
+                                </p>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <p class="text-muted text-center">Information provided to us is for employment
+                                    purposes only and cannot be compromised.
+                                </p>
 
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

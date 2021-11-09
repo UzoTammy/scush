@@ -48,7 +48,7 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
 class ArticleUpdateView(LoginRequiredMixin, UpdateView):
     model = Article
     fields = ('name', 'description', 'value', 'quantity_in',
-    'in_date', 'source')
+    'in_date', 'source', 'quantity_balance')
 
     # def form_valid(self, form):
     #     if form.instance.pack_type == 'Pieces':
@@ -72,12 +72,11 @@ class RequestCreateView(LoginRequiredMixin, CreateView):
 
             #Mailing
             last_num = self.get_queryset().last().id
+            issuer = 'g.motun01@gmail.com'
+            approver = 'uzo.nwokoro@ozonefl.com'
             send_mail(f'Request for  Article #{str(last_num + 1).zfill(3)}',
             f"A request has been made for {form.instance.quantity} {article.name}. This request is from {Employee.active.get(id=int(self.request.user.username.split('-')[1]))}. An approval is required before issuance.",
-            self.request.user.email,
-            ['uzo.nwokoro@ozonefl.com', 'uzo.tammy@gmail.com'],
-            fail_silently=False,
-            )
+            self.request.user.email, [approver, issuer, 'dickson.abanum@ozonefl.com'], fail_silently=False)
             
             return super().form_valid(form)
         else:

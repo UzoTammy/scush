@@ -1,60 +1,8 @@
-<!DOCTYPE html>
+{% extends 'pdf/base.html' %}
 {% load custom_templates %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Scush-Staff</title>
-    <style type="text/css">
-            body {
-                font-weight: 100;
-                font-size: 14px;
-            }
-            .header {
-                font-size: 20px;
-                font-weight: 100;
-                text-align: center;
-                color: #007cae;
-            }
-            .title {
-                font-size: 22px;
-                font-weight: 100;
-               /* text-align: right;*/
-               padding: 10px 20px 0px 20px;
-            }
-            .title span {
-                color: #007cae;
-            }
-            .details {
-                padding: 10px 20px 0px 20px;
-                text-align: left !important;
-                /*margin-left: 40%;*/
-            }
-            .hrItem {
-                border: none;
-                height: 1px;
-                /* Set the hr color */
-                color: #333; /* old IE */
-                background-color: #fff; /* Modern Browsers */
-            }
-            small {
-                color: #e7aaad;
-            }
-            table, th, td {
-                border: 1px solid #d6d7ce;
-                padding: 3px;
-            }
-            table {
-                width: 100%;
-            }
-            img {
-
-            }
-
-    </style>
-</head>
 <body>
-<small>Source: Scush Web App as at {% now "d-m-Y H:i" %} WAT</small>
+{% block content %}
 <div class='wrapper'>
     <div class='header'>
         <p class='title'>Ozone: List Of Employees</p>
@@ -122,9 +70,5 @@
     </tr>
     </tfoot>
 </table>
-<!--        footnote-->
-<br>
-<small>note: WAT -> West African Time (GMT+1)</small>
-
+{% endblock %}
 </body>
-</html>

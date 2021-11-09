@@ -1,11 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>SCUsH-Policies</title>
-</head>
+{% extends 'pdf/base.html' %}
+
 <body>
-<h1>SALES PROCEDURE</h1>
+{% block content %}
+<div class='wrapper'>
+    <div class='header'>
+        <p class='title'>SALES PROCEDURE</p>
+    </div>
+</div>
+
 <h3>Get Sales Order</h3>
 
 <ul style="list-style-type:circle;">Welcome the customer and/or the sales rep.
@@ -120,5 +122,8 @@ Accountant raises the cheque
 Follows up with the debit and treats accordingly
 The GSM notes the order placed and tracks the delivery.
 If the order is distorted then we adjust accordingly.
+
+
+{% endblock %}
+
 </body>
-</html>

@@ -63,14 +63,6 @@ class PayrollListView(LoginRequiredMixin, ListView):
     context_object_name = 'employees'
 
     def get(self, request, *args, **kwargs):
-        path = os.path.join(settings.BASE_DIR, 'customer/static/customer/logo.png')
-        with open(path, 'rb') as rf:
-            content = rf.read()
-        buf = BytesIO(content)
-        logo = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
-        buf.close()
-            
-        # file = base64.b64encode(content.getvalue()).decode('utf-8').replace('\n', '')
         period = kwargs['period']
         queryset = self.get_queryset().filter(period=period)
         if queryset.exists():
@@ -96,7 +88,7 @@ class PayrollListView(LoginRequiredMixin, ListView):
                 'total_credit': queryset.aggregate(sum=Sum('credit_amount')),
                 'total_deduction': queryset.aggregate(sum=Sum('deduction')),
                 'total_outstanding': queryset.aggregate(sum=Sum('outstanding')),
-                'logo_image': logo
+                'logo_image': Ozone.logo()
             
                 # 'total_salary': queryset.aggregate(sum=Sum('salary')),
                 # 'total_tax': queryset.aggregate(sum=Sum('tax')),
@@ -124,6 +116,7 @@ class EmployeeListView(LoginRequiredMixin, ListView):
             'num_married': Employee.active.filter(staff__marital_status='MARRIED'),
             'num_management': Employee.active.filter(is_management=True),
             'num_non_management': Employee.active.filter(is_management=False),
+            'logo_image': Ozone.logo()
         }
         return render_to_pdf(self.template_name, context_dict=context)
 
@@ -206,10 +199,12 @@ class RejectedApplicantList(ListView):
 class PoliciesDocView(LoginRequiredMixin, View):
 
     template_name = 'pdf/procedures.html'
+    # template_name = 'pdf/pdf_policies.html'
 
     def get(self, request, *args, **kwargs):
         context = {
-
+           'logo_image': Ozone.logo(),
+                 
         }
         return render_to_pdf(self.template_name, context_dict=context)
 
@@ -270,7 +265,8 @@ class StockViewList(LoginRequiredMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         context = {
-            'stocks': self.get_queryset().order_by('-pk')
+            'stocks': self.get_queryset().order_by('-pk'),
+            'logo_image': Ozone.logo(),
         }
         pdf = render_to_pdf(self.template_name, context)
         if pdf:
