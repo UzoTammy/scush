@@ -26,7 +26,6 @@ from djmoney.money import Money
 from ozone import mytools
 import calendar
 import datetime
-import itertools
 from decimal import Decimal
 from django.contrib import messages
 from django.core.mail import send_mail, mail_admins, mail_managers
@@ -37,11 +36,9 @@ from django.db.models import (F,
                               Sum,
                               Avg,
                               Max,
-                              Min,
-                              DateField,
-                              ExpressionWrapper)
+                              Min,)
 from .form import EmployeeForm
-
+from .models import POSITIONS, BRANCHES
 
 
 class Salary:
@@ -397,17 +394,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             return 1
         return 0
 
-        # for i in range(len(weekly)-1):
-        #     if len(weekly) > 1:
-        #         L = list()
-        #         monday = weekly[i]
-        #         n_monday = weekly[i + 1]
-        #         sunday = n_monday - timedelta(days=1)
-        #         L.append(monday)
-        #         L.append(sunday)
-        #         print(tuple(L))
-      
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         person = self.get_queryset().get(pk=kwargs['object'].pk)
@@ -440,8 +427,8 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['consumed_days'] = days_consumed
         context['permit_count'] = 'None' if days_consumed == 0 else permit.count()
         context['balance_days'] = int(leave) - days_consumed
-        context['positions'] = (i[0] for i in Employee.POSITIONS)
-        context['branches'] = (i[0] for i in Employee.BRANCHES)
+        context['positions'] = (i[0] for i in POSITIONS)
+        context['branches'] = (i[0] for i in BRANCHES)
 
         context['reassigned'] = Reassign.objects.filter(staff_id=person)
         context['permissions'] = Permit.objects.filter(staff_id=person)

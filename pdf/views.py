@@ -15,6 +15,7 @@ from staff.models import Employee, Payroll, EmployeeBalance
 from trade.models import TradeMonthly
 from stock.models import Product
 from brief.models import Post
+from material.models import Article
 from django.db.models import Sum, F, Avg, Min, ExpressionWrapper, DecimalField
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
@@ -370,8 +371,27 @@ class TodayPostPdf(LoginRequiredMixin, TemplateView):
     
 
 class PriceUpdateFootNote(View):
+
     def get(self, request, *args, **kwargs):
         content = request.GET['footnote']
         with open('extrafiles/price-update-footnote.txt', 'w') as wf:
             wf.write(content)
         return redirect('product-home')
+
+class ArticlesPdf(LoginRequiredMixin, TemplateView):
+    template_name = 'pdf/article_pdf.html'
+
+    def get(self, request, *args, **kwargs):
+        articles = Article.available.all()
+        context = {
+            'articles': articles.order_by('-pk'),
+            'logo_image': Ozone.logo()
+        }
+        pdf = render_to_pdf(self.template_name, context_dict=context)
+        
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            today = datetime.date.today().strftime('%d%m%Y')
+            response['Content-Disposition'] = f'filename="articles-{today}.pdf"'
+            return response
+        return HttpResponse('Error')

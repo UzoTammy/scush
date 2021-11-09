@@ -46,7 +46,7 @@ class RequestArticle(models.Model):
     objects = models.Manager()
     
     def __str__(self):
-        return f'{self.article} request'
+        return f'{self.article.name}-{self.id} request'
 
     def get_absolute_url(self):
         return reverse('home')

@@ -24,3 +24,7 @@ urlpatterns += [
 urlpatterns += [
     path('daily/post/', TodayPostPdf.as_view(), name='pdf-daily-post')
 ]
+
+urlpatterns += [
+    path('artcles/', ArticlesPdf.as_view(), name='articles-pdf')
+]
