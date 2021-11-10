@@ -143,7 +143,7 @@ class ProductHomeView(View):
 
 class ProductListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Product
-    ordering = ['name']
+    ordering = '-pk'
 
     def test_func(self):
         """if user is a member of the group Sales then grant access to this view"""
@@ -153,10 +153,6 @@ class ProductListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         return super().get_queryset().filter(active=True)
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
 
 
 class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):

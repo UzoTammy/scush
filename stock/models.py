@@ -1,7 +1,10 @@
+from django.core import validators
 from django.db import models
 from djmoney.models.fields import MoneyField
 from django.shortcuts import reverse
 from django.utils import timezone
+from django.core.validators import MinValueValidator
+
 
 
 SOURCES = [('NB', 'NBPlc'),
@@ -10,8 +13,8 @@ SOURCES = [('NB', 'NBPlc'),
            ('FE', 'FarEast'),
            ('SW', 'SellWell'),
            ('MD', 'Monument'),
-           ('FN', 'Fouani'),
-           ('HY', 'Hayat'),
+           ('GG', 'Golden Guinea'),
+           ('BD', 'BigDist'),
            ('MSC', 'Miscellaneous'),
            ]
 
@@ -68,7 +71,8 @@ class Product(models.Model):
     alcohol_content = models.FloatField(default=0.0)
     vat = models.FloatField(default=7.5, choices=[(7.5, 'Vatable'), (0.0, 'Exempted')])
     image = models.ImageField(default='default.jpg', upload_to='product_pics')
-    cost_price = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN', default=0.0)
+    cost_price = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN', default=0.0, 
+    validators=[MinValueValidator(1.0)])
     parameter = models.CharField(max_length=20,
                                  help_text='<span class="text-danger">types but of same price e.g. maltina classic, maltina pineaple</span>')
     active = models.BooleanField(default=True, choices=[(True, 'Yes'), (False, 'No')], verbose_name='Active?')
@@ -92,10 +96,6 @@ class Product(models.Model):
     def margin(self):
         return self.unit_price - self.cost_price
 
-    def percentage_margin(self):
-        if self.cost_price == 0:
-            return None
-        return 100*(self.unit_price/self.cost_price - 1)
-
+    
 
     

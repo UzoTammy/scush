@@ -226,7 +226,7 @@ class StaffViews(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     def get(self, request, *args, **kwargs):
 
         context = {
-            'terminated_staff': self.get_queryset()
+            'terminated_staff': self.get_queryset().order_by('-pk')
         }
         return render(request, self.template_name, context)
 
