@@ -1,0 +1,49 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col mt-3">
+            <h3>Make your Request</h3>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3">
+        <div class="col mt-3">
+            <div class="card bg-primary text-white text-center p-3">
+                <a href="{% url 'request-create' %}" class="text-white">Article</a>
+              </div>
+        </div>
+        <!-- <div class="col mt-3">
+            <div class="card bg-danger text-white text-center p-3">
+                <a href="" class="text-white">Payslip</a>
+              </div>
+        </div>
+        <div class="col mt-3">
+            <div class="card bg-warning text-white text-center p-3">
+                <a href="" class="text-white">Permission</a>
+              </div>
+        </div>
+        <div class="col mt-3">
+            <div class="card bg-secondary text-white text-center p-3">
+                <a href="" class="text-white">Article</a>
+              </div>
+        </div>
+        <div class="col mt-3">
+            <div class="card bg-success text-white text-center p-3">
+                <a href="" class="text-white">Article</a>
+              </div>
+        </div>
+        <div class="col mt-3">
+            <div class="card bg-info text-white text-center p-3">
+                <a href="" class="text-white">Article</a>
+              </div>
+        </div> -->
+        <div class="col mt-3">
+            <div class="card text-center p-3">
+                <a href="{% url 'home' %}"> <i class="fa fa-reply"></i> Return Home</a>
+              </div>
+        </div>
+    </div>    
+</div>
+{% endblock %}

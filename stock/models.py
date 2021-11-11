@@ -1,10 +1,9 @@
-from django.core import validators
 from django.db import models
 from djmoney.models.fields import MoneyField
 from django.shortcuts import reverse
 from django.utils import timezone
 from django.core.validators import MinValueValidator
-
+from djmoney.money import Money
 
 
 SOURCES = [('NB', 'NBPlc'),
@@ -71,8 +70,9 @@ class Product(models.Model):
     alcohol_content = models.FloatField(default=0.0)
     vat = models.FloatField(default=7.5, choices=[(7.5, 'Vatable'), (0.0, 'Exempted')])
     image = models.ImageField(default='default.jpg', upload_to='product_pics')
-    cost_price = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN', default=0.0, 
-    validators=[MinValueValidator(1.0)])
+    cost_price = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN', 
+    validators=[MinValueValidator(Money(1, 'NGN'), 
+    message="Cost price can't must be 0.00")])
     parameter = models.CharField(max_length=20,
                                  help_text='<span class="text-danger">types but of same price e.g. maltina classic, maltina pineaple</span>')
     active = models.BooleanField(default=True, choices=[(True, 'Yes'), (False, 'No')], verbose_name='Active?')

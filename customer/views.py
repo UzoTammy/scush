@@ -303,3 +303,6 @@ class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 class CSVCustomerView(View):
     pass
+
+class RequestHome(TemplateView):
+    template_name = 'customer/requests/request.html'

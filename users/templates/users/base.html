@@ -102,7 +102,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link active text-light" href="{% url 'staff-home' %}">
-                    <i class="fa fa-user text-success"></i> Staff</a>
+                    <i class="fa fa-user text-white"></i> Staff</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active text-light" href="{% url 'customer-home' %}">
@@ -110,7 +110,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link active text-light" href="{% url 'product-home' %}">
-                    <i class="fa fa-cubes text-danger"></i> Stocks</a>
+                    <i class="fa fa-cubes text-white"></i> Stocks</a>
             </li>
 
             <li class="nav-item dropdown">
@@ -120,7 +120,7 @@
                    role="button"
                    aria-haspopup="true"
                    aria-expanded="false">
-                    <i class="fa fa-play-circle text-dark"></i>
+                    <i class="fa fa-play-circle text-white"></i>
                     More
                 </a>
                 <div class="dropdown-menu">
@@ -136,19 +136,27 @@
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'article-list' %}">Materials</a>        
             </li>
-            <li class="nav-item dropdown">
+
+            <li class="nav-item">
+                <a class="nav-link active text-light" href="{% url 'request-home' %}">
+                    <i class="fa fa-exchange text-white"></i> Requests</a>
+            </li>
+
+            <!-- <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
                    aria-haspopup="true"
                    aria-expanded="false">
                     <i class="fa fa-address-card text-white"></i> Request</a>
                 <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'request-home' %}">GO</a>
+                    <hr class="dropdown-divider"> 
                     <a class="dropdown-item" href="{% url 'request-create' %}">Article</a>
                     <hr class="dropdown-divider"> 
                     <a class="dropdown-item" href="{% url 'home' %}">Payslip</a>
                     <hr class="dropdown-divider"> 
                     <a class="dropdown-item" href="{% url 'home' %}">Permission</a>
                 </div>
-            </li>
+            </li> -->
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
                    aria-haspopup="true"
@@ -185,7 +193,7 @@
                 <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
                    aria-haspopup="true"
                    aria-expanded="false">
-                    <i class="fa fa-gears text-dark"></i> Administration</a>
+                    <i class="fa fa-gears text-white"></i> Administration</a>
                 <div class="dropdown-menu">
                     <!-- <a class="dropdown-item" href="{% url 'pk-reset' %}">Primary Key Reset</a> -->
                     <a class="dropdown-item"
@@ -223,11 +231,11 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link active text-light" href="{% url 'dashboard' %}">
-                    <i class="fa fa-tachometer text-dark"></i> Dashboard</a>
+                    <i class="fa fa-tachometer text-white"></i> Dashboard</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link active text-light" href="{% url 'logout' %}">
-                    <i class="fa fa-sign-out text-dark"></i> Sign Out</a>
+                    <i class="fa fa-sign-out text-white"></i> Sign Out</a>
             </li>
             {% else %}
             <li class="nav-item">
