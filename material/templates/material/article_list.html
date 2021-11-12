@@ -57,7 +57,7 @@
             <table class="table table-sm table-primary" 
             data-pagination="true"
             data-toggle="table">
-                <caption>Request List</caption>
+                <caption>List of Pending Request(s)</caption>
                 <thead class="bg-white">
                     <tr>
                         <th>Request #</th>
@@ -65,19 +65,24 @@
                         <th>Article</th>
                         <th>Quantity</th>
                         <th>Request By</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for object in requests %}
                     <tr>
                         <td><a href="#">
-                            <i class="fa fa-edit"></i></a> 
+                            <i class="fa fa-edit"></i>
+                        </a> 
+                        <a href="{% url 'issue-create' object.pk %}" class="ml-2">
                             {{object.pk|zeropadding:3}}
+                        </a>  
                         </td>
                         <td>{{object.date}}</td>
                         <td>{{object.article}}</td>
                         <td>{{object.quantity}}</td>
                         <td>{{object.request_by}}</td>  
+                        <td>{{object.status}}</td>
                     {% endfor %}
                 </tbody>
                 
@@ -85,11 +90,7 @@
         </div>   
     </div>
 
-    <div class="row mt-3">
-        <div class="col">
-            <a class="btn btn-outline-dark float-right ml-1" href="{% url 'issue-create' %}">Issue Article</a>
-        </div>
-    </div>
+    
     <div class="row mt-2">
         <div class="col shadow-lg">
             <table class="table table-sm table-primary" 

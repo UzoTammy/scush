@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container p-4">
-    <h2 class="text-secondary text-center">Product Detail Page</h2>
+    <h2 class="text-secondary text-center">{{object}}</h2>
     <div class="row">
         <div class="col-sm-4">
             <!--Side menu-->
@@ -49,8 +49,7 @@
                    class="rounded mr-3"
                    alt="...">
               <div class="media-body">
-                <h5 class="text-info mt-0">{{object}}</h5>
-                <p class="text-success">Product Code: {{object.id|zeropadding:4}}</p>
+                <h3 class="text-success">Product Code: {{object.id|zeropadding:4}}</h3>
               </div>
             </div>
             <div class="row p-2">

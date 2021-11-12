@@ -4,6 +4,7 @@ from django.shortcuts import reverse
 from django.utils import timezone
 from django.core.validators import MinValueValidator
 from djmoney.money import Money
+from outlet.models import SalesCenter
 
 
 SOURCES = [('NB', 'NBPlc'),
@@ -97,5 +98,23 @@ class Product(models.Model):
         return self.unit_price - self.cost_price
 
     
+class ProductPerformance(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    outlet = models.ForeignKey(SalesCenter, on_delete=models.CASCADE)
+    date = models.DateField(default=timezone.now)
+    landing_cost = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN', default=0.0)
+    selling_price = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN', default=0.0)
+    depletion = models.IntegerField()
+    balance = models.IntegerField()
+    tag = models.BooleanField(default=True) #focus brand
 
+    def __str__(self):
+        return f'{self.product} performance' 
+
+    def get_absolute_url(self):
+        return reverse('product-performance-detail', kwargs={'pk':self.pk})
+        
+    
+
+    
     

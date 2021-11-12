@@ -50,5 +50,7 @@
     "Accounts",
     "HR",
     "Info Tech"
-  ]
+  ],
+  "material_actors":[1, 2, 3]
+
 }

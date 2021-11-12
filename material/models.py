@@ -21,7 +21,7 @@ class Article(models.Model):
     quantity_in = models.IntegerField(default=0)
     in_date = models.DateField(default=timezone.now)
     source = models.CharField(max_length=20)
-    status = models.BooleanField(default=True)
+    status = models.BooleanField(default=True) #true is available
     image = models.ImageField(default='default.jpg', upload_to='article_pics', blank=True)
     quantity_balance = models.IntegerField(default=0)
 
@@ -40,7 +40,7 @@ class RequestArticle(models.Model):
     date = models.DateField(default=timezone.now)
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-    status = models.BooleanField(default=False) #true: done, #false: pending
+    status = models.BooleanField(default=None, null=True, blank=True) #true: approved, #false: disapproved, #none: pending
 
     available = AvailableRequestArticleManager()
     objects = models.Manager()
@@ -55,7 +55,7 @@ class RequestArticle(models.Model):
 class IssueArticle(models.Model):
     the_request = models.ForeignKey(RequestArticle, on_delete=models.CASCADE, verbose_name='Article Requested')
     out_date = models.DateField(default=timezone.now)
-    approved_by = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    approved_by = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def __str__(self):
         return f'{self.the_request.article} issue'
@@ -63,5 +63,4 @@ class IssueArticle(models.Model):
     def get_absolute_url(self):
         return reverse('article-list')
 
-    
-    
+

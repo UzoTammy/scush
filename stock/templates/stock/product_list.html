@@ -6,7 +6,7 @@
     <div class="col-sm-12">
             <table data-search="true"
                    data-pagination="true"
-                   data-page-list="[10, 20, 30, All]"
+                   data-page-list="[10,20,30, All]"
                    data-toggle="table"
                    class="table caption-top table-bordered table-sm">
                 <caption>
@@ -34,6 +34,7 @@
                     <th scope="col">Cost Price</th>
                     <th scope="col">Sales Price</th>
                     <th scope="col">Margin</th>
+                    <!-- <th scope="col">% Margin</th> -->
                 </tr>
                 </thead>
                 <tbody>
@@ -53,6 +54,7 @@
                     <td>{{product.cost_price}}</td>
                     <td>{{product.unit_price}}</td>
                     <th>{{product.margin}}</th>
+                    <!-- <th>{{product.percentage_margin|floatformat:3}}</th> -->
                 </tr>
                 {% endfor %}
                 </tbody>

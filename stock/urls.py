@@ -13,5 +13,11 @@ urlpatterns = [
     path('product/price/list/', PricePageView.as_view(), name='price-list'),
     path('product/<int:pk>/price/update/', PriceUpdate.as_view(), name='price-update'),
     path('product/home/footnote/', PriceUpdateFootNote.as_view(), name='price-update-footnote')
+]
+
+urlpatterns += [
+    path('product/performance/list/', ProductPerformanceListView.as_view(), name='product-performance-list'),
+    path('product/performance/create/', ProductPerformanceCreateView.as_view(), name='product-performance-create'),
+    path('product/performance/<int:pk>/detail/', ProductPerformanceDetailView.as_view(), name='product-performance-detail')
     
 ]

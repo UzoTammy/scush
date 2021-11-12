@@ -2,7 +2,7 @@ import datetime
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.generic.base import TemplateView
-from .models import Product
+from .models import Product, ProductPerformance
 from delivery.models import DeliveryNote
 from django.views.generic import View
 from django.template.loader import get_template
@@ -223,4 +223,66 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
         product.save()
         return redirect(product)
 
+
+class ProductPerformanceListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = ProductPerformance
+    template_name = 'stock/performance/product_list.html'
+    ordering = ('-date', 'outlet')
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    def get_queryset(self):
+        return super().get_queryset().filter(tag=True)
+
+
+class ProductPerformanceCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = ProductPerformance
+    fields = ('product', 'outlet', 'landing_cost', 'selling_price', 'depletion', 'balance')
+    template_name = 'stock/performance/product_form.html'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'New'
+        return context
+
+
+class ProductPerformanceUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Product
+    fields = ('product', 'outlet', 'landing_cost', 'selling_price', 'depletion', 'balance')
+    template_name = 'stock/performance/product_form.html'
+
+    
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Update'
+        return context
+
+
+class ProductPerformanceDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = ProductPerformance
+    template_name = 'stock/performance/product_detail.html'
+
+    
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
 

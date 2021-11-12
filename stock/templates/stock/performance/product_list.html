@@ -1,0 +1,65 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="row m-2">
+    <div class="col-sm-12">
+            <table data-search="true"
+                   data-pagination="true"
+                   data-page-list="[10, 20, 30, All]"
+                   data-toggle="table"
+                   class="table caption-top table-bordered table-sm">
+                <caption>
+                    <div class="row">
+                        <div class="col">
+                           Performance List
+                        </div>
+                        <div class="col text-right">
+                <a href="{% url 'product-performance-create' %}"
+                   class="btn btn-dark btn-sm text-right">
+                    <i class="fa fa-plus text-success"></i>
+                    Add
+                </a>
+                    
+            </div>
+                    </div>
+                </caption>
+                <thead class="bg-dark text-white">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Product</th>
+                    <th scope="col">Outlet</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Cost</th>
+                    <th scope="col">Selling</th>
+                    <th scope="col">Depletion</th>
+                    <th scope="col">Balance</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for product in object_list %}
+                <tr>
+                    <th scope="row"><a href="{% url 'product-performance-detail' product.pk %}">{{product.id|zeropadding:3}}</a></th>
+                    <th scope="col">{{product.product}}</th>
+                    <td>{{ product.outlet }}</td>
+                    <td>{{product.date}}</td>
+                    <td>{{product.landing_cost}}</td>
+                    <td>{{product.selling_price}}</td>
+                    <td>{{product.depletion}}</td>
+                    <th>{{product.balance}}</th>
+                </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+
+                </tfoot>
+            </table>
+            <div class="row">
+                <div class="col">
+                    <a class="btn btn-outline-dark float-right" href="{% url 'product-home' %}"><i class="fa fa-reply"></i></a>
+                </div>
+            </div>
+        </div>
+</div>
+
+{% endblock content %}

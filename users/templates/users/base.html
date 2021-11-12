@@ -196,19 +196,33 @@
                     <i class="fa fa-gears text-white"></i> Administration</a>
                 <div class="dropdown-menu">
                     <!-- <a class="dropdown-item" href="{% url 'pk-reset' %}">Primary Key Reset</a> -->
-                    <a class="dropdown-item"
-                       data-toggle="modal"
-                       data-target="#choiceModalAdd"
-                       href="#">Add Database Field Choices</a>
-                    <a class="dropdown-item"
-                       data-toggle="modal"
-                       data-target="#choiceModalEdit"
-                       href="#">Edit Database Field Choices</a>
-                    <a class="dropdown-item"
-                       data-toggle="modal"
-                       data-target="#choiceModalDelete"
-                       href="#">Delete Database Field Choices</a>
-                    <hr>
+                    <ul class="list-group">
+                        <li class="list-group-item"><a class="dropdown-item"
+                            data-toggle="modal"
+                            data-target="#choiceModalAdd"
+                            href="#">Add Choice</a>
+                        </li>
+                        <li class="list-group-item"><a class="dropdown-item"
+                            data-toggle="modal"
+                            data-target="#choiceModalEdit"
+                            href="#">Edit Choice</a>
+                         </li>
+                        <li class="list-group-item">
+                            <a class="dropdown-item"
+                            data-toggle="modal"
+                            data-target="#choiceModalDelete"
+                            href="#">Delete Choice</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="" class="dropdown-item">
+                                Material Actors
+                            </a>
+                        </li>
+                        
+                      </ul>
+                    
+                    
+                
                 </div>
             </li>
         </ul>

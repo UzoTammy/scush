@@ -1,5 +1,6 @@
 {% extends 'users/base.html' %}
 {% load crispy_forms_tags %}
+{% load custom_templates %}
 
 
 {% block content %}
@@ -9,14 +10,27 @@
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <legend class="text-warning">Approve & Issue Article</legend>
+                <p>Request ID: {{request.pk|zeropadding:3}}</p>
+                <p>Article: {{request.article.name}}</p>
+                <p>Quantity: {{request.quantity}} out of {{request.article.quantity_balance}} available</p>
+                <p>By: {{request.request_by}} ({{staff}})</p>
                 <fieldset class="bg-light">
                     <div class="ml-2">{{ form|crispy }}</div>
                 </fieldset>
                 <div class="form-group p-2">
-                    <button class="btn btn-outline-primary" type="submit">Approve</button>
-                    <a href="{% url 'article-list' %}" class="btn btn-outline-dark float-right">
-                        <i class="fa fa-reply"></i>
-                    </a>
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-outline-primary" type="submit">Approve</button>
+                        </div>
+                        <div class="col text-center">
+                            <a href="" class="btn btn-outline-danger">Disapprove</a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'article-list' %}" class="btn btn-outline-dark float-right">
+                                <i class="fa fa-reply"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
