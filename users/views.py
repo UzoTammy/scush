@@ -93,3 +93,12 @@ def add_choice(request):
 class UsersListView(ListView):
     model = User
     
+    def get_queryset(self):
+
+        return super().get_queryset().filter(username__contains='-').order_by('-pk')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['A'] = self.get_queryset().count()
+        context['B'] = User.objects.all().count()
+        return context

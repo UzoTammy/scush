@@ -1,6 +1,7 @@
 from django.http import request
 from django.http.response import HttpResponse
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, View
+from django.views.generic.base import TemplateView
 from .models import Article, IssueArticle, RequestArticle
 from django.shortcuts import redirect, render
 from django.contrib import messages
@@ -10,6 +11,11 @@ from staff.models import Employee
 from django.db.models import F, Sum
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
+
+
+
+mail_list = ['uzo.nwokoro@ozonefl.com', 'g.motun01@gmail.com', 'dickson.abanum@ozonefl.com']
+# ml = ['uzo.nwokoro@ozonefl.com']
 
 
 class FormFailure(View):
@@ -77,12 +83,11 @@ class RequestCreateView(LoginRequiredMixin, CreateView):
 
             #Mailing
             last_num = self.get_queryset().last().id
-            issuer = 'g.motun01@gmail.com'
-            sender = self.request.user.email
             send_mail(f'Request for  Article #{str(last_num + 1).zfill(3)}',
             f"A request has been made for {form.instance.quantity} (out of {article.quantity_balance}) {article.name}. This request is from {Employee.active.get(id=int(self.request.user.username.split('-')[1]))}. An approval is required before issuance.",
             '', 
-            ['uzo.nwokoro@ozonefl.com', issuer, 'dickson.abanum@ozonefl.com', sender], fail_silently=True)
+            mail_list + [self.request.user.email], 
+            fail_silently=True)
             return super().form_valid(form)
         else:
             messages.info(self.request, 'Request not submitted, Request quantity more than what is available.')
@@ -109,8 +114,8 @@ class IssueArticleCreateView(LoginRequiredMixin, CreateView):
         request_obj = RequestArticle.objects.get(pk=self.kwargs['pk'])
         # article = form.instance.the_request.article
         article = request_obj.article
-        if article.quantity_balance > request_obj.quantity: #form.instance.the_request.quantity:
-            article.quantity_balance -= request_obj.quantity #form.instance.the_request.quantity
+        if article.quantity_balance > request_obj.quantity: 
+            article.quantity_balance -= request_obj.quantity 
             article.save()
 
             request_obj.status = True
@@ -119,14 +124,11 @@ class IssueArticleCreateView(LoginRequiredMixin, CreateView):
             form.instance.the_request = request_obj
             form.instance.approved_by = self.request.user
 
-            send_mail(f'Request for  Article #{str(request_obj.id).zfill(3)}', 
-            f'{request_obj.quantity} {request_obj.article.name} APPROVED', 
-            from_email='',
-            recipient_list=[request_obj.request_by.email, 'uzo.nwokoro@ozonefl.com', 'g.motun01@gmail.com', 'dickson.abanum@ozonefl.com'],
-            fail_silently=True)
-            return super().form_valid(form)
-        elif article.quantity_balance == request_obj.quantity: #form.instance.the_request.quantity:
-            article.status = False # article no longer available 
+            message = f'{request_obj.quantity} {request_obj.article.name} APPROVED'
+            redirect_to = super().form_valid(form)
+
+        elif article.quantity_balance == request_obj.quantity:
+            article.status = False
             article.quantity_balance = 0
             article.save()
 
@@ -135,15 +137,39 @@ class IssueArticleCreateView(LoginRequiredMixin, CreateView):
 
             form.instance.the_request = request_obj
             form.instance.approved_by = self.request.user
-            return super().form_valid(form)
+
+            message = f'{request_obj.quantity} {request_obj.article.name} APPROVED'
+            redirect_to = super().form_valid(form)
+
         else:
-            messages.info(self.request, f'Your request for {article} not approved. Not enough Article(s) to issue')
-            return redirect('article-list')
-        # return HttpResponse(self.kwargs)
+            message = f'Your request for {article} NOT approved yet. Not enough Article(s) to issue'
             
+            messages.info(self.request, message)
+            redirect_to = redirect('article-list')
 
-class ArticleRequest(LoginRequiredMixin, View):
+        send_mail(f'Request for  Article #{str(request_obj.id).zfill(3)}', 
+            message=message, 
+            from_email='',
+            recipient_list=mail_list + [request_obj.request_by.email],
+            fail_silently=True)
 
-    def get(self, request):
+        return redirect_to
+        
+class ArticleRequestDisapprove(LoginRequiredMixin, View):
+    
+    def get(self, request, **kwargs):
+        request_obj=get_object_or_404(RequestArticle, pk=int(kwargs['pk']))
 
-        return render(request, 'material/article_request_form.html', context={})
+        messages.info(request, f"Request #{str(kwargs['pk']).zfill(3)} not Approved")
+
+        send_mail(f"Request for Article #{str(kwargs['pk']).zfill(3)}",
+        f"Request for Article #{str(kwargs['pk']).zfill(3)} NOT APPROVED",
+        from_email='',
+        recipient_list=mail_list + [request_obj.request_by.email],
+        fail_silently=True        
+        )
+
+        request_obj.status = False
+        request_obj.save()
+
+        return redirect('article-list')

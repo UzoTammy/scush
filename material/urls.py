@@ -10,6 +10,6 @@ urlpatterns = [
     path('article/create/', ArticleCreateView.as_view(), name='article-create'),
     path('article/<int:pk>/update/', ArticleUpdateView.as_view(), name='article-update'),
 
-    # path('article/request/', ArticleRequest.as_view(), name='article-request'),
-    path('request/create/', RequestCreateView.as_view(), name='request-create')
+    path('request/create/', RequestCreateView.as_view(), name='request-create'),
+    path('article/request/<int:pk>/dissapprove/', ArticleRequestDisapprove.as_view(), name='article-request-disapprove'), 
 ]

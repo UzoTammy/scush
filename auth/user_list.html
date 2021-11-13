@@ -35,10 +35,16 @@
                 </tr>
             {% endfor %}
             </table>
+            <small class="text-danger">Please note that special users are excluded from the list. These are users without hyphen in their username. ({{A}} of {{B}})</small>
+        
             <a type="button" href="{% url 'home' %}" class="btn btn-dark float-right mt-3">
                 <i class="fa fa-reply"></i>
             </a>
         </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            </div>
     </div>
 </div>
 {% endblock %}

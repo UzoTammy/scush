@@ -23,7 +23,7 @@
                             <button class="btn btn-outline-primary" type="submit">Approve</button>
                         </div>
                         <div class="col text-center">
-                            <a href="" class="btn btn-outline-danger">Disapprove</a>
+                            <a href="{% url 'article-request-disapprove' request.pk %}" class="btn btn-outline-danger">Disapprove</a>
                         </div>
                         <div class="col">
                             <a href="{% url 'article-list' %}" class="btn btn-outline-dark float-right">
