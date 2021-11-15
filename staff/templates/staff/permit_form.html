@@ -1,0 +1,42 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row">
+        <div class="col">
+            <form action="" method="post">
+                {% csrf_token%}
+                <legend>Permission Request #{{code|zeropadding:3}}</legend>
+                <div class="row row-cols-1">
+                    <div class="col">
+                        <ul class="list-group">
+                            <li class="list-group-item">Requested By: {{object.request_by}}</li>
+                            <li class="list-group-item">Staff: {{object.staff}}</li>
+                            <li class="list-group-item">Date of request: {{object.date}}</li>
+                            <li class="list-group-item">Start Date: {{object.start_date}}</li>
+                            <li class="list-group-item">Resume Date: {{object.resume_date}}</li>
+                            <li class="list-group-item">Duration: {{object.resume_date|timeuntil:object.start_date}}</li>
+                            <li class="list-group-item">Status: {{object.status|yesno:'Approved, Disapproved, Pending'}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-group p-2">
+                    <div class="row">
+                        <div class="col">
+                            <button class="btn btn-outline-primary" type="submit">Approve</button>
+                        </div>
+                        <div class="col text-center">
+                            <a href="{% url 'request-permission-disapprove' code %}" class="btn btn-outline-danger">Disapprove</a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'request-permission-list' %}" class="btn btn-outline-dark float-right">
+                                <i class="fa fa-reply"></i>
+                            </a>
+                        </div>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,15 +1,8 @@
 import decimal
+from django import template
 
-from .models import (Employee,
-                     Payroll,
-                     CreditNote,
-                     DebitNote,
-                     Terminate,
-                     Reassign,
-                     Suspend,
-                     Permit,
-                     SalaryChange,
-                     EmployeeBalance)
+from django.http.request import HttpRequest
+from .models import *
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
@@ -30,14 +23,14 @@ from decimal import Decimal
 from django.contrib import messages
 from django.core.mail import send_mail, mail_admins, mail_managers
 from django.core.validators import ValidationError
-from .form import DebitForm, CreditForm
+from .form import DebitForm, CreditForm, RequestPermissionForm
 from django.template import loader
 from django.db.models import (F,
                               Sum,
                               Avg,
                               Max,
                               Min,)
-from .form import EmployeeForm
+from .form import *
 from .models import POSITIONS, BRANCHES
 
 
@@ -413,6 +406,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             days_consumed = 0
 
         balance = EmployeeBalance.objects.filter(staff_id=person)
+        
         if balance.exists():
             credit = balance.filter(value_type='Cr')
             debit = balance.filter(value_type='Dr')
@@ -1415,3 +1409,146 @@ class EmployeeBalanceUpdateView(UpdateView):
     
     def get_success_url(self):
         return reverse_lazy('employee-balance-detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class RequestPermissionCreateView(LoginRequiredMixin, CreateView):
+    form_class = RequestPermissionForm
+    template_name = 'staff/request_permission_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['create'] = True
+        return context
+    def get(self, request, *args, **kwargs):
+        staff_id = int(str(request.user).split('-')[1])
+        staff = Employee.objects.filter(pk=staff_id)
+        if staff.exists():
+            self.initial['staff'] = staff.get()
+        self.initial['start_date'] = timezone.now()
+        self.initial['resume_date'] = timezone.now()
+        return super().get(request, *args, **kwargs)
+    
+    # the submit method
+    def form_valid(self, form):
+        form.instance.request_by = self.request.user
+        qs = RequestPermission.objects.all()
+        num = qs.last().id if qs.exists() else 1
+        user_email = self.request.user.email
+        messages.info(self.request, f'Your request is submitted successfully!!!')
+        send_mail(subject=f'Permission Request #{str(num+1).zfill(3)}',
+        message=f'Your request for permission has been received and will be processed adequately.',
+        from_email='',
+        recipient_list=[user_email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
+        fail_silently=True
+        )
+        return super().form_valid(form)
+    
+
+class RequestPermissionUpdateView(LoginRequiredMixin, UpdateView):
+    model = RequestPermission
+    fields = '__all__'
+    # form_class = RequestPermissionForm
+    template_name = 'staff/request_permission_form.html'
+
+    def get(self, request, *args, **kwargs):
+        # user_id = int(str(request.user).split('-')[1])
+        request = RequestPermission.objects.get(pk=kwargs['pk'])
+        # staff = Employee.objects.filter(pk=staff_id)
+        # if staff.exists():
+        #     self.initial['staff'] = staff.get()
+        self.initial['start_date'] = request.start_date
+        self.initial['resume_date'] = request.resume_date
+        return super().get(request, *args, **kwargs)
+    
+    def form_invalid(self, form):
+        print(form.errors)
+        return super().form_invalid(form)
+
+    def form_valid(self, form):
+        try:
+            code = form.instance.request_by.split('-')[1]
+            requester = User.objects.filter(pk=code)
+            requester_email = requester.email if requester.exists() else None
+        except:
+            requester_email = None
+        send_mail(
+            subject=f'Permission Request #{str(self.kwargs["pk"]).zfill(3)}',
+            message=f'Request for permission has been modified from {form.instance.start_date} to {form.instance.resume_date} for {form.instance.staff}.',
+            from_email='',
+            recipient_list=['self.request.user.email', requester_email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
+            fail_silently=True
+        )
+        return super().form_valid(form)
+
+class RequestPermissionListView(LoginRequiredMixin, ListView):
+    model = RequestPermission
+    ordering = '-pk'   
+    template_name = 'staff/request_permission_list.html' 
+
+    def get_queryset(self):
+        return super().get_queryset().filter(status=None)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['permissions'] = Permit.objects.all().order_by('-pk')
+        return context
+
+
+class PermissionFromRequest(LoginRequiredMixin, CreateView):
+    model = Permit
+    fields = []
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        context['code'] = self.kwargs['pk']
+        context['object'] = get_object_or_404(RequestPermission, pk=self.kwargs['pk']) #RequestPermission.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def form_valid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        
+        """The request to change to approved status"""
+        obj = context['object']
+        obj.status = True
+        obj.save()
+
+        """Programmatically filling the form"""
+        form.instance.staff = context['object'].staff
+        form.instance.starting_from = context['object'].start_date
+        form.instance.ending_at = context['object'].resume_date
+        form.instance.reason = context['object'].reason
+
+        messages.info(self.request, f'Permission Granted to {form.instance.staff} on request #{str(obj.id).zfill(3)}')
+        
+        try:
+            code = form.instance.request_by.split('-')[1]
+            requester = User.objects.filter(pk=code)
+            requester_email = requester.email if requester.exists() else None
+        except:
+            requester_email = None
+        send_mail(f"Permission Request #{str(obj.pk).zfill(3)}",
+        message=f'Permission Granted to {obj.staff} on request #{str(obj.id).zfill(3)}. {obj.reason} being the reason. Permitted on {obj.start_date} to resume on {obj.resume_date}',
+        from_email='',
+        recipient_list=[requester_email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
+        fail_silently=True
+        )
+        return super().form_valid(form)
+
+
+class RequestPermissionDisapprove(LoginRequiredMixin, View):
+    
+    def get(self, request, *args, **kwargs):
+        obj = get_object_or_404(RequestPermission, pk=kwargs['pk'])
+        obj.status = False
+        obj.save()
+
+        messages.info(request, f"Permission Request #{str(kwargs['pk']).zfill(3)} DISAPPROVED")
+        send_mail(subject=f"Permission Request #{str(kwargs['pk']).zfill(3)}",
+        message=f"Your request for permission is NOT APPROVED",
+        from_email='',
+        recipient_list=[obj.request_by.email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
+        fail_silently=True
+        )
+        return redirect('request-permission-list')
+    

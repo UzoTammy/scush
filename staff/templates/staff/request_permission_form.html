@@ -1,0 +1,46 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <form action="" method="post" class="p-4 shadow-lg">
+                {% csrf_token %}
+                <legend>Request Permission</legend>
+                <fieldset>
+                    <div class="form-row">
+                        {% if not create %}
+                        <div class="form-group col-md-6 mb-0" hidden>
+                            {{form.request_by|as_crispy_field}}
+                        </div>
+                        {% endif %}
+                        <div class="form-group col-md-6 mb-0">
+                            {{form.staff|as_crispy_field}}
+                        </div>
+                        <div class="form-group col-md-6 mb-0">
+                            {{form.reason|as_crispy_field}}
+                        </div>
+                        <div class="form-group col-md-6 mb-0">
+                            {{form.start_date|as_crispy_field}}
+                        </div>
+                        <div class="form-group col-md-6 mb-0">
+                            {{form.resume_date|as_crispy_field}}
+                        </div>
+                    </div>
+                    
+                </fieldset>
+                <div class="row mb-3">
+                    <div class="col">
+                        <button class="btn btn-primary" type="submit">Apply</button>
+                        <a class="btn btn-outline-dark float-right" href="{% url 'request-permission-list' %}">
+                            <i class="fa fa-reply"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

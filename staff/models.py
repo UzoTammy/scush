@@ -8,6 +8,7 @@ from djmoney.money import Money
 import datetime
 from ozone import mytools
 import json
+from django.contrib.auth.models import User
 
 
 with open('extrafiles/choices.json') as jsf:
@@ -20,6 +21,7 @@ BRANCHES = sorted(list((i, i) for i in content['branches']))
 POSITIONS = sorted(list((i, i) for i in content['positions']))
 
 DEPARTMENTS = sorted(list((i, i) for i in content['departments']))
+
 
 
 class ActiveEmployeeManager(models.Manager):
@@ -228,6 +230,9 @@ class Permit(models.Model):
     def __str__(self):
         return f"""{self.staff.fullname()}-{self.id}"""
 
+    def get_absolute_url(self):
+        return reverse('request-permission-list')
+
 
 class SalaryChange(models.Model):
     staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
@@ -259,3 +264,22 @@ class EmployeeBalance(models.Model):
     
     def get_absolute_url(self):
         return reverse('employeebalance-detail', kwargs={'pk': self.pk})
+
+
+class RequestPermission(models.Model):
+    request_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now, blank=True)
+    reason = models.CharField(max_length=100)
+    start_date = models.DateTimeField()
+    resume_date = models.DateTimeField()
+    status = models.BooleanField(default=None, null=True, blank=True) #true: approved, #false: disapproved, #none: pending
+
+    # available = AvailableRequestArticleManager()
+    # objects = models.Manager()
+    
+    def __str__(self):
+        return f'{self.staff} permission request'
+
+    def get_absolute_url(self):
+        return reverse('home')

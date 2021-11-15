@@ -47,3 +47,11 @@ urlpatterns += [
     path('payroll/<int:pk>/balance/', BalanceView.as_view(), name='balance-view'),
     path('payroll/tax/list/', TaxList.as_view(), name='tax-list'),
 ]
+
+urlpatterns += [
+    path('request/permission/create/', RequestPermissionCreateView.as_view(), name='request-permission-create'),
+    path('request/permission/<int:pk>/update/', RequestPermissionUpdateView.as_view(), name='request-permission-update'),
+    path('request/permission/list/', RequestPermissionListView.as_view(), name='request-permission-list'),
+    path('permission/from/<int:pk>/request/', PermissionFromRequest.as_view(), name='permission-from-request'),
+    path('request/permission/<int:pk>/disapprove/', RequestPermissionDisapprove.as_view(), name='request-permission-disapprove'),
+]

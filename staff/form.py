@@ -1,7 +1,11 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, fields
 from django import forms
-from .models import CreditNote, DebitNote, Employee
+from django.forms.widgets import DateTimeInput, Input
+from .models import CreditNote, DebitNote, Employee, RequestPermission
 import json
+from django.utils import timezone
+import datetime
+
 
 class CreditForm(ModelForm):
     class Meta:
@@ -42,3 +46,52 @@ class EmployeeForm(ModelForm):
               'basic_salary', 'allowance', 'tax_amount')
 
 
+class DateTimeSelectorWidget(forms.MultiWidget):
+    def __init__(self, attrs=None):
+        days = [(day, str(day).zfill(2)) for day in range(1, 32)]
+        months = [(month, str(month).zfill(2)) for month in range(1, 13)]
+        year = datetime.date.today().year
+        years = [(year, str(year)) for year in [year, year+1]]
+        hours = [(hour, str(hour).zfill(2)) for hour in range(24)]
+        minutes = [(minute, str(minute).zfill(2)) for minute in range(60)]
+        widgets = [
+            forms.Select(attrs=attrs, choices=days),
+            forms.Select(attrs=attrs, choices=months),
+            forms.Select(attrs=attrs, choices=years),
+            forms.Select(attrs=attrs, choices=hours),
+            forms.Select(attrs=attrs, choices=minutes),
+            
+        ]
+        super().__init__(widgets, attrs)
+
+    def decompress(self, value):
+        if isinstance(value, datetime.datetime):
+            return [value.day, value.month, value.year, value.hour, value.minute]
+        elif isinstance(value, str):
+            date = value.split(' ')[0]
+            time = value.split(' ')[1]
+            year, month, day = date.split('-') #value.split('-')
+            hour, minute = time.split(':')
+            return [day, month, year, hour, minute]
+        print(value)
+        return [None, None, None, None, None]
+
+    def value_from_datadict(self, data, files, name):
+        day, month, year, hour, minute = super().value_from_datadict(data, files, name)
+        # DateField expects a single string that it can parse into a date.
+        return f'{year}-{month}-{day} {hour}:{minute}'
+
+
+class RequestPermissionForm(ModelForm):
+    start_date = forms.DateTimeField(widget=DateTimeInput(attrs={
+        'class':'form-control col-6', 'type':'datetime-local'
+    }))
+    resume_date = forms.DateTimeField(widget=DateTimeInput(attrs={
+        'class':'form-control col-6', 'type': 'datetime-local'
+    }))
+    
+    class Meta:
+        model = RequestPermission
+        fields = ('staff', 'reason', 'start_date', 'resume_date')
+    
+        

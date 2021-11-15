@@ -1,0 +1,85 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+{% block content%}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <table class="table table-info" 
+            data-toggle="table" 
+            data-pagination="true">
+                <caption>List of Pending Request for Permission</caption>
+                <thead class="bg-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Requested By</th>
+                        <th>Staff</th>
+                        <th>Reason</th>
+                        <th>Request Date</th>
+                        <th>Start Date</th>
+                        <th>Resume Date</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                    <tr>
+                        <td><a href="{% url 'request-permission-update' object.pk %}" class="fa fa-edit ml-2"></a>
+                            <a href="{% url 'permission-from-request' object.pk %}">{{object.id|zeropadding:3}}</a></td>
+                        <td>{{object.request_by}}</td>
+                        <td>{{object.staff}}</td>
+                        <td>{{object.reason}}</td>
+                        <td>{{object.date}}</td>
+                        <td>{{object.start_date}}</td>
+                        <td>{{object.resume_date}}</td>
+                        <td>{{object.resume_date|timeuntil:object.start_date}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col">
+            <table class="table table-info" 
+            data-toggle="table" 
+            data-pagination="true">
+                <caption>List of Granted Permissions</caption>
+                <thead class="bg-light">
+                    <tr>
+                        <th>ID</th>
+                        <!-- Request id -->
+                        <th>Staff</th>
+                        <th>Reason</th>
+                        <th>Start Date</th>
+                        <th>Resume Date</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in permissions %}
+                    <tr>
+                        <td><a href="" class="fa fa-edit ml-2"></a>
+                            <a href="#">{{object.id|zeropadding:3}}</a>
+                        </td>
+                        <!-- Request id -->
+                        <td>{{object.staff}}</td>
+                        <td>{{object.reason}}</td>
+                        <td>{{object.starting_from}}</td>
+                        <td>{{object.ending_at}}</td>
+                        <td>{{object.ending_at|timeuntil:object.starting_from}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a href="{% url 'staff-home' %}" class="btn btn-outline-dark float-right">
+                <i class="fa fa-reply"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock%}

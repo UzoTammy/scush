@@ -73,8 +73,6 @@ class RequestCreateView(LoginRequiredMixin, CreateView):
     model = RequestArticle
     fields = ('article', 'quantity')
 
-
-
     def form_valid(self, form):
         article = form.instance.article
         if article.quantity_balance >= form.instance.quantity:
@@ -154,9 +152,10 @@ class IssueArticleCreateView(LoginRequiredMixin, CreateView):
             fail_silently=True)
 
         return redirect_to
-        
+
+
 class ArticleRequestDisapprove(LoginRequiredMixin, View):
-    
+
     def get(self, request, **kwargs):
         request_obj=get_object_or_404(RequestArticle, pk=int(kwargs['pk']))
 
@@ -168,8 +167,8 @@ class ArticleRequestDisapprove(LoginRequiredMixin, View):
         recipient_list=mail_list + [request_obj.request_by.email],
         fail_silently=True        
         )
-
         request_obj.status = False
         request_obj.save()
 
         return redirect('article-list')
+
