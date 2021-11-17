@@ -11,6 +11,7 @@ from staff.models import Employee
 from django.db.models import F, Sum
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
+from django.core.mail import EmailMessage
 
 
 
@@ -51,6 +52,23 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.quantity_balance = form.instance.quantity_in
+        staff_id = str(self.request.user).split('-')[1]
+        staff = Employee.objects.filter(id=staff_id)
+        staff = staff.get() if staff.exists() else None
+        email = EmailMessage(
+            f'Articles Added to Store',
+            f"""
+            <p>{form.instance.quantity_in} {form.instance.name} has been added to store</p>
+            <p>Description: {form.instance.description}</p>
+            <p>Valued at {form.instance.value} and from {form.instance.source}</p>
+            <p>This was added by {staff}</p>
+            """,
+            '',
+            mail_list[1:],
+            cc=[mail_list[0]],
+        ) 
+        email.content_subtype = "html"
+        email.send(fail_silently=False)       
         return super().form_valid(form)
 
 

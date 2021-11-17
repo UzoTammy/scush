@@ -12,6 +12,8 @@ ozone-files.txt
 historyCLI.txt
 aa.txt
 customer/static/json/
+mail/sample
+mail/sample.html
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

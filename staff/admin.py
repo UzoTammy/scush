@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db import models
 from .models import (Employee,
                      StaffStatement,
                      CreditNote,
@@ -11,6 +10,7 @@ from .models import (Employee,
                      Permit,
                      SalaryChange, 
                      EmployeeBalance,
+                     RequestPermission
                      )
 
 # Register your models here.
@@ -30,7 +30,7 @@ admin.site.register(Suspend)
 admin.site.register(Permit)
 admin.site.register(SalaryChange)
 admin.site.register(EmployeeBalance)
-
+admin.site.register(RequestPermission)
 
 
 
