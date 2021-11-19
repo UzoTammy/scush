@@ -73,7 +73,6 @@ class DateTimeSelectorWidget(forms.MultiWidget):
             year, month, day = date.split('-') #value.split('-')
             hour, minute = time.split(':')
             return [day, month, year, hour, minute]
-        print(value)
         return [None, None, None, None, None]
 
     def value_from_datadict(self, data, files, name):

@@ -61,7 +61,7 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
             <p>{form.instance.quantity_in} {form.instance.name} has been added to store</p>
             <p>Description: {form.instance.description}</p>
             <p>Valued at {form.instance.value} and from {form.instance.source}</p>
-            <p>This was added by {staff}</p>
+            <p>This article was added by {staff}</p>
             """,
             '',
             mail_list[1:],
@@ -74,12 +74,35 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
 
 class ArticleUpdateView(LoginRequiredMixin, UpdateView):
     model = Article
-    fields = ('name', 'description', 'value', 'quantity_in',
+    fields = ('name', 'description', 'value',
     'in_date', 'source', 'quantity_balance')
 
     def form_valid(self, form):
         if form.instance.quantity_balance > 0:
             form.instance.status = True
+            form.instance.quantity_in= form.instance.quantity_balance
+        
+
+        staff_id = int(str(self.request.user).split('-')[1])
+        staff = Employee.active.filter(id=staff_id)
+        staff = staff.get() if staff.exists() else None
+        
+        email = EmailMessage(
+            f'Articles Update',
+            f"""
+            <h5>{form.instance.name} has been updated to:</h5>
+            <p>Adjusted Quantity: {form.instance.quantity_in}</p>
+            <p>Description: {form.instance.description}</p>
+            <p>Valued at {form.instance.value} and from {form.instance.source}</p>
+            <p>This articles was updated by {staff}</p>
+            """,
+            '',
+            mail_list[1:],
+            cc=[mail_list[0]],
+        ) 
+        email.content_subtype = "html"
+        email.send(fail_silently=False)       
+        
         return super().form_valid(form)
 
 

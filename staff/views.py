@@ -1,8 +1,6 @@
 import decimal
-from django import template
-
-from django.http.request import HttpRequest
 from .models import *
+from .form import *
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
@@ -11,8 +9,7 @@ from django.views.generic import (View,
                                   ListView,
                                   DetailView,
                                   CreateView,
-                                  UpdateView,
-                                  )
+                                  UpdateView)
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from apply.models import Applicant
 from djmoney.money import Money
@@ -21,16 +18,11 @@ import calendar
 import datetime
 from decimal import Decimal
 from django.contrib import messages
-from django.core.mail import send_mail, mail_admins, mail_managers, send_mass_mail
+from django.core.mail import send_mail
 from django.core.validators import ValidationError
 from .form import DebitForm, CreditForm, RequestPermissionForm
 from django.template import loader
-from django.db.models import (F,
-                              Sum,
-                              Avg,
-                              Max,
-                              Min,)
-from .form import *
+from django.db.models import (F, Sum, Avg, Max, Min)
 from .models import POSITIONS, BRANCHES
 
 

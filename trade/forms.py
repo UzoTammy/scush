@@ -1,5 +1,6 @@
 from django import forms
 from django.db.models import fields
+from django.forms.widgets import DateInput
 from .models import TradeMonthly, TradeDaily
 import datetime
 from djmoney.models.validators import MinMoneyValidator
@@ -17,7 +18,12 @@ class TradeMonthlyForm(forms.ModelForm):
         fields = '__all__'
 
 class TradeDailyForm(forms.ModelForm):
-    date = forms.DateField(initial=datetime.date.today(), help_text='yyyy-mm-dd')
+    date = forms.DateField(widget=DateInput(attrs={'type':'date'}))
+
+    # start_date = forms.DateTimeField(widget=DateTimeInput(attrs={
+    #     'class':'form-control col-6', 'type':'datetime-local'
+    # }))
+    
     # sales = MoneyField(validators=[MinMoneyValidator(1), MinMoneyValidator(Money(1, 'NGN'))], 
     # help_text='1.00 instead of 0.00')
     # purchase = MoneyField(validators=[MinMoneyValidator(1), MinMoneyValidator(Money(1, 'NGN'))], 

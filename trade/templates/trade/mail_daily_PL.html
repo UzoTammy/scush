@@ -1,0 +1,31 @@
+{% extends 'customer/base.html' %}
+{% load djmoney %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container">
+    <h4>P & L for {{object.date}}</h4>
+    <hr>
+    <p>Sales: {{object.sales}}</p>
+    <hr>
+    <p>Purchase: {{object.purchase}}</p>
+    <hr>
+    <p>Direct Expenses: {{object.direct_expenses}}</p>
+    <hr>
+    <p>Indirect Expenses: {{object.indirect_expenses}}</p>
+    <hr>
+    <p>Opening Stock: {{object.opening_value}}</p>
+    <hr>
+    <p>Closing Stock: {{object.closing_value}}</p> 
+    <hr>
+    <p>Gross Profit: {{object.gross_profit}}</p>
+    <hr>
+    <p>Direct Income: {{object.direct_income}}</p> 
+    <hr>
+    <p>Indirect Income: {{object.indirect_income}}</p>
+    <hr>
+    <p>Net profit: {{object.net_profit}}</p>
+    <hr>
+    <p></p>   
+</div>
+{% endblock content %}

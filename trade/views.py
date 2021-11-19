@@ -5,6 +5,7 @@ from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
 from django.db.models.query_utils import Q
 from django.http.response import HttpResponse, HttpResponseRedirect
+from django.template import loader
 from .forms import TradeMonthlyForm, TradeDailyForm
 from django.shortcuts import redirect, render
 from .models import *
@@ -18,9 +19,10 @@ import io, base64
 from matplotlib import pyplot as plt
 import matplotlib
 import numpy as np
-from django.views.generic import (View, TemplateView, CreateView, ListView, DetailView, UpdateView)                            
+from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView)                            
 from datetime import timedelta
 from ozone import mytools
+from django.core.mail import EmailMessage
 
 
 matplotlib.use('Agg')
@@ -469,12 +471,33 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         context['title'] = 'New Daily'
         return context
 
-    def form_valid(self, form):
-        # if form.instance.sales == Money(0, 'NGN'):
-        #     form.instance.sales = Money(1, 'NGN')
-        # if form.instance.purchase == Money(0, 'NGN'):
-        #     form.instance.purchase = Money(1, 'NGN')
-        return super().form_valid(form)
+    def form_valid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        context['object'] = {
+            'date': form.instance.date,
+            'sales': form.instance.sales,
+            'purchase': form.instance.purchase,
+            'direct_expenses': form.instance.direct_expenses,
+            'indirect_expenses': form.instance.indirect_expenses,
+            'opening_value': form.instance.opening_value,
+            'closing_value': form.instance.closing_value,
+            'gross_profit': form.instance.gross_profit,
+            'direct_income': form.instance.direct_income,
+            'indirect_income': form.instance.indirect_income,
+            'net_profit': form.instance.gross_profit - form.instance.indirect_expenses + form.instance.direct_income + form.instance.indirect_income,
+        }
+        email = EmailMessage(
+            subject=f'Daily P & L Report for {form.instance.date}',
+            body=loader.render_to_string('trade/mail_daily_PL.html', context=context),
+            from_email='',
+            to=['uzo.nwokoro@ozonefl.com'],
+            cc=['dickson.abanum@ozonefl.com'],
+            headers={'message-id': 'zebra'},
+        )
+        email.content_subtype="html"
+        email.send(fail_silently=False)
+        return super().form_valid(form, **kwargs)
+        
 
 class TradeDailyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = TradeDaily
@@ -512,6 +535,31 @@ class TradeDailyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context['title'] = 'Daily Update'
         return context
 
+    def form_valid(self, form):
+        email = EmailMessage(
+            subject=f'Daily P & L Report for {form.instance.date}',
+            body=f"""
+            <p>
+            Sales: {form.instance.sales} <br>
+            Purchase: {form.instance.purchase} <br>
+            Direct Expenses: {form.instance.direct_expenses} <br>
+            Opening Stock: {form.instance.opening_value} <br>
+            Closing Stock: {form.instance.closing_value} <br>
+            Direct Income: {form.instance.direct_income} <br>
+            Indirect Income: {form.instance.indirect_income} <br>
+            Gross Profit: {form.instance.gross_profit} <br>
+            Indirect Expenses: {form.instance.indirect_expenses}
+            Net Profit: {form.instance.gross_profit - form.instance.indirect_expenses}
+            </p>
+            """,
+            from_email='',
+            to=['uzo.nwokoro@ozonefl.com'],
+            cc=['dickson.abanum@ozonefl.com'],
+            headers={'message-id': 'zebra'},
+        )
+        email.content_subtype="html"
+        email.send(fail_silently=False)
+        return super().form_valid(form)
 
 class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 

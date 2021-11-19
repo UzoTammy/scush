@@ -8,10 +8,10 @@
             <table data-toggle="table"
                     data-pagination="true"
                     data-search="true"
-                    class="table table-bordered">
+                    class="table table-bordered table-sm">
                 <caption>Daily Trading, Profit & Loss Account</caption>
             <thead>
-                <tr>
+                <tr class="text-center">
                     <th>ID</th>
                     <th>Date</th>
                     <th>Opening Stock</th>
@@ -21,13 +21,14 @@
                     <th>Indirect Expenses</th>
                     <th>Closing Stock</th>
                     <th>Gross Profit</th>
+                    <th>Net Profit</th>
                 </tr>
             </thead>
             <tbody>
                 {% for object in object_list %}
-                <tr>
+                <tr class="text-right">
                     <td><a href="{% url 'trade-daily-detail' object.pk %}">{{object.id|zeropadding:3}}</a></td>
-                    <td>{{object.date}}</td>
+                    <td>{{object.date|date:'d-m-Y'}}</td>
                     <td>{{object.opening_value}}</td>
                     <td>{{object.sales}}</td>
                     <td>{{object.purchase}}</td>
@@ -35,6 +36,7 @@
                     <td>{{object.indirect_expenses}}</td>
                     <td>{{object.closing_value}}</td>
                     <td>{{object.gross_profit}}</td>
+                    <td>{{object.gross_profit|minus:object.indirect_expenses}}</td>
                 </tr>
                 {% endfor %}
             </tbody>
