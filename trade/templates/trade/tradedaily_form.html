@@ -60,7 +60,12 @@
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                     <div class="col text-right">
+                        {% if title == 'Daily Update' %}
+                        <a class="btn btn-outline-dark" href="{% url 'trade-daily-detail' object.pk %}"><i class="fa fa-reply"></i> Trade Home</a>
+                        {% else %}
                         <a class="btn btn-outline-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i> Trade Home</a>
+
+                        {% endif %}
                     </div>
                 </div>
                 

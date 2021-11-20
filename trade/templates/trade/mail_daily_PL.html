@@ -5,31 +5,42 @@
 {% block content %}
 <div class="container">
 
-    <h4>P & L for {{object.date}} 
+    <h5>P & L for {{object.date}} and it's month cummulative
         {% if title == 'Daily Update' %}
         Modified
         {% endif %}
-    </h4>
+    </h5>
     <hr>
-    <p>Sales: {{object.sales}}</p>
+    <p>Sales: {{object.sales}} (<small>total: {{object.total_sales}}</small>)</p>
     <hr>
-    <p>Purchase: {{object.purchase}}</p>
+    <p>Purchase: {{object.purchase}} (<small>total: {{object.total_purchase}}</small>)</p>
     <hr>
-    <p>Direct Expenses: {{object.direct_expenses}}</p>
+    <p>Direct Expenses: {{object.direct_expenses}} (<small>total: {{object.total_direct_expenses}}</small>)</p>
     <hr>
-    <p>Indirect Expenses: {{object.indirect_expenses}}</p>
+    <p>Indirect Expenses: {{object.indirect_expenses}} (<small>total: {{object.total_indirect_expenses}}</small>)</p>
     <hr>
-    <p>Opening Stock: {{object.opening_value}}</p>
+    <p>Opening Stock: {{object.opening_value}} (<small>as at first day: {{object.total_os}}</small>)</p>
     <hr>
-    <p>Closing Stock: {{object.closing_value}}</p> 
+    <p>Closing Stock: {{object.closing_value}} (<small>same closing stock</small>)</p> 
     <hr>
-    <p>Gross Profit: {{object.gross_profit}}</p>
+    <p>Gross Profit: {{object.gross_profit}} (<small>total: {{object.total_gross_profit}}</small>)</p>
     <hr>
-    <p>Direct Income: {{object.direct_income}}</p> 
+    <p>Direct Income: {{object.direct_income}} (<small>total: {{object.total_direct_income}}</small>)</p> 
     <hr>
-    <p>Indirect Income: {{object.indirect_income}}</p>
+    <p>Indirect Income: {{object.indirect_income}} (<small>total: {{object.total_indirect_income}}</small>)</p>
     <hr>
-    <p style="color: green;">Net profit: {{object.net_profit}}</p>
+    {% if object.net_profit >= 0 %}
+    <p style="color: green;">Profit: {{object.net_profit}}</p>
+    {%else %}
+    <p style="color: red;">Loss: {{object.net_profit}}</p>
+    {% endif %}
+    <small>total profit for the period:
+        {%if object.total_gross_profit|minus:object.total_indirect_expenses > 0 %}
+        object.total_gross_profit|minus:object.total_indirect_expenses
+        {% else %}
+        <span style="color:red">({{object.total_gross_profit|minus:object.total_indirect_expenses|abs}})</span>
+        {% endif %}   
+    </small>
     <hr>
     <p>Stock Check: {{object.opening_value|minus:object.sales|add:object.purchase|add:object.gross_profit|add:object.direct_expenses|minus:object.closing_value}}</p>   
     <hr>

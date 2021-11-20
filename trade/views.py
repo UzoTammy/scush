@@ -473,6 +473,7 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
+        qs = self.get_queryset().filter(date__month=form.instance.date.month)
         context['object'] = {
             'date': form.instance.date,
             'sales': form.instance.sales,
@@ -484,8 +485,17 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             'gross_profit': form.instance.gross_profit,
             'direct_income': form.instance.direct_income,
             'indirect_income': form.instance.indirect_income,
-            'net_profit': form.instance.gross_profit - form.instance.indirect_expenses + form.instance.direct_income + form.instance.indirect_income,
+            'net_profit': form.instance.gross_profit - form.instance.indirect_expenses, #+ form.instance.direct_income + form.instance.indirect_income,
+            'total_sales': Money(qs.aggregate(Sum('sales'))['sales__sum'], 'NGN'),
+            'total_purchase': Money(qs.aggregate(Sum('purchase'))['purchase__sum'], 'NGN'),
+            'total_direct_expenses': Money(qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'], 'NGN'),
+            'total_indirect_expenses': Money(qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'], 'NGN'),
+            'total_os': qs.first().opening_value,
+            'total_gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN'),
+            'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN'),
+            'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN'),
         }
+        
         email = EmailMessage(
             subject=f'Daily P & L Report for {form.instance.date}',
             body=loader.render_to_string('trade/mail_daily_PL.html', context=context),
@@ -497,7 +507,7 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         email.content_subtype="html"
         email.send(fail_silently=False)
         return super().form_valid(form, **kwargs)
-        
+        # return HttpResponse('working')
 
 class TradeDailyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = TradeDaily
@@ -518,6 +528,25 @@ class TradeDailyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
             return True
         return False
+    
+    def get_queryset(self):
+        latest_record = TradeDaily.objects.latest('date')
+        
+        if latest_record:
+            latest_month = latest_record.date.month 
+            return super().get_queryset().filter(date__month=latest_month)
+        return super().get_queryset()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sales'] = Money(self.get_queryset().aggregate(Sum('sales'))['sales__sum'], 'NGN')
+        context['purchase'] = Money(self.get_queryset().aggregate(Sum('purchase'))['purchase__sum'], 'NGN')
+        context['direct_expenses'] = Money(self.get_queryset().aggregate(Sum('direct_expenses'))['direct_expenses__sum'], 'NGN')
+        context['indirect_expenses'] = Money(self.get_queryset().aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'], 'NGN')
+        context['gross_profit'] = Money(self.get_queryset().aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN')
+        context['direct_income'] = Money(self.get_queryset().aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN')
+        context['indirect_income'] = Money(self.get_queryset().aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN')
+        return context
 
 
 class TradeDailyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):

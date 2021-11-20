@@ -2,38 +2,38 @@
 {% load custom_templates %}
 
 {% block content %}
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col">
-            <table data-toggle="table table-sm"
+            <table data-toggle="table"
                     data-pagination="true"
                     data-search="true"
-                    class="table table-bordered table-sm">
-                <caption>Daily Trading, Profit & Loss Account</caption>
-            <thead>
+                    class="table table-bordered table-sm bg-light">
+                <caption>Daily Trading, Profit & Loss Account - {{date}}</caption>
+            <thead class="bg-primary text-white">
                 <tr class="text-center">
                     <th>ID</th>
                     <th>Date</th>
                     <th>Opening Stock</th>
                     <th>Sales</th>
                     <th>Purchase</th>
-                    <th>Direct Expenses</th>
-                    <th>Indirect Expenses</th>
+                    <th>D. Expenses</th>
+                    <th>I. Expenses</th>
                     <th>Closing Stock</th>
                     <th>Gross Profit</th>
                     <th>Net Profit</th>
-                    <th>Stock Check</th>
+                    <th>Check</th>
                 </tr>
             </thead>
             <tbody>
                 {% for object in object_list %}
                 <tr class="text-right">
                     <td><a href="{% url 'trade-daily-detail' object.pk %}">{{object.id|zeropadding:3}}</a></td>
-                    <td>{{object.date|date:'d-m-Y'}}</td>
+                    <td style="white-space: nowrap;">{{object.date|date:'d-m-Y'}}</td>
                     <td>{{object.opening_value}}</td>
                     <td>{{object.sales}}</td>
                     <td>{{object.purchase}}</td>
-                    <td>{{object.direct_expenses}}</td>
+                    <td>{{object.direct_expenses}} </td>
                     <td>{{object.indirect_expenses}}</td>
                     <td>{{object.closing_value}}</td>
                     <td>{{object.gross_profit}}</td>
@@ -44,6 +44,31 @@
             </tbody>
         </table>
         </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <ul class="list-group">
+                <li class="list-group-item">Total Sales: {{sales}}</li>
+                <li class="list-group-item">Total Purchase: {{purchase}}</li>
+                <li class="list-group-item">
+                    <p>Expenses: {{direct_expenses|add:indirect_expenses}}</p>  
+                    <p class="ml-3">Direct: {{direct_expenses}}</p>
+                    <p class="ml-3">Indirect: {{indirect_expenses}}</p>
+                </li>
+              </ul>
+        </div>
+        <div class="col-sm-6">
+            <ul class="list-group">
+                <li class="list-group-item">Gross Profit: {{gross_profit}}</li>
+                <li class="list-group-item">Net profit: {{gross_profit|minus:indirect_expenses}}</li>
+                <li class="list-group-item">
+                    <p>Income: {{direct_income|add:indirect_income}}</p>
+                    <p  class="ml-3">Direct: {{direct_income}}</p>
+                    <p class="ml-3">Indirect: {{indirect_income}}</p>
+                </li>
+              </ul>
+        </div>
+        
     </div>
     <div class="row mt-3">
         <div class="col text-right">
