@@ -5,7 +5,7 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <table data-toggle="table"
+            <table data-toggle="table table-sm"
                     data-pagination="true"
                     data-search="true"
                     class="table table-bordered table-sm">
@@ -22,6 +22,7 @@
                     <th>Closing Stock</th>
                     <th>Gross Profit</th>
                     <th>Net Profit</th>
+                    <th>Stock Check</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,6 +38,7 @@
                     <td>{{object.closing_value}}</td>
                     <td>{{object.gross_profit}}</td>
                     <td>{{object.gross_profit|minus:object.indirect_expenses}}</td>
+                    <td>{{object.opening_value|minus:object.sales|add:object.purchase|add:object.gross_profit|add:object.direct_expenses|minus:object.closing_value}}</td>
                 </tr>
                 {% endfor %}
             </tbody>

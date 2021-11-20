@@ -535,23 +535,24 @@ class TradeDailyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context['title'] = 'Daily Update'
         return context
 
-    def form_valid(self, form):
+    def form_valid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        context['object'] = {
+            'date': form.instance.date,
+            'sales': form.instance.sales,
+            'purchase': form.instance.purchase,
+            'direct_expenses': form.instance.direct_expenses,
+            'indirect_expenses': form.instance.indirect_expenses,
+            'opening_value': form.instance.opening_value,
+            'closing_value': form.instance.closing_value,
+            'gross_profit': form.instance.gross_profit,
+            'direct_income': form.instance.direct_income,
+            'indirect_income': form.instance.indirect_income,
+            'net_profit': form.instance.gross_profit - form.instance.indirect_expenses + form.instance.direct_income + form.instance.indirect_income,
+        }
         email = EmailMessage(
             subject=f'Daily P & L Report for {form.instance.date}',
-            body=f"""
-            <p>
-            Sales: {form.instance.sales} <br>
-            Purchase: {form.instance.purchase} <br>
-            Direct Expenses: {form.instance.direct_expenses} <br>
-            Opening Stock: {form.instance.opening_value} <br>
-            Closing Stock: {form.instance.closing_value} <br>
-            Direct Income: {form.instance.direct_income} <br>
-            Indirect Income: {form.instance.indirect_income} <br>
-            Gross Profit: {form.instance.gross_profit} <br>
-            Indirect Expenses: {form.instance.indirect_expenses}
-            Net Profit: {form.instance.gross_profit - form.instance.indirect_expenses}
-            </p>
-            """,
+            body=loader.render_to_string('trade/mail_daily_PL.html', context=context),
             from_email='',
             to=['uzo.nwokoro@ozonefl.com'],
             cc=['dickson.abanum@ozonefl.com'],
@@ -559,7 +560,8 @@ class TradeDailyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         )
         email.content_subtype="html"
         email.send(fail_silently=False)
-        return super().form_valid(form)
+        return super().form_valid(form, **kwargs)
+
 
 class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 

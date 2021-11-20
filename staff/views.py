@@ -1440,7 +1440,7 @@ class RequestPermissionCreateView(LoginRequiredMixin, CreateView):
 
         form.instance.request_by = self.request.user
         qs = RequestPermission.objects.all()
-        num = qs.last().id if qs.exists() else 1
+        num = qs.last().id if qs.exists() else 0
         user_email = self.request.user.email
         messages.info(self.request, f'Your request is submitted successfully!!!')
         send_mail(subject=f'Permission Request #{str(num+1).zfill(3)}',
