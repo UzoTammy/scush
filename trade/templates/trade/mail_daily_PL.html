@@ -31,14 +31,16 @@
     <hr>
     {% if object.net_profit >= 0 %}
     <p style="color: green;">Profit: {{object.net_profit}}</p>
-    {%else %}
-    <p style="color: red;">Loss: {{object.net_profit}}</p>
+    {% else %}
+    <p style="color: red;">Loss: {{object.net_profit|abs}}</p>
     {% endif %}
-    <small>total profit for the period:
+    <small>
         {%if object.total_gross_profit|minus:object.total_indirect_expenses > 0 %}
+        total profit for the period:
         object.total_gross_profit|minus:object.total_indirect_expenses
         {% else %}
-        <span style="color:red">({{object.total_gross_profit|minus:object.total_indirect_expenses|abs}})</span>
+        total loss for the period:
+        <span style="color:red">{{object.total_gross_profit|minus:object.total_indirect_expenses|abs}}</span>
         {% endif %}   
     </small>
     <hr>
