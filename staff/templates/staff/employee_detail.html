@@ -135,9 +135,11 @@
                         <div class="col-6">
                             <p class="text-success">Gratuity: {{naira}}{{total_balance}}</p>
                             <p class="text-success">Worked For: {{object.date_employed|timesince}}</p>
-                            {% if consumed_days > 0 %}
-                            <p class="text-danger">Permissions: {{consumed_days}} Day{{consumed_days|pluralize}}</p>
-                            {% else %} <p class="text-success">Permissions: None</p>{%endif%}
+                            {% if consumed_days|first == 0 and consumed_days|last == 0 %}
+                            <p class="text-success">Permissions: None</p>
+                            {% else %}
+                            <p class="text-danger">Permissions: {{consumed_days|first}}Day{{consumed_days|first|pluralize}}, {{consumed_days|last}}Hour{{consumed_days|last|pluralize}} </p>
+                            {% endif %}
                             <hr>
                             <p>Date Employed: {{object.date_employed}}</p>
                             <p>Official Email: {{object.official_email}}</p>
@@ -774,7 +776,7 @@
                 <div class="container">
                     <p>Permissible this year: {{permissible_days}} days</p>
                     <p>Number of permissions: {{permit_count}}</p>
-                    <p>Already Consumed this year: {{consumed_days}} day{{consumed_days|pluralize}}</p>
+                    <p>Already Consumed this year: {{consumed_days|first}} day{{consumed_days|first|pluralize}}</p>
                     {% if permissible_days > consumed_days %}
                     <p class="text-success">Permission beyond {{balance_days}} day{{balance_days|pluralize}} should not be granted</p>
                     {% endif %}

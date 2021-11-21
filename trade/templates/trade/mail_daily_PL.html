@@ -19,7 +19,7 @@
     <hr>
     <p>Indirect Expenses: {{object.indirect_expenses}} (<small>total: {{object.total_indirect_expenses}}</small>)</p>
     <hr>
-    <p>Opening Stock: {{object.opening_value}} (<small>as at first day: {{object.total_os}}</small>)</p>
+    <p>Opening Stock: {{object.opening_value}} (<small>as at first day: {{object.opening_stock}}</small>)</p>
     <hr>
     <p>Closing Stock: {{object.closing_value}} (<small>same closing stock</small>)</p> 
     <hr>
@@ -29,22 +29,28 @@
     <hr>
     <p>Indirect Income: {{object.indirect_income}} (<small>total: {{object.total_indirect_income}}</small>)</p>
     <hr>
-    {% if object.net_profit >= 0 %}
-    <p style="color: green;">Profit: {{object.net_profit}}</p>
+    
+    {% if object.net_profit.amount >= 0 %}
+    <p>Profit: <span style="color: green;">{{object.net_profit}}</span></p>
     {% else %}
-    <p style="color: red;">Loss: {{object.net_profit|abs}}</p>
+    <p>Loss: <span style="color: red;">{{object.net_profit|abs}}</span></p>
     {% endif %}
-    <small>
-        {%if object.total_gross_profit|minus:object.total_indirect_expenses > 0 %}
+    <small>(
+        {% with object.total_gross_profit|minus:object.total_indirect_expenses as profit %}
+        {% if profit.amount >= 0 %}
         total profit for the period:
-        object.total_gross_profit|minus:object.total_indirect_expenses
+        <span style="color:green">{{profit}}</span>
         {% else %}
         total loss for the period:
-        <span style="color:red">{{object.total_gross_profit|minus:object.total_indirect_expenses|abs}}</span>
-        {% endif %}   
+        <span style="color:red">{{profit|abs}}</span>
+        {% endif %} 
+        {% endwith %}
+        )  
     </small>
     <hr>
-    <p>Stock Check: {{object.opening_value|minus:object.sales|add:object.purchase|add:object.gross_profit|add:object.direct_expenses|minus:object.closing_value}}</p>   
+    <p>Check: {{object.opening_value|minus:object.sales|add:object.purchase|add:object.gross_profit|add:object.direct_expenses|minus:object.closing_value}}
+        <small style="color: rgb(81, 83, 81);">Opening stock less sales add purchase add gross profit add direct expenses less closing stock</small>
+    </p>   
     <hr>
 </div>
 {% endblock content %}

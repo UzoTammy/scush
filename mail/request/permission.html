@@ -20,7 +20,11 @@
             <hr>
             <p><span style="text-align: left;">Resume Date: </span>{{object.resume_date}}</p>
             <hr>
-            <p><span style="text-align: left;">Duration: </span>{{object.resume_date|timeuntil:object.start_date}}</p>
+            {% if object.duration|last == 'D' %}
+            <p><span style="text-align: left;">Duration: </span>{{object.duration|first|first}} Day(s)</p>
+            {% else %}
+            <p><span style="text-align: left;">Duration: </span>{{object.duration|first|first}} Hour(s)</p>
+            {% endif %}
             <hr>
             {% if object.status == True %}
             <p style="color:green; font-size:16px;"><span style="text-align: right">Status: </span>{{object.status|yesno:'APPROVED, DISAPPROVED, PENDING'}}</p>

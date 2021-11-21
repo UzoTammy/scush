@@ -1,3 +1,4 @@
+import calendar
 from django.db import models
 from djmoney.models.fields import MoneyField
 from djmoney.models.validators import MaxMoneyValidator, MinMoneyValidator
@@ -233,6 +234,16 @@ class Permit(models.Model):
     def get_absolute_url(self):
         return reverse('request-permission-list')
 
+    def duration(self):
+        if self.starting_from.date() == self.ending_at.date():
+            delta = (self.starting_from - self.ending_at).total_seconds()
+            # 1hr = 3600 seconds
+            hours = int(divmod(delta, 3600)[0])
+            return f'{hours}H'
+        else:
+            days = len(mytools.DateRange(self.starting_from.date(), self.ending_at.date()).exclude_weekday(calendar.SUNDAY))
+            return f'{days - 1}D'
+
 
 class SalaryChange(models.Model):
     staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
@@ -283,3 +294,14 @@ class RequestPermission(models.Model):
 
     def get_absolute_url(self):
         return reverse('home')
+
+
+    def duration(self):
+        if self.start_date.date() == self.resume_date.date():
+            delta = (self.resume_date - self.start_date).total_seconds()
+            # 1hr = 3600 seconds
+            hours = int(divmod(delta, 3600)[0])
+            return f'{hours}H'
+        else:
+            days = len(mytools.DateRange(self.start_date.date(), self.resume_date.date()).exclude_weekday(calendar.SUNDAY))
+            return f'{days - 1}D'

@@ -8,85 +8,76 @@
 <div class="container mt-5">
 <!--    The detailed view-->
     <div class="row">
-        <div class="col d-flex justify-content-center">
-            <div class="card mb-3" style="max-width: 540px;">
-                <div class="row g-0">
-                    <div class="col-md-4 text-center">
-                        <img src="{% static 'customer/logo.png' %}"
-                        class="rounded-circle p-2"
-                             height="50px"
-                         alt="...">
-                        <div class="col">
-                            <p class="text-primary">Applied since {{ object.get_apply_age_string}} ago</p>
-                            <p class="text-danger">Status: {{object.status|yesno:'Employed, Rejected, Pending'}}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title text-info">
-                                Application Data for {{ object }}</h5>
-                            <p class="card-text">Full Name: {{ object.last_name|upper}},
-                                {{ object.first_name}} {{ object.second_name}}</p>
-                            <p class="card-text">Date of Birth: {{ object.birth_date}}</p>
-                            <p class="card-text">Gender: {{ object.gender}}</p>
-                            <p class="card-text">Marital Status: {{object.marital_status}}</p>
-                            <p class="card-text">Date Applied: {{ object.apply_date}}</p>
-                            <p class="card-text">Qualification: {{ object.qualification}}</p>
-                            <p class="card-text">Course of Study: {{ object.course}}</p>
-                            <p class="card-text">Last Modified on: {{ object.modified_date}}</p>
-                            <p class="card-text">Mobile Number: {{ object.mobile|addsep}}</p>
-                            <p class="card-text">Email: {{ object.email}}</p>
-                            <p class="card-text">Address: {{ object.address}}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!--The buttons-->
-                <div class="row ml-2 mb-2">
-                    <!--        Employ-->
-                    <div class="col">
-                        {% if object.status is None %}
-                            <a href="{% url 'employee-create' object.pk %}" class="btn btn-success btn-sm">
-                                Employ</a>
-                        {% else %}
-                            <a href="{% url 'employee-create' object.pk %}" class="btn btn-secondary btn-sm"
-                               style="pointer-events: none;">
-                                Employ</a>
-                        {% endif %}
-
-                    </div>
-
-                    <!--Reject-->
-                    <div class="col">
-                        <a href="#"
-                           data-target="#rejectModal"
-                           data-toggle="modal"
-                           tabindex="-1"
-                           class="btn btn-info btn-sm">
-                            Reject
-                        </a>
-                    </div>
-                    <!--       Delete -->
-                    <!-- Button trigger modal -->
-                    {% if user.is_superuser %}
-                    <div class="col">
-                        <button type="button"
-                                class="btn btn-danger btn-sm"
-                                data-toggle="modal"
-                                data-target="#deleteModal">
-                            Delete
-                        </button>
-                    </div>
-                    {% endif %}
-                    <!--        return-->
-                    <div class="col">
-                        <a href="{% url 'apply' %}" class="btn btn-secondary btn-sm">
-                            <i class="fa fa-reply text-danger"></i></a>
-                    </div>
-                </div>
-            </div>
+        <div class="col">
+            <ul class="list-group">
+              <li class="list-group-item text-right"><img src="{% static 'customer/logo.png' %}"
+                class="rounded-circle p-2"
+                     height="50px"
+                 alt="...">
+                 <p class="text-primary">Applied since {{ object.get_apply_age_string}} ago</p>
+                  <p class="text-danger">Status: {{object.status|yesno:'Employed, Rejected, Pending'}}</p></li>
+              <li class="list-group-item"><h5 class="card-title text-info">
+                Application Data for {{ object }}</h5>
+              </li>
+              <li class="list-group-item">Full Name: {{ object.last_name|upper}},
+                {{ object.first_name}} {{ object.second_name}}</li>
+              <li class="list-group-item">Date of Birth: {{ object.birth_date}}</li>
+              <li class="list-group-item">Date of Birth: {{ object.birth_date}}</li>
+              <li class="list-group-item">Gender: {{ object.gender}}</li>
+              <li class="list-group-item">Marital Status: {{object.marital_status}}</li>
+              <li class="list-group-item">Date Applied: {{ object.apply_date}}</li>
+              <li class="list-group-item">Qualification: {{ object.qualification}}</li>
+              <li class="list-group-item">Course of Study: {{ object.course}}</li>
+              <li class="list-group-item">Last Modified on: {{ object.modified_date}}</li>
+              <li class="list-group-item">Mobile Number: {{ object.mobile|addsep}}</li>
+              <li class="list-group-item">Email: {{ object.email}}</li>
+              <li class="list-group-item">Address: {{ object.address}}</li>
+            </ul>   
         </div>
     </div>
+    <!--The buttons-->
+    <div class="row ml-2 mb-2 mt-4">
+      <!--        Employ-->
+      <div class="col">
+          {% if object.status is None %}
+              <a href="{% url 'employee-create' object.pk %}" class="btn btn-success btn-sm">
+                  Employ</a>
+          {% else %}
+              <a href="{% url 'employee-create' object.pk %}" class="btn btn-secondary btn-sm"
+                 style="pointer-events: none;">
+                  Employ</a>
+          {% endif %}
+
+      </div>
+
+      <!--Reject-->
+      <div class="col">
+          <a href="#"
+             data-target="#rejectModal"
+             data-toggle="modal"
+             tabindex="-1"
+             class="btn btn-info btn-sm">
+              Reject
+          </a>
+      </div>
+      <!--       Delete -->
+      <!-- Button trigger modal -->
+      {% if user.is_superuser %}
+      <div class="col">
+          <button type="button"
+                  class="btn btn-danger btn-sm"
+                  data-toggle="modal"
+                  data-target="#deleteModal">
+              Delete
+          </button>
+      </div>
+      {% endif %}
+      <!--        return-->
+      <div class="col">
+          <a href="{% url 'apply' %}" class="btn btn-secondary btn-sm">
+              <i class="fa fa-reply text-danger"></i></a>
+      </div>
+  </div>
 </div>
 <!--    Modals-->
 <div class="modal fade"

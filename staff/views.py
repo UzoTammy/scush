@@ -26,6 +26,17 @@ from django.db.models import (F, Sum, Avg, Max, Min)
 from .models import POSITIONS, BRANCHES
 
 
+def duration(start_date, resume_date):
+    if start_date.date() == resume_date.date():
+        delta = (resume_date - start_date).total_seconds()
+        # 1hr = 3600 seconds
+        hours = int(divmod(delta, 3600)[0])
+        return f'{hours}H'
+    else:
+        days = len(mytools.DateRange(start_date.date(), resume_date.date()).exclude_weekday(calendar.SUNDAY))
+        return f'{days - 1}D'
+
+
 class Salary:
     """
 x = amount to pay
@@ -362,40 +373,23 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         allocation = 0.04  # 4% of full_year_workdays
         return int(full_year_workdays * allocation)
 
-    def permit_days(self, start_date, end_date):
-        end_date = end_date.date()
-        start_date = start_date.date()
-        number_days_between = (end_date - start_date).days
-
-        if number_days_between > 1:
-            date_range = [start_date]
-            for i in range(number_days_between-1):
-                date_range.append((start_date + datetime.timedelta(days=i+1)))
-            for i in date_range:
-                if calendar.weekday(i.year, i.month, i.day) == calendar.SUNDAY:
-                    date_range.remove(i)
-            return len(date_range)
-        elif number_days_between == 1:
-            return 1
-        return 0
-
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         person = self.get_queryset().get(pk=kwargs['object'].pk)
         leave = (1 - person.date_employed.month / 12) * self.leave() if person.date_employed.year == datetime.date.today().year else self.leave()
         
         permit = Permit.objects.filter(staff_id=person)
-
+        
         if permit.exists():
-            dd = list()
+            days, hours = list(), list()
             for p in permit:
-                dd.append(self.permit_days(p.starting_from, p.ending_at))
-            days_consumed = sum(dd)
-            # permit = permit.annotate(delta=F('ending_at') - F('starting_from'))
-            # days_consumed = permit.aggregate(total=Sum('delta'))['total'].days
+                if p.duration()[-1] == 'D':
+                    days.append(int(p.duration()[:-1]))
+                else:
+                    hours.append(int(p.duration()[:-1]))
+            consumed = (sum(days), sum(hours))
         else:
-            days_consumed = 0
+            consumed = (0, 0)
 
         balance = EmployeeBalance.objects.filter(staff_id=person)
         
@@ -410,9 +404,9 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
         context['naira'] = chr(8358)
         context['permissible_days'] = int(leave)
-        context['consumed_days'] = days_consumed
-        context['permit_count'] = 'None' if days_consumed == 0 else permit.count()
-        context['balance_days'] = int(leave) - days_consumed
+        context['consumed_days'] = consumed
+        context['permit_count'] = 'None' if consumed == (0, 0) else permit.count()
+        # context['balance_days'] = int(leave) - days_consumed
         context['positions'] = (i[0] for i in POSITIONS)
         context['branches'] = (i[0] for i in BRANCHES)
 
@@ -1426,7 +1420,11 @@ class RequestPermissionCreateView(LoginRequiredMixin, CreateView):
     # the submit method
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
+        if (form.instance.start_date - form.instance.date).days < 3 and form.instance.start_date != form.instance.resume_date:
+            messages.info(self.request, "This request cannot be submitted because it is contrary to company's policy")
+            return redirect('home')
         context['heading'] = f'Permission for {form.instance.staff}'
+        durations = duration(form.instance.start_date, form.instance.resume_date)
         context['object'] = {
             'request_by': self.request.user,
             'staff': form.instance.staff,
@@ -1434,7 +1432,8 @@ class RequestPermissionCreateView(LoginRequiredMixin, CreateView):
             'reason': form.instance.reason,
             'start_date': form.instance.start_date,
             'resume_date':form.instance.resume_date,
-            'status': form.instance.status 
+            'status': form.instance.status,
+            'duration': (durations[:-1], durations[-1]) 
         }
         mail_message = loader.render_to_string('mail/request/permission.html', context)
 
@@ -1459,6 +1458,7 @@ class RequestPermissionUpdateView(LoginRequiredMixin, UpdateView):
     # form_class = RequestPermissionForm
     template_name = 'staff/request_permission_form.html'
 
+    
     def get(self, request, *args, **kwargs):
         request = RequestPermission.objects.get(pk=kwargs['pk'])
         self.initial['start_date'] = request.start_date
@@ -1466,6 +1466,17 @@ class RequestPermissionUpdateView(LoginRequiredMixin, UpdateView):
         return super().get(request, *args, **kwargs)
     
     def form_valid(self, form, **kwargs):
+
+        # if form.instance.start_date.date() == form.instance.resume_date.date():
+        #     delta = (form.instance.start_date - form.instance.resume_date).total_seconds()
+        #     # 1hr = 3600 seconds
+        #     hours = int(divmod(delta, 3600)[0])
+        #     duration = f'{hours}H'
+        # else:
+        #     days = len(mytools.DateRange(form.instance.start_date.date(), form.instance.resume_date.date()).exclude_weekday(calendar.SUNDAY))
+        #     duration = f'{days - 1}D'
+
+        durations = duration(form.instance.start_date, form.instance.resume_date)
         context = self.get_context_data(**kwargs)
         context['heading'] = f'Permission for {form.instance.staff} modified'
         context['object'] = {
@@ -1475,7 +1486,8 @@ class RequestPermissionUpdateView(LoginRequiredMixin, UpdateView):
             'reason': form.instance.reason,
             'start_date': form.instance.start_date,
             'resume_date':form.instance.resume_date,
-            'status': form.instance.status 
+            'status': form.instance.status,
+            'duration': (durations[:-1], durations[-1])
         }
         requester_email = form.instance.request_by.email
         mail_message = loader.render_to_string('mail/request/permission.html', context)
