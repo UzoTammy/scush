@@ -469,8 +469,16 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'New Daily'
+        next_date = self.get_queryset().latest('date').date + timedelta(days=1)
+        if calendar.weekday(next_date.year, next_date.month, next_date.day) == calendar.SUNDAY:
+            next_date += timedelta(days=1)
+        context['next_date'] = next_date 
         return context
-
+    
+    def get(self, request, *args: str, **kwargs):
+        
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
         qs = self.get_queryset().filter(date__month=form.instance.date.month)
@@ -486,14 +494,14 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             'direct_income': form.instance.direct_income,
             'indirect_income': form.instance.indirect_income,
             'net_profit': form.instance.gross_profit - form.instance.indirect_expenses, #+ form.instance.direct_income + form.instance.indirect_income,
-            'total_sales': Money(qs.aggregate(Sum('sales'))['sales__sum'], 'NGN'),
-            'total_purchase': Money(qs.aggregate(Sum('purchase'))['purchase__sum'], 'NGN'),
-            'total_direct_expenses': Money(qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'], 'NGN'),
-            'total_indirect_expenses': Money(qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'], 'NGN'),
+            'total_sales': Money(qs.aggregate(Sum('sales'))['sales__sum'], 'NGN') + form.instance.sales,
+            'total_purchase': Money(qs.aggregate(Sum('purchase'))['purchase__sum'], 'NGN') + form.instance.purchase,
+            'total_direct_expenses': Money(qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'], 'NGN') + form.instance.direct_expenses,
+            'total_indirect_expenses': Money(qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'], 'NGN') + form.instance.indirect_expenses,
             'total_os': qs.first().opening_value,
-            'total_gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN'),
-            'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN'),
-            'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN'),
+            'total_gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN') + form.instance.gross_profit,
+            'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN') + form.instance.direct_income,
+            'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN') + form.instance.indirect_income,
         }
         
         email = EmailMessage(

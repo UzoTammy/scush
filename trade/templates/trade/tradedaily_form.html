@@ -8,14 +8,16 @@
         <div class="col-md-8">
             <form method="POST">
                 {% csrf_token %}
+
                 <fieldset>
-                    <legend>{{title}} Trading, Profit and Loss Form</legend>
-                    
+                    <legend>{{title}} Trading, Profit and Loss Form </legend>
                         <div class="form-row">
                             <div class="form-group col-sm-6 mb-0">
+                                <small class="text-danger">Suggested date {{next_date|date:'D d/m/Y'}}</small>
                                 {{ form.date|as_crispy_field }}
                             </div>
                         </div>
+                        
                     <div class="form-row">
                         <div class="form-group col-md-6 mb-0">
                             {{ form.sales|as_crispy_field }}

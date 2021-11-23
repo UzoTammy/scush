@@ -236,7 +236,7 @@ class Permit(models.Model):
 
     def duration(self):
         if self.starting_from.date() == self.ending_at.date():
-            delta = (self.starting_from - self.ending_at).total_seconds()
+            delta = (self.ending_at - self.starting_from).total_seconds()
             # 1hr = 3600 seconds
             hours = int(divmod(delta, 3600)[0])
             return f'{hours}H'

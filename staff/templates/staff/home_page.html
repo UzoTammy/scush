@@ -141,7 +141,11 @@
 <!--            Probation Tables-->
             <div class="row">
                 <div class="col-sm-6 text-center">
-                    <table class="table">
+                    <table class="table table-sm" 
+                    data-toggle="table" 
+                    data-pagination="true"
+                    data-page-list="[5, 10, All]"
+                    data-page-size="5">
                         <caption>Primary Probation</caption>
                         <thead>
                         <tr>
@@ -164,9 +168,14 @@
                         </tbody>
                     </table>
                 </div>
-                {% if reassign_data %}
+                
                 <div class="col-sm-6 text-center">
-                    <table class="table">
+                    <table 
+                    class="table table-sm" 
+                    data-toggle="table" 
+                    data-pagination="true"
+                    data-page-list="[5, 10, All]"
+                    data-page-size="5">
                         <caption>Secondary Probation</caption>
                         <thead>
                         <tr>
@@ -195,7 +204,42 @@
                         </tbody>
                     </table>
                 </div>
-                {% endif %}
+                
+            </div>
+            <div class="row mt-2">
+                <div class="col-sm-6 text-center">
+                    <table 
+                    class="table table-sm" 
+                    data-toggle="table" 
+                    data-click-to-select="true"
+                    data-pagination="true"
+                    data-page-list="[5, 10, All]"
+                    data-page-size="5">
+                        <caption>Permissions</caption>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Employee</th>
+                            <th>Duration</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for permit in permissions %}
+                        <tr>
+                            <td>{{permit.staff.id|zeropadding:3}}</td>
+                            <td>{{permit.staff.fullname}}</td>
+                            <td>{{permit.duration }}</td>
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="col-sm-6 text-center">
+                    
+                </div>
+                
             </div>
         </div>
     </div>
