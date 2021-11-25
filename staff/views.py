@@ -1,4 +1,6 @@
 import decimal
+
+from users.models import Profile
 from .models import *
 from .form import *
 from django.shortcuts import render, reverse, redirect, get_object_or_404
@@ -24,6 +26,7 @@ from .form import DebitForm, CreditForm, RequestPermissionForm
 from django.template import loader
 from django.db.models import (F, Sum, Avg, Max, Min)
 from .models import POSITIONS, BRANCHES
+# from users.models import Profile
 
 
 def duration(start_date, resume_date):
@@ -1591,3 +1594,46 @@ class RequestPermissionDisapprove(LoginRequiredMixin, View):
         )
         return redirect('request-permission-list')
 
+
+class UserHandleCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = User
+    fields = []
+    # success_url = reverse_lazy('employee-detail', kwargs={'pk': kwargs['pk']})
+
+    
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='Administrator').exists():
+            return True
+        return False
+
+    def get(self, request, *args, **kwargs):
+
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
+        context['staff'] = staff
+        context['username'] = f'{staff.staff.first_name}-{str(staff.id).zfill(2)}'
+        context['first_name'] = staff.staff.first_name
+        context['last_name'] = staff.staff.last_name
+        context['email'] =  staff.staff.email if staff.official_email is None else staff.official_email 
+        return context
+    
+    def form_valid(self, form):
+        staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
+        form.instance.username = f'{staff.staff.first_name}-{str(staff.id).zfill(2)}'
+        form.instance.first_name = staff.staff.first_name
+        form.instance.last_name =  staff.staff.last_name
+        form.instance.email = staff.staff.email if staff.official_email is None else staff.official_email
+        password = User.objects.make_random_password()
+        form.instance.password1 = password
+        form.instance.password2 = password
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        user_profile = Profile.objects.last()
+        user_profile.staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
+        user_profile.save()
+        return reverse("employee-detail", kwargs={'pk': self.kwargs['pk']})

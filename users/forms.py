@@ -63,14 +63,14 @@ class MyForm(forms.ModelForm):
 
 
 class UserRegisterForm(UserCreationForm):
-    email = forms.EmailField()
-    first_name = forms.CharField(max_length=30)
-    last_name = forms.CharField(max_length=30)
+    # email = forms.EmailField()
+    # first_name = forms.CharField(max_length=30)
+    # last_name = forms.CharField(max_length=30)
 
     class Meta(UserCreationForm.Meta):
         model = User
-        # fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2']
-        fields = UserCreationForm.Meta.fields
+        fields = ['password1', 'password2']
+        # fields = UserCreationForm.Meta.fields
 
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()
@@ -85,4 +85,4 @@ class UserUpdateForm(forms.ModelForm):
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['image']
+        fields = ['staff']

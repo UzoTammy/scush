@@ -1,13 +1,12 @@
 from .models import Profile
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.core.signals import request_finished
 from django.dispatch import receiver
-from customer import views
 
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
+    print(kwargs)
     if created:
         Profile.objects.create(user=instance)
 

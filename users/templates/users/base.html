@@ -59,6 +59,10 @@
 
         .dropbutton:hover .dropbtn {background-color: #3e8e41;}
 
+        .container-grid {
+            place-content: center;
+            display: grid;
+        }
     </style>
 
     {% block head %} {% endblock %}
@@ -231,7 +235,7 @@
             {% if user.is_authenticated %}
             <li class="nav-item">
                 <a class="nav-link active text-light" href="{% url 'profile' %}">
-                    <img src="{{user.profile.image.url}}"
+                    <img src="{{user.profile.staff.image.url}}"
                          height="30"
                          class="rounded-circle bg-white"
                          alt="">

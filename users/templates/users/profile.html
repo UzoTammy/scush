@@ -103,27 +103,28 @@
     </div>
     <div class="card mb-2 justify-content-center shadow" style="height:240px">
         <div class="media">
-              <img src="{{ user.profile.image.url }}"
+              <img src="{{ user.profile.staff.image.url }}"
                    width="120px"
                    height="150px"
                    class="rounded-circle mr-3 ml-2"
                    alt="...">
               <div class="media-body">
-                <p class="text-muted">Personalise your account with a photo.</p>
+                <p class="text-muted">Link this user to a Staff</p>
                 <h5 class="text-info mt-0">{{user.username|title}}
-                        {% if user.is_superuser %}
+                        {% if user.is_superuser %}                      
                         <i class="fa fa-user-plus text-success"></i>
                         {% else %}
                         <i class="fa fa-user text-info"></i>
                         {% endif %}
                         <br> <small>{{user.email}}</small>
+                        <small>{{user.profile.staff.staff.email}}</small>
                     </h5>
                   <button
                             type="button"
                             data-toggle="modal"
                             data-target="#photoUpdate"
                             class="card-text btn btn-outline-info btn-sm"
-                    >Change Photo
+                    >Link to Staff
                     </button>
               </div>
             </div>

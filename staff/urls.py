@@ -25,6 +25,7 @@ urlpatterns = [
     path('employee/balance/list/', EmployeeBalanceListView.as_view(), name='employee-balance-list'),
     path('employee/balance/<int:pk>/detail/', EmployeeBalanceDetailView.as_view(), name='employee-balance-detail'),
     path('employee/balance/<int:pk>/update/', EmployeeBalanceUpdateView.as_view(), name='employee-balance-update'),
+    path('user/<int:pk>/create/', UserHandleCreateView.as_view(), name='create-user')
     ]
 
 urlpatterns += [
