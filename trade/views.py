@@ -498,7 +498,7 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             'total_purchase': Money(qs.aggregate(Sum('purchase'))['purchase__sum'], 'NGN') + form.instance.purchase,
             'total_direct_expenses': Money(qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'], 'NGN') + form.instance.direct_expenses,
             'total_indirect_expenses': Money(qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'], 'NGN') + form.instance.indirect_expenses,
-            'total_os': qs.first().opening_value,
+            'opening_stock': qs.first().opening_value,
             'total_gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN') + form.instance.gross_profit,
             'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN') + form.instance.direct_income,
             'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN') + form.instance.indirect_income,

@@ -29,6 +29,7 @@ class Log(auth_views.LoginView):
         numbers = obj.values_list('id', flat=True)
         number = random.choice(numbers)
         context['staff'] = obj.get(pk=number)
+        context['staffs'] = obj
         return context
 
 urlpatterns = [

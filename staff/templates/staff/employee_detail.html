@@ -77,6 +77,8 @@
                     </a>
                 </li>
             </ul>
+            
+            {% if not username %}
             <hr class="dropdown-divider">
             <p class="text-white mt-1">
                 <i class="fa fa-minus text-warning"></i>
@@ -87,7 +89,8 @@
                     href="{% url 'create-user' object.pk %}">Create User</a>
                 </li>
             </ul>
-            <hr>
+            {% endif %}
+            <hr class="dropdown-divider">
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link" href="#">
@@ -112,7 +115,9 @@
                              alt="...">
                         <div class="media-body">
                             <h5 class="text-info mt-0">{{object}}</h5>
-                            <p class="text-success">Employee ID: {{object.id|zeropadding:3}}</p>
+                            <p class="text-success">Employee ID: {{object.id|zeropadding:3}}
+                                <span class="text-danger">(Username: {{username|default:'Not Created'}})</span>
+                            </p>
                         </div>
                     </div>
                     <div class="row">

@@ -9,21 +9,21 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm bg-white">
+        <div class="col-sm-3 bg-white">
             <div class="jumbotron jumbotron-fluid bg-white">
                 <div class="row text-center">
                     <div class="col">
                         <img 
                         style="border-radius: 50px 100px 50px 100px;" 
-                        src="{{ staff.image.url }}" height="180px" alt="">
-                        <p>{{staff.fullname}}</p>
+                        src="{{ staff.image.url }}" height="150px" alt="">
+                        <p>{{staff.fullname}} <br>{{staff.position}}, {{staff.branch}}</p>
                       </div>
                 </div>
             
               </div>
             
         </div>
-        <div class="col-sm mb-3">
+        <div class="col-sm-5 mb-3">
             <div class="row justify-content-center">
                 <div class="col-8">
                     <div id="login" class="container mt-5">
@@ -57,8 +57,23 @@
                 </div>
             </div>
         </div>
-        
+        <div class="col-sm-4">
+            <div class="row justify-content-center">
+                <div class="col">
+                    <h4 class="text-info mt-3">
+                    <i>
+                    SCusH is a web app for administration
+                    </i>
+                </h4>
+                <ul>
+                    <li class="text-warning">Stock Management</li>
+                    <li class="text-danger">Customer Management</li>
+                    <li class="text-success">Human Resource Management</li>
+                </ul>
+                <hr>
+                </div>
+            </div>
+        </div>
     </div>
-    
 </div>
 {% endblock %}

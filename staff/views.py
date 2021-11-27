@@ -1,5 +1,4 @@
 import decimal
-
 from users.models import Profile
 from .models import *
 from .form import *
@@ -26,7 +25,7 @@ from .form import DebitForm, CreditForm, RequestPermissionForm
 from django.template import loader
 from django.db.models import (F, Sum, Avg, Max, Min)
 from .models import POSITIONS, BRANCHES
-# from users.models import Profile
+from django.core.mail import EmailMessage
 
 
 def duration(start_date, resume_date):
@@ -407,6 +406,9 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             total_balance = Decimal('0.00')
 
         context['naira'] = chr(8358)
+        user = User.objects.filter(username=f'{person.staff.first_name}-{str(person.id).zfill(2)}')
+        if user.exists():
+            context['username'] = user.get().get_username()
         context['permissible_days'] = int(leave)
         context['consumed_days'] = consumed
         context['permit_count'] = 'None' if consumed == (0, 0) else permit.count()
@@ -1471,15 +1473,6 @@ class RequestPermissionUpdateView(LoginRequiredMixin, UpdateView):
     
     def form_valid(self, form, **kwargs):
 
-        # if form.instance.start_date.date() == form.instance.resume_date.date():
-        #     delta = (form.instance.start_date - form.instance.resume_date).total_seconds()
-        #     # 1hr = 3600 seconds
-        #     hours = int(divmod(delta, 3600)[0])
-        #     duration = f'{hours}H'
-        # else:
-        #     days = len(mytools.DateRange(form.instance.start_date.date(), form.instance.resume_date.date()).exclude_weekday(calendar.SUNDAY))
-        #     duration = f'{days - 1}D'
-
         durations = duration(form.instance.start_date, form.instance.resume_date)
         context = self.get_context_data(**kwargs)
         context['heading'] = f'Permission for {form.instance.staff} modified'
@@ -1598,8 +1591,7 @@ class RequestPermissionDisapprove(LoginRequiredMixin, View):
 class UserHandleCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = User
     fields = []
-    # success_url = reverse_lazy('employee-detail', kwargs={'pk': kwargs['pk']})
-
+    
     
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -1607,10 +1599,7 @@ class UserHandleCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             return True
         return False
 
-    def get(self, request, *args, **kwargs):
-
-        return super().get(request, *args, **kwargs)
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
@@ -1622,18 +1611,37 @@ class UserHandleCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return context
     
     def form_valid(self, form):
+        global password
         staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
         form.instance.username = f'{staff.staff.first_name}-{str(staff.id).zfill(2)}'
         form.instance.first_name = staff.staff.first_name
         form.instance.last_name =  staff.staff.last_name
         form.instance.email = staff.staff.email if staff.official_email is None else staff.official_email
         password = User.objects.make_random_password()
-        form.instance.password1 = password
-        form.instance.password2 = password
+        context = {
+            'header': 'SCusH login credential created',
+            'username': form.instance.username,
+            'password': password,
+            'first_name': form.instance.first_name,
+            'last_name': form.instance.last_name,
+            'email': form.instance.email,
+        }
+        email = EmailMessage(
+            subject=f"User handle Created for {staff}",
+            body=loader.render_to_string('mail/user_create.html', context), 
+            from_email='',
+            to=[form.instance.email],
+            cc=['uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
+        )
+        email.content_subtype='html'
+        email.send(fail_silently=True)
         return super().form_valid(form)
-
+        
     def get_success_url(self):
         user_profile = Profile.objects.last()
+        user = User.objects.last()
         user_profile.staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
+        user.set_password(password)
+        user.save()
         user_profile.save()
         return reverse("employee-detail", kwargs={'pk': self.kwargs['pk']})

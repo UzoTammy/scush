@@ -1,4 +1,3 @@
-from django.db import models
 from django.shortcuts import render, redirect
 from .forms import UserRegisterForm
 from django.contrib import messages
@@ -7,6 +6,7 @@ from .forms import UserUpdateForm, ProfileUpdateForm
 import json
 from django.views.generic import ListView
 from django.contrib.auth.models import User
+
 
 def allow_admin(user):
     if user.groups.filter(name='Administrator').exists():
@@ -94,11 +94,14 @@ class UsersListView(ListView):
     model = User
     
     def get_queryset(self):
-
+        # to list all users working at Ozone
         return super().get_queryset().filter(username__contains='-').order_by('-pk')
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['A'] = self.get_queryset().count()
-        context['B'] = User.objects.all().count()
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['A'] = self.get_queryset().count()
+    #     context['B'] = User.objects.all().count()
+    #     return context
+
+
+        
