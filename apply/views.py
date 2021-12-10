@@ -144,8 +144,8 @@ class ApplyCreateView(CreateView):
             email.content_subtype = 'html'
             email.send(fail_silently=True)
 
-        return HttpResponse('testing')
-        # return super().form_valid(form)
+        # return HttpResponse('testing')
+        return super().form_valid(form)
 
 
 class RejectApplicant(View):
