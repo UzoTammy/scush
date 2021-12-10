@@ -1,0 +1,27 @@
+{% extends 'customer/base.html' %}
+{% load djmoney %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container">
+    <h4>{{header}}</h4>
+    <hr>
+    <div>
+        <p>First Name: {{first_name}}</p>
+        <p>Second Name: {{second_name}}</p>
+        <p>Last Name: {{last_name}}</p>
+        <p>Gender: {{gender}}</p>
+        <p>Marital Status: {{marital_status}}</p>
+        <p>Qualification: {{qualification}}</p>
+        <p>Date of Birth: {{date_of_birth}}</p>
+        <p>Course: {{course}}</p>
+        <p>Mobile Number: {{mobile}}</p>
+        <p>Email Address: {{email}}</p>
+        <address>Address: {{address}}</address>
+    </div>
+    <p style="color: coral;">We will continue to reach you through your email or mobile number.</p>
+    <small style="color: cornflowerblue;">You are getting this mail because you used this email address 
+        to apply for a job at Ozone. If this mail does not represent you, kindly disregard and if possible 
+        contact us at info@ozonefl.com to block further communication to you.</small>
+</div>
+{% endblock content %}

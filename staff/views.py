@@ -1374,6 +1374,9 @@ class BalanceView(ListView):
 class TaxList(ListView):
     model = Employee
     
+    def get_queryset(self):
+        return super().get_queryset().filter(status=True)
+
     def get_template_names(self):
         
         return ['staff/payroll/tax_list.html']

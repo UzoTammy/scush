@@ -13,6 +13,7 @@
                     <tr class="text-center">
                     <th>ID</th>
                     <th>User</th>
+                    <th>Staff</th>
                     <th>State</th>
                     <th>Staff</th>
                     <th>Super</th>
@@ -28,6 +29,7 @@
                <tr>
                    <td>{{user.id|zeropadding:3}}</td>
                    <td>{{user}}</td>
+                   <td>{{user.profile.staff}}</td>
                    {% if user.is_active %}
                    <td>{{user.is_active|yesno:'Active, Not Active'}}</td>
                    {% else %}

@@ -479,9 +479,11 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         
         return super().get(request, *args, **kwargs)
     
+
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
         qs = self.get_queryset().filter(date__month=form.instance.date.month)
+        print(qs)
         context['object'] = {
             'date': form.instance.date,
             'sales': form.instance.sales,
@@ -493,17 +495,34 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             'gross_profit': form.instance.gross_profit,
             'direct_income': form.instance.direct_income,
             'indirect_income': form.instance.indirect_income,
-            'net_profit': form.instance.gross_profit - form.instance.indirect_expenses, #+ form.instance.direct_income + form.instance.indirect_income,
-            'total_sales': Money(qs.aggregate(Sum('sales'))['sales__sum'], 'NGN') + form.instance.sales,
-            'total_purchase': Money(qs.aggregate(Sum('purchase'))['purchase__sum'], 'NGN') + form.instance.purchase,
-            'total_direct_expenses': Money(qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'], 'NGN') + form.instance.direct_expenses,
-            'total_indirect_expenses': Money(qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'], 'NGN') + form.instance.indirect_expenses,
-            'opening_stock': qs.first().opening_value,
-            'total_gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN') + form.instance.gross_profit,
-            'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN') + form.instance.direct_income,
-            'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN') + form.instance.indirect_income,
-        }
-        
+            'net_profit': form.instance.gross_profit - form.instance.indirect_expenses
+        }    
+        if qs:
+            context['object'].update(
+                {
+                    'total_sales': Money(qs.aggregate(Sum('sales'))['sales__sum'], 'NGN'), #+ form.instance.sales,
+                    'total_purchase': Money(qs.aggregate(Sum('purchase'))['purchase__sum'], 'NGN') + form.instance.purchase,
+                    'total_direct_expenses': Money(qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'], 'NGN') + form.instance.direct_expenses,
+                    'total_indirect_expenses': Money(qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'], 'NGN') + form.instance.indirect_expenses,
+                    'opening_stock': qs.first().opening_value,
+                    'total_gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN') + form.instance.gross_profit,
+                    'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN') + form.instance.direct_income,
+                    'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN') + form.instance.indirect_income,
+                }
+            )
+        else:
+            context['object'].update(
+                {
+                    'total_sales': form.instance.sales,
+                    'total_purchase': form.instance.purchase,
+                    'total_direct_expenses': form.instance.direct_expenses,
+                    'total_indirect_expenses': form.instance.indirect_expenses,
+                    'opening_stock': form.instance.opening_value,
+                    'total_gross_profit': form.instance.gross_profit,
+                    'total_direct_income': form.instance.direct_income,
+                    'total_indirect_income': form.instance.indirect_income,
+                }
+            )
         email = EmailMessage(
             subject=f'Daily P & L Report for {form.instance.date}',
             body=loader.render_to_string('trade/mail_daily_PL.html', context=context),
@@ -515,7 +534,7 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         email.content_subtype="html"
         email.send(fail_silently=False)
         return super().form_valid(form, **kwargs)
-        # return HttpResponse('working')
+        # return HttpResponse('testing')
 
 
 class TradeDailyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):

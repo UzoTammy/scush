@@ -1,9 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.template import loader
 from .models import Applicant
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.views.generic import (View,
                                   FormView,
@@ -106,7 +107,7 @@ class WelcomeView(TemplateView):
 class ApplyCreateView(CreateView):
     model = Applicant
     form_class = ApplicantForm
-    success_url = '/thanks/'
+    # success_url = '/thanks/'
 
     """This is to revalidate the form to ensure
     that the current logged in user is assigned as the creator"""
@@ -117,15 +118,34 @@ class ApplyCreateView(CreateView):
         return context
 
     def form_valid(self, form):
+        hr_email = 'dickson.abanum@ozonefl.com'
+        context = {
+            'first_name': form.instance.first_name,
+            'second_name': form.instance.second_name,
+            'last_name': form.instance.last_name,
+            'gender': form.instance.gender,
+            'marital_status': form.instance.marital_status,
+            'qualification': form.instance.qualification,
+            'date_of_birth': form.instance.birth_date,
+            'course': form.instance.course,
+            'mobile': form.instance.mobile,
+            'email': form.instance.email,
+            'address': form.instance.address,
+            'header': f'Your application received successfully'
+        }
         if form.instance.email:
-            send_mail(subject='Application Submitted Successfully',
-                      message="""We are pleased to receive your application at Ozone.
-                      We will commence processing it and revert to you. Thank you.""",
-                      from_email=None,
-                      html_message="",
-                      recipient_list=[form.instance.email],
-                      fail_silently=False)
-        return super().form_valid(form)
+            email = EmailMessage(
+                subject='Application for a job at Ozone',
+                body=loader.render_to_string('mail/apply_for_job.html', context),
+                from_email='',
+                to=[form.instance.email],
+                cc=[hr_email]
+            )
+            email.content_subtype = 'html'
+            email.send(fail_silently=True)
+
+        return HttpResponse('testing')
+        # return super().form_valid(form)
 
 
 class RejectApplicant(View):
