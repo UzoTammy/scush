@@ -2,5 +2,7 @@
   "cluster": [
     "Trade Fair", "Festac", "Okoko", "Badagry", "Satellite", "Diaspora"
   ],
-  "category": ["Brass", "Bronze", "Silver", "Gold", "Platinum"]
+  "category": ["Brass", "Bronze", "Silver", "Gold", "Platinum"
+  ],
+  "section": ["Crate & Bottle", "Can & Pet", "Wine & Whisky"]
 }

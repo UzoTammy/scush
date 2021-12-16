@@ -2,16 +2,12 @@ from django import forms
 from .models import CustomerProfile
 from django.core.validators import RegexValidator
 
-CHOICES = [('A-Can', 'Alcoholic, Cans'),
-           ('NA-Can', 'Non-alcoholic, Cans'),
-           ('Wine', 'Wine'),
-           ('A-Bottle', 'Alcoholic, Bottles'),
-           ('NA-Bottle', 'Non-alcoholic, Bottles'),
-           ]
-
+TYPE_CHOICES = [('NA', 'Non-Alcoholic'), ('A', 'Alcoholic'), ('U', 'Unknown')]
+SECTION_CHOICES = [('C & B', 'Crate & Bottle'), ('W & W', 'Wine & Whisky'), ('C & P', 'Cans & Pet')]
 
 class CustomerProfileForm(forms.ModelForm):
-    type = forms.MultipleChoiceField(choices=CHOICES)
+    # type = forms.MultipleChoiceField(choices=TYPE_CHOICES)
+    section = forms.MultipleChoiceField(choices=SECTION_CHOICES)
     number_regex = RegexValidator(regex=r'0\d{10}', message='only numbers starting with zero')
     mobile = forms.CharField(max_length=11, validators=[number_regex])
 
@@ -24,5 +20,6 @@ class CustomerProfileForm(forms.ModelForm):
                   'email',
                   'address',
                   'type',
+                  'section',
                   'sales',
                   'freq']

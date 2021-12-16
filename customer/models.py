@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls.base import reverse_lazy
 from django.utils import timezone
 from django.urls import reverse
 from djmoney.models.fields import Money, MoneyField
@@ -30,7 +31,9 @@ class CustomerProfile(models.Model):
     mobile = models.CharField(max_length=11)
     email = models.EmailField(blank=True, null=True, help_text="<span class='text-danger'>not compulsory</span>")
 
-    type = models.CharField(max_length=50, default='NA-Can')
+    type = models.CharField(max_length=10, default='NA', choices=[('NA', 'Non-Alcoholic'), 
+    ('A', 'Alcoholic'), ('U', 'Unknown')])
+    section = models.CharField(max_length=10, choices=[('C & B', 'Crate & Bottle'), ('W & W', 'Wine & Whisky'), ('C & P', 'Cans & Pet')])
     sales = MoneyField(max_digits=12, default_currency='NGN', decimal_places=2, default=Money(0, 'NGN'))
     freq = models.IntegerField(default=0)
     category = models.CharField(max_length=30,
@@ -47,3 +50,5 @@ class CustomerProfile(models.Model):
 
     def get_absolute_url(self):
         return reverse('customer-detail', kwargs={'pk': self.pk})
+
+

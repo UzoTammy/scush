@@ -500,7 +500,7 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         if qs:
             context['object'].update(
                 {
-                    'total_sales': Money(qs.aggregate(Sum('sales'))['sales__sum'], 'NGN'), #+ form.instance.sales,
+                    'total_sales': Money(qs.aggregate(Sum('sales'))['sales__sum'], 'NGN') + form.instance.sales,
                     'total_purchase': Money(qs.aggregate(Sum('purchase'))['purchase__sum'], 'NGN') + form.instance.purchase,
                     'total_direct_expenses': Money(qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'], 'NGN') + form.instance.direct_expenses,
                     'total_indirect_expenses': Money(qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'], 'NGN') + form.instance.indirect_expenses,
@@ -534,8 +534,7 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         email.content_subtype="html"
         email.send(fail_silently=False)
         return super().form_valid(form, **kwargs)
-        # return HttpResponse('testing')
-
+        
 
 class TradeDailyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = TradeDaily
