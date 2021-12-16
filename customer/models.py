@@ -33,7 +33,7 @@ class CustomerProfile(models.Model):
 
     type = models.CharField(max_length=10, default='NA', choices=[('NA', 'Non-Alcoholic'), 
     ('A', 'Alcoholic'), ('U', 'Unknown')])
-    section = models.CharField(max_length=10, choices=[('C & B', 'Crate & Bottle'), ('W & W', 'Wine & Whisky'), ('C & P', 'Cans & Pet')])
+    section = models.CharField(max_length=10, choices=[('C & B', 'Crate & Bottle'), ('W & W', 'Wine & Whisky'), ('C & P', 'Cans & Pet')], default='C & P')
     sales = MoneyField(max_digits=12, default_currency='NGN', decimal_places=2, default=Money(0, 'NGN'))
     freq = models.IntegerField(default=0)
     category = models.CharField(max_length=30,
