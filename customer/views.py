@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from .models import CustomerProfile
 from staff.models import Employee
 from users.models import Profile
-from django.db.models import F
+from django.db.models import F, Sum
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import (CreateView,
                                   ListView,
@@ -13,13 +13,14 @@ from django.views.generic import (CreateView,
                                   View,
                                   TemplateView)
 from django.conf import settings
+import ast
 import os
 import json
 import secrets
 import datetime
 from ozone.mytools import CSVtoTuple
 from django.shortcuts import render, redirect, reverse
-from .forms import CustomerProfileForm
+from .forms import CustomerProfileForm, CustomerUpdateProfileForm
 
 
 class CSVPart(TemplateView):
@@ -209,6 +210,14 @@ class HomeView(TemplateView):
 class CustomerHomeView(TemplateView):
     template_name = 'customer/customer_home.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        customers = CustomerProfile.objects.all()
+        if customers.exists():
+            context['customers'] = customers
+            context['total_sales'] = customers.aggregate(Sum('sales'))
+            
+        return context
 
 class CustomerListView(LoginRequiredMixin, ListView):
     model = CustomerProfile
@@ -230,33 +239,29 @@ class CustomerDetailView(LoginRequiredMixin, DetailView):
     model = CustomerProfile
 
 
+def categorize(sales):
+    if sales >= 100e6:
+        result = 'Platinum'
+    elif sales >= 50e6:
+        result = 'Gold'
+    elif sales >= 10e6:
+        result = 'Silver' 
+    elif sales >= 5e6:
+        result = 'Bronze'
+    else:
+        result = 'Basic'
+    return result
+
+
 class CustomerCreateView(LoginRequiredMixin, CreateView):
     # model = CustomerProfile
     template_name = 'customer/customerprofile_form.html'
     success_url = reverse_lazy('customer-list-all')
     form_class = CustomerProfileForm
 
-    def categorize(self, value, factor=4/12):
-        if value >= 100e6 * factor:
-            return 'Platinum'
-        elif 70e6 * factor <= value < 100e6 * factor:
-            return 'Gold'
-        elif 50e6 * factor <= value < 70e6 * factor:
-            return 'Silver'
-        elif 30e6 * factor <= value < 50e6 * factor:
-            return 'Bronze'
-        elif 10e6 * factor <= value < 30e6 * factor:
-            return 'Basic'
-        elif 1e6 * factor <= value < 10e6 * factor:
-            return 'Normal'
-        elif 0 < value < 1e6 * factor:
-            return 'NYC'
-        elif value == 0:
-            return 'Inactive'
-
+    
     def form_valid(self, form):
-        sales = form.instance.sales.amount
-        form.instance.category = self.categorize(sales)
+        form.instance.category = categorize(form.instance.sales.amount)
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -268,19 +273,18 @@ class CustomerCreateView(LoginRequiredMixin, CreateView):
 
 class CustomerUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomerProfile
-    fields = ['business_name',
-              'business_owner',
-              'region',
-              'cluster',
-              'category',
-              'mobile',
-              'email',
-              'address',
-              ]
+    form_class = CustomerUpdateProfileForm
 
+    def get(self, request, *args, **kwargs):
+        obj = self.get_queryset().get(pk=kwargs['pk'])
+        #get the string of section & convert to list
+        # section = ast.literal_eval(obj.section)
+        return super().get(request, *args, **kwargs)
+    
     def form_valid(self, form):
         form.instance.creator = self.request.user
         form.instance.date_modified = datetime.datetime.now()
+        form.instance.category = categorize(form.instance.sales.amount)
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):

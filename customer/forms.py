@@ -23,3 +23,19 @@ class CustomerProfileForm(forms.ModelForm):
                   'section',
                   'sales',
                   'freq']
+
+class CustomerUpdateProfileForm(forms.ModelForm):
+    number_regex = RegexValidator(regex=r'0\d{10}', message='only numbers starting with zero')
+    mobile = forms.CharField(max_length=11, validators=[number_regex])
+
+    class Meta:
+        model = CustomerProfile
+        fields = ['business_name',
+                  'business_owner',
+                  'cluster',
+                  'mobile',
+                  'email',
+                  'address',
+                  'type',
+                  'sales',
+                  'freq']

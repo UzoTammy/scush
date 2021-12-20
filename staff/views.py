@@ -457,7 +457,7 @@ class StaffCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
 class StaffUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Employee
-    fields = '__all__'
+    fields = ['image']
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""

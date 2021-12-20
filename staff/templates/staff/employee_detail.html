@@ -118,6 +118,8 @@
                             <p class="text-success">Employee ID: {{object.id|zeropadding:3}}
                                 <span class="text-danger">(Username: {{username|default:'Not Created'}})</span>
                             </p>
+                            <a class="btn btn-outline-dark btn-sm" href="{% url 'employee-update' object.pk %}"><small>Update Image</small></a>
+                            
                         </div>
                     </div>
                     <div class="row">

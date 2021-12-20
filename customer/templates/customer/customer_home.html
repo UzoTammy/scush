@@ -20,13 +20,13 @@
                         </a>
                     </li>
                 </ul>
-                <ul class="nav flex-column">
+                <!-- <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'customer-csv' %}">
                             <i class="fa fa-plus text-warning"></i> Add with CSV
                         </a>
                     </li>
-                </ul>
+                </ul> -->
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link" href="#">
@@ -41,6 +41,11 @@
                         </a>
                     </li>
                 </ul>
+            </div>
+            <div class="col-10 p-3">
+                <p>Number of customers: {{customers.count}}</p>
+                <p>Sales: NGN{{total_sales.sales__sum|floatformat:2}}</p>
+                <p></p>
             </div>
         </div>
 </div>
