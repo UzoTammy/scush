@@ -5,6 +5,75 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col">
+            <table 
+            data-toggle="table" 
+            data-pagination="true"
+            data-search="true">
+                <caption class="text-success">Accrued Gratuity
+                    {% if disbursed_gratuity_object_sum %}
+                    <span class="float-right text-success">
+                        <small>N{{accrued_gratuity_object_sum|floatformat:'2g'}}</small> 
+                    </span>
+                    {% endif %}
+                </caption>
+                
+                <thead>
+                    <tr class="text-center bg-success text-white">
+                        <th>Staff ID</th>
+                        <th>Name</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    {% for obj in accrued_gratuity_object %}
+                    <tr>
+                        <td>{{obj.staff|zeropadding:3}}</td>
+                        <td>{{obj.name}}</td>
+                        <td>{{obj.total|floatformat:'2g'}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+        </div>
+    
+        <div class="col">
+            <table 
+            data-toggle="table" 
+            data-pagination="true"
+            data-search="true">
+                <caption class="text-danger">Disbursed Gratuity
+                    {% if disbursed_gratuity_object_sum %}
+                    <span class="float-right text-success">
+                        <small>N{{disbursed_gratuity_object_sum|floatformat:'2g'}}</small>   
+                    </span>
+                    {% endif %}
+                </caption>
+                <thead>
+                    <tr class="text-center bg-danger text-white">
+                        <th>Staff ID</th>
+                        <th>Name</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    {% for obj in disbursed_gratuity_object %}
+                    <tr>
+                        <td>{{obj.staff|zeropadding:3}}</td>
+                        <td>{{obj.name}}</td>
+                        <td>{{obj.total|floatformat:'2g'}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="col">
             <table data-toggle="table" 
                    data-search="true"
                    data-show-columns="true"
@@ -14,7 +83,7 @@
                     <caption>Gratuity List
                         
                         {% if total_value >= 0 %}
-                        <span class="float-right text-success">NGN{{total_value|floatformat:'2g'}}</span>
+                        <span class="float-right text-success">N{{total_value|floatformat:'2g'}}</span>
                         {% else %}
                         <span class="float-right text-danger">{{total_value|floatformat:'2g'}}</span>
                         {% endif%}
@@ -44,14 +113,15 @@
                         {% else %}
                         <td class='text-right'>{{record.value.amount}}{{record.value_type}}</td>
                         {% endif %}
-                        <!-- <td>{{record.value_type}}</td> -->
+                        <td>{{record.value_type}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             
         </div>
-    </div>
+    </div> 
+
     <div class="row">
         <div class="col">
             {% if return == 'detail' %}

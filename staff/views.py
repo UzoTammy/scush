@@ -1,4 +1,6 @@
 import decimal
+
+from django.db.models.aggregates import Count
 from users.models import Profile
 from .models import *
 from .form import *
@@ -23,7 +25,7 @@ from django.core.mail import send_mail
 from django.core.validators import ValidationError
 from .form import DebitForm, CreditForm, RequestPermissionForm
 from django.template import loader
-from django.db.models import (F, Sum, Avg, Max, Min)
+from django.db.models import (F, Sum, Avg, Max, Min, query)
 from .models import POSITIONS, BRANCHES
 from django.core.mail import EmailMessage
 
@@ -1386,6 +1388,7 @@ class EmployeeBalanceListView(ListView):
     model = EmployeeBalance
     ordering = ['-date', 'pk']
 
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         cr = self.get_queryset().filter(value_type='Cr').aggregate(total=Sum('value'))['total']
@@ -1393,6 +1396,27 @@ class EmployeeBalanceListView(ListView):
         cr = cr if cr is not None  else Decimal('0')
         dr = dr if dr is not None else Decimal('0')
         context['total_value'] = cr - dr
+
+        query_cr = self.get_queryset().filter(value_type='Cr').values('staff').annotate(total=Sum('value')).order_by()
+        if query_cr.exists():
+            query_cr_object = list()
+            for q in query_cr:
+                name = Employee.objects.filter(id=q['staff'])
+                q['name'] = name.get()
+                query_cr_object.append(q)
+            context['accrued_gratuity_object'] = query_cr_object
+            context['accrued_gratuity_object_sum'] = sum(i['total'] for i in query_cr_object)
+        
+        query_dr = self.get_queryset().filter(value_type='Dr').values('staff').annotate(total=Sum('value')).order_by()
+        if query_dr.exists():
+            query_dr_object = list()
+            for q in query_dr:
+                name = Employee.objects.filter(id=q['staff'])
+                q['name'] = name.get()
+                query_dr_object.append(q)
+            context['disbursed_gratuity_object'] = query_dr_object
+            context['disbursed_gratuity_object_sum'] = sum(i['total'] for i in query_dr_object)
+        
         return context
 
 
