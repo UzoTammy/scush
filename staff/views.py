@@ -1386,7 +1386,7 @@ class TaxList(ListView):
 
 class EmployeeBalanceListView(ListView):
     model = EmployeeBalance
-    ordering = ['-date', 'pk']
+    ordering = ['-date']
 
     
     def get_context_data(self, **kwargs):
@@ -1419,6 +1419,15 @@ class EmployeeBalanceListView(ListView):
         
         return context
 
+class EmployeeGratuityList(TemplateView):
+
+    template_name = 'staff/gratuity/employee_gratuity_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        context['staff'] = Employee.objects.get(id=kwargs['pk'])
+        context['staff_gratuity'] = EmployeeBalance.objects.filter(staff=kwargs['pk'])
+        return context
 
 class EmployeeBalanceDetailView(DetailView):
     model = EmployeeBalance

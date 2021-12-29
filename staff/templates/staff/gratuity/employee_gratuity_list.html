@@ -1,0 +1,58 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %} 
+<div class="container">
+    <div class="row">
+        
+        <div class="col">
+            <table class="table table-bordered table-striped" 
+                data-toggle="table"
+                data-pagination="true"
+                >
+                <caption>Gratuity List for {{staff}}</caption>
+                <thead>
+                    <tr class="bg-info text-white">
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Period</th>
+                        <th>Value</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    {% for record in staff_gratuity %}
+                    
+                    <tr>
+                        <td>{{record.date}}</td>
+                        <td>{{record.title}}</td>
+                        <td>{{record.period}}</td>
+                        {% if record.value_type == 'Cr' %}
+                        <td>{{record.value}}</td>
+                        {% else %}
+                        <td class="text-danger">{{record.value}}</td>
+                        {% endif %}
+                        <td>{{record.value_type}}</td>
+                    </tr>
+                    
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="col">
+            <a class=" btn btn-outline-dark float-right" 
+            href="{% url 'employee-balance-list' %}">
+        <i class="fa fa-reply"></i>
+        </a>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

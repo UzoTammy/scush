@@ -29,7 +29,7 @@
                     {% for obj in accrued_gratuity_object %}
                     <tr>
                         <td>{{obj.staff|zeropadding:3}}</td>
-                        <td>{{obj.name}}</td>
+                        <td><a href="{% url 'employee-gratuity-list' obj.staff %}">{{obj.name}}</a></td>
                         <td>{{obj.total|floatformat:'2g'}}</td>
                     </tr>
                     {% endfor %}
@@ -72,14 +72,20 @@
         </div>
         
     </div>
-    <div class="row">
+    <div class="row mt-2">
         <div class="col">
-            <table data-toggle="table" 
-                   data-search="true"
-                   data-show-columns="true"
-                   data-pagination="true"
-                    class="table table-sm table-striped table-bordered mydatatable"
-                    style="width: 100%">
+            <h3 class="text-success"><i>Gratuity Net Value: N{{total_value|floatformat:'2g'}}</i></h1>
+        </div>
+    </div>
+    <!-- <div class="row">
+        <div class="col">
+            <table 
+                data-toggle="table" 
+                data-search="true"
+                data-show-columns="true"
+                data-pagination="true"
+                class="table table-sm table-striped table-bordered" 
+                >
                     <caption>Gratuity List
                         
                         {% if total_value >= 0 %}
@@ -89,7 +95,7 @@
                         {% endif%}
                     </caption>
                 <thead>
-                    <tr class="text-center">
+                    <tr class="text-center bg-dark text-white">
                         <th>Title</th>
                         <th>Code</th>
                         <th>Staff</th>
@@ -97,6 +103,7 @@
                         <th>Date</th>
                         <th>Description</th>
                         <th>Value</th>
+                        <th>Type</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -109,9 +116,9 @@
                         <td>{{record.date|date:'d-m-Y'}}</td>
                         <td>{{record.description}}</td>
                         {% if record.value_type == 'Dr' %}
-                        <td class='text-right text-danger'>{{record.value.amount}}{{record.value_type}}</td>
+                        <td class='text-right text-danger'>{{record.value.amount}}</td>
                         {% else %}
-                        <td class='text-right'>{{record.value.amount}}{{record.value_type}}</td>
+                        <td class='text-right'>{{record.value.amount}}</td>
                         {% endif %}
                         <td>{{record.value_type}}</td>
                     </tr>
@@ -120,7 +127,7 @@
             </table>
             
         </div>
-    </div> 
+    </div>  -->
 
     <div class="row">
         <div class="col">
@@ -136,6 +143,3 @@
 </div>
 {% endblock content%}
 
-<script>
-    $('.mydatatable').DataTable();
-</script>
