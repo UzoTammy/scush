@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from .models import CustomerProfile
 from staff.models import Employee
 from users.models import Profile
-from django.db.models import F, Sum
+from django.db.models import F, Sum, Max
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import (CreateView,
                                   ListView,
@@ -216,7 +216,29 @@ class CustomerHomeView(TemplateView):
         if customers.exists():
             context['customers'] = customers
             context['total_sales'] = customers.aggregate(Sum('sales'))
-            
+            context['platinum_customers'] = customers.filter(category='Platinum')
+            context['gold_customers'] = customers.filter(category='Gold')
+            context['silver_customers'] = customers.filter(category='Silver')
+            context['bronze_customers'] = customers.filter(category='Bronze')
+            context['basic_customers'] = customers.filter(category='Basic')
+            context['n_customers'] = customers.filter(category='')
+            max_freq = customers.aggregate(Max('freq'))['freq__max']
+            customer = customers.get(freq=max_freq)
+            context['most_regular_customer'] = {
+                'name': customer,
+                'sales_value': customer.sales,
+                'category': customer.category,
+                'type': customer.type,
+                
+            }
+            max_sales = customers.aggregate(Max('sales'))['sales__max']
+            customer = customers.get(sales=max_sales)
+            context['biggest_customer'] = {
+                'name': customer,
+                'sales_value': customer.sales,
+                'category': customer.category,
+                'type': customer.type
+            }
         return context
 
 class CustomerListView(LoginRequiredMixin, ListView):

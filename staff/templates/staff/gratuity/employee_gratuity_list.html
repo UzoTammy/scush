@@ -10,7 +10,11 @@
                 data-toggle="table"
                 data-pagination="true"
                 >
-                <caption>Gratuity List for {{staff}}</caption>
+                <caption>Gratuity List for {{staff}}
+                    <span class="float-right">
+                        N{{net_value|floatformat:'2g'}}
+                    </span>
+                </caption>
                 <thead>
                     <tr class="bg-info text-white">
                         <th>Date</th>
@@ -25,13 +29,13 @@
                     {% for record in staff_gratuity %}
                     
                     <tr>
-                        <td>{{record.date}}</td>
+                        <td><a href="{% url 'employee-balance-detail' record.pk %}">{{record.date}}</a></td>
                         <td>{{record.title}}</td>
                         <td>{{record.period}}</td>
                         {% if record.value_type == 'Cr' %}
-                        <td>{{record.value}}</td>
+                        <td class="text-right">{{record.value}}</td>
                         {% else %}
-                        <td class="text-danger">{{record.value}}</td>
+                        <td class="text-danger text-right">{{record.value}}</td>
                         {% endif %}
                         <td>{{record.value_type}}</td>
                     </tr>

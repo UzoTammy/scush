@@ -76,209 +76,113 @@
                 </li>
             </ul>
         </div>
-   
-        <!--        body of page-->
+        
         <div class="col-9 mt-3 bg-white">
-            <h3>Business Summary</h3>
-            
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
-                <div class="col">
-                    {% if daily %}
-                    <div class="card border-primary mb-3" style="max-width: 18rem;">
-                        <div class="card-header">Daily - {{daily.date|date:'jS F, Y'}}</div>
+            <h3>{{year}} Trade Values</h3>
+            <h5 class="text-primary"><i>Derived from Profit & Loss Account</i></h5>
+            <div class="row">
+                <!-- sales -->
+                <div class="col-sm-6">
+                    <div class="card">
                         <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Sales
-                                    <span class="badge badge-primary badge-pill">{{daily.sales.amount}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Purchase
-                                    <span class="badge badge-success badge-pill">{{daily.purchase.amount}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Direct Expenses
-                                    <span class="badge badge-danger badge-pill">{{daily.direct_expenses.amount}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Indirect Expenses
-                                    <span class="badge badge-warning badge-pill">{{daily.indirect_expenses.amount}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    GP Ratio
-                                    <span class="badge badge-info badge-pill">
-                                        {% if daily.sales.amount != 0 %}
-                                        {{ daily.gp_ratio|dividedby:1000|floatformat:'3' }}
-                                        {% else %}
-                                        0.000
-                                        {% endif %}
-                                        %
-                                    </span>
-
-                                </li>
-
-                            </ul>
-                          <div class="row">
-                              <div class="col text-right">
-                                <!-- <a class="btn btn-outline-primary btn-sm" href="{% url 'daily-pl-report' %}">List</a> -->
-                                <a class="btn btn-outline-primary btn-sm" href="{% url 'daily-pl-report' %}">Report</a>  
-                              </div>
-                          </div>
+                            <div class="card text-white bg-info" 
+                            style="max-width: 32rem; border-radius: 50px;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Sales as at {{daily.date}}</h5>
+                                    <p class="card-text">
+                                        Latest Daily Post - {{daily.sales}}
+                                    </p>
+                                    
+                                    <p class="card-text">
+                                        Current Month - NGN{{daily_monthly_sales|default_if_none:0.00|floatformat:'2g'}}
+                                    </p>
+                                    <p class="card-text">
+                                        YTD(current year) - NGN{{daily_yearly_sales|default_if_none:0.00|floatformat:'2g'}}
+                                    </p>
+                                    <!-- <p>---</p> -->
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    {% else %}
-                    <h6>No Daily record yet</h6>
-                    {% endif %}
                 </div>
-                {% if quarter_one %}
-                <div class="col">
-                    <div class="card border-success mb-3" style="max-width: 18rem;">
-                        <div class="card-header">Monthly - {{monthly}}</div>
+                <!-- purchase -->
+                <div class="col-sm-6">
+                    <div class="card">
                         <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Sales
-                                    <span class="badge badge-primary badge-pill">{{monthly.sales.amount}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Purchase
-                                    <span class="badge badge-success badge-pill">{{monthly.purchase.amount}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Direct Expenses
-                                    <span class="badge badge-danger badge-pill">{{monthly.direct_expenses.amount}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Indirect Expenses
-                                    <span class="badge badge-warning badge-pill">{{monthly.indirect_expenses.amount}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    GP Ratio
-                                    <span class="badge badge-info badge-pill">{{monthly.gp_ratio|dividedby:1000|floatformat:'3'}}%</span>
-                                </li>
-                            </ul>
-                          <div class="row">
-                              <div class="col text-right">
-                                <a class="btn btn-outline-success btn-sm" href="{% url 'trade-trading-account' %}">Report</a>  
-                              </div>
-                          </div>
+                            <div class="card text-white bg-warning" 
+                            style="max-width: 32rem; border-radius: 50px;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Purchase as at {{daily.date}}</h5>
+                                    <p class="card-text">
+                                        Latest Daily Post - {{daily.purchase}}
+                                    </p>
+                                    
+                                    <p class="card-text">
+                                        Current Month - NGN{{daily_monthly_purchase|default_if_none:0.00|floatformat:'2g'}}
+                                    </p>
+                                    <p class="card-text">
+                                        YTD(current year) - NGN{{daily_yearly_purchase|default_if_none:0.00|floatformat:'2g'}}
+                                    </p>
+                                    <!-- <p>---</p> -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                </div>
-                {% else %}
-                    <h6>No Monthly record yet</h6>
-                {% endif %}
-                <div class="col">
-                    {% if quarter_one %}
-                    <div class="card border-danger mb-3" style="max-width: 18rem;">
-                        <div class="card-header">Quarterly - {{quarter}}</div>
+                <!-- expenses -->
+                <div class="col-sm-6">
+                    <div class="card">
                         <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Sales
-                                    <span class="badge badge-primary badge-pill">{{quarter_one.sales}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Purchase
-                                    <span class="badge badge-success badge-pill">{{quarter_one.purchase}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Direct Expenses
-                                    <span class="badge badge-danger badge-pill">{{quarter_one.direct_expenses}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Indirect Expenses
-                                    <span class="badge badge-warning badge-pill">{{quarter_one.indirect_expenses}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    GP Ratio
-                                    <span class="badge badge-info badge-pill">{{quarter_one.gp_ratio|dividedby:1000|floatformat:'3'}}%</span>
-                                </li>
-                            </ul>
-                          <div class="row">
-                              <div class="col text-right">
-                                <a class="btn btn-outline-danger btn-sm" href="{% url 'daily-pl-report' %}">Report</a>  
-                              </div>
-                          </div>
+                            <div class="card text-white bg-secondary" 
+                            style="max-width: 32rem; border-radius: 50px;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Expenses as at {{daily.date}}</h5>
+                                    <p class="card-text">
+                                        Latest Daily Post - NGN{{daily.expenses|default_if_none:0|floatformat:'2g'}}
+                                    </p>
+                                    
+                                    <p class="card-text">
+                                        Current Month - NGN{{daily_monthly_expenses|default_if_none:0|floatformat:'2g'}}
+                                    </p>
+                                    <p class="card-text">
+                                        YTD(current year) - NGN{{daily_yearly_expenses|default_if_none:0|floatformat:'2g'}}
+                                    </p>
+                                    <!-- <p>---</p> -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    </div>
-                    {% else %}
-                        <h6>No quarterly record yet</h6>
-                    {% endif %}
-                
                 </div>
-
-                <div class="col">
-                    <div class="card border-warning mb-3" style="max-width: 18rem;">
-                        <div class="card-header">Yearly - {{year}}</div>
+                <!-- gross profit -->
+                <div class="col-sm-6">
+                    <div class="card">
                         <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Sales
-                                    <span class="badge badge-primary badge-pill">{{sales|floatformat:'2g'}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Purchase
-                                    <span class="badge badge-success badge-pill">{{purchase|floatformat:'2g'}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Direct Expenses
-                                    <span class="badge badge-danger badge-pill">{{direct_expenses|floatformat:'2g'}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Indirect Expenses
-                                    <span class="badge badge-warning badge-pill">{{indirect_expenses|floatformat:'2g'}}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    GP Ratio
-                                    <span class="badge badge-info badge-pill">{{gp_ratio|dividedby:1000|floatformat:'3'}}%</span>
-                                </li>
-                            </ul>
-                          <div class="row">
-                              <div class="col text-right">
-                                <a class="btn btn-outline-warning btn-sm" href="{% url 'daily-pl-report' %}">Report</a>  
-                              </div>
-                          </div>
+                            <div class="card text-white bg-primary" 
+                            style="max-width: 32rem; border-radius: 50px;">
+                                <div class="card-body">
+                                    <h5 class="card-title">Gross Profit as at {{daily.date}}</h5>
+                                    <p class="card-text">
+                                        Latest Daily Post - {{daily.gross_profit}}
+                                    </p>
+                                    
+                                    <p class="card-text">
+                                        Current Month - NGN{{daily_monthly_gross|default_if_none:0.00|floatformat:'2g'}}
+                                    </p>
+                                    <p class="card-text">
+                                        YTD(current year) - NGN{{daily_yearly_gross|default_if_none:0.00|floatformat:'2g'}}
+                                    </p>
+                                    <!-- <p>---</p> -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                
-                
-                </div>
-            </div>
-            <div class="row">
-                <div class="col mb-3">
-                    <table class="table table-bordered table-sm" 
-                    data-toggle="table"
-                    data-pagination="true"
-                    data-caption="true"
-    
-                    >
-                    <caption>Sales</caption>
-                        <thead>
-                            <tr>
-                                <th>Period</th>
-                                <th>Daily</th>
-                                <th>Monthly</th>
-                                <th>Difference</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-    
-                            {% for data in sales_table %}
-                            <tr>
-                                <td style="width: 10%;">{{data.period}}</td>
-                                <td class="text-right">{{data.daily|floatformat:'2g'}}</td>
-                                <td class="text-right">{{data.monthly|floatformat:'2g'}}</td>
-                                <td class="text-right">{{data.delta|floatformat:'2g'}}</td>
-                            </tr>
-                            {%endfor%}
-                        </tbody>
-    
-                    </table>
-                </div>
-                
-            </div>
+            </div> 
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mt-3">
+            
         </div>
     </div>
 </div>

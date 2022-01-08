@@ -1425,8 +1425,15 @@ class EmployeeGratuityList(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) 
+        
         context['staff'] = Employee.objects.get(id=kwargs['pk'])
-        context['staff_gratuity'] = EmployeeBalance.objects.filter(staff=kwargs['pk'])
+        staff_gratuity = EmployeeBalance.objects.filter(staff=kwargs['pk'])
+        context['staff_gratuity'] = staff_gratuity
+        value = staff_gratuity.filter(value_type='Cr').aggregate(Sum('value'))['value__sum']
+        credit_amount = value if value is not None else decimal.Decimal('0')
+        value = staff_gratuity.filter(value_type='Dr').aggregate(Sum('value'))['value__sum']
+        debit_amount = value if value is not None else decimal.Decimal('0')
+        context['net_value'] = credit_amount - debit_amount
         return context
 
 class EmployeeBalanceDetailView(DetailView):

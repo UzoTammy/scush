@@ -18,7 +18,7 @@
     <div class="row mt-3">
         <div class="col text-right">
             <a class="btn btn-outline-primary" href="{%url 'employee-balance-update' object.pk %}">Update</a>
-            <a class="btn btn-outline-dark" href="{% url 'employee-balance-list' %}">
+            <a class="btn btn-outline-dark" href="{% url 'employee-gratuity-list' object.staff.pk %}">
                 <i class="fa fa-reply"></i></a>
         </div>
     </div>

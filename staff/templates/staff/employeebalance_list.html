@@ -28,9 +28,11 @@
                 <tbody>
                     {% for obj in accrued_gratuity_object %}
                     <tr>
-                        <td>{{obj.staff|zeropadding:3}}</td>
-                        <td><a href="{% url 'employee-gratuity-list' obj.staff %}">{{obj.name}}</a></td>
-                        <td>{{obj.total|floatformat:'2g'}}</td>
+                        <td class="text-center">
+                            <a href="{% url 'employee-gratuity-list' obj.staff %}">{{obj.staff|zeropadding:3}}</a>
+                        </td>
+                        <td>{{obj.name}}</td>
+                        <td class="text-right">{{obj.total|floatformat:'2g'}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -45,7 +47,7 @@
             data-search="true">
                 <caption class="text-danger">Disbursed Gratuity
                     {% if disbursed_gratuity_object_sum %}
-                    <span class="float-right text-success">
+                    <span class="float-right text-danger">
                         <small>N{{disbursed_gratuity_object_sum|floatformat:'2g'}}</small>   
                     </span>
                     {% endif %}
@@ -61,74 +63,20 @@
                 <tbody>
                     {% for obj in disbursed_gratuity_object %}
                     <tr>
-                        <td>{{obj.staff|zeropadding:3}}</td>
+                        <td class="text-center">{{obj.staff|zeropadding:3}}</td>
                         <td>{{obj.name}}</td>
-                        <td>{{obj.total|floatformat:'2g'}}</td>
+                        <td class="text-right">{{obj.total|floatformat:'2g'}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
                 
             </table>
+            <h4 class="text-right text-success m-2"><i>Gratuity Net Value: N{{total_value|floatformat:'2g'}}</i></h4>
         </div>
         
     </div>
-    <div class="row mt-2">
-        <div class="col">
-            <h3 class="text-success"><i>Gratuity Net Value: N{{total_value|floatformat:'2g'}}</i></h1>
-        </div>
-    </div>
-    <!-- <div class="row">
-        <div class="col">
-            <table 
-                data-toggle="table" 
-                data-search="true"
-                data-show-columns="true"
-                data-pagination="true"
-                class="table table-sm table-striped table-bordered" 
-                >
-                    <caption>Gratuity List
-                        
-                        {% if total_value >= 0 %}
-                        <span class="float-right text-success">N{{total_value|floatformat:'2g'}}</span>
-                        {% else %}
-                        <span class="float-right text-danger">{{total_value|floatformat:'2g'}}</span>
-                        {% endif%}
-                    </caption>
-                <thead>
-                    <tr class="text-center bg-dark text-white">
-                        <th>Title</th>
-                        <th>Code</th>
-                        <th>Staff</th>
-                        <th>Period</th>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th>Value</th>
-                        <th>Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for record in object_list %}
-                    <tr class="text-center">
-                        <td>{{record.title}}</td>
-                        <td>{{record.id|zeropadding:4}}</td>
-                        <th><a href="{% url 'employee-balance-detail' record.id %}">{{record.staff}}</a></th>
-                        <td>{{record.period}}</td>
-                        <td>{{record.date|date:'d-m-Y'}}</td>
-                        <td>{{record.description}}</td>
-                        {% if record.value_type == 'Dr' %}
-                        <td class='text-right text-danger'>{{record.value.amount}}</td>
-                        {% else %}
-                        <td class='text-right'>{{record.value.amount}}</td>
-                        {% endif %}
-                        <td>{{record.value_type}}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            
-        </div>
-    </div>  -->
-
+    
+    
     <div class="row">
         <div class="col">
             {% if return == 'detail' %}

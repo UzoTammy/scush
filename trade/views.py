@@ -59,57 +59,77 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def get_context_data(self, **kwargs):
         
         context = super().get_context_data(**kwargs)
-        year = datetime.date.today().year
-
-        daily_qs = TradeDaily.objects.annotate(gp_ratio=ExpressionWrapper(100*1000*F('gross_profit')/F('sales'), output_field=DecimalField()))
+        # year = datetime.date.today().year 
+        # month = datetime.date.today().month
+        
+        daily_qs = TradeDaily.objects.all()  #.annotate(gp_ratio=ExpressionWrapper(F('gross_profit'), output_field=DecimalField()))
+        daily_qs = daily_qs.annotate(expenses=F('direct_expenses')+F('indirect_expenses'))
+        
         daily = daily_qs.latest('date')
-
+        year = daily.date.year
+        month = daily.date.month
+        
+        context['year'] = f'{year}'
+        context['daily'] = daily
+        context['daily_monthly_sales'] = daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('sales'))['sales__sum']
+        context['daily_yearly_sales'] = daily_qs.filter(date__year=year).aggregate(Sum('sales'))['sales__sum']
+        
+        context['daily_monthly_purchase'] = daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('purchase'))['purchase__sum']
+        context['daily_yearly_purchase'] = daily_qs.filter(date__year=year).aggregate(Sum('purchase'))['purchase__sum']
+        
+        context['daily_monthly_expenses'] = daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('expenses'))['expenses__sum']
+        context['daily_yearly_expenses'] = daily_qs.filter(date__year=year).aggregate(Sum('expenses'))['expenses__sum']
+        
+        context['daily_monthly_gross'] = daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('gross_profit'))['gross_profit__sum']
+        context['daily_yearly_gross'] = daily_qs.filter(date__year=year).aggregate(Sum('gross_profit'))['gross_profit__sum']
+        
         monthly_qs = TradeMonthly.objects.filter(year=year).annotate(gp_ratio=ExpressionWrapper(100*1000*F('gross_profit')/F('sales'), output_field=DecimalField()))
         monthly = monthly_qs.last()
+        
+        if monthly_qs.exists():
+            if monthly_qs.filter(month='October').exists():
+                quarter = self.quarter_group(monthly_qs, year, ['October', 'November', 'December'])
+                context['quarter'] = 'Q4'
+            elif monthly_qs.filter(month='July').exists():
+                quarter = self.quarter_group(monthly_qs, year, ['July', 'August', 'September'])
+                context['quarter'] = 'Q3'
+            elif monthly_qs.filter(month='April').exists():
+                quarter = self.quarter_group(monthly_qs, year, ['April', 'May', 'June'])
+                context['quarter'] = 'Q2'
+            else:
+                quarter = self.quarter_group(monthly_qs, year, ['January', 'February', 'March'])
+                context['quarter'] = 'Q1'
 
-        if monthly_qs.filter(month='October').exists():
-            quarter = self.quarter_group(monthly_qs, year, ['October', 'November', 'December'])
-            context['quarter'] = 'Q4'
-        elif monthly_qs.filter(month='July').exists():
-            quarter = self.quarter_group(monthly_qs, year, ['July', 'August', 'September'])
-            context['quarter'] = 'Q3'
-        elif monthly_qs.filter(month='April').exists():
-            quarter = self.quarter_group(monthly_qs, year, ['April', 'May', 'June'])
-            context['quarter'] = 'Q2'
-        else:
-            quarter = self.quarter_group(monthly_qs, year, ['January', 'February', 'March'])
-            context['quarter'] = 'Q1'
-
-        context['sales'] = monthly_qs.aggregate(total=Sum('sales'))['total']
-        context['purchase'] = monthly_qs.aggregate(total=Sum('purchase'))['total']
-        context['direct_expenses'] = monthly_qs.aggregate(total=Sum('direct_expenses'))['total']
-        context['indirect_expenses'] = monthly_qs.aggregate(total=Sum('indirect_expenses'))['total']
-        context['gp_ratio'] = monthly_qs.aggregate(total=Avg('gp_ratio'))['total']
+            context['sales'] = monthly_qs.aggregate(total=Sum('sales'))['total']
+            context['purchase'] = monthly_qs.aggregate(total=Sum('purchase'))['total']
+            context['direct_expenses'] = monthly_qs.aggregate(total=Sum('direct_expenses'))['total']
+            context['indirect_expenses'] = monthly_qs.aggregate(total=Sum('indirect_expenses'))['total']
+            # context['gp_ratio'] = monthly_qs.aggregate(total=Avg('gp_ratio'))['total']
 
         
-        # context['sales'] = sales
-        context['daily'] = daily
-        context['monthly'] = monthly
-        context['year'] = f'{year}'
+            # context['sales'] = sales
+            context['monthly'] = monthly
+            
+            context['quarter_one'] = {
+                'sales': quarter[0], 
+                'purchase': quarter[1], 
+                'direct_expenses': quarter[2],
+                'indirect_expenses': quarter[3], 
+                'gp_ratio': quarter[4]/quarter[5]
+            }
 
-        context['quarter_one'] = {'sales': quarter[0], 
-        'purchase': quarter[1], 
-        'direct_expenses': quarter[2],
-        'indirect_expenses': quarter[3], 
-        'gp_ratio': quarter[4]/quarter[5]}
-
-        # The Sales Table
-        sales_list = list()
-        for key, value in mytools.Period.full_months.items():
-            result = dict()
-            sum_day = daily_qs.filter(date__month=int(key)).aggregate(Sum('sales'))['sales__sum']
-            q_month = monthly_qs.filter(year=monthly.year, month=value) 
-            result['period'] = value
-            result['daily'] = sum_day if sum_day is not None else decimal.Decimal('0')
-            result['monthly'] = q_month.get().sales.amount if q_month.exists() else decimal.Decimal('0')
-            result['delta'] = result['monthly'] - result['daily']
-            sales_list.append(result)
-        context['sales_table'] = sales_list
+            # # The Sales Table
+            sales_list = list()
+            for key, value in mytools.Period.full_months.items():
+                result = dict()
+                sum_day = daily_qs.filter(date__month=int(key)).aggregate(Sum('sales'))['sales__sum']
+                q_month = monthly_qs.filter(year=monthly.year, month=value) 
+                result['period'] = value
+                result['daily'] = sum_day if sum_day is not None else decimal.Decimal('0')
+                result['monthly'] = q_month.get().sales.amount if q_month.exists() else decimal.Decimal('0')
+                result['delta'] = result['monthly'] - result['daily']
+                sales_list.append(result)
+            context['sales_table'] = sales_list
         return context
   
 
