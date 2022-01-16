@@ -44,14 +44,21 @@
             </div>
             <div class="col-10 p-3">
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Number of customers: {{customers.count}}</li>
+                    <li class="list-group-item">Number of Customers: {{customers.count}}</li>
                     <li class="list-group-item">Sales: NGN{{total_sales.sales__sum|floatformat:2}}</li>
-                    <li class="list-group-item">Platinum: {{platinum_customers.count}}</li>
-                    <li class="list-group-item">Gold: {{gold_customers.count}}</li>
-                    <li class="list-group-item">Silver: {{silver_customers.count}}</li>
-                    <li class="list-group-item">Bronze: {{bronze_customers.count}}</li>
-                    <li class="list-group-item">Basic: {{basic_customers.count}}</li>
-                    <li class="list-group-item">Non-Categorized: {{n_customers.count}}</li>
+                    <li class="list-group-item">
+                        <i class="fa fa-cube text-danger"></i> Platinum: {{platinum_customers.count}},
+                        <i class="fa fa-cube text-primary"></i> Gold: {{gold_customers.count}},
+                        <i class="fa fa-cube text-danger"></i> Silver: {{silver_customers.count}},
+                        <i class="fa fa-cube text-primary"></i> Bronze: {{bronze_customers.count}},
+                        <i class="fa fa-cube text-danger"></i> Basic: {{basic_customers.count}},
+                        <i class="fa fa-cube text-primary"></i> Non-Categorized: {{n_customers.count}}
+                    </li>
+                    <!-- <li class="list-group-item"></li> -->
+                    <!-- <li class="list-group-item"></li> -->
+                    <!-- <li class="list-group-item"></li> -->
+                    <!-- <li class="list-group-item"></li> -->
+                    <!-- <li class="list-group-item"></li> -->
                     
                   </ul>
                 

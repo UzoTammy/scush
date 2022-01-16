@@ -79,7 +79,7 @@
         
         <div class="col-9 mt-3 bg-white">
             <h3>{{year}} Trade Values</h3>
-            <h5 class="text-primary"><i>Derived from Profit & Loss Account</i></h5>
+            <h5 class="text-primary"><i>Derived from Profit & Loss Account - {{daily.date}}</i></h5>
             <div class="row">
                 <!-- sales -->
                 <div class="col-sm-6">
@@ -88,7 +88,7 @@
                             <div class="card text-white bg-info" 
                             style="max-width: 32rem; border-radius: 50px;">
                                 <div class="card-body">
-                                    <h5 class="card-title">Sales as at {{daily.date}}</h5>
+                                    <h5 class="card-title text-danger">Sales</h5>
                                     <p class="card-text">
                                         Latest Daily Post - {{daily.sales}}
                                     </p>
@@ -112,7 +112,7 @@
                             <div class="card text-white bg-warning" 
                             style="max-width: 32rem; border-radius: 50px;">
                                 <div class="card-body">
-                                    <h5 class="card-title">Purchase as at {{daily.date}}</h5>
+                                    <h5 class="card-title text-danger">Purchase</h5>
                                     <p class="card-text">
                                         Latest Daily Post - {{daily.purchase}}
                                     </p>
@@ -136,7 +136,7 @@
                             <div class="card text-white bg-secondary" 
                             style="max-width: 32rem; border-radius: 50px;">
                                 <div class="card-body">
-                                    <h5 class="card-title">Expenses as at {{daily.date}}</h5>
+                                    <h5 class="card-title text-danger">Expenses</h5>
                                     <p class="card-text">
                                         Latest Daily Post - NGN{{daily.expenses|default_if_none:0|floatformat:'2g'}}
                                     </p>
@@ -160,7 +160,7 @@
                             <div class="card text-white bg-primary" 
                             style="max-width: 32rem; border-radius: 50px;">
                                 <div class="card-body">
-                                    <h5 class="card-title">Gross Profit as at {{daily.date}}</h5>
+                                    <h5 class="card-title text-danger">Gross Profit</h5>
                                     <p class="card-text">
                                         Latest Daily Post - {{daily.gross_profit}}
                                     </p>

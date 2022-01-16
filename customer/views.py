@@ -215,7 +215,7 @@ class CustomerHomeView(TemplateView):
         customers = CustomerProfile.objects.all()
         if customers.exists():
             context['customers'] = customers
-            context['total_sales'] = customers.aggregate(Sum('sales'))
+            context['total_sales'] = customers.filter().aggregate(Sum('sales'))
             context['platinum_customers'] = customers.filter(category='Platinum')
             context['gold_customers'] = customers.filter(category='Gold')
             context['silver_customers'] = customers.filter(category='Silver')
