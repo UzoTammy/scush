@@ -595,6 +595,7 @@ class TradeDailyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context['gross_profit'] = Money(self.get_queryset().aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN')
         context['direct_income'] = Money(self.get_queryset().aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN')
         context['indirect_income'] = Money(self.get_queryset().aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN')
+        context['previous_period'] = mytools.Period(int(self.kwargs['year']), int(self.kwargs['month'])).previous()
         return context
 
 
