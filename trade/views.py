@@ -128,10 +128,11 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 result['delta'] = result['monthly'] - result['daily']
                 sales_list.append(result)
             context['sales_table'] = sales_list
-            if TradeDaily:
-                context['daily'] = TradeDaily.objects.latest('date').date
-            else:
-                context['daily'] = {'year': 0, 'month': 0}
+        if TradeDaily:
+            context['trade_daily'] = TradeDaily.objects.latest('date').date
+        else:
+            context['trade_daily'] = {'year': 0, 'month': 0}
+            
         return context
   
 
@@ -595,7 +596,10 @@ class TradeDailyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context['gross_profit'] = Money(self.get_queryset().aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN')
         context['direct_income'] = Money(self.get_queryset().aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN')
         context['indirect_income'] = Money(self.get_queryset().aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN')
-        context['previous_period'] = mytools.Period(int(self.kwargs['year']), int(self.kwargs['month'])).previous()
+        period = mytools.Period(int(self.kwargs['year']), int(self.kwargs['month'])).previous()
+        year = period.split('-')[0]
+        month = period.split('-')[1]
+        context['previous_period'] = {'year': year, 'month': month}
         return context
 
 

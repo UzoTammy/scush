@@ -24,14 +24,11 @@
                     </a>
                 </li>
                 <li class="text-success ml-2">Daily</li>
-                
                 <li class="nav-item">
-                    
                     <a class="nav-link"
-                        href="{% url 'trade-daily-list' daily.year daily.month %}">
+                        href="{% url 'trade-daily-list' trade_daily.year trade_daily.month %}">
                         <i class="fa fa-eye-slash text-warning"></i> View
                     </a>
-                    
                 </li>
                 
                 <li class="nav-item">
@@ -81,6 +78,7 @@
         
         <div class="col-9 mt-3 bg-white">
             <h3>{{year}} Trade Values</h3>
+            
             <h5 class="text-primary"><i>Derived from Profit & Loss Account - {{daily.date}}</i></h5>
             <div class="row">
                 <!-- sales -->

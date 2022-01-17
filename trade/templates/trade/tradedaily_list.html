@@ -73,7 +73,7 @@
     <div class="row mt-3">
         <div class="col text-right">
             {% if view.kwargs.year != 0 %}
-            <button class="btn btn-dark"><a href="{% url 'trade-daily-list' 2021 11 %}"><i class="fa fa-backward"></i> Previous</a></button>
+            <button class="btn btn-dark"><a href="{% url 'trade-daily-list' previous_period.year previous_period.month %}"><i class="fa fa-backward"></i> Previous</a></button>
             {% endif %}
             <a class="btn btn-outline-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i> Trade Home</a>
         </div>
