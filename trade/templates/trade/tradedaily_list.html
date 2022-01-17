@@ -9,7 +9,7 @@
                     data-pagination="true"
                     data-search="true"
                     class="table table-bordered table-sm bg-light">
-                <caption>Daily Trading, Profit & Loss Account - {{object_list.first.date|date:'F'}}</caption>
+                <caption>Daily Trading, Profit & Loss Account - {{object_list.first.date|date:'F, Y'}}</caption>
             <thead class="bg-primary text-white">
                 <tr class="text-center">
                     <th>ID</th>
@@ -72,6 +72,7 @@
     </div>
     <div class="row mt-3">
         <div class="col text-right">
+            <button class="btn btn-dark"><i class="fa fa-backward"></i> Previous</button>
             <a class="btn btn-outline-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i> Trade Home</a>
         </div>
     </div>

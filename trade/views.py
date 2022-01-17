@@ -59,8 +59,6 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def get_context_data(self, **kwargs):
         
         context = super().get_context_data(**kwargs)
-        # year = datetime.date.today().year 
-        # month = datetime.date.today().month
         
         daily_qs = TradeDaily.objects.all()  #.annotate(gp_ratio=ExpressionWrapper(F('gross_profit'), output_field=DecimalField()))
         daily_qs = daily_qs.annotate(expenses=F('direct_expenses')+F('indirect_expenses'))
@@ -130,6 +128,10 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 result['delta'] = result['monthly'] - result['daily']
                 sales_list.append(result)
             context['sales_table'] = sales_list
+            if TradeDaily:
+                context['daily'] = TradeDaily.objects.latest('date').date
+            else:
+                context['daily'] = {'year': 0, 'month': 0}
         return context
   
 
@@ -503,7 +505,7 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
         qs = self.get_queryset().filter(date__month=form.instance.date.month)
-        print(qs)
+
         context['object'] = {
             'date': form.instance.date,
             'sales': form.instance.sales,
@@ -577,12 +579,12 @@ class TradeDailyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return False
     
     def get_queryset(self):
-        latest_record = TradeDaily.objects.latest('date')
-        
-        if latest_record:
-            latest_month = latest_record.date.month 
-            return super().get_queryset().filter(date__month=latest_month)
-        return super().get_queryset()
+        if self.kwargs['year'] == 0 and self.kwargs['month'] == 0:
+            return super().get_queryset()
+        year = int(self.kwargs['year'])
+        month = int(self.kwargs['month'])
+        return super().get_queryset().filter(date__year=year, date__month=month)
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

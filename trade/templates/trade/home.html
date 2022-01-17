@@ -26,10 +26,17 @@
                 <li class="text-success ml-2">Daily</li>
                 
                 <li class="nav-item">
+                    {% if daily %}
+                    <a class="nav-link"
+                        href="{% url 'trade-daily-list' daily.year daily.month %}">
+                        <i class="fa fa-eye-slash text-warning"></i> View
+                    </a>
+                    {% else %}
                     <a class="nav-link"
                         href="{% url 'trade-daily-list' %}">
                         <i class="fa fa-eye-slash text-warning"></i> View
                     </a>
+                    {% endif %}
                 </li>
                 
                 <li class="nav-item">
@@ -123,7 +130,7 @@
                                     <p class="card-text">
                                         YTD(current year) - NGN{{daily_yearly_purchase|default_if_none:0.00|floatformat:'2g'}}
                                     </p>
-                                    <!-- <p>---</p> -->
+                                    
                                 </div>
                             </div>
                         </div>
