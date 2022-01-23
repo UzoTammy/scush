@@ -7,19 +7,17 @@
             display: none;
         }
         body {
-            background-color: #8c8e8c;
-        },
-        div {
-            background-color: red;
-        },
+            background-color: white;
+        }
+        
     </style>
 {% endblock %}
 
 
 {% block content %}
-<div class="container">
-  <h3 class="bg-dark text-white">The Team</h3>
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
+<div class="container mt-3">
+  <h3 class="text-warning mb-3">The Team</h3>
+  <!-- <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
       {% for staff in members %}
     <div class="col">
         <div class="card mb-3" style="max-width: 540px;">
@@ -39,6 +37,68 @@
     </div>
       {% endfor %}
 
+  </div> -->
+  <div class="row">
+      <div class="col-md-6">
+        <ul class="list-unstyled">
+            {% for staff in members %}
+            {% if forloop.counter != 1 and forloop.counter != 2 %}
+            <li class="media mb-2">
+              <img src="{{staff.image.url}}" width="64rem;" class="mr-3" alt="...">
+              <div class="media-body">
+                <h5 class="mt-0 mb-1">{{staff}}</h5>
+                <p>{{staff.position}}</p>
+              </div>
+            </li>
+            <hr>
+            {% endif %}
+            {% endfor %}
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <div class="row">
+            <div class="col">
+                <div class="card mb-3" style="max-width: 540px;">
+                    <div class="row no-gutters">
+                        <div class="col-md-4">
+                        <img src="{{members.first.image.url}}" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{members.first}}</h5>
+                            <p class="card-text">{{members.first.position}}</p>
+                            <p class="card-text"><small class="text-muted"></small></p>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </div> 
+        <div class="row">
+            <div class="col">
+                <div class="card mb-3" style="max-width: 480px;">
+                    <div class="row no-gutters">
+                        <div class="col-md-4">
+                        <img src="{{members.last.image.url}}" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{members.last}}</h5>
+                            <p class="card-text">{{memebers.last.position}}</p>
+                            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </div>
+      </div>
+  </div>
+
+  <div class="row">
+      <div class="col">
+          <a class="btn btn-outline-primary" href="{% url 'about' %}"><i class="fa fa-backward"></i> Back</a>
+      </div>
   </div>
 </div>
 {% endblock %}

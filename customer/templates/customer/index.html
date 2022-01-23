@@ -16,21 +16,27 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body {
-            background-color:#313029;
-            color:#ffffff
+            background-color:white;
+            /* background-color:#313029; */
+            color:dimgray
+        }
+        a:hover {
+            color: red;
+            background-color: transparent;
+            text-decoration: none;
         }
     </style>
     <title>SCusH</title>
     <link rel="icon" class="shadow-xl" href="{% static 'customer/logo.ico' %}">
 </head>
 <body>
-
+    
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm ml-3 mb-3">
             <div class="row m-3">
                 <div class="col">
-                    <h2>The SCusH Web App</h2>
+                    <h2>The SCusH Web Platform</h2>
                 </div>
             </div>
             <div class="row p-3">
@@ -48,20 +54,21 @@
                 </h3>
             </div>
             <div class="row">
-                    <h5>We add value to other businesses
+                    <h5><i>We add value to other businesses</i>
                         <i class="fa fa-pagelines fa-2x text-success"></i></h5>
                 </div>
             <div class="row">
                 {% if user.is_authenticated %}
-                <div class="col"><a href="{% url 'home' %}"><i class="fa fa-home fa-2x"></i></a></div>
+                <div class="col"> <i class="fa fa-home fa-1x"></i> <a href="{% url 'home' %}">Go to staff home page</a></div>
                 {% else %}
-                <div class="col"><a href="{% url 'login' %}"><i class="fa fa-sign-in fa-2x"></i></a></div>
+                <div class="col"><i class="fa fa-sign-in fa-1x"></i> <small class="text-muted">Only staff with sign in credentials can</small> 
+                    <a href="{% url 'login' %}">Log In </a></div>
                 {% endif %}
                 <!-- <div class="col"><a href="{% url 'about' %}">Join Us</a></div> -->
             </div>
         </div>
         <div class="col-sm bg-white text-center">
-            <img src="{% static 'customer/background/login.jpeg' %}" height="auto" alt="">
+            <img src="{% static 'customer/background/team.jpeg' %}" height="auto" alt="">
             <div class="row">
                 <div class="col">
                     <img src="{% static 'customer/photo/redbull.jpeg' %}" height="100px" alt="">
@@ -76,11 +83,46 @@
                     <img src="{% static 'customer/brands/amstel-malta.jpeg' %}" height="100px" alt="">
                 </div>
             </div>
+            <div class="row">
+                <div class="col">
+                    <img src="{% static 'customer/background/customer.png' %}" height="auto" alt="">
+                </div>
+            </div>
         </div>
     </div>
     
 </div>
 
+<nav class="navbar fixed-bottom navbar-light bg-light">
+    <a class="navbar-brand" href="{% url 'about' %}">About <img class="rounded-circle" src="{% static 'customer/logo.ico' %}" width="20%" alt=""></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'apply-create' %}">Apply <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Policies</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Procedures</a>
+          </li>
+          
+          <li class="nav-item">
+            {% if user.is_authenticated %}
+            <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-sign-in fa-1x"></i> Log Out</a>
+            {% else %}
+            <a class="nav-link" href="{% url 'login' %}"><i class="fa fa-sign-in fa-1x"></i> Log In</a>
+            {% endif %}
+          </li>
+          
+        </ul>
+    <span class="navbar-text">
+        Navbar text with an inline element
+    </span>
+</nav>
 <!-- Option 2: Separate Popper and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

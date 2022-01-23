@@ -19,7 +19,7 @@ import json
 import secrets
 import datetime
 from ozone.mytools import CSVtoTuple
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, reverse
 from .forms import CustomerProfileForm, CustomerUpdateProfileForm
 
 
@@ -195,7 +195,7 @@ class AboutView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(AboutView, self).get_context_data(**kwargs)
         context['title'] = 'About'
-        return context
+        return context    
 
 
 class HomeView(TemplateView):
