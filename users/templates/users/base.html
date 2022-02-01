@@ -74,6 +74,7 @@
     <link rel="icon" class="shadow-xl" href="{% static 'customer/logo.ico' %}">
 </head>
 <body>
+    <!-- Navbar -->
 <nav id="navmain"
      class="navbar sticky-top navbar-expand-md navbar-light bg-primary">
     <button
@@ -99,11 +100,12 @@
                 <a class="nav-link active text-light" href="{% url 'home' %}">
                     <i class="fa fa-home text-white fa-2x"></i><span class="sr-only">(current)</span></a>
             </li>
-            
+            {% if user.username == 'Uzo-02' %}
             <li class="nav-item">
                 <a class="nav-link text-light" href="{% url 'email-sample' %}">
-                    <i class="fa fa-pencil-square text-white"></i> sampler</a>
+                    <i class="fa fa-pencil-square text-white"></i> Sampler</a>
             </li>
+            {% endif %}
             <li class="nav-item">
                 <a class="nav-link text-light" href="{% url 'apply-pending' %}">
                     <i class="fa fa-pencil-square text-white"></i> Applicants</a>
@@ -271,7 +273,7 @@
         </div>
     </div>
 </div>
-
+{{development}}
 {% block content %} {% endblock %}
 
 <!--Database Field Choice - Add-->

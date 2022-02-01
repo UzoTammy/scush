@@ -18,6 +18,7 @@ import matplotlib
 from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView)                            
 from datetime import timedelta
 from ozone import mytools
+from django.conf import settings
 
 
 matplotlib.use('Agg')
@@ -27,6 +28,11 @@ GROUP_NAME = 'Administrator'
 class EmailSample(TemplateView):
     template_name = 'mail/sample.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['development'] = settings.DEBUG
+        return context
+    
 
 class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView): 
     template_name = 'trade/home.html'

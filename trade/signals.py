@@ -13,7 +13,7 @@ def trade_daily_create(sender, instance, created, **kwargs):
     else:
         head_title = 'Updated'
 
-    qs = TradeDaily.objects.filter(date__month=instance.date.month)
+    qs = TradeDaily.objects.filter(date__year=instance.date.year, date__month=instance.date.month)
 
     dataset = {
             'date': instance.date,
