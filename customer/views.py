@@ -169,7 +169,9 @@ def company(request):
 
     context = {
         'company': company,
-        'members': md.union(gsm, scm, hrm, acct, mrk, lyst),
+        'team': scm.union(hrm, acct, mrk, lyst),
+        'gsm': gsm,
+        'md': md 
     }
     return render(request, 'customer/company.html', context)
 

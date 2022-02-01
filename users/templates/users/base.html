@@ -7,16 +7,15 @@
     <!-- Required meta tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+ 
 
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
           integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-
     <!--icon font awesome    -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <!--  Bootstrap table  -->
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
+
+    <!-- Bootstrap table -->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
     
     <!--    custom styles-->
     <link rel="stylesheet" href="{% static 'customer/css/main.css' %}">
@@ -100,6 +99,11 @@
                 <a class="nav-link active text-light" href="{% url 'home' %}">
                     <i class="fa fa-home text-white fa-2x"></i><span class="sr-only">(current)</span></a>
             </li>
+            
+            <li class="nav-item">
+                <a class="nav-link text-light" href="{% url 'email-sample' %}">
+                    <i class="fa fa-pencil-square text-white"></i> sampler</a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link text-light" href="{% url 'apply-pending' %}">
                     <i class="fa fa-pencil-square text-white"></i> Applicants</a>
@@ -145,22 +149,6 @@
                 <a class="nav-link active text-light" href="{% url 'request-home' %}">
                     <i class="fa fa-list-alt text-white"></i> Requests</a>
             </li>
-
-            <!-- <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
-                   aria-haspopup="true"
-                   aria-expanded="false">
-                    <i class="fa fa-address-card text-white"></i> Request</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'request-home' %}">GO</a>
-                    <hr class="dropdown-divider"> 
-                    <a class="dropdown-item" href="{% url 'request-create' %}">Article</a>
-                    <hr class="dropdown-divider"> 
-                    <a class="dropdown-item" href="{% url 'home' %}">Payslip</a>
-                    <hr class="dropdown-divider"> 
-                    <a class="dropdown-item" href="{% url 'home' %}">Permission</a>
-                </div>
-            </li> -->
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
                    aria-haspopup="true"
@@ -352,87 +340,18 @@
     
 </div>
 
-<!-- Database Fielf Choice - Edit -->
-<!-- <div class="modal fade"
-     id="choiceModalEdit"
-     tabindex="-1"
-     aria-labelledby="banks"
-     aria-hidden="true">
-    
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark text-white">
-            <div class="modal-header">
-                <h5 class="modal-title"
-                    id="banks">
-                    Database Field Choice Value - 
-                    <span class="text-warning">Edit</span> 
-                </h5>
-                <button type="button"
-                        class="btn-close"
-                        data-dismiss="modal"
-                        aria-label="Close">
-                    <i class="fa fa-close"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form action="{% url 'xx' %}" method="GET">
-                    <div class="form-group">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="choiceType" id="inlineRadio1" value="bank" checked>
-                            <label class="form-check-label" for="inlineRadio1">Bank</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="choiceType" id="inlineRadio2" value="branch">
-                            <label class="form-check-label" for="inlineRadio2">Branch</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="choiceType" id="inlineRadio3" value="department">
-                            <label class="form-check-label" for="inlineRadio3">Department</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="choiceType" id="inlineRadio4" value="position">
-                            <label class="form-check-label" for="inlineRadio4">Position</label>
-                        </div>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label class="text-primary"
-                               for="choiceValue">Choice Value</label>
-                        <input id="choiceValue"
-                               class="form-control"
-                               name="choiceValue"
-                               placeholder=""
-                               type="text">
-                    </div>
-                    <div class="modal-footer">
-                        <!--          <a type="submit" href="#" class="btn btn-primary">OK</a>-->
-                        <!-- <input value="Edit" type="submit" class="btn btn-primary"> -->
-                        <!-- <button type="button" -->
-                                <!-- class="btn btn-secondary" -->
-                                <!-- data-dismiss="modal"> -->
-                            <!-- Cancel -->
-                        <!-- </button> -->
-                    <!-- </div> -->
-                <!-- </form> --> 
-            <!-- </div> -->
-        <!-- </div> -->
-    <!-- </div> -->
-    
-<!-- </div> -->
 
 
-<!-- Option 2: Separate Popper and Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"
-        integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF"
-        crossorigin="anonymous"></script>
-<!--bootstrap table-->
-<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+    crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"
+    integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF"
+    crossorigin="anonymous"></script>
+    <!-- Bootstrap Table -->
+    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
 </body>
 </html>

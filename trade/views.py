@@ -3,11 +3,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import datetime
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
-from django.db.models.query_utils import Q
-from django.http.response import HttpResponse, HttpResponseRedirect
-from django.template import loader
 from .forms import TradeMonthlyForm, TradeDailyForm
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from .models import *
 from staff.models import Employee, EmployeeBalance, Payroll
 from stock.models import Product
@@ -18,16 +15,17 @@ import calendar
 import io, base64
 from matplotlib import pyplot as plt
 import matplotlib
-import numpy as np
 from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView)                            
 from datetime import timedelta
 from ozone import mytools
-from django.core.mail import EmailMessage
 
 
 matplotlib.use('Agg')
 
 GROUP_NAME = 'Administrator'
+
+class EmailSample(TemplateView):
+    template_name = 'mail/sample.html'
 
 
 class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView): 
@@ -38,8 +36,7 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
             return True
         return False
-
-
+    
     def quarter_group(self, queryset, year, quarter):
         qs_list = list()
         for month in quarter:
@@ -59,7 +56,6 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def get_context_data(self, **kwargs):
         
         context = super().get_context_data(**kwargs)
-        
         daily_qs = TradeDaily.objects.all()  #.annotate(gp_ratio=ExpressionWrapper(F('gross_profit'), output_field=DecimalField()))
         daily_qs = daily_qs.annotate(expenses=F('direct_expenses')+F('indirect_expenses'))
         
@@ -220,12 +216,6 @@ class TradeMonthlyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView
         context = super().get_context_data(**kwargs)
         context['title'] = 'Update'
         return context
-
-    # def form_valid(self, form, **kwargs):
-    #     context = self.get_context_data(**kwargs)
-    #     form.instance.year = context['last_record']['year']
-    #     form.instance.month = context['last_record']['month']
-    #     return super().form_valid(form)
 
 
 class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -498,67 +488,7 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         context['next_date'] = next_date 
         return context
     
-    def get(self, request, *args: str, **kwargs):
-        
-        return super().get(request, *args, **kwargs)
-    
-
-    def form_valid(self, form, **kwargs):
-        context = self.get_context_data(**kwargs)
-        qs = self.get_queryset().filter(date__month=form.instance.date.month)
-
-        context['object'] = {
-            'date': form.instance.date,
-            'sales': form.instance.sales,
-            'purchase': form.instance.purchase,
-            'direct_expenses': form.instance.direct_expenses,
-            'indirect_expenses': form.instance.indirect_expenses,
-            'opening_value': form.instance.opening_value,
-            'closing_value': form.instance.closing_value,
-            'gross_profit': form.instance.gross_profit,
-            'direct_income': form.instance.direct_income,
-            'indirect_income': form.instance.indirect_income,
-            'net_profit': form.instance.gross_profit - form.instance.indirect_expenses
-        }    
-        if qs:
-            context['object'].update(
-                {
-                    'total_sales': Money(qs.aggregate(Sum('sales'))['sales__sum'], 'NGN') + form.instance.sales,
-                    'total_purchase': Money(qs.aggregate(Sum('purchase'))['purchase__sum'], 'NGN') + form.instance.purchase,
-                    'total_direct_expenses': Money(qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'], 'NGN') + form.instance.direct_expenses,
-                    'total_indirect_expenses': Money(qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'], 'NGN') + form.instance.indirect_expenses,
-                    'opening_stock': qs.first().opening_value,
-                    'total_gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN') + form.instance.gross_profit,
-                    'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN') + form.instance.direct_income,
-                    'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN') + form.instance.indirect_income,
-                }
-            )
-        else:
-            context['object'].update(
-                {
-                    'total_sales': form.instance.sales,
-                    'total_purchase': form.instance.purchase,
-                    'total_direct_expenses': form.instance.direct_expenses,
-                    'total_indirect_expenses': form.instance.indirect_expenses,
-                    'opening_stock': form.instance.opening_value,
-                    'total_gross_profit': form.instance.gross_profit,
-                    'total_direct_income': form.instance.direct_income,
-                    'total_indirect_income': form.instance.indirect_income,
-                }
-            )
-        email = EmailMessage(
-            subject=f'Daily P & L Report for {form.instance.date}',
-            body=loader.render_to_string('trade/mail_daily_PL.html', context=context),
-            from_email='',
-            to=['uzo.nwokoro@ozonefl.com'],
-            cc=['dickson.abanum@ozonefl.com'],
-            headers={'message-id': 'zebra'},
-        )
-        email.content_subtype="html"
-        email.send(fail_silently=False)
-        return super().form_valid(form, **kwargs)
-        
-
+   
 class TradeDailyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = TradeDaily
     
@@ -617,47 +547,6 @@ class TradeDailyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Daily Update'
         return context
-
-    def form_valid(self, form, **kwargs):
-        context = self.get_context_data(**kwargs)
-        qs = self.get_queryset().filter(date__month=form.instance.date.month)
-        
-        opening_stock = form.instance.opening_value if qs.first().pk == self.kwargs['pk'] else qs.first().opening_value
-            
-        context['object'] = {
-            'date': form.instance.date,
-            'sales': form.instance.sales,
-            'purchase': form.instance.purchase,
-            'direct_expenses': form.instance.direct_expenses,
-            'indirect_expenses': form.instance.indirect_expenses,
-            'opening_value': form.instance.opening_value,
-            'closing_value': form.instance.closing_value,
-            'gross_profit': form.instance.gross_profit,
-            'direct_income': form.instance.direct_income,
-            'indirect_income': form.instance.indirect_income,
-            'net_profit': form.instance.gross_profit - form.instance.indirect_expenses,
-            'total_sales': Money(qs.aggregate(Sum('sales'))['sales__sum'], 'NGN') - qs.get(id=self.kwargs['pk']).sales + form.instance.sales,
-            'total_purchase': Money(qs.aggregate(Sum('purchase'))['purchase__sum'], 'NGN') - qs.get(id=self.kwargs['pk']).purchase + form.instance.purchase,
-            'total_direct_expenses': Money(qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'], 'NGN') - qs.get(id=self.kwargs['pk']).direct_expenses + form.instance.direct_expenses,
-            'total_indirect_expenses': Money(qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'], 'NGN') - qs.get(id=self.kwargs['pk']).indirect_expenses + form.instance.indirect_expenses,
-            'opening_stock': opening_stock,
-            'total_gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN') - qs.get(id=self.kwargs['pk']).gross_profit + form.instance.gross_profit,
-            'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN') - qs.get(id=self.kwargs['pk']).direct_income + form.instance.direct_income,
-            'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN') - qs.get(id=self.kwargs['pk']).indirect_income + form.instance.indirect_income,
-        }
-
-        email = EmailMessage(
-            subject=f'Daily P & L Report for {form.instance.date}',
-            body=loader.render_to_string('trade/mail_daily_PL.html', context=context),
-            from_email='',
-            to=['uzo.nwokoro@ozonefl.com'],
-            cc=['dickson.abanum@ozonefl.com'],
-            headers={'message-id': 'zebra'},
-        )
-        email.content_subtype="html"
-        email.send(fail_silently=False)
-        return super().form_valid(form, **kwargs)
-        # return HttpResponse('testing')
 
 
 class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):

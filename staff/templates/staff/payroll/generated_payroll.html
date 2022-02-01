@@ -7,104 +7,64 @@
     <div class="row">
         <div class="col">
             <table data-toggle="table"
-                   data-show-footer="true"
+                   data-show-footer="true" 
                    data-pagination="true"
                    data-search="true"
                    data-show-columns="true"
-                   class="table table-bordered caption-top table-sm"
+                   class="table table-bordered table-sm"
                    width="40px" bgcolor="#e7efef">
                 <caption>Generated Payroll for the period {{period}}
                     <span class="text-success float-right">{{month}}, {{year}}</span>
                 </caption>
                 <thead class="bg-dark text-white text-center">
                 <tr>
-                    <th scope="col">Code</th>
-                    <th scope="col">Staff</th>
-                    <th scope="col">Salary</th>
-                    <th scope="col">Tax</th>
-                    <th scope="col">Balance</th>
-                    <th scope="col">Credit Amount</th>
-                    <th scope="col">Debit Amount</th>
-                    <th scope="col">Net Pay</th>
-                    <th scope="col">Deduction</th>
-                    <th scope="col">Outstanding</th>
+                    <th>Code</th>
+                    <th>Staff</th>
+                    <th data-footer-formatter="{{salary}}">Salary</th>
+                    <th>Tax</th>
+                    <th>Gross Pay</th>
+                    <th>Credit</th>
+                    <th>Debit</th>
+                    <th>Net Pay</th>
+                    <th>Deduction</th>
+                    <th>Outstanding</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for record in records %}
                 <tr>
-                    <th scope="row">{{ record.code|zeropadding:3}}</th>
+                    <td>{{ record.code|zeropadding:3}}</td>
                     <td>{{record.staff}}</td>
                     <td class="text-right">{{record.salary.amount}}</td>
                     <td class="text-right">{{record.tax.amount}}</td>
-                    {% if record.balance.amount >= 0 %}
-                    <td class="text-right">{{record.balance.amount}}</td>
-                    {% else %}
-                    <td class="text-right text-danger">{{record.balance.amount|abs}}</td>
-                    {% endif %}
+                    <td class="text-right">{{record.gross_pay.amount}}</td>
                     <td class="text-right">{{record.credit.amount|floatformat:"2g"}}</td>
                     <td class="text-right text-danger">{{record.debit.amount|floatformat:"2g"}}</td>
-                    <td class="bg-success text-white text-right">
-                        <b>{{record.earning}}</b></td>
+                    <td class="text-success text-right">{{record.earning}}</td>
                     <td class="text-right">{{record.deduction.amount|floatformat:"2g"}}</td>
-                    {% if record.outstanding.amount >= 0 %}
                     <td class="text-right">{{record.outstanding.amount|floatformat:'2g'}}</td>
-                    {% else %}
-                    <td class="text-right text-danger">{{record.outstanding.amount|abs|floatformat:'2g'}}</td>
-                    {% endif %}
                 </tr>
                 {% endfor %}
+                
                 </tbody>
-                <tfoot>
-                <tr>
-                    <td class="bg-dark"></td>
-                </tr>
+                <tfoot class="text-success text-bold">
+                    <tr>
+                        <td class="text-center" colspan="2">Total</td>
+                        <td class="text-right"><b>{{salary}}</b></td>
+                        <td class="text-right"><b>{{tax}}</b></td>
+                        <td class="text-right"><b>{{gross_pay}}</b></td>
+                        <td class="text-right"><b>{{credit}}</b></td>
+                        <td class="text-right"><b>{{debit}}</b></td>
+                        <td class="text-right"><b>{{net_pay}}</b></td>
+                        <td class="text-right"><b>{{deduction}}</b></td>
+                        <td class="text-right"><b>{% if outstanding < 0 %}{{ outstanding|abs}}{% else %}{{ outstanding}}{% endif %}</b></td>
+                    
+                    </tr>
                 </tfoot>
             </table>
         </div>
     </div>
-    <!--        payroll totals-->
-    <div class="row p-2">
-        <div class="col">
-            <ul class="list-group">
-                    <li class="list-group-item active">Payroll Totals</li>
-                    <li class="list-group-item">
-                        <div class="row">
-                        <div class="col">Salary: {{salary}}</div>
-                        <div class="col">Balance:
-                            {% if balance.amount < 0 %}
-                            <span class="text-danger">{{balance|abs}}</span>
-                            {% else %}
-                            <span>{{balance}}</span>
-                            {% endif %}
-                        </div>
-                        <div class="col text-success">Net Pay: {{net_pay}}</div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="row">
-                        <div class="col">Tax Due: {{tax}}</div>
-                        <div class="col">Credit: {{credit}}</div>
-                        <div class="col">Deduction: {{deduction}}</div>
-                        </div>
-                    </li>
-                    <li class="list-group-item">
-                        <div class="row">
-                        <div class="col">Gross Pay: {{gross_pay}}</div>
-                        <div class="col">Debit: {{debit}}</div>
-                        <div class="col">
-                            Outstanding:
-                            {% if outstanding < 0 %}
-                            <span class="text-danger">{{ outstanding|abs}}</span>
-                            {% else %}
-                            <span>{{ outstanding}}</span>
-                            {% endif %}
-                        </div>
-                        </div>
-                    </li>
-                </ul>
-        </div>
-    </div>
+    
 <!--    The form save that moves data into payroll-->
     <form class="p-2"
           action=""
