@@ -79,3 +79,8 @@ def dividedby(value, arg):
 @register.filter
 def array(value, arg):
     return value[arg-1]
+
+
+@register.filter
+def multiply(value, arg):
+    return value * arg

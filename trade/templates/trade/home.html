@@ -77,7 +77,7 @@
         </div>
         
         <div class="col-9 mt-3 bg-white">
-            <h3>{{year}} Trade Values</h3>
+            <h3>{{year}} Trade Values </h3>
             
             <h5 class="text-primary"><i>Derived from Profit & Loss Account - {{daily.date}}</i></h5>
             <div class="row">
@@ -178,7 +178,32 @@
                     </div>
                 </div>
             </div> 
+            <div class="row mt-3">
+                <div class="col-sm-4">
+                    
+                    <table class="table">
+                        <caption>Ratios </caption>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>SDR(%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ratio in sales_drive|slice:":5"%}
+                            <tr>
+                                <td>{{ratio.date}}</td>
+                                <td>{{ratio.sales.amount|div:ratio.opening_value.amount|multiply:100|floatformat:'2'}}</td>
+                            </tr>   
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <p class="text-muted"><i class="fa fa-braille text-warning"></i> SDR - Sales Drive Ratio(last five sales day)</p>
+                    
+                </div>
+            </div>
         </div>
+        
     </div>
     
 </div>

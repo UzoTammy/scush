@@ -18,7 +18,6 @@ import matplotlib
 from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView)                            
 from datetime import timedelta
 from ozone import mytools
-from django.conf import settings
 
 
 matplotlib.use('Agg')
@@ -28,11 +27,6 @@ GROUP_NAME = 'Administrator'
 class EmailSample(TemplateView):
     template_name = 'mail/sample.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['development'] = settings.DEBUG
-        return context
-    
 
 class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView): 
     template_name = 'trade/home.html'
@@ -106,7 +100,6 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['indirect_expenses'] = monthly_qs.aggregate(total=Sum('indirect_expenses'))['total']
             # context['gp_ratio'] = monthly_qs.aggregate(total=Avg('gp_ratio'))['total']
 
-        
             # context['sales'] = sales
             context['monthly'] = monthly
             
@@ -130,11 +123,14 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 result['delta'] = result['monthly'] - result['daily']
                 sales_list.append(result)
             context['sales_table'] = sales_list
+            
         if TradeDaily:
             context['trade_daily'] = TradeDaily.objects.latest('date').date
         else:
             context['trade_daily'] = {'year': 0, 'month': 0}
-            
+        
+        # The Sales Drive Ratio: Sales by opening stock
+        context['sales_drive'] =  daily_qs.order_by('-pk')     
         return context
   
 
