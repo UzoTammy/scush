@@ -2,10 +2,6 @@ body {
     background-color: #ffffff;
   }
 
-#login {
-    background-color:#bbccdf;
-        }
-
 #sidebar {
     display: none;
     color: red
@@ -14,3 +10,4 @@ body {
 #navmain {
     display: none;
         }
+

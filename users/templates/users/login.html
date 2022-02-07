@@ -9,24 +9,10 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-3 bg-white">
-            <div class="jumbotron jumbotron-fluid bg-white">
-                <div class="row text-center">
-                    <div class="col">
-                        <img 
-                        style="border-radius: 50px 100px 50px 100px;" 
-                        src="{{ staff.image.url }}" height="150px" alt="">
-                        <p>{{staff.fullname}} <br>{{staff.position}}, {{staff.branch}}</p>
-                      </div>
-                </div>
-            
-              </div>
-            
-        </div>
-        <div class="col-sm-5 mb-3">
-            <div class="row justify-content-center">
+        <div class="col-sm-5">
+            <div class="row h-100 justify-content-center align-items-center">
                 <div class="col-8">
-                    <div id="login" class="container mt-5">
+                    <div class="container">
                         <div class="row">
                             <div class="col mt-2 text-center">
                                 <img src="{% static 'customer/logo.png' %}"
@@ -36,19 +22,22 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col shadow">
+                            <div class="col text-primary shadow">
                                 <form method="POST" class="">
                                     {% csrf_token %}
-                                    <legend class="text-dark">Sign In</legend>
+                                    <legend class="text-danger">Sign In</legend>
                                     <div class="form-group">
                                         {{ form|crispy }}
+                                        <small class="text-muted">Forgot password? contact company administrator</small>
                                     </div>
+                                    
                                     <div class="form-group float-right">
                                         <a href="{% url 'index' %}" class="btn btn-outline-primary">
                                             <i class="fa fa-home"></i>
                                         </a>
                                         
-                                        <button class="btn btn-outline-primary" type="submit">Log In</button>
+                                        <button class="btn btn-outline-primary" type="submit">Log In</button> <br>
+                                        <small class="text-muted">Always log out when done</small>
                                     </div>
                                 </form>
                             </div>
@@ -57,10 +46,17 @@
                 </div>
             </div>
         </div>
+        
+        <div class="col-sm-3">
+            <img src="{% static 'customer/background/adminpage.jpeg' %}"
+            width="250%"
+            height="145%"
+            alt="">
+        </div>
         <div class="col-sm-4">
-            <div class="row justify-content-center">
-                <div class="col">
-                    <h4 class="text-info mt-3">
+            <div class="row">
+                <div class="col bg-dark" style="opacity: 0.7;">
+                    <h4 class="text-white mt-3">
                     <i>
                     SCusH is a web platform for administration
                     </i>
@@ -72,21 +68,23 @@
                 </ul>
                 <hr>
                 <div class="row">
-                    <div class="col">
-                        <h3>Stock</h3>
+                    <div class="col text-white">
+                        <h3 class="text-warning">Stock</h3>
                         <ul>
                             <li>Stock Profile</li>
                         </ul>
-                        <h3>Customers</h3>
+                        <h3 class="text-danger">Customers</h3>
                         <ul>
                             <li>Customer Profile</li>
                         </ul>
-                        <h3>Human Resources</h3>
+                        <h3 class="text-success">Human Resources</h3>
                         <ul>
                             <li>Application</li>
                             <li>Employees</li>
                             <li>Payroll</li>
                         </ul>
+                        <hr>
+                        <p>Number of Users admitted: {{staffs.count}}</p>
                     </div>
                 </div>
                 </div>

@@ -130,7 +130,7 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['trade_daily'] = {'year': 0, 'month': 0}
         
         # The Sales Drive Ratio: Sales by opening stock
-        context['sales_drive'] =  daily_qs.order_by('-pk')     
+        context['sales_drive'] =  daily_qs.order_by('-pk')   
         return context
   
 

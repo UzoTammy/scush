@@ -51,5 +51,20 @@
         <small style="color: rgb(81, 83, 81);">Opening stock less sales add purchase add gross profit add direct expenses less closing stock</small>
     </p>   
     <hr>
+    <h3>Sales Drive Ratio</h3>
+    <table class="table" style="width: fit-content;">
+        <tr>
+            <th>Date</th>
+            <th>SDR(%)</th>
+        </tr>
+        {% for ratio in sales_drive|slice:":5" %}
+            <tr>
+                <td>{{ratio.date}}</td>
+                <td>{{ratio.sales.amount|div:ratio.opening_value.amount|multiply:100|floatformat:'2'}}</td>
+            </tr>   
+        {% endfor %}
+    </table>
+    <p class="text-muted"><i class="fa fa-braille text-warning"></i> SDR - Sales Drive Ratio(last five sales day)</p>
+    
 </div>
 {% endblock content %}

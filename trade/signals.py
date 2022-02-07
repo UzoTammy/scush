@@ -14,6 +14,7 @@ def trade_daily_create(sender, instance, created, **kwargs):
         head_title = 'Updated'
 
     qs = TradeDaily.objects.filter(date__year=instance.date.year, date__month=instance.date.month)
+    qs_all = TradeDaily.objects.all()
 
     dataset = {
             'date': instance.date,
@@ -36,6 +37,8 @@ def trade_daily_create(sender, instance, created, **kwargs):
             'total_gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN'),
             'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN'),
             'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN'),
+            'sales_drive': qs_all
+
         } 
     email = EmailMessage(
         subject=f'Daily P & L Report for {instance.date} - {head_title}',

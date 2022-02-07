@@ -1169,15 +1169,9 @@ class StaffSalaryChange(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
         qs = self.get_queryset().get(id=kwargs['pk'])
         previous_pay = qs.basic_salary + qs.allowance
-        if qs.is_management:
-            basic_salary = 0.4 * salary
-            allowance = 0.6 * salary
-        else:
-            basic_salary = 0.6 * salary
-            allowance = 0.4 * salary
-
-        qs.basic_salary = Money(basic_salary, 'NGN')
-        qs.allowance = Money(allowance, 'NGN')
+        
+        qs.basic_salary = Money(0.4 * salary, 'NGN')
+        qs.allowance = Money(0.6 * salary, 'NGN')
         qs.save()
 
         change_salary = SalaryChange(staff=person,
