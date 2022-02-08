@@ -19,6 +19,7 @@ from users import views as user_views
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.models import User
 from staff.models import Employee
 import random
 
@@ -29,7 +30,7 @@ class Log(auth_views.LoginView):
         numbers = obj.values_list('id', flat=True)
         number = random.choice(numbers)
         context['staff'] = obj.get(pk=number)
-        context['staffs'] = obj
+        context['users'] = User.objects.all()
         return context
 
 urlpatterns = [
