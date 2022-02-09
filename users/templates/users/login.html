@@ -49,9 +49,6 @@
         
         <div class="col-sm-3 bg-dark" style="opacity: 0.6;">
              <!-- add some at the middle -->
-             {% for user in users %}
-                <img src="{{user.profile.staff.image.url }}" width="70px" alt="">
-             {% endfor %}
         </div>
         <div class="col-sm-4">
             <div class="row">
@@ -89,6 +86,17 @@
                 </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="row mt-5 text-center">
+        <div class="col">
+            <img class="border border-primary" width="200px" height="150px" src="{% static 'customer/background/login.jpeg' %}" alt="">
+        </div>
+        <div class="col">
+            <img class="border border-primary" width="200px" height="150px" src="{% static 'customer/background/adminpage.jpeg' %}" alt="">
+        </div>
+        <div class="col">
+            <img class="border border-primary" width="200px" height="150px" src="{% static 'customer/background/room.jpeg' %}" alt="">
         </div>
     </div>
 </div>

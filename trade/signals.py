@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.core.mail import EmailMessage
 from django.template import loader
 from .models import Money, TradeDaily
+from pdf.views import Ozone
 
 
 @receiver(post_save, sender=TradeDaily)
@@ -18,6 +19,7 @@ def trade_daily_create(sender, instance, created, **kwargs):
 
     dataset = {
             'date': instance.date,
+            'title': 'P & L',
             'sales': instance.sales,
             'purchase': instance.purchase,
             'direct_expenses': instance.direct_expenses,
@@ -37,8 +39,8 @@ def trade_daily_create(sender, instance, created, **kwargs):
             'total_gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN'),
             'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN'),
             'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN'),
-            'sales_drive': qs_all
-
+            'sales_drive': qs_all.order_by('-pk')[:5],
+            'logo_image': Ozone.logo()
         } 
     email = EmailMessage(
         subject=f'Daily P & L Report for {instance.date} - {head_title}',

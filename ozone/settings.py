@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.admindocs',
     'django.contrib.humanize',
     'pdf',
+    'mail',
     'storages',
     'crispy_forms',
     'djmoney',
