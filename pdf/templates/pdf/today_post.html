@@ -1,64 +1,12 @@
 <!--<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">-->
-<!doctype html>
+{% extends 'pdf/base.html' %}
 {% load custom_templates %}
 {% load static %}
-<html>
-    <head>
-        <title>SCUSH|Today's Brief</title>
-        <style type="text/css">
-            body {
-                font-weight: 100;
-                font-size: 14px;
-            }
-            .header {
-                font-size: 20px;
-                font-weight: 100;
-                text-align: center;
-                color: #007cae;
-            }
-            .title {
-                font-size: 22px;
-                font-weight: 100;
-               /* text-align: right;*/
-               padding: 10px 20px 0px 20px;
-            }
-            .title span {
-                color: #007cae;
-            }
-            .details {
-                padding: 10px 20px 0px 20px;
-                text-align: left !important;
-                /*margin-left: 40%;*/
-            }
-            .hrItem {
-                border: none;
-                height: 1px;
-                /* Set the hr color */
-                color: #333; /* old IE */
-                background-color: #fff; /* Modern Browsers */
-            }
-            small {
-                color: #e7aaad;
-            }
-            table, th, td {
-                border: 1px solid #d6d7ce;
-                padding: 3px;
-            }
-            table {
-                width: 100%;
-            }
-            img {
 
-            }
-        </style>
-    </head>
-    <body>
-        <img src="data:image/png;base64,{{logo_image}}" 
-        width="120px" 
-        margin="50px"
-        style="text-align:left;"
-        alt="">
-
+{% block head %}
+    <title>SCUSH|Today's Brief</title>
+{% endblock %}        
+    {% block content %}
         <div class='wrapper'>
             <div class='header'>
                 <p class='title'>Daily Brief for {% now 'jS M. Y' %}</p>
@@ -87,5 +35,4 @@
             <i style="color:red;">It is very important you go going through the daily brief before you resume work!!!</p>       
         </div>
     </div>
-</body>
-</html>
+{% endblock content %}

@@ -55,9 +55,9 @@
                     <div class="col-sm-4">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Cumulative Values</h5>
+                                <h5 class="card-title">Cummulative Values</h5>
                                 <p class="card-text">Total Capacity: {{total_capacity|floatformat:0}}
-                                <small class="text-muted">*includes capacities of owned properties</small></p>
+                                <small class="text-muted">*includes owned properties</small></p>
                                 <p class="card-text">Rented Capacity: {{rented_capacity|floatformat:0}}</p>
                                 <p class="card-text">Owned Capacity: {{owned_capacity|floatformat:0}}</p>
                             </div>
@@ -68,8 +68,9 @@
                             <div class="card-body">
                                 <h5 class="card-title">Rent Status</h5>
                                 <p class="card-text">Payable: {{N}}{{total_rent_payable_per_annum|floatformat:2}} (#<span>{{stores.count}}</span>)</p>
-                                <p class="card-text text-success">Paid: {{N}}{{rent_amount_paid|floatformat:2}} (#<span class="text-success">{{quantity_rent.paid}}</span>) </p>
-                                <p class="card-text text-danger">Pending: {{N}}{{rent_amount_unpaid|floatformat:2}} (#<span class="text-danger">{{quantity_rent.unpaid}}</span>) </p>
+                                <p class="card-text text-success">Paid: {{N}}{{rent_amount_paid|floatformat:2}} (#<span class="text-success">{{renewal_count}}</span>) </p>
+                                <p class="card-text text-danger">Pending: {{N}}{{rent_amount_unpaid|floatformat:2}} 
+                                    (#<span class="text-danger">{{stores.count|minus:renewal_count}}</span>) </p>
                             </div>
                         </div>
                     </div>
@@ -89,8 +90,6 @@
                                     Sell-out & Storage: {{N}}{% if rent.storage == None %}0.00{% else %}{{rent.storage}}{% endif %}
                                     ({{rent_percentage.storage|floatformat:2}}%)
                                 </p>
-
-
                             </div>
                         </div>
                     </div>
@@ -123,7 +122,7 @@
                                    {% if store.expiry_date > today %}
                                 <td>{{store.expiry_date|timeuntil}}</td>
                                     {% else %}
-                                <td class="text-danger">Rent is due</td>
+                                <td><a href="{% url 'payment' store.pk %}">Rent is due</a></td>
                                     {% endif %}
                             </tr>
                             {% endfor %}

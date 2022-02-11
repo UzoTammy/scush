@@ -24,7 +24,8 @@ def next_year(date):
 
 class HomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'warehouse/home.html'
-    queryset = Stores.active.exclude(owner='Self')
+    store_obj = Stores.active.exclude(owner='Self')
+    payment_obj = Renewal.objects.filter(date__year=datetime.date.today().year)
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -35,22 +36,29 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        if self.queryset.exists():
+        if self.store_obj.exists():
+            
+            for obj in self.store_obj:
+                if (obj.expiry_date - datetime.date.today()).days <= 0:
+                    obj.status = False
+                    obj.save()
+
             context['N'] = chr(8358)
             context['today'] = datetime.date.today()
 
             context['owned_properties'] = Stores.active.filter(owner='Self')
 
-            context['total_rent_payable_per_annum'] = self.queryset.aggregate(total=Sum('rent_amount'))['total']
+            context['total_rent_payable_per_annum'] = self.store_obj.aggregate(total=Sum('rent_amount'))['total']
             context['total_capacity'] = Stores.active.aggregate(total=Sum('capacity'))['total']
-            context['rented_capacity'] = self.queryset.aggregate(total=Sum('capacity'))['total']
+            context['rented_capacity'] = self.store_obj.aggregate(total=Sum('capacity'))['total']
             context['owned_capacity'] = context['total_capacity'] - context['rented_capacity']
 
             context['store_types'] = (i[0] for i in Stores.TYPES)
             context['usage'] = (i[0] for i in Stores.USAGE)
-            context['rent_amount_paid'] = self.queryset.filter(status=True).aggregate(total_paid=Sum('rent_amount'))['total_paid']
-            context['rent_amount_unpaid'] = self.queryset.filter(status=False).aggregate(total_unpaid=Sum('rent_amount'))['total_unpaid']
-            context['quantity_rent'] = {'paid': self.queryset.filter(status=True).count(), 'unpaid': self.queryset.filter(status=False).count()}
+            context['rent_amount_paid'] = self.payment_obj.aggregate(total_paid=Sum('amount_paid'))['total_paid']
+            context['rent_amount_unpaid'] = context['total_rent_payable_per_annum'] - context['rent_amount_paid']
+            #self.store_obj.filter(status=False).aggregate(total_unpaid=Sum('rent_amount'))['total_unpaid']
+            context['renewal_count'] = self.payment_obj.count()
 
             qs = Stores.active.all()
             qs_total = qs.aggregate(total=Sum('rent_amount'))['total']
@@ -66,7 +74,7 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                                           'apartment': apartment,
                                           'storage': storage,
                                           }
-            context['stores'] = self.queryset.order_by('expiry_date')
+            context['stores'] = self.store_obj.order_by('expiry_date')
         return context
 
 
@@ -175,20 +183,18 @@ class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         qs = self.get_queryset().get(id=kwargs['pk'])
         period = int(request.POST['period'])
         the_unit = request.POST['unit']
-        date = qs.expiry_date
         if the_unit == 'Year':
             factor = period
-            for _ in range(period):
-                date = next_year(date)
+            date = datetime.date(qs.expiry_date.year + period, qs.expiry_date.month, qs.expiry_date.day)
         else:
             factor = period/12
-            num = date.month + period
+            num = qs.expiry_date.month + period
             if num > 12:
                 num -= 12
-                year = date.year + 1
+                year = qs.expiry_date.year + 1
             else:
-                year = date.year
-            date = datetime.date(year, num, date.day)
+                year = qs.expiry_date.year
+            date = datetime.date(year, num, qs.expiry_date.day)
 
         qs.expiry_date = date
         qs.status = True
@@ -198,12 +204,11 @@ class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         renew = Renewal(store=qs,
                         date=datetime.date.today(),
                         amount_paid=qs.rent_amount*factor,
-                        expiry_date=date)
+                        )
         renew.save()
 
-
         # the message
-        messages.success(request, f'Rent renewal saved successfully !!!')
+        messages.success(request, f'Rent renewal successfully !!!')
         return redirect('warehouse-detail', pk=kwargs['pk'])
 
 

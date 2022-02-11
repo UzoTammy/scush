@@ -40,7 +40,6 @@ def trade_daily_create(sender, instance, created, **kwargs):
             'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN'),
             'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN'),
             'sales_drive': qs_all.order_by('-pk')[:5],
-            'logo_image': Ozone.logo()
         } 
     email = EmailMessage(
         subject=f'Daily P & L Report for {instance.date} - {head_title}',

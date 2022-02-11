@@ -11,4 +11,5 @@ urlpatterns = [
     path('stores/pay/<int:pk>/rent/', PayRent.as_view(), name='warehouse-pay-rent'),
     path('stores/bank/add/', BankAccountCreate.as_view(), name='warehouse-bank-create'),
     path('stores/<int:pk>/update/', BankAccountUpdate.as_view(), name='warehouse-bank-update'),
+    path('stores/<int:pk>/payment/', StoresDetailView.as_view(), name='payment')
 ]

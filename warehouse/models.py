@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.db import models
 from djmoney.models.fields import MoneyField
 from django.utils import timezone
-from staff.models import Employee
+# from staff.models import Employee
 # from staff import models
 
 
@@ -49,8 +49,9 @@ class Renewal(models.Model):
     amount_paid = MoneyField(max_digits=10,
                              decimal_places=2,
                              default_currency='NGN')
-    expiry_date = models.DateField()
-
+    
+    def __str__(self):
+        return f'{self.store.name} Renewed'
 
 class BankAccount(models.Model):
     store = models.OneToOneField(Stores, on_delete=models.CASCADE)

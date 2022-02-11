@@ -6,6 +6,7 @@ from django.db.models.fields import FloatField
 from .forms import TradeMonthlyForm, TradeDailyForm
 from django.shortcuts import render
 from .models import *
+from warehouse.models import Stores, Renewal
 from staff.models import Employee, EmployeeBalance, Payroll
 from stock.models import Product
 from customer.models import CustomerProfile
@@ -18,6 +19,7 @@ import matplotlib
 from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView)                            
 from datetime import timedelta
 from ozone import mytools
+
 
 
 matplotlib.use('Agg')
@@ -744,15 +746,27 @@ class DashBoardView(TemplateView):
                 context['gp_ratio'] = 0
             context['sales'] = qs_daily_last.sales
             context['day'] = qs_daily_last.date
+
         context['workforce'] = Employee.active.count()
         context['products'] = Product.objects.count()
         context['customers'] = CustomerProfile.objects.count()
         context['salaries'] = Payroll.objects.aggregate(Sum('net_pay'))['net_pay__sum']
-        from warehouse.models import Stores
+        
         context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
         
         positive_grat = EmployeeBalance.objects.filter(value_type='Cr').aggregate(Sum('value'))['value__sum']
         negative_grat = EmployeeBalance.objects.filter(value_type='Dr').aggregate(Sum('value'))['value__sum']
         context['gratuity_value'] = positive_grat - negative_grat
-        # context['gratuity_number'] = EmployeeBalance.objects.count()
+        
+        current_year = datetime.date.today().year
+        context['last_year_rent'] = Renewal.objects.filter(date__year=current_year-1).aggregate(Sum('amount_paid'))['amount_paid__sum']
+        last_four_years = [current_year, current_year-1, current_year-2, current_year-3]
+        context['year_sales'] = list((str(i), TradeMonthly.objects.filter(year=i).aggregate(Sum('sales')).get('sales__sum')) for i in last_four_years)
         return render(request, self.template_name, context)
+
+
+
+
+
+
+

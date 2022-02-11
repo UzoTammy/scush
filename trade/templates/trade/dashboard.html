@@ -3,7 +3,6 @@
 
 {% block content %}
 <div class="container  px-lg-5">
-    
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
         <div class="col mt-2">
             {% if net_pay == None or net_profit == None %}
@@ -63,6 +62,39 @@
               </div>
         
         </div> 
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
+        <div class="col">
+            <ul class="list-group">
+                <li class="list-group-item">Rent (2021) - {{last_year_rent}}</li>
+                <li class="list-group-item">
+                    <table class="table">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Year</th>
+                                <th>Sales</th>
+                            </tr>
+                        </thead>
+                        <tbody>   
+                            {% for sale in year_sales %}
+                                <tr>
+                                    <td>{{sale|first}}</td>
+                                    <td class="text-right">{{sale|last|default_if_none:0|floatformat:'2g'}} 
+                                        {% if forloop.counter == 1 %}
+                                        <sup class="text-danger">**</sup>  
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        
+                    </table>
+                    <small class="text-danger">** - still counting</small>
+                </li>
+                
+            </ul>
+        </div>
     </div>
 </div>
 
