@@ -111,15 +111,13 @@
                             {% for store in stores %}
                                     
                             <tr>     
-                                {% now "Y" as current_year %}
-                                {% if store.expiry_date|date:"Y" == current_year %}
-                                <th scope="row">{{store.id|zeropadding:2}} <i class="fa fa-bolt text-danger"></i></th>
-                                {% else %}
-                                <th scope="row">{{store.id|zeropadding:2}}</th>
-                                {% endif %}
+                                <th scope="row">{{store.id|zeropadding:2}} 
+                                    <!-- <i class="fa fa-bolt text-danger"></i> -->
+                                </th>
                                 <td>{{store.name}}</td>
                                 <td>{{store.expiry_date}}</td>
-                                   {% if store.expiry_date > today %}
+                                
+                                   {% if store.expiry_date >= today %}
                                 <td>{{store.expiry_date|timeuntil}}</td>
                                     {% else %}
                                 <td><a href="{% url 'payment' store.pk %}">Rent is due</a></td>

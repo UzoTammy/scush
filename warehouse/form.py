@@ -1,3 +1,4 @@
+from dataclasses import field
 from .models import Stores
 from django import forms
 from django.forms import ModelForm
@@ -13,4 +14,4 @@ class StoreForm(ModelForm):
 
     class Meta:
         model = Stores
-        exclude = ('status', 'disabled')
+        fields = '__all__'

@@ -37,9 +37,8 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         if self.store_obj.exists():
-            
             for obj in self.store_obj:
-                if (obj.expiry_date - datetime.date.today()).days <= 0:
+                if obj.expiry_date >= datetime.date.today():
                     obj.status = False
                     obj.save()
 
@@ -56,8 +55,7 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['store_types'] = (i[0] for i in Stores.TYPES)
             context['usage'] = (i[0] for i in Stores.USAGE)
             context['rent_amount_paid'] = self.payment_obj.aggregate(total_paid=Sum('amount_paid'))['total_paid']
-            context['rent_amount_unpaid'] = context['total_rent_payable_per_annum'] - context['rent_amount_paid']
-            #self.store_obj.filter(status=False).aggregate(total_unpaid=Sum('rent_amount'))['total_unpaid']
+            context['rent_amount_unpaid'] = context['total_rent_payable_per_annum'] - context['rent_amount_paid'] if self.payment_obj.exists() else context['total_rent_payable_per_annum']
             context['renewal_count'] = self.payment_obj.count()
 
             qs = Stores.active.all()
@@ -72,8 +70,7 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             storage = 0 if context['rent']['storage'] is None else 100 * context['rent']['storage'] / qs_total
             context['rent_percentage'] = {'office': office,
                                           'apartment': apartment,
-                                          'storage': storage,
-                                          }
+                                          'storage': storage}
             context['stores'] = self.store_obj.order_by('expiry_date')
         return context
 
@@ -149,7 +146,9 @@ class StoresUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
               'contact',
               'rent_amount',
               'capacity',
-              'expiry_date')
+              'expiry_date',
+              'status',
+              'disabled')
     
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -169,7 +168,6 @@ class StoresUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().post(request, *args, **kwargs)
 
     
-
 class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Stores
 
@@ -195,7 +193,6 @@ class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             else:
                 year = qs.expiry_date.year
             date = datetime.date(year, num, qs.expiry_date.day)
-
         qs.expiry_date = date
         qs.status = True
         qs.save()
@@ -209,6 +206,7 @@ class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
         # the message
         messages.success(request, f'Rent renewal successfully !!!')
+
         return redirect('warehouse-detail', pk=kwargs['pk'])
 
 
