@@ -722,8 +722,11 @@ class DashBoardView(TemplateView):
 
     
     def get_context_data(self, **kwargs):
-
-        return super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        context['workforce'] = Employee.active.count()
+        context['products'] = Product.objects.count()
+        context['customers'] = CustomerProfile.objects.count()
+        return context
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -747,9 +750,6 @@ class DashBoardView(TemplateView):
             context['sales'] = qs_daily_last.sales
             context['day'] = qs_daily_last.date
 
-        context['workforce'] = Employee.active.count()
-        context['products'] = Product.objects.count()
-        context['customers'] = CustomerProfile.objects.count()
         context['salaries'] = Payroll.objects.aggregate(Sum('net_pay'))['net_pay__sum']
         
         context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
@@ -761,7 +761,15 @@ class DashBoardView(TemplateView):
         current_year = datetime.date.today().year
         context['last_year_rent'] = Renewal.objects.filter(date__year=current_year-1).aggregate(Sum('amount_paid'))['amount_paid__sum']
         last_four_years = [current_year, current_year-1, current_year-2, current_year-3]
-        context['year_sales'] = list((str(i), TradeMonthly.objects.filter(year=i).aggregate(Sum('sales')).get('sales__sum')) for i in last_four_years)
+    
+        context['year_sales'] = list((str(i), 
+        TradeMonthly.objects.filter(year=i).aggregate(Sum('sales')).get('sales__sum'),
+        TradeMonthly.objects.filter(year=i).aggregate(Sum('purchase')).get('purchase__sum'),
+        Renewal.objects.filter(date__year=i).aggregate(Sum('store__rent_amount'))['store__rent_amount__sum'],
+        Payroll.objects.filter(date_paid__year=i).aggregate(Sum('net_pay'))['net_pay__sum']
+        ) 
+        for i in last_four_years)
+        
         return render(request, self.template_name, context)
 
 

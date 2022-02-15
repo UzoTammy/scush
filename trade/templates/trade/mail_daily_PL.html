@@ -30,7 +30,8 @@
     <hr>
     
     {% if object.net_profit.amount >= 0 %}
-    <p>Profit: <span style="color: green;">{{object.net_profit}}</span></p>
+    <p>Profit: <span style="color: green;">{{object.net_profit}}</span> 
+        (<span style="color:cadetblue">margin ratio: {{object.net_profit|div:object.sales|multiply:100|floatformat:2}}%</span>)</p>
     {% else %}
     <p>Loss: <span style="color: red;">{{object.net_profit|abs}}</span></p>
     {% endif %}

@@ -84,3 +84,7 @@ def array(value, arg):
 @register.filter
 def multiply(value, arg):
     return value * arg
+
+@register.filter
+def array_index(value, index):
+    return value[index]

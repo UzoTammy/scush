@@ -370,11 +370,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     def leave(self):
         """This year's man hour"""
         days_in_year = int(datetime.date(datetime.date.today().year, 12, 31).strftime('%j'))
-        
-        if datetime.date.today().year == 2021:
-            full_year_workdays = (days_in_year - 52) * 5/12
-        else:
-            full_year_workdays = days_in_year - 52
+        full_year_workdays = days_in_year - 52
         allocation = 0.04  # 4% of full_year_workdays
         return int(full_year_workdays * allocation)
 
@@ -383,7 +379,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         person = self.get_queryset().get(pk=kwargs['object'].pk)
         leave = (1 - person.date_employed.month / 12) * self.leave() if person.date_employed.year == datetime.date.today().year else self.leave()
         
-        permit = Permit.objects.filter(staff_id=person)
+        permit = Permit.objects.filter(starting_from__year=datetime.date.today().year, staff_id=person)
         
         if permit.exists():
             days, hours = list(), list()

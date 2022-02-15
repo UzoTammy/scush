@@ -64,15 +64,36 @@
                         </div>
                     </div>
                     <div class="col-sm-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Rent Status</h5>
-                                <p class="card-text">Payable: {{N}}{{total_rent_payable_per_annum|floatformat:2}} (#<span>{{stores.count}}</span>)</p>
-                                <p class="card-text text-success">Paid: {{N}}{{rent_amount_paid|floatformat:2}} (#<span class="text-success">{{renewal_count}}</span>) </p>
-                                <p class="card-text text-danger">Pending: {{N}}{{rent_amount_unpaid|floatformat:2}} 
-                                    (#<span class="text-danger">{{stores.count|minus:renewal_count}}</span>) </p>
-                            </div>
-                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="text-danger">RENT</th>
+                                    <th>Count</th>
+                                    <th>Amount({{N}})</th>
+                                    <th class="text-center">%</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Payable</td>
+                                    <td class="text-center">{{stores.count}}</td>
+                                    <td>{{total_rent_payable_per_annum|floatformat:2}}</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Paid</td>
+                                    <td class="text-center">{{renewal_count}}</td>
+                                    <td>{{rent_amount_paid|floatformat:2}} </td>
+                                    <td class="text-right">{{rent_amount_paid|default_if_none:0|div:total_rent_payable_per_annum|multiply:100|floatformat:2}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Unpaid</td>
+                                    <td class="text-center">{{stores.count|minus:renewal_count}}</td>
+                                    <td>{{rent_amount_unpaid|floatformat:2}}</td>
+                                    <td class="text-right">{{rent_amount_unpaid|default_if_none:0|div:total_rent_payable_per_annum|multiply:100|floatformat:2}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div class="col-sm-4">
                         <div class="card">
@@ -116,7 +137,7 @@
                                 </th>
                                 <td>{{store.name}}</td>
                                 <td>{{store.expiry_date}}</td>
-                                
+
                                    {% if store.expiry_date >= today %}
                                 <td>{{store.expiry_date|timeuntil}}</td>
                                     {% else %}
@@ -129,7 +150,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col">
+                    <div class="col-sm-4">
                         <table class="table table-sm" data-toggle="table" data-pagination="true">
                             <caption>Owned</caption>
                             <thead>
@@ -137,24 +158,21 @@
                                 <th scope="col">ID</th>
                                 <th scope="col">Store</th>
                                 <th scope="col">Value</th>
-                                <th scope="col">Due Date</th>
-                                <th scope="col">Review</th>
+                                
                             </tr>
                             </thead>
                             <tbody>
                             {% for property in owned_properties %}
-                                <tr>
+                            <tr>
                                 <th scope="row">{{property.id}}</th>
                                 <td>{{property.name}}</td>
-                                <td>{{property.rent_amount}}</td>
-                                <td>{{property.expiry_date}}</td>
-                                   {% if property.expiry_date <= today %}
-                                <td>{{property.expiry_date|timeuntil}}</td>
-                                    {% else %}
-                                <td class="text-danger">Due for Review</td>
-                                    {% endif %}
+                                <td class="text-right">{{property.rent_amount|multiply:30}}</td>
                             </tr>
                             {% endfor %}
+                            <tr>
+                                <td colspan="2" class="text-right">Total</td>
+                                <td class="text-right">NGN{{owned_property_total|floatformat:'2g'}}</td>
+                            </tr>
                             </tbody>
                         </table>
 

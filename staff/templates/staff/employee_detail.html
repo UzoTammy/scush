@@ -150,12 +150,12 @@
                             <p>Residential Address: {{object.staff.address}}</p>
                         </div>
                         <div class="col-6">
-                            <p class="text-success">Gratuity: {{naira}}{{total_balance}}</p>
-                            <p class="text-success">Worked For: {{object.date_employed|timesince}}</p>
+                            <p>Gratuity: <span class="text-success">{{naira}}{{total_balance}}</span></p>
+                            <p>Worked For: <span class="text-success">{{object.date_employed|timesince}}</span></p>
                             {% if consumed_days|first == 0 and consumed_days|last == 0 %}
-                            <p class="text-success">Permissions: None</p>
+                            <p>Permissions: <span class="text-success">No permission taken or granted</span></p>
                             {% else %}
-                            <p class="text-danger">Permissions: {{consumed_days|first}}Day{{consumed_days|first|pluralize}}, {{consumed_days|last}}Hour{{consumed_days|last|pluralize}} </p>
+                            <p>Permissions: <span class="text-danger">{{consumed_days|first}}Day{{consumed_days|first|pluralize}}, {{consumed_days|last}}Hour{{consumed_days|last|pluralize}}</span></p>
                             {% endif %}
                             <hr>
                             <p>Date Employed: {{object.date_employed}}</p>

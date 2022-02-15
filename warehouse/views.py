@@ -72,6 +72,7 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                                           'apartment': apartment,
                                           'storage': storage}
             context['stores'] = self.store_obj.order_by('expiry_date')
+            context['owned_property_total'] = 30*context['owned_properties'].aggregate(Sum('rent_amount'))['rent_amount__sum']
         return context
 
 
