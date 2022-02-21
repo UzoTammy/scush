@@ -35,6 +35,10 @@ class Stores(models.Model):
     active = ActiveStoreManager()
     objects = models.Manager()
 
+    class Meta:
+        verbose_name_plural = 'Stores'
+
+
     def __str__(self):
         return self.name
 
@@ -50,6 +54,10 @@ class Renewal(models.Model):
                              decimal_places=2,
                              default_currency='NGN')
     
+    class Meta:
+        verbose_name_plural = 'Renewal'
+        
+
     def __str__(self):
         return f'{self.store.name} Renewed'
 

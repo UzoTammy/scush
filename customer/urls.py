@@ -7,6 +7,7 @@ urlpatterns = [
     path('scush/', TemplateView.as_view(template_name = 'customer/scush.html'), name='scush'),
     path('home/', HomeView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
+    path('survey/', ViewSurvey.as_view(), name='survey'),
     path('company/', views.company, name='company'),
     path('customer/home/', CustomerHomeView.as_view(), name='customer-home'),
     path('customer/list/', CustomerListView.as_view(), name='customer-list-all'),

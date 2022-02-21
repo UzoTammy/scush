@@ -36,6 +36,9 @@ class TradeMonthly(models.Model):
     direct_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
     indirect_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
 
+    class Meta:
+        verbose_name_plural = 'Monthly'
+
 
     def __str__(self):
         return f'{self.month}, {self.year}'
@@ -56,6 +59,9 @@ class TradeDaily(models.Model):
     direct_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
     indirect_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
 
+    class Meta:
+        verbose_name_plural = 'Daily'
+        
 
     def __str__(self):
         return f'{self.date}'

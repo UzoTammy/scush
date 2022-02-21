@@ -4,56 +4,79 @@
 
 {% block content %}
 <div class="container">
-    <h5>P & L for {{object.date}} and it's month cummulative
-        {% if title == 'Daily Update' %}
-        Modified
-        {% endif %}
-    </h5>
-    <hr>
-    <p>Sales: {{object.sales}} (<small>total: {{object.total_sales}}</small>)</p>
-    <hr>
-    <p>Purchase: {{object.purchase}} (<small>total: {{object.total_purchase}}</small>)</p>
-    <hr>
-    <p>Direct Expenses: {{object.direct_expenses}} (<small>total: {{object.total_direct_expenses}}</small>)</p>
-    <hr>
-    <p>Indirect Expenses: {{object.indirect_expenses}} (<small>total: {{object.total_indirect_expenses}}</small>)</p>
-    <hr>
-    <p>Opening Stock: {{object.opening_value}} (<small>as at first day: {{object.opening_stock}}</small>)</p>
-    <hr>
-    <p>Closing Stock: {{object.closing_value}} (<small>same closing stock</small>)</p> 
-    <hr>
-    <p>Gross Profit: {{object.gross_profit}} (<small>total: {{object.total_gross_profit}}</small>)</p>
-    <hr>
-    <p>Direct Income: {{object.direct_income}} (<small>total: {{object.total_direct_income}}</small>)</p> 
-    <hr>
-    <p>Indirect Income: {{object.indirect_income}} (<small>total: {{object.total_indirect_income}}</small>)</p>
-    <hr>
     
-    {% if object.net_profit.amount >= 0 %}
-    <p>Profit: <span style="color: green;">{{object.net_profit}}</span> 
-        (<span style="color:cadetblue">margin ratio: {{object.net_profit|div:object.sales|multiply:100|floatformat:2}}%</span>)</p>
-    {% else %}
-    <p>Loss: <span style="color: red;">{{object.net_profit|abs}}</span></p>
-    {% endif %}
-    <small>(
-        {% with object.total_gross_profit|minus:object.total_indirect_expenses as profit %}
-        {% if profit.amount >= 0 %}
-        total profit for the period:
-        <span style="color:green">{{profit}}</span>
-        {% else %}
-        total loss for the period:
-        <span style="color:red">{{profit|abs}}</span>
-        {% endif %} 
-        {% endwith %}
-        )  
-    </small>
-    <hr>
+    <h5>P & L for {{object.date}} and it's month cumulative</h5>
+    <table>
+        <tr>
+            <th style="text-align: center;">Items</th>
+            <th style="text-align: center;">This Day</th>
+            <th style="text-align: center;">This Month</th>
+        </tr>
+    
+        <tr>
+            <td>Sales</td>
+            <td style="text-align: right;">{{object.sales}}</td>
+            <td style="text-align: right;">{{object.total_sales}}</td>
+        </tr>
+        <tr>
+            <td>Purchase</td>
+            <td style="text-align: right;">{{object.purchase}}</td>
+            <td style="text-align: right;">{{object.total_purchase}}</td>
+        </tr> 
+        <tr>
+            <td>Direct Expenses</td>
+            <td style="text-align: right;">{{object.direct_expenses}}</td>
+            <td style="text-align: right;">{{object.total_direct_expenses}}</td>
+        </tr>
+        <tr>
+            <td>Indirect Expenses</td>
+            <td style="text-align: right;">{{object.indirect_expenses}}</td>
+            <td style="text-align: right;">{{object.total_indirect_expenses}}</td>
+        </tr>
+        <tr>
+            <td>Opening Stock</td>
+            <td style="text-align: right;">{{object.opening_value}}</td>
+            <td style="text-align: right;">{{object.opening_stock}}</td>
+        </tr>
+        <tr>
+            <td>Closing Stock</td>
+            <td style="text-align: right;">{{object.closing_value}}</td>
+            <td style="text-align: right;">{{object.closing_value}}</td>
+        </tr>
+        <tr>
+            <td>Gross Profit</td>
+            <td style="text-align: right;">{{object.gross_profit}}</td>
+            <td style="text-align: right;">{{object.total_gross_profit}}</td>
+        </tr>
+        <tr>
+            <td>Direct Income</td>
+            <td style="text-align: right;">{{object.direct_income}}</td>
+            <td style="text-align: right;">{{object.total_direct_income}}</td>
+        </tr>
+        <tr>
+            <td>Indirect Income</td>
+            <td style="text-align: right;">{{object.indirect_income}}</td>
+            <td style="text-align: right;">{{object.total_indirect_income}}</td>
+        </tr>
+        <tr>
+            <td>Net Profit</td>
+            <td style="text-align: right;">
+                {% if object.net_profit.amount >= 0 %}
+                    <span style="color: green;">{{object.net_profit}}</span> 
+                {% else %}
+                    <span style="color: red;">{{object.net_profit|abs}}</span>
+                {% endif %}
+            </td>
+            <td style="text-align: right;">
+                {% with object.total_gross_profit|minus:object.total_indirect_expenses as profit %}
+                    <span style="color:green">{{profit}}</span>
+                {% endwith %}
+            </td>
+        </tr>
+    </table>
     <p>Check: {{object.opening_value|minus:object.sales|add:object.purchase|add:object.gross_profit|add:object.direct_expenses|minus:object.closing_value}}
-        <small style="color: rgb(81, 83, 81);">Opening stock less sales add purchase add gross profit add direct expenses less closing stock</small>
-    </p>   
-    <hr>
+        <small style="color: rgb(81, 83, 81);">Opening stock less sales add purchase add gross profit add direct expenses less closing stock</small></p>
     <h3>Sales Drive Ratio</h3>
-    
     <table>
         <tr>
             <th style="text-align: center;">Date</th>
@@ -62,14 +85,11 @@
     
         {% for ratio in object.sales_drive %}
         <tr>
-            <td>{{ratio.date|date:'m-d-y'}}</td>
+            <td>{{ratio.date|date:'d-m-Y'}}</td>
             <td style="text-align: right;">{{ratio.sales.amount|div:ratio.opening_value.amount|multiply:100|floatformat:'2'}}</td>
         </tr> 
-    
         {% endfor %}
     </table>
-    
     <p>SDR = Sales Vs Opening Stock (last five sales)</p>
-    
 </div>
 {% endblock content %}

@@ -5,16 +5,17 @@ from django.core.mail import EmailMessage
 from django.template import loader
 from .models import Money, TradeDaily
 from pdf.views import Ozone
-
+import datetime
 
 @receiver(post_save, sender=TradeDaily)
 def trade_daily_create(sender, instance, created, **kwargs):
     if created:
         head_title = 'Created'
+        qs = TradeDaily.objects.filter(date__year=instance.date.year, date__month=instance.date.month)
     else:
         head_title = 'Updated'
+        qs = TradeDaily.objects.filter(date__range=(datetime.date(instance.date.year, instance.date.month, 1), instance.date))
 
-    qs = TradeDaily.objects.filter(date__year=instance.date.year, date__month=instance.date.month)
     qs_all = TradeDaily.objects.all()
 
     dataset = {
@@ -42,7 +43,7 @@ def trade_daily_create(sender, instance, created, **kwargs):
             'sales_drive': qs_all.order_by('-pk')[:5],
         } 
     email = EmailMessage(
-        subject=f'Daily P & L Report for {instance.date} - {head_title}',
+        subject=f'P & L Report as at {instance.date} - {head_title}',
         body=loader.render_to_string('trade/mail_daily_PL.html', context={'object': dataset}),
         from_email='',
         to=['uzo.nwokoro@ozonefl.com'],

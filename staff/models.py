@@ -169,6 +169,9 @@ class Payroll(models.Model):
     """status: True means paid and False means not paid"""
     balance = MoneyField(max_digits=9, default_currency='NGN', decimal_places=2, default=Money(0, 'NGN'))
 
+    class Meta:
+        verbose_name_plural = 'Payroll'
+
     def __str__(self):
         return f"{self.staff.fullname()}-{self.period}"
 

@@ -762,11 +762,14 @@ class DashBoardView(TemplateView):
         context['last_year_rent'] = Renewal.objects.filter(date__year=current_year-1).aggregate(Sum('amount_paid'))['amount_paid__sum']
         last_four_years = [current_year, current_year-1, current_year-2, current_year-3]
     
-        context['year_sales'] = list((str(i), 
-        TradeMonthly.objects.filter(year=i).aggregate(Sum('sales')).get('sales__sum'),
-        TradeMonthly.objects.filter(year=i).aggregate(Sum('purchase')).get('purchase__sum'),
-        Renewal.objects.filter(date__year=i).aggregate(Sum('store__rent_amount'))['store__rent_amount__sum'],
-        Payroll.objects.filter(date_paid__year=i).aggregate(Sum('net_pay'))['net_pay__sum']
+        context['year_data'] = list((str(i), 
+            TradeMonthly.objects.filter(year=i).aggregate(Sum('sales')).get('sales__sum'),
+            TradeMonthly.objects.filter(year=i).aggregate(Sum('purchase')).get('purchase__sum'),
+            Renewal.objects.filter(date__year=i).aggregate(Sum('store__rent_amount'))['store__rent_amount__sum'],
+            Payroll.objects.filter(period__startswith=i).aggregate(Sum('net_pay'))['net_pay__sum'],
+            TradeMonthly.objects.filter(year=i).aggregate(Sum('gross_profit')).get('gross_profit__sum'),
+            TradeMonthly.objects.filter(year=i).aggregate(Sum('direct_expenses')).get('direct_expenses__sum'),
+            TradeMonthly.objects.filter(year=i).aggregate(Sum('indirect_expenses')).get('indirect_expenses__sum'),
         ) 
         for i in last_four_years)
         
