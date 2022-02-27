@@ -51,7 +51,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('material/', include('material.urls')),
     path('model/choices/', user_views.add_choice, name='xx'),
-
+    path('survey/', include('survey.urls')),
 
     # users
     path('register/', user_views.register, name='register'),

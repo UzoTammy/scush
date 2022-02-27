@@ -1,4 +1,4 @@
-from django.shortcuts import render, reverse
+from django.shortcuts import redirect, render, reverse
 from django.urls import reverse_lazy
 from .models import CustomerProfile
 from staff.models import Employee
@@ -209,16 +209,6 @@ class HomeView(TemplateView):
         return context
 
 
-class ViewSurvey(TemplateView):
-    template_name = 'customer/survey.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['heading'] = 'Number of Children'
-        context['dataset'] = Employee.active.all()
-        return context
-
-
 class CustomerHomeView(TemplateView):
     template_name = 'customer/customer_home.html'
 
@@ -339,9 +329,6 @@ class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         return False
 
-
-class CSVCustomerView(View):
-    pass
 
 
 class RequestHome(TemplateView):

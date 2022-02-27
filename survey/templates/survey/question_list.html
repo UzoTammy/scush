@@ -1,0 +1,36 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+<div class="d-flex row justify-content-center align-items-center py-md-5 py-3">
+    <div class="col-sm-4">
+        <h3 class="text-center">List Of Staff</h3>
+        <table class="table table-info" data-toggle="table" data-pagination="true">
+            <thead>
+                <tr class="text-center">
+                    <th>Staff</th>
+                    <th>Code</th>
+                    <th>Kids</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for staff in object_list %}
+                <tr class="text-center">
+                    <td>{{staff.staff.fullname}}</td>
+                    <td>{{staff.code|slugify}}</td>
+                    <td>{{staff.number_kids}}</td>
+                </tr>
+                {% endfor %} 
+                <tr class="text-center">
+                    <td colspan="2">Total</td>
+                    <td>{{total}}</td>
+                </tr>      
+            </tbody>
+        </table>
+
+       
+    </div>
+</div>
+</div>
+
+{% endblock %}

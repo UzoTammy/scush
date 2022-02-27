@@ -1,5 +1,5 @@
 import decimal
-
+from survey.models import Question
 from django.db.models.aggregates import Count
 from users.models import Profile
 from .models import *
@@ -420,6 +420,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['salary_changed'] = SalaryChange.objects.filter(staff_id=person)
         context['total_balance'] = total_balance
         context['payout'] = Payroll.objects.filter(staff_id=self.kwargs['pk']).aggregate(total=Sum('net_pay'))['total']
+        context['question_obj'] = Question.objects.filter(staff_id=person).first()
         return context
 
 

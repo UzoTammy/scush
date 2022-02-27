@@ -40,7 +40,19 @@
     <link rel="icon" class="shadow-lg" href="{% static 'customer/logo.ico' %}">
 </head>
 <body>
-{% block content %} {% endblock %}
+  <div class="row">
+    <div class="col text-center">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+  </div>
+  
+{% block content %}{% endblock %}
 
 <!-- Option 2: Separate Popper and Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

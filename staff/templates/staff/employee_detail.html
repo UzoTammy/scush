@@ -106,7 +106,7 @@
         <div class="col-9 mt-4">
             <h2 class="text-secondary text-center bg-light">Individual Data Page</h2>
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-9">
                     <div class="media">
                         <img src="{{object.image.url}}"
                              width="150px"
@@ -119,7 +119,7 @@
                                 <span class="text-danger">(Username: {{username|default:'Not Created'}})</span>
                             </p>
                             <a class="btn btn-outline-dark btn-sm" href="{% url 'employee-update' object.pk %}"><small>Update Image</small></a>
-                            
+                            <h5 class="float-right">Survey Code: <span class="badge badge-info">{{question_obj.code|slugify}}</span></h5>
                         </div>
                     </div>
                     <div class="row">
@@ -306,11 +306,11 @@
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
     </div>
 </div>
-
 
 <!--Change Salary-->
 <div class="modal"

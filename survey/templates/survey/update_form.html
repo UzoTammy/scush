@@ -1,0 +1,25 @@
+{% extends 'customer/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+   
+    <div class="row">
+        <div class="col-sm-6">
+            <img src="{{ staff.staff.image.url }}" alt="" width="150px">
+            <p>Your Name: {{staff.staff.fullname}}</p>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label class="form-control-label" for="">How many Children do you have?</label>
+                    <input class="form-control" type="number" name="number_of_kids">
+                    <small class="text-danger">If this is not you, kindly ignore</small>
+                </div>
+                <button class="btn btn-outline-info" type="submit">Submit</button>
+                <a class="btn btn-outline-dark float-right" href="{% url 'index' %}">Close</a>
+            </form>
+        </div>
+    </div>  
+    
+</div>
+
+{% endblock content %}

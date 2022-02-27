@@ -11,9 +11,12 @@
 
                 <fieldset>
                     <legend>{{title}} Trading, Profit and Loss Form </legend>
+                    
                         <div class="form-row">
                             <div class="form-group col-sm-6 mb-0">
+                                {% if title == 'New Daily' %}
                                 <small class="text-danger">Suggested date {{next_date|date:'D d/m/Y'}}</small>
+                                {% endif %}
                                 {{ form.date|as_crispy_field }}
                             </div>
                         </div>

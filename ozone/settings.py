@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'target.apps.TargetConfig', 
     'brief.apps.BriefConfig',
     'material.apps.MaterialConfig',
+    'survey.apps.SurveyConfig',
 ]
 
 MIDDLEWARE = [
