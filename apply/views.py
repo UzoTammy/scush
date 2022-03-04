@@ -35,6 +35,12 @@ class ApplyListViewPending(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context['title'] = 'Applicants-pending'
         context['applicants_pending'] = self.get_queryset().filter(status=None).order_by('last_name')
         context['number_pending'] = context['applicants_pending']
+
+        context['applicants'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1).count()
+        context['employed'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1, status=True).count()
+        context['rejected'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1, status=False).count()
+        context['pending'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1, status=None).count()
+        
         return context
 
 

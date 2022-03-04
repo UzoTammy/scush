@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'djmoney',
 
+    'core.apps.CoreConfig',
     'customer.apps.CustomerConfig',
     'users.apps.UsersConfig',
     'apply.apps.ApplyConfig',

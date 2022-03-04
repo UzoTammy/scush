@@ -1,21 +1,23 @@
 import decimal
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-import datetime
-from django.db.models.expressions import Func
-from django.db.models.fields import FloatField
-from .forms import TradeMonthlyForm, TradeDailyForm
-from django.shortcuts import render
-from .models import *
-from warehouse.models import Stores, Renewal
-from staff.models import Employee, EmployeeBalance, Payroll
-from stock.models import Product
-from customer.models import CustomerProfile
-from django.urls.base import reverse_lazy
-from django.db.models import Sum, F, Avg, ExpressionWrapper, DecimalField
 import calendar
 import io, base64
-from matplotlib import pyplot as plt
 import matplotlib
+import datetime
+from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
+from django.db.models.expressions import Func
+from django.db.models.fields import FloatField
+from .forms import (TradeMonthlyForm, TradeDailyForm)
+from django.shortcuts import render
+from .models import *
+from warehouse.models import (Stores, Renewal)
+from staff.models import (Employee, EmployeeBalance, Payroll)
+from survey.models import Question
+from stock.models import Product
+from apply.models import Applicant
+from customer.models import CustomerProfile
+from django.urls.base import reverse_lazy
+from django.db.models import (Sum, F, Avg, ExpressionWrapper, DecimalField)
+from matplotlib import pyplot as plt
 from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView)                            
 from datetime import timedelta
 from ozone import mytools
@@ -717,63 +719,6 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return render(request, 'trade/no_record.html', {'message': f'No Daily Record to Report from {from_date} to {to_date}'})
 
 
-class DashBoardView(TemplateView):
-    template_name = 'trade/dashboard.html'
-
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['workforce'] = Employee.active.count()
-        context['products'] = Product.objects.count()
-        context['customers'] = CustomerProfile.objects.count()
-        return context
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        """let us consider the year of the last record"""
-        if TradeMonthly.objects.exists():
-            qs_last = TradeMonthly.objects.last()
-            year = qs_last.year
-            month = qs_last.month
-            m = (str(index).zfill(2) for index, i in enumerate(calendar.month_name) if i == month)
-            period = f'{year}-{next(m)}'
-            net_pay = Payroll.objects.filter(period=period).aggregate(Sum('net_pay'))['net_pay__sum']
-            qs = TradeMonthly.objects.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
-            net_profit = qs.filter(year=year, month=month).aggregate(Sum('net_profit'))['net_profit__sum']
-            context['net_profit'] = net_profit
-            context['net_pay'] = net_pay
-            qs_daily_last = TradeDaily.objects.last()
-            try:
-                context['gp_ratio'] = 100*qs_daily_last.gross_profit/qs_daily_last.sales
-            except:
-                context['gp_ratio'] = 0
-            context['sales'] = qs_daily_last.sales
-            context['day'] = qs_daily_last.date
-
-        context['salaries'] = Payroll.objects.aggregate(Sum('net_pay'))['net_pay__sum']
-        
-        context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
-        
-        positive_grat = EmployeeBalance.objects.filter(value_type='Cr').aggregate(Sum('value'))['value__sum']
-        negative_grat = EmployeeBalance.objects.filter(value_type='Dr').aggregate(Sum('value'))['value__sum']
-        context['gratuity_value'] = positive_grat - negative_grat
-        
-        current_year = datetime.date.today().year
-        context['last_year_rent'] = Renewal.objects.filter(date__year=current_year-1).aggregate(Sum('amount_paid'))['amount_paid__sum']
-        last_four_years = [current_year, current_year-1, current_year-2, current_year-3]
-    
-        context['year_data'] = list((str(i), 
-            TradeMonthly.objects.filter(year=i).aggregate(Sum('sales')).get('sales__sum'),
-            TradeMonthly.objects.filter(year=i).aggregate(Sum('purchase')).get('purchase__sum'),
-            Renewal.objects.filter(date__year=i).aggregate(Sum('store__rent_amount'))['store__rent_amount__sum'],
-            Payroll.objects.filter(period__startswith=i).aggregate(Sum('net_pay'))['net_pay__sum'],
-            TradeMonthly.objects.filter(year=i).aggregate(Sum('gross_profit')).get('gross_profit__sum'),
-            TradeMonthly.objects.filter(year=i).aggregate(Sum('direct_expenses')).get('direct_expenses__sum'),
-            TradeMonthly.objects.filter(year=i).aggregate(Sum('indirect_expenses')).get('indirect_expenses__sum'),
-        ) 
-        for i in last_four_years)
-        
-        return render(request, self.template_name, context)
 
 
 

@@ -62,9 +62,19 @@
               </div>
         
         </div> 
+        <div class="col mt-2">
+            <div class="card text-white bg-success" 
+                style="max-width: 18rem; border-radius: 50px 100px 50px 100px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Number of Children</h5>
+                        <p class="card-text text-right">Total: {{number_of_kids}}</p>
+                    </div>
+              </div>
+        
+        </div>
     </div>
 
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
+    <div class="d-flex row justify-content-center mt-5">
         <div class="col">
             <table class="table bg-white shadow-sm">
                 <thead>
@@ -99,6 +109,28 @@
                 </tbody>
                 
             </table>
+        </div>
+    </div>
+
+    <div class="d-flex row justify-content-center mt-2">
+        <div class="col float-center">
+            <ul class="list-group list-group-horizontal">
+                <li class="list-group-item">Applicants: {{applicants}}</li>
+                <li class="list-group-item">Employed: {{employed}}</li>
+                <li class="list-group-item">Rejected: {{rejected}}</li>
+                <li class="list-group-item">Pending: {{pending}}</li>
+              </ul>
+        </div>
+    </div>
+
+    <div class="d-flex row justify-content-center mt-2">
+        <div class="col float-center">
+            <ul class="list-group list-group-horizontal">
+                <li class="list-group-item">Applicants: {{applicants}}</li>
+                <li class="list-group-item">Employed: {{employed}}</li>
+                <li class="list-group-item">Rejected: {{rejected}}</li>
+                <li class="list-group-item">Pending: {{pending}}</li>
+              </ul>
         </div>
     </div>
 </div>

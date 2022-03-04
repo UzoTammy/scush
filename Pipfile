@@ -20,6 +20,7 @@ django-session-timeout = "*"
 django-on-heroku = "*"
 gunicorn = "*"
 matplotlib = "*"
+requests = "*"
 
 [requires]
 python_version = "3.8"

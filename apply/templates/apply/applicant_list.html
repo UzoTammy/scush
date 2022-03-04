@@ -4,64 +4,65 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row m-1">
-    <div class="col">
-        <table data-toggle="table"
-           data-search="true"
-           data-show-footer="true"
-           data-show-columns="true"
-           data-pagination="true"
-           class="table caption-top table-sm">
-             <caption>
-                <div class="row">
-                <div class="col text-secondary">
-                    <p>List Of All Applicants</p>
+        <div class="col">
+            <table data-toggle="table"
+            data-search="true"
+            data-show-footer="true"
+            data-show-columns="true"
+            data-pagination="true"
+            class="table caption-top table-sm">
+                <caption>
+                    <div class="row">
+                    <div class="col text-secondary">
+                        <p>List Of All Applicants</p>
+                    </div>
+                    <div class="col text-right">
+                        <a class="btn btn-dark btn-sm"
+                        href="{% url 'apply-employed' %}">
+                            Employed</a>
+                        <a class="btn btn-dark btn-sm"
+                        href="{% url 'apply-rejected' %}">
+                            Rejected</a>
+                        <a class="btn btn-dark btn-sm"
+                        href="{% url 'apply-pending' %}">
+                            Pending
+                        </a>
+                    </div>
                 </div>
-                <div class="col text-right">
-                    <a class="btn btn-dark btn-sm"
-                       href="{% url 'apply-employed' %}">
-                         Employed</a>
-                    <a class="btn btn-dark btn-sm"
-                       href="{% url 'apply-rejected' %}">
-                        Rejected</a>
-                    <a class="btn btn-dark btn-sm"
-                       href="{% url 'apply-pending' %}">
-                        Pending
-                    </a>
-                </div>
-            </div>
-            </caption>
-            <thead class="bg-dark text-white">
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Applicant</th>
-                    <th scope="col">Apply Date</th>
-                    <th scope="col">Birth date</th>
-                    <th scope="col">Qualification</th>
-                    <th scope="col">Course</th>
-                    <th scope="col">Mobile</th>
-                    <th scope="col">Age(yrs)</th>
-                    <th scope="col">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for applicant in all_applicants %}
-                <tr>
-                <th scope="row">{{ applicant.id|zeropadding:3 }}</th>
-                <td><a href="{% url 'apply-detail' applicant.pk %}">{{applicant}}</a></td>
-                <td>{{applicant.apply_date|date:'d-m-Y'}}</td>
-                <td>{{applicant.birth_date|date:'d-m-Y'}}</td>
-                <td>{{applicant.qualification}}</td>
-                <td>{{applicant.course}}</td>
-                <td>{{applicant.mobile|addsep}}</td>
-                <td>{{applicant.get_age}}</td>
-                <td>{{applicant.status|yesno:'Employed, Rejected, Pending'}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            <tfoot></tfoot>
-        </table>
+                </caption>
+                <thead class="bg-dark text-white">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Applicant</th>
+                        <th scope="col">Apply Date</th>
+                        <th scope="col">Birth date</th>
+                        <th scope="col">Qualification</th>
+                        <th scope="col">Course</th>
+                        <th scope="col">Mobile</th>
+                        <th scope="col">Age(yrs)</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for applicant in all_applicants %}
+                    <tr>
+                    <th scope="row">{{ applicant.id|zeropadding:3 }}</th>
+                    <td><a href="{% url 'apply-detail' applicant.pk %}">{{applicant}}</a></td>
+                    <td>{{applicant.apply_date|date:'d-m-Y'}}</td>
+                    <td>{{applicant.birth_date|date:'d-m-Y'}}</td>
+                    <td>{{applicant.qualification}}</td>
+                    <td>{{applicant.course}}</td>
+                    <td>{{applicant.mobile|addsep}}</td>
+                    <td>{{applicant.get_age}}</td>
+                    <td>{{applicant.status|yesno:'Employed, Rejected, Pending'}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot></tfoot>
+            </table>
+        </div>
     </div>
-</div>
+
     <div class="row m-1">
         <div class="col text-right">
         <a class="btn btn-outline-dark"

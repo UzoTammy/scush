@@ -36,7 +36,8 @@ class Log(auth_views.LoginView):
 urlpatterns = [
     path('admin/doc/', include('django.contrib.admindocs.urls')),
     path('admin/', admin.site.urls, name='admin'),
-    path('', include('customer.urls')),
+    path('', include('core.urls')),
+    path('customer/', include('customer.urls')),
     path('', include('apply.urls')),
     path('', include('stock.urls')),
     path('', include('warehouse.urls')),

@@ -1,3 +1,4 @@
+import secrets
 from django.utils import timezone
 from django.http import HttpResponse
 from django.db.models import Sum
@@ -23,8 +24,8 @@ class SurveyCreateView(View):
                 obj = Question(code=code, staff=staff)
                 obj.save()
             except:
-                return HttpResponse(f'''<h3>This request already exist, contact Admin for reset if you will need to 
-                recreate survey</h3>''')
+                messages.info(request, 'Codes already generated, You can only Reset to generate new codes')
+                return redirect('survey-home')
 
         return HttpResponse(f'{Employee.objects.all().count()} staff codes Created')
 
@@ -65,9 +66,27 @@ class SurveyUpdateView(View):
 
 
 class SurveyListView(ListView):
+
     model = Question
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['total'] = self.get_queryset().aggregate(Sum('number_kids'))['number_kids__sum']
         return context
+
+
+class SurveyResetView(TemplateView):
+    def get(self, request, *args, **kwargs):
+        employees = Employee.objects.all()
+        for employee in employees:
+            try:
+                obj = Question.objects.get(staff=employee)
+                obj.delete()
+            except Question.DoesNotExist:
+                pass
+        for employee in employees:
+            pin = random.randint(1000, 9999)
+            code = int((str(pin)) + str(employee.id).zfill(3))
+            Question.objects.create(staff=employee, code=code)
+        return redirect('survey-list')
+        

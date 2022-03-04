@@ -1,8 +1,9 @@
-from django.shortcuts import redirect, render, reverse
+import os
+import secrets
+import datetime
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from .models import CustomerProfile
-from staff.models import Employee
-from users.models import Profile
 from django.db.models import F, Sum, Max
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import (CreateView,
@@ -13,14 +14,39 @@ from django.views.generic import (CreateView,
                                   View,
                                   TemplateView)
 from django.conf import settings
-import ast
-import os
-import json
-import secrets
-import datetime
 from ozone.mytools import CSVtoTuple
-from django.shortcuts import render, reverse
 from .forms import CustomerProfileForm, CustomerUpdateProfileForm
+
+
+def generate_token():
+    return secrets.token_hex(4)
+
+def permit(request):
+    result = ''
+    if request.method == 'POST':
+        if request.POST.get('token') == '123456':
+            result = 'passed'
+        #     generate another token to replace
+        else:
+            result = 'failed'
+    else:
+        pass
+
+    context = {'result': result}
+    return render(request, 'customer/permit.html', context)
+
+def categorize(sales):
+    if sales >= 100e6:
+        result = 'Platinum'
+    elif sales >= 50e6:
+        result = 'Gold'
+    elif sales >= 10e6:
+        result = 'Silver' 
+    elif sales >= 5e6:
+        result = 'Bronze'
+    else:
+        result = 'Basic'
+    return result
 
 
 class CSVPart(TemplateView):
@@ -125,7 +151,6 @@ class CSVPart(TemplateView):
             context['message'] = msg
         return render(request, self.template_name, context)
 
-
 class CSVCustomerDetail(View):
 
     def get(self, request, id):
@@ -151,63 +176,6 @@ class CSVCustomerDetail(View):
             'object': objects
         }
         return render(request, 'customer/CSV/customer_csv_detail.html', context)
-
-
-def generate_token():
-    return secrets.token_hex(4)
-
-
-def company(request):
-    md = Employee.active.filter(position='MD')
-    gsm = Employee.active.filter(position='GSM')
-    scm = Employee.active.filter(position='SCM')
-    hrm = Employee.active.filter(position='HRM')
-    acct = Employee.active.filter(position='Accountant')
-    mrk = Employee.active.filter(position='Marketing Manager')
-    lyst = Employee.active.filter(position='Analyst')
-
-
-    context = {
-        'company': company,
-        'team': scm.union(hrm, acct, mrk, lyst),
-        'gsm': gsm,
-        'md': md 
-    }
-    return render(request, 'customer/company.html', context)
-
-
-def permit(request):
-    result = ''
-    if request.method == 'POST':
-        if request.POST.get('token') == '123456':
-            result = 'passed'
-        #     generate another token to replace
-        else:
-            result = 'failed'
-    else:
-        pass
-
-    context = {'result': result}
-    return render(request, 'customer/permit.html', context)
-
-
-class AboutView(TemplateView):
-    template_name = 'customer/about.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(AboutView, self).get_context_data(**kwargs)
-        context['title'] = 'About'
-        return context    
-
-
-class HomeView(TemplateView):
-    template_name = 'customer/home.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(HomeView, self).get_context_data(**kwargs)
-        context['title'] = 'Home'
-        return context
-
 
 class CustomerHomeView(TemplateView):
     template_name = 'customer/customer_home.html'
@@ -243,7 +211,6 @@ class CustomerHomeView(TemplateView):
             }
         return context
 
-
 class CustomerListView(LoginRequiredMixin, ListView):
     model = CustomerProfile
     template_name = 'customer/customer.html'
@@ -259,24 +226,8 @@ class CustomerListView(LoginRequiredMixin, ListView):
             context['last_time_modified'] = context['last_modified_object'].date_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
         return context
 
-
 class CustomerDetailView(LoginRequiredMixin, DetailView):
     model = CustomerProfile
-
-
-def categorize(sales):
-    if sales >= 100e6:
-        result = 'Platinum'
-    elif sales >= 50e6:
-        result = 'Gold'
-    elif sales >= 10e6:
-        result = 'Silver' 
-    elif sales >= 5e6:
-        result = 'Bronze'
-    else:
-        result = 'Basic'
-    return result
-
 
 class CustomerCreateView(LoginRequiredMixin, CreateView):
     # model = CustomerProfile
@@ -294,7 +245,6 @@ class CustomerCreateView(LoginRequiredMixin, CreateView):
         context['title'] = "New"
         context['btn_text'] = 'Create'
         return context
-
 
 class CustomerUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomerProfile
@@ -318,7 +268,6 @@ class CustomerUpdateView(LoginRequiredMixin, UpdateView):
         context['btn_text'] = 'Update'
         return context
 
-
 class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = CustomerProfile
     success_url = reverse_lazy('customer-list-all')  # '/','/index/'
@@ -328,8 +277,6 @@ class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if self.request.user.is_superuser:
             return True
         return False
-
-
 
 class RequestHome(TemplateView):
     template_name = 'customer/requests/request.html'
