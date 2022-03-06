@@ -1,7 +1,7 @@
 from io import BytesIO
 from django.http import HttpResponse
 from django.template.loader import get_template
-# from xhtml2pdf import pisa
+from xhtml2pdf import pisa
 
 
 # ISO-8859-1.encode("UTF-8")
@@ -9,16 +9,16 @@ def render_to_pdf(template_src, context_dict={}):
     template = get_template(template_src)
     html = template.render(context_dict)
     result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode('UTF-8')), result)
+    pdf = pisa.CreatePDF(BytesIO(html.encode('UTF-8')), result)
 
     if not pdf.err:
         return HttpResponse(result.getvalue(), content_type='application/pdf')
     return None
 
 
-def render_to_mail(template_name, context=dict()):
-    template = get_template(template_name)
-    html = template.render(context)
-    # result = BytesIO()
-    mail = BytesIO(html.encode('UTF-8'))
-    return HttpResponse(mail.getvalue(), content_type='text/html')
+# def render_to_mail(template_name, context=dict()):
+#     template = get_template(template_name)
+#     html = template.render(context)
+#     result = BytesIO()
+#     mail = BytesIO(html.encode('UTF-8'))
+#     return HttpResponse(mail.getvalue(), content_type='text/html')

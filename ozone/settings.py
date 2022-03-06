@@ -41,12 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.admindocs',
     'django.contrib.humanize',
+
     'pdf',
+    'pdf_convert.apps.PdfConvertConfig',
     'mail',
     'storages',
     'crispy_forms',
     'djmoney',
-
+    
     'core.apps.CoreConfig',
     'customer.apps.CustomerConfig',
     'users.apps.UsersConfig',
@@ -167,7 +169,6 @@ LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'login'
-
 
 # Email Server
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend'

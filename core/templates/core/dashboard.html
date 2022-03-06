@@ -74,9 +74,11 @@
         </div>
     </div>
 
+    
     <div class="d-flex row justify-content-center mt-5">
         <div class="col">
             <table class="table bg-white shadow-sm">
+                <h3>The Business</h3>
                 <thead>
                     <tr class="text-center">
                         <th>Year</th>
@@ -112,27 +114,59 @@
         </div>
     </div>
 
+    <h3>Application</h3>
     <div class="d-flex row justify-content-center mt-2">
         <div class="col float-center">
-            <ul class="list-group list-group-horizontal">
-                <li class="list-group-item">Applicants: {{applicants}}</li>
-                <li class="list-group-item">Employed: {{employed}}</li>
-                <li class="list-group-item">Rejected: {{rejected}}</li>
-                <li class="list-group-item">Pending: {{pending}}</li>
-              </ul>
+            <table class="table bg-white shadow-sm">
+                <thead>
+                    <tr class="text-center">
+                        <th>Year</th>
+                        <th>Applications</th>
+                        <th>Employed</th>
+                        <th>Rejected</th>
+                        <th>Pending</th>
+                    </tr>
+                </thead>
+                <thead>
+                    {% for key, value in application_count.items %}
+                    <tr class="text-center">
+                        <td>{{key}}</td>
+                        {% for item in value %}
+                        <td>{{item}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </thead>
+            </table>
         </div>
     </div>
-
-    <div class="d-flex row justify-content-center mt-2">
+    <h3>Employees</h3>
+    <div class="d-flex row justify-content-center mt-2 mb-5">
         <div class="col float-center">
-            <ul class="list-group list-group-horizontal">
-                <li class="list-group-item">Applicants: {{applicants}}</li>
-                <li class="list-group-item">Employed: {{employed}}</li>
-                <li class="list-group-item">Rejected: {{rejected}}</li>
-                <li class="list-group-item">Pending: {{pending}}</li>
-              </ul>
+            <table class="table bg-white shadow-sm">
+                <legend></legend>
+                <thead>
+                    <tr class="text-center">
+                        <th class="text-left">Period</th>
+                        <th>Workforce</th>
+                        <th class="text-right">Yield</th>
+                        <th>Average Payout</th>
+                        <!-- <th>Pending</th> -->
+                    </tr>
+                </thead>
+                <thead>
+                    {% for dataset in employee_dataset %}
+                    <tr class="text-center">
+                        <td class="text-left">{{dataset|array_index:0}}</td>
+                        <td>{{dataset|array_index:1}}</td>
+                        <td class="text-right">{{dataset|array_index:2}}</td>
+                        <td>{{dataset|array_index:3}}</td>
+                    </tr>
+                    {% endfor %}
+                </thead>
+            </table>
         </div>
     </div>
+    
 </div>
-
 {% endblock content %}

@@ -46,6 +46,7 @@ class TradeMonthly(models.Model):
     def get_absolute_url(self):
         return reverse('trade-detail', kwargs={'pk': self.pk})
 
+    
 
 class TradeDaily(models.Model):
     date = models.DateField(default=date.today)

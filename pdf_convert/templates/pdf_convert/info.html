@@ -1,0 +1,14 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <p>PDF convert main page</p>
+                {% for product in products %}
+                <p>{{product}}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

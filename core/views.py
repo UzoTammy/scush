@@ -10,6 +10,7 @@ from survey.models import Question
 from apply.models import Applicant
 from trade.models import TradeDaily, TradeMonthly
 from warehouse.models import Stores, Renewal
+from ozone import mytools
 
 
 class HomeView(TemplateView):
@@ -102,11 +103,37 @@ class DashBoardView(TemplateView):
         for i in last_four_years)
 
         # Applicants summary
-        context['applicants'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year).count()
-        context['employed'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year, status=True).count()
-        context['rejected'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year, status=False).count()
-        context['pending'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year, status=None).count()
-        
+        if Applicant.objects.exists():
+            applicant = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year)
+            applicants_this_year = [applicant.count(), applicant.filter(status=True).count(), applicant.filter(status=False).count(), applicant.filter(status=None).count()]
+            applicant = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1)
+            applicants_last_year = [applicant.count(), applicant.filter(status=True).count(), applicant.filter(status=False).count(), applicant.filter(status=None).count()]
+        context['application_count'] = {
+            str(datetime.datetime.now().year): applicants_this_year,
+            str(datetime.datetime.now().year-1): applicants_last_year
+        }
+
+        # Employees
+        if Payroll.objects.exists():
+            all_periods = set(Payroll.objects.values_list('period', flat=True))
+            lastest_10_periods = sorted(list(all_periods)[:10], reverse=True)
+            periods = (f"{mytools.Period.full_months[i.split('-')[1]]}, {i.split('-')[0]}"  for i in lastest_10_periods)
+            workforce = tuple(Payroll.objects.filter(period=period).count() for period in lastest_10_periods)
+            total_payout = tuple(Payroll.objects.filter(period=period).aggregate(Sum('net_pay'))['net_pay__sum'] for period in lastest_10_periods)
+            
+            gross_profits = list(TradeMonthly.objects.filter(
+                year=period.split('-')[0], 
+                month=mytools.Period.full_months[period.split('-')[1]]
+                ).aggregate(Sum('gross_profit'))['gross_profit__sum']
+                for period in lastest_10_periods)
+            
+            gross_profits = list(0 if profit == None else profit for profit in gross_profits)  
+            
+            yields = tuple(round(x/y, 2) for x, y in zip(gross_profits, total_payout))
+            average_pay = tuple(round(x/y, 2)for x, y in zip(total_payout, workforce))
+
+        context['employee_dataset'] = list(data for data in zip(periods, workforce, yields, average_pay))
+            
         return context
 
     
