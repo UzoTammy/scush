@@ -1,3 +1,4 @@
+
 import datetime
 import calendar
 from django.shortcuts import render
@@ -114,6 +115,23 @@ class DashBoardView(TemplateView):
         }
 
         # Employees
+        # first row for the current data
+        qs = Employee.active.all()
+        number_of_employees = qs.count()
+        qs = qs.annotate(salary=F('basic_salary') + F('allowance'))
+        payout = qs.aggregate(Sum('salary'))['salary__sum']
+        latest_date = TradeDaily.objects.latest('date').date
+        year, month = latest_date.year, latest_date.month
+        gross_profits = TradeDaily.objects.filter(date__year=year).filter(date__month=month).aggregate(
+            Sum('gross_profit'))['gross_profit__sum']
+        
+        context['current_data'] = (
+            latest_date, 
+            number_of_employees, 
+            round(float(gross_profits)/(1.1*float(payout)), 2),
+            round((1.1*float(payout)/number_of_employees), 2)
+            )
+        
         if Payroll.objects.exists():
             all_periods = set(Payroll.objects.values_list('period', flat=True))
             lastest_10_periods = sorted(list(all_periods)[:10], reverse=True)
@@ -131,9 +149,21 @@ class DashBoardView(TemplateView):
             
             yields = tuple(round(x/y, 2) for x, y in zip(gross_profits, total_payout))
             average_pay = tuple(round(x/y, 2)for x, y in zip(total_payout, workforce))
+        
+            context['employee_dataset'] = list(data for data in zip(periods, workforce, yields, average_pay))
 
-        context['employee_dataset'] = list(data for data in zip(periods, workforce, yields, average_pay))
-            
+
+        if TradeMonthly.objects.exists():
+            year = TradeMonthly.objects.last().year - 1
+            try:
+                payout = Payroll.objects.filter(period__startswith=str(year)).aggregate(Sum('net_pay'))['net_pay__sum']
+                employees = Employee.active.filter(date_employed__year=year).count()
+                gross_profit = TradeMonthly.objects.aggregate(Sum('gross_profit'))['gross_profit__sum']
+                context['data'] = (str(year), employees, round(gross_profit/payout, 2), round(payout/employees, 2))
+            except Exception as err:
+                context['data'] = (str(year), 'RNR', 'RNR', 'RNR') 
+                context['msg'] =  'RNR - Record Not Ready'         
+                
         return context
 
     

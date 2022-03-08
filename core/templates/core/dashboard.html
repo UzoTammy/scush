@@ -155,6 +155,12 @@
                     </tr>
                 </thead>
                 <thead>
+                    <tr class="bg-success text-white text-center">
+                        <td class="text-left">{{current_data|array_index:0}}</td>
+                        <td>{{current_data|array_index:1}}</td>
+                        <td class="text-right">{{current_data|array_index:2}}</td>
+                        <td>{{current_data|array_index:3}}</td>
+                    </tr>
                     {% for dataset in employee_dataset %}
                     <tr class="text-center">
                         <td class="text-left">{{dataset|array_index:0}}</td>
@@ -163,8 +169,15 @@
                         <td>{{dataset|array_index:3}}</td>
                     </tr>
                     {% endfor %}
+                    <tr class="bg-dark text-white text-center">
+                        <td class="text-left">{{data|array_index:0}}</td>
+                        <td>{{data|array_index:1}}</td>
+                        <td class="text-right">{{data|array_index:2}}</td>
+                        <td>{{data|array_index:3}}</td>
+                    </tr>
                 </thead>
             </table>
+            <p class="text-danger">{{msg}}</p>
         </div>
     </div>
     
