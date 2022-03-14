@@ -73,7 +73,7 @@ class Product(models.Model):
     image = models.ImageField(default='default.jpg', upload_to='product_pics')
     cost_price = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN', 
     validators=[MinValueValidator(Money(1, 'NGN'), 
-    message="Cost price can't must be 0.00")])
+    message="Cost price can't be NGN0.00")])
     parameter = models.CharField(max_length=20,
                                  help_text='<span class="text-danger">types but of same price e.g. maltina classic, maltina pineaple</span>')
     active = models.BooleanField(default=True, choices=[(True, 'Yes'), (False, 'No')], verbose_name='Active?')
@@ -86,6 +86,7 @@ class Product(models.Model):
                                          ('RATIO', 'Qty Ratio')
                                      ], default='PP')
     date_modified = models.DateTimeField(default=timezone.now)
+    is_stock_valued = models.BooleanField(default=False) #
 
     
     def __str__(self):
@@ -115,6 +116,36 @@ class ProductPerformance(models.Model):
         return reverse('product-performance-detail', kwargs={'pk':self.pk})
         
     
+class ProductExtension(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    cost_price = MoneyField(
+        max_digits=8, decimal_places=2, default_currency='NGN',
+        default=Money(1000, 'NGN'), 
+        validators=[MinValueValidator(Money(1, 'NGN'), 
+        message="Cost price can't be NGN0.00")]
+    )
+    selling_price = MoneyField(
+        max_digits=8, decimal_places=2, default_currency='NGN',
+        default=Money(1000, 'NGN'), 
+        validators=[MinValueValidator(Money(1, 'NGN'), 
+        message="Selling price can't be NGN0.00")]
+    )
+    stock_value = models.IntegerField(default=0)
+    date = models.DateField(default=timezone.now)
+    sell_out = models.IntegerField(default=0)
+    sales_amount = MoneyField(
+        max_digits=12, decimal_places=2, default_currency='NGN',
+        default=Money(0, 'NGN'), 
+        validators=[MinValueValidator(Money(0, 'NGN'), 
+        message="Sales amount can't be negative")]
+    )
+    status = models.BooleanField(default=False) # can be used to deactivate the product
 
+    def __str__(self) -> str:
+        return f'{self.product}-{self.date}'
+
+    # def get_absolute_url(self):
+    #     return reverse('product-performance-detail', kwargs={'pk':self.pk})
+    
     
     

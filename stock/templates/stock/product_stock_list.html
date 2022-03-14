@@ -1,0 +1,47 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container">
+    {% for queryset in qs %}
+        {% if queryset|last %}
+        <div class="d-flex justify-content-center">
+            <div class="col">
+                <table class="table table-bordered bg-white" data-toggle="table">
+                    <caption>Stock Report for {{the_date|date:'d-m-Y'}} - 
+                        <span class="text-danger">{{queryset|first|last}}</span>
+                    </caption>
+                    <thead>
+                        <tr class="text-center">
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Cost(&#8358;)</th>
+                            <th>Value(&#8358;)</th>
+                            <th>Selling(&#8358;)</th>
+                            <th>Margin(&#8358;)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in queryset|last %}
+                        <tr>
+                            <td>{{item.product}}</td>
+                            <td class="text-center">{{item.stock_value}}</td>
+                            <td class="text-right">{{item.cost_price.amount}}</td>
+                            <td class="text-right">{{item.stock_value|multiply:item.product.cost_price.amount}}</td>
+                            <td class="text-right">{{item.selling_price.amount}}</td>
+                            <td class="text-right">{{item.selling_price.amount|minus:item.cost_price.amount}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+    <div class="row m-3">
+        <div class="col">
+            <a class="btn btn-primary float-right" href="{% url 'product-home' %}">Close</a>
+        </div>
+    </div>
+</div>
+{% endblock content%}

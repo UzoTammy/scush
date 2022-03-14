@@ -88,3 +88,7 @@ def multiply(value, arg):
 @register.filter
 def array_index(value, index):
     return value[index]
+
+@register.filter
+def make_list(value, separator):
+    return value.split(separator)

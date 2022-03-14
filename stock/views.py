@@ -1,8 +1,11 @@
 import datetime
+from django.contrib import messages
+from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic.base import TemplateView
-from .models import Product, ProductPerformance
+from .models import (Product, ProductPerformance, ProductExtension, SOURCES)
 from delivery.models import DeliveryNote
 from django.views.generic import View
 from django.template.loader import get_template
@@ -109,7 +112,11 @@ class ProductHomeView(View):
                 sum(data_others))
 
     def get(self, request):
-
+        with open('stock/text/stock_valued.txt', 'r') as rf:
+            content = rf.read()
+        if content == 'complete':
+            Product.objects.all().update(is_stock_valued=False)
+        
         context = {
             'total_count': Product.objects.all().count(),
             'nb_count': Product.objects.filter(source='NB').count(),
@@ -137,6 +144,7 @@ class ProductHomeView(View):
             'gn_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='GN'))[3]:,.2f}",
             'ib_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[0],
             'ib_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[3]:,.2f}",
+            'is_product_extension': ProductExtension.objects.exists()
         }
         return render(request, 'stock/product_home.html', context=context)
 
@@ -154,6 +162,83 @@ class ProductListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def get_queryset(self):
         return super().get_queryset().filter(active=True)
 
+
+class ProductTabularCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = ProductExtension
+    template_name = 'stock/product_tabular.html'
+    fields = ('stock_value',)
+    success_url = reverse_lazy('product-tabular')
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        try:
+            the_date = datetime.datetime.strptime(self.request.GET.get('theDate'), '%Y-%m-%d').date()
+            context['the_date'] = the_date
+            with open('stock/text/date.txt', 'w') as wf:
+                wf.write(self.request.GET.get('theDate'))
+        except Exception as err:
+            with open('stock/text/date.txt', 'r') as rf:
+                the_date = rf.read()
+            the_date = datetime.datetime.strptime(the_date, '%Y-%m-%d').date()    
+            context['the_date'] = the_date
+
+        context['products'] = Product.objects.filter(is_stock_valued=False)
+
+        if context['products'].count()==0:
+            context['complete'] = True
+            with open('stock/text/stock_valued.txt', 'w') as wf:
+                wf.write('complete')  
+        else:
+            context['complete'] = False 
+            with open('stock/text/stock_valued.txt', 'w') as wf:
+                wf.write('incomplete')
+        
+        """Check the latest entry"""
+        latest_date = ProductExtension.objects.latest('date').date
+        qs_count = ProductExtension.objects.filter(date=latest_date).count()
+        product_count = Product.objects.count()
+        if qs_count != product_count and latest_date != the_date:
+            context['product_assesment'] = (latest_date, True, qs_count, product_count)
+        return context
+
+    def form_valid(self, form):
+        product = get_object_or_404(Product, pk=self.request.POST['pk'])
+        form.instance.product = product
+        form.instance.cost_price = product.cost_price
+        form.instance.selling_price = product.unit_price
+        form.instance.date = self.get_context_data(kwargs={}).get('the_date')
+        product.is_stock_valued = True
+        product.save()
+        messages.info(self.request, f'Stock Value for {form.instance.product} added Successfully !!!')
+        return super().form_valid(form)
+
+
+class ProductTabularListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = ProductExtension
+    template_name = 'stock/product_stock_list.html'            
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    def get_queryset(self):
+        date = self.request.GET.get('theDate')
+        return super().get_queryset().filter(date=date)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['the_date'] = datetime.datetime.strptime(self.request.GET['theDate'], '%Y-%m-%d')
+        context['qs'] = list((data, self.get_queryset().filter(product__source=data[0]))  for data in SOURCES)
+        return context
 
 class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Product
@@ -285,4 +370,5 @@ class ProductPerformanceDetailView(LoginRequiredMixin, UserPassesTestMixin, Deta
         if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
+
 

@@ -1,0 +1,28 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex row justify-content-center mt-5 mb-5">
+        <div class="col-sm-8 shadow-lg">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <legend class="text-warning text-center">Product Extension - Stock</legend>
+                <h5 class="text-primary ml-3 mt-3"> <span class="text-dark">Product:</span>  {{product}}</h5>
+                <h5 class="text-primary ml-3 mt-3"> <span class="text-dark">Date:</span>  {{date}}</h5>
+                <hr>
+                <fieldset class="bg-light">
+                    <div class="ml-2">{{ form|crispy }}</div>
+                </fieldset>
+                <div class="form-group p-2">
+                    <button class="btn btn-outline-warning" type="submit">Submit</button>
+                    <a class="btn btn-outline-light float-right"
+                       href="{% url 'product-tabular' %}">
+                        <i class="fa fa-reply text-danger"></i> Return</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

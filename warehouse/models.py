@@ -59,7 +59,7 @@ class Renewal(models.Model):
         
 
     def __str__(self):
-        return f'{self.store.name} Renewed'
+        return f'{self.store.name}-{self.date}'
 
 class BankAccount(models.Model):
     store = models.OneToOneField(Stores, on_delete=models.CASCADE)
