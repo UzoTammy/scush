@@ -112,10 +112,6 @@ class ProductHomeView(View):
                 sum(data_others))
 
     def get(self, request):
-        with open('stock/text/stock_valued.txt', 'r') as rf:
-            content = rf.read()
-        if content == 'complete':
-            Product.objects.all().update(is_stock_valued=False)
         
         context = {
             'total_count': Product.objects.all().count(),
@@ -144,9 +140,30 @@ class ProductHomeView(View):
             'gn_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='GN'))[3]:,.2f}",
             'ib_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[0],
             'ib_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[3]:,.2f}",
-            'is_product_extension': ProductExtension.objects.exists()
+            
         }
         return render(request, 'stock/product_home.html', context=context)
+
+
+class StockValueView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'stock/stock_value.html'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        with open('stock/text/stock_valued.txt', 'r') as rf:
+            content = rf.read()
+        if content == 'complete':
+            Product.objects.all().update(is_stock_valued=False)
+       
+        context['is_product_extension'] = ProductExtension.objects.exists()
+        return context
 
 
 class ProductListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -201,11 +218,12 @@ class ProductTabularCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateVi
                 wf.write('incomplete')
         
         """Check the latest entry"""
-        latest_date = ProductExtension.objects.latest('date').date
-        qs_count = ProductExtension.objects.filter(date=latest_date).count()
-        product_count = Product.objects.count()
-        if qs_count != product_count and latest_date != the_date:
-            context['product_assesment'] = (latest_date, True, qs_count, product_count)
+        if ProductExtension.objects.exists():
+            latest_date = ProductExtension.objects.latest('date').date
+            qs_count = ProductExtension.objects.filter(date=latest_date).count()
+            product_count = Product.objects.count()
+            if qs_count != product_count and latest_date != the_date:
+                context['product_assesment'] = (latest_date, True, qs_count, product_count)
         return context
 
     def form_valid(self, form):
@@ -239,6 +257,7 @@ class ProductTabularListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context['the_date'] = datetime.datetime.strptime(self.request.GET['theDate'], '%Y-%m-%d')
         context['qs'] = list((data, self.get_queryset().filter(product__source=data[0]))  for data in SOURCES)
         return context
+
 
 class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Product

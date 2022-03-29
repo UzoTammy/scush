@@ -1,0 +1,176 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+    <div class="container-fluid p-3">
+        <div class="row">
+            <div class="col text-center">
+                <h3>Stock Value Page</h3>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-3 bg-light">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <!-- Button trigger modal -->
+                        <a href="#" data-toggle="modal" data-target="#stockAddModal">
+                            Add
+                        </a>
+                    </li>
+                    {% if is_product_extension %}
+                    <li class="list-group-item">
+                        <a href="#" data-toggle="modal" data-target="#stockReportModal">Modify</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="#" data-toggle="modal" data-target="#stockReportModal">View</a>
+                    </li>
+                    {% endif %}
+                    
+                    <li class="list-group-item">
+                        <a href="{% url 'product-home' %}"><i class="fa fa-reply"></i> Return</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-9">
+                
+            </div>
+        </div>
+    </div>
+
+        
+  <!-- Modal footnote-->
+  <div class="modal fade" 
+  id="footNotePriceUpdate" 
+  data-backdrop="static" 
+  data-keyboard="false" 
+  tabindex="-1" 
+  aria-labelledby="staticBackdropLabel" 
+  aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Price Update Footnote</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{% url 'price-update-footnote' %}">
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="footNote">Note</label>
+                <textarea class="form-control"
+                placeholder="enter your footnotes here to add more infomation to the price review"
+                name="footnote" 
+                id="footNote" 
+                cols="30" 
+                rows="10"></textarea>
+            </div> 
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="button" 
+          class="btn btn-secondary" 
+          data-dismiss="modal">Close</button>
+        </div>
+    </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Stock  Modal -->
+  <div class="modal fade" id="stockAddModal" tabindex="-1" aria-labelledby="stockAddModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="stockUpdateModalLabel">Add Stock - Pick A Date</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{% url 'product-tabular' %}" method="GET">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="">Date</label>
+                    <input id="stockAddInput" class="form-control" type="date" name="theDate" onchange="addFunc()">
+                </div>   
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="btnAdd" type="submit" class="btn btn-primary" disabled>Continue</button>           
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- modify Stock  Modal -->
+  <div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="stockReportModalLabel">Modify Stock - Pick A Date</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{% url 'product-tabular-list' %}" method="GET">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="">Date</label>
+                    <input id="stockReportInput" class="form-control" type="date" name="theDate" onchange="reportFunc()">
+                </div>   
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="btnReport" type="submit" class="btn btn-primary" disabled>Report</button>           
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Stock  Modal -->
+  <div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="stockReportModalLabel">Modify Stock - Pick A Date</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{% url 'product-tabular-list' %}" method="GET">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="">Date</label>
+                    <input id="stockReportInput" class="form-control" type="date" name="theDate" onchange="reportFunc()">
+                </div>   
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id="btnReport" type="submit" class="btn btn-primary" disabled>Report</button>           
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+      function addFunc() {
+        
+        if (document.getElementById('stockAddInput').value == '') {
+            document.getElementById('btnAdd').disabled = true;
+        } else {
+            document.getElementById('btnAdd').disabled = false;
+        }  
+      }
+
+      function reportFunc() {
+        
+        if (document.getElementById('stockReportInput').value == '') {
+            document.getElementById('btnReport').disabled = true;
+        } else {
+            document.getElementById('btnReport').disabled = false;
+        }  
+      }
+  </script>
+{% endblock %}

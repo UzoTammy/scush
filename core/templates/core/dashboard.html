@@ -141,7 +141,7 @@
         </div>
     </div>
     <h3>Employees</h3>
-    <div class="d-flex row justify-content-center mt-2 mb-5">
+    <div class="d-flex row justify-content-center mt-2 mb-1">
         <div class="col float-center">
             <table class="table bg-white shadow-sm" data-toggle="table">
                 <legend></legend>
@@ -180,6 +180,10 @@
             <p class="text-danger">{{msg}}</p>
         </div>
     </div>
-    
+    <div class="row mb-3">
+        <div class="col">
+            <a class="btn btn-outline-dark float-right" href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
+        </div>
+    </div>
 </div>
 {% endblock content %}

@@ -58,8 +58,8 @@
                                 <h5 class="card-title">Cummulative Values</h5>
                                 <p class="card-text">Total Capacity: {{total_capacity|floatformat:0}}
                                 <small class="text-muted">*includes owned properties</small></p>
-                                <p class="card-text">Rented Capacity: {{rented_capacity|floatformat:0}}</p>
-                                <p class="card-text">Owned Capacity: {{owned_capacity|floatformat:0}}</p>
+                                <p class="card-text">Rented Capacity: {{rented_capacity|floatformat:0}} ({{percent_rent|last|floatformat:2}}%)</p>
+                                <p class="card-text">Owned Capacity: {{owned_capacity|floatformat:0}} ({{percent_rent|first|floatformat:2}}%)</p>
                             </div>
                         </div>
                     </div>

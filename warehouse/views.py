@@ -51,11 +51,13 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['total_capacity'] = Stores.active.aggregate(total=Sum('capacity'))['total']
             context['rented_capacity'] = self.store_obj.aggregate(total=Sum('capacity'))['total']
             context['owned_capacity'] = context['total_capacity'] - context['rented_capacity']
+            context['percent_rent'] = (100*context['owned_capacity']/context['total_capacity'], 100*context['rented_capacity']/context['total_capacity'])
 
             context['store_types'] = (i[0] for i in Stores.TYPES)
             context['usage'] = (i[0] for i in Stores.USAGE)
             context['rent_amount_paid'] = self.payment_obj.aggregate(total_paid=Sum('amount_paid'))['total_paid']
             context['rent_amount_unpaid'] = context['total_rent_payable_per_annum'] - context['rent_amount_paid'] if self.payment_obj.exists() else context['total_rent_payable_per_annum']
+            
             context['renewal_count'] = self.payment_obj.count()
 
             qs = Stores.active.all()

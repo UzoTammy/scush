@@ -1,13 +1,15 @@
+import datetime
+import logging
+from pathlib import Path
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.template import loader
 from .models import Applicant
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.views.generic import (View,
-                                  FormView,
                                   TemplateView,
                                   CreateView,
                                   ListView,
@@ -16,9 +18,26 @@ from django.views.generic import (View,
                                   DeleteView,
                                   )
 from .forms import ApplicantForm, MyForm
-import datetime
 from django.urls import reverse_lazy, reverse
 
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(name)s:%(levelname)s %(asctime)s %(message)s', datefmt='%d-%b-%Y %I:%M %p')
+path = Path(__file__).resolve().parent
+
+file_handler = logging.FileHandler(path / 'log' / 'views.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+
+"""This view is completely class based views. It starts with listing all pending
+applicants. From here, employed and rejected applicants can be listed with 
+ApplyListViewEmployed and ApplyListViewRejected classes respectively.
+Also, all applicants are listed with ApplyListView class.
+Since CBVs allow for list, detail, update and create and even delete,
+they are all utilized in this model to manage the data. However, more functiona
+are applied."""
 
 class ApplyListViewPending(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Applicant
@@ -95,29 +114,14 @@ class ApplyDetailView(LoginRequiredMixin, DetailView):
     model = Applicant
 
 
-def successful(request):
-    return HttpResponse("""<h1 style="color:green;">Your form is submitted successfully!!!</h1>
-    <a href="/">Return back to index page</a>""")
-
-
-class WelcomeView(TemplateView):
-
-    def get(self, request, *args, **kwargs):
-        context = {
-            'count': Applicant.objects.all().count,
-        }
-        return render(request, 'mails/welcome_applicant.html',
-                      context)
-
-
 class ApplyCreateView(CreateView):
+    """No login required and no restriction on user's needed, making it available
+    to the public.
+    """
     model = Applicant
     form_class = ApplicantForm
-    # success_url = '/thanks/'
-
-    """This is to revalidate the form to ensure
-    that the current logged in user is assigned as the creator"""
-
+    
+   
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "New"
@@ -193,6 +197,21 @@ class ApplyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class ApplyDeleteView(DeleteView):
     model = Applicant
     success_url = reverse_lazy('home')
+
+
+class WelcomeView(TemplateView):
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'count': Applicant.objects.all().count,
+        }
+        return render(request, 'mails/welcome_applicant.html',
+                      context)
+
+
+def successful(request):
+    return HttpResponse("""<h1 style="color:green;">Your form is submitted successfully!!!</h1>
+    <a href="/">Return back to index page</a>""")
 
 
 def test_form(request):

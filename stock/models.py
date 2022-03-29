@@ -71,9 +71,10 @@ class Product(models.Model):
     alcohol_content = models.FloatField(default=0.0)
     vat = models.FloatField(default=7.5, choices=[(7.5, 'Vatable'), (0.0, 'Exempted')])
     image = models.ImageField(default='default.jpg', upload_to='product_pics')
-    cost_price = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN', 
-    validators=[MinValueValidator(Money(1, 'NGN'), 
-    message="Cost price can't be NGN0.00")])
+    cost_price = MoneyField(
+        max_digits=8, decimal_places=2, default_currency='NGN', 
+        validators=[MinValueValidator(Money(1, 'NGN'), 
+        message="Cost price can't be NGN0.00")])
     parameter = models.CharField(max_length=20,
                                  help_text='<span class="text-danger">types but of same price e.g. maltina classic, maltina pineaple</span>')
     active = models.BooleanField(default=True, choices=[(True, 'Yes'), (False, 'No')], verbose_name='Active?')

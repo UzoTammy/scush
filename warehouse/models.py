@@ -3,8 +3,10 @@ from django.urls import reverse
 from django.db import models
 from djmoney.models.fields import MoneyField
 from django.utils import timezone
-# from staff.models import Employee
-# from staff import models
+from pathlib import Path
+import json
+
+
 
 
 class ActiveStoreManager(models.Manager):
@@ -62,7 +64,14 @@ class Renewal(models.Model):
         return f'{self.store.name}-{self.date}'
 
 class BankAccount(models.Model):
+
+    path = Path(__file__).resolve().parent.parent
+    
+    with open(path /'core' /'json' / 'choices.json') as rf:
+        content = json.load(rf)
+    banks = [(bank, bank) for bank in content['banks']]
+
     store = models.OneToOneField(Stores, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     account_number = models.CharField(max_length=10)
-    bank = models.CharField(max_length=10, choices=[("A", 'A')])
+    bank = models.CharField(max_length=10, choices=banks)

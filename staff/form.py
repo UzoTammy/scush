@@ -1,10 +1,11 @@
-from django.forms import ModelForm, fields
-from django import forms
-from django.forms.widgets import DateTimeInput, Input
-from .models import CreditNote, DebitNote, Employee, RequestPermission
 import json
-from django.utils import timezone
 import datetime
+from pathlib import Path
+from django.forms import ModelForm
+from django import forms
+from django.forms.widgets import DateTimeInput
+from .models import CreditNote, DebitNote, Employee, RequestPermission
+
 
 
 class CreditForm(ModelForm):
@@ -21,7 +22,9 @@ class DebitForm(ModelForm):
 
 
 class EmployeeForm(ModelForm):
-    with open('extrafiles/choices.json') as jsf:
+    path = Path(__file__).resolve().parent.parent
+
+    with open(path / 'core' /'json' / 'choices.json') as jsf:
         content = json.load(jsf)
 
     BANKS = sorted(list((i, i) for i in content['banks']))

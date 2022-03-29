@@ -12,15 +12,8 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
                         <!-- Button trigger modal -->
-                        <a href="#" data-toggle="modal" data-target="#stockAddModal">
-                            Add Stock Value
-                        </a>
+                        <a href="{% url 'stock-value' %}">Stock Value</a>
                     </li>
-                    {% if is_product_extension %}
-                    <li class="list-group-item">
-                        <a href="#" data-toggle="modal" data-target="#stockReportModal">View Stock Value</a>
-                    </li>
-                    {% endif %}
                     <li class="list-group-item">
                         <a href="{% url 'product-list' %}">View Products</a>
                     </li>
