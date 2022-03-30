@@ -1,6 +1,6 @@
 import json
 import datetime
-from pathlib import Path
+from django.conf import settings
 from django.forms import ModelForm
 from django import forms
 from django.forms.widgets import DateTimeInput
@@ -22,9 +22,9 @@ class DebitForm(ModelForm):
 
 
 class EmployeeForm(ModelForm):
-    path = Path(__file__).resolve().parent.parent
+    root_dir = settings.BASE_DIR #Path(__file__).resolve().parent.parent
 
-    with open(path / 'core' /'json' / 'choices.json') as jsf:
+    with open(root_dir / 'json' / 'choices.json') as jsf:
         content = json.load(jsf)
 
     BANKS = sorted(list((i, i) for i in content['banks']))

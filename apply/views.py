@@ -1,6 +1,5 @@
 import datetime
 import logging
-from pathlib import Path
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.template import loader
 from .models import Applicant
@@ -19,16 +18,17 @@ from django.views.generic import (View,
                                   )
 from .forms import ApplicantForm, MyForm
 from django.urls import reverse_lazy, reverse
+# from django.conf import settings
 
+# logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
+# formatter = logging.Formatter('%(name)s:%(levelname)s %(asctime)s %(message)s', datefmt='%d-%b-%Y %I:%M %p')
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(name)s:%(levelname)s %(asctime)s %(message)s', datefmt='%d-%b-%Y %I:%M %p')
-file_path = Path(__file__).resolve().parent
+# root_dir = settings.BASE_DIR #Path(__file__).resolve().parent.parent
+# file_handler = logging.FileHandler(root_dir / 'logs' / 'views.log')
 
-file_handler = logging.FileHandler(file_path / 'log' / 'views.log')
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+# file_handler.setFormatter(formatter)
+# logger.addHandler(file_handler)
 
 
 """This view is completely class based views. It starts with listing all pending

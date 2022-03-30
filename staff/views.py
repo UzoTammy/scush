@@ -1122,7 +1122,6 @@ class StaffSuspend(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return redirect('employee-detail', pk=kwargs['pk'])
 
 
-
 class StaffPermit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Employee
 

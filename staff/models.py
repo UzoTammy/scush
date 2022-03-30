@@ -1,21 +1,21 @@
 import calendar
+import datetime
+import json
 from django.db import models
-from djmoney.models.fields import MoneyField
-from djmoney.models.validators import MaxMoneyValidator, MinMoneyValidator
 from django.utils import timezone
 from django.urls import reverse
-from apply.models import Applicant
 from djmoney.money import Money
-import datetime
-from ozone import mytools
-import json
 from django.contrib.auth.models import User
-from pathlib import Path
+from django.conf import settings
+from djmoney.models.fields import MoneyField
+from djmoney.models.validators import MaxMoneyValidator, MinMoneyValidator
+from ozone import mytools
+from apply.models import Applicant
 
 
-file_path = Path(__file__).resolve().parent.parent
+root_dir = settings.BASE_DIR #Path(__file__).resolve().parent.parent
 
-with open(file_path / 'core' / 'json' / 'choices.json') as jsf:
+with open(root_dir / 'json' / 'choices.json') as jsf:
         content = json.load(jsf)
 
 BANKS = sorted(list((i, i) for i in content['banks']))
@@ -36,12 +36,6 @@ class ActiveEmployeeManager(models.Manager):
 
 class Employee(models.Model):
 
-    # DUTY_CHOICE = [('Nil', 'Nil'),
-                #    ('Leave', 'Leave'),
-                #    ('Training', 'Training'),
-                #    ('Suspension', 'Suspension'),
-                #    ('Terminated', 'Terminated')]
-    
     staff = models.ForeignKey(Applicant, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='staff_pics', blank=True)
     date_employed = models.DateField(default=timezone.now,

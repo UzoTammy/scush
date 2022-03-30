@@ -1,8 +1,6 @@
 
 import datetime
 import calendar
-import logging
-from pathlib import Path
 from django.shortcuts import render
 from django.views.generic import View, TemplateView
 from django.db.models import F, Sum 
@@ -16,13 +14,15 @@ from warehouse.models import Stores, Renewal
 from ozone import mytools
 
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(name)s:%(levelname)s %(asctime)s %(message)s', datefmt='%d-%b-%Y @ %I:%M %p')
-file_path = Path(__file__).resolve().parent
-file_handler = logging.FileHandler(file_path / 'log' / 'views.log')
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+# logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
+# formatter = logging.Formatter('%(name)s:%(levelname)s %(asctime)s %(message)s', datefmt='%d-%b-%Y @ %I:%M %p')
+
+# root_dir = settings.BASE_DIR  #Path(__file__).resolve().parent.parent
+# file_handler = logging.FileHandler(root_dir / 'logs' / 'views.log')
+
+# file_handler.setFormatter(formatter)
+# logger.addHandler(file_handler)
 
 
 
