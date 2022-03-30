@@ -1,9 +1,13 @@
 import decimal
+import calendar
+import datetime
 from survey.models import Question
-from django.db.models.aggregates import Count
 from users.models import Profile
+from apply.models import Applicant
 from .models import *
+from .models import POSITIONS, BRANCHES
 from .form import *
+from .form import DebitForm, CreditForm, RequestPermissionForm
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
@@ -14,20 +18,15 @@ from django.views.generic import (View,
                                   CreateView,
                                   UpdateView)
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from apply.models import Applicant
 from djmoney.money import Money
 from ozone import mytools
-import calendar
-import datetime
 from decimal import Decimal
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.core.validators import ValidationError
-from .form import DebitForm, CreditForm, RequestPermissionForm
-from django.template import loader
-from django.db.models import (F, Sum, Avg, Max, Min, query)
-from .models import POSITIONS, BRANCHES
 from django.core.mail import EmailMessage
+from django.core.validators import ValidationError
+from django.template import loader
+from django.db.models import (F, Sum, Avg, Max, Min)
 
 
 def duration(start_date, resume_date):
@@ -1411,6 +1410,7 @@ class EmployeeBalanceListView(ListView):
         
         return context
 
+
 class EmployeeGratuityList(TemplateView):
 
     template_name = 'staff/gratuity/employee_gratuity_list.html'
@@ -1427,6 +1427,7 @@ class EmployeeGratuityList(TemplateView):
         debit_amount = value if value is not None else decimal.Decimal('0')
         context['net_value'] = credit_amount - debit_amount
         return context
+
 
 class EmployeeBalanceDetailView(DetailView):
     model = EmployeeBalance

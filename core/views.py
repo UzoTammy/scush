@@ -1,6 +1,8 @@
 
 import datetime
 import calendar
+import logging
+from pathlib import Path
 from django.shortcuts import render
 from django.views.generic import View, TemplateView
 from django.db.models import F, Sum 
@@ -12,6 +14,16 @@ from apply.models import Applicant
 from trade.models import TradeDaily, TradeMonthly
 from warehouse.models import Stores, Renewal
 from ozone import mytools
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(name)s:%(levelname)s %(asctime)s %(message)s', datefmt='%d-%b-%Y @ %I:%M %p')
+file_path = Path(__file__).resolve().parent
+file_handler = logging.FileHandler(file_path / 'log' / 'views.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
 
 
 class HomeView(TemplateView):

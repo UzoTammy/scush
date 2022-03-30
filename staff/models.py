@@ -10,9 +10,12 @@ import datetime
 from ozone import mytools
 import json
 from django.contrib.auth.models import User
+from pathlib import Path
 
 
-with open('extrafiles/choices.json') as jsf:
+file_path = Path(__file__).resolve().parent.parent
+
+with open(file_path / 'core' / 'json' / 'choices.json') as jsf:
         content = json.load(jsf)
 
 BANKS = sorted(list((i, i) for i in content['banks']))

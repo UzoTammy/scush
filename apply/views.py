@@ -24,9 +24,9 @@ from django.urls import reverse_lazy, reverse
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(name)s:%(levelname)s %(asctime)s %(message)s', datefmt='%d-%b-%Y %I:%M %p')
-path = Path(__file__).resolve().parent
+file_path = Path(__file__).resolve().parent
 
-file_handler = logging.FileHandler(path / 'log' / 'views.log')
+file_handler = logging.FileHandler(file_path / 'log' / 'views.log')
 file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
