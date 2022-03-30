@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.db import models
 from djmoney.models.fields import MoneyField
 from django.utils import timezone
-from pathlib import Path
+from django.conf import settings
 import json
 
 
@@ -65,9 +65,9 @@ class Renewal(models.Model):
 
 class BankAccount(models.Model):
 
-    path = Path(__file__).resolve().parent.parent
+    root_dir = settings.BASE_DIR #Path(__file__).resolve().parent.parent
     
-    with open(path /'core' /'json' / 'choices.json') as rf:
+    with open(root_dir / 'json' / 'choices.json') as rf:
         content = json.load(rf)
     banks = [(bank, bank) for bank in content['banks']]
 
