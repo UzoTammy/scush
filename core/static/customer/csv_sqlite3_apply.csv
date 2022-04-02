@@ -1,0 +1,12 @@
+id,first_name,second_name,last_name,birth_date,gender,marital_status,course,mobile,email,address,apply_date,modified_date,qualification
+2,David,Emeka,Nwokoro,1973-08-12,MALE,SINGLE,Computer Scientist,09076966477,,"#24 Olarenwaju Street,
+Opp. Ojo Cantonment,
+Lagos.",2021-04-11,2021-04-18 18:49:53.834005,SECONDARY
+3,Chisom,Catherine,Nwigwe,1983-07-10,FEMALE,MARRIED,Geography and Planning,08065342665,chisom.nwigwe@gmail.com,"#24 Olarenwaju Street, Ojo, Lagos",2021-04-10,2021-04-18 18:49:53.834005,BACHELOR
+4,Michelle,Onyinye,Nwokoro,1973-05-12,FEMALE,SINGLE,,08079037789,michelle@gmail.com,"#24 Olarenwaju street, Ojo, Lagos",2021-04-11,2021-04-18 19:08:03.482305,PRIMARY
+5,Charles,Eze,Ezeora,1975-05-12,MALE,MARRIED,Mech Engineering,09054653543,charles@gmail.com,#10 Augustine street,2021-04-18,2021-04-18 18:49:53.834005,BACHELOR
+6,Joseph,Ikenna,Nwokoro,2000-04-12,MALE,SINGLE,,08076456553,jo@gmail.com,"#70b Plot 10 Spark Avenuw,
+Ojoba, Ijodu
+Lagos.",2021-04-18,2021-04-18 18:49:53.834005,SECONDARY
+7,Uzo,Tammy,Nwokoro,1977-02-26,MALE,MARRIED,Chemical Engineering,08033769440,uzo.tammy@gmail.com,"#24 Olarenwaju Street, Ojo, Lagos",2021-04-20,2021-04-22 01:38:31.833955,BACHELOR
+8,,,,,,,,,,,,,

@@ -8,7 +8,7 @@ import os
 from django.conf import settings
 
 
-json_path = os.path.join(settings.BASE_DIR, "customer/static/customer/customer.json")
+json_path = os.path.join(settings.BASE_DIR, "core/static/customer/customer.json")
 
 with open(json_path, 'r') as rf:
     content = json.load(rf)

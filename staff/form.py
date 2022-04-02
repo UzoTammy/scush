@@ -24,13 +24,17 @@ class DebitForm(ModelForm):
 class EmployeeForm(ModelForm):
     root_dir = settings.BASE_DIR #Path(__file__).resolve().parent.parent
 
-    with open(root_dir / 'json' / 'choices.json') as jsf:
+    with open(root_dir /'core'/'static'/ 'json' / 'choices.json') as jsf:
         content = json.load(jsf)
 
-    BANKS = sorted(list((i, i) for i in content['banks']))
-    BRANCHES = sorted(list((i, i) for i in content['branches']))
-    POSITIONS = sorted(list((i, i) for i in content['positions']))
-    DEPARTMENTS = sorted(list((i, i) for i in content['departments']))
+    if content['banks']:
+        BANKS = sorted(list((i, i) for i in content['banks']))
+    if content['branches']:
+        BRANCHES = sorted(list((i, i) for i in content['branches']))
+    if content['positions']:
+        POSITIONS = sorted(list((i, i) for i in content['positions']))
+    if content['departments']:
+        DEPARTMENTS = sorted(list((i, i) for i in content['departments']))
 
     BRANCHES.append(('', '----------'))
     POSITIONS.append(('', '----------'))

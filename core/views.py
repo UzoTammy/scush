@@ -1,7 +1,10 @@
 
 import datetime
 import calendar
-from django.shortcuts import render
+import json
+from django.conf import settings
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
 from django.views.generic import View, TemplateView
 from django.db.models import F, Sum 
 from staff.models import Employee, Payroll, EmployeeBalance
@@ -12,6 +15,8 @@ from apply.models import Applicant
 from trade.models import TradeDaily, TradeMonthly
 from warehouse.models import Stores, Renewal
 from ozone import mytools
+from .forms import *
+from django.contrib import messages
 
 
 # logger = logging.getLogger(__name__)
@@ -34,6 +39,7 @@ class HomeView(TemplateView):
         context['title'] = 'Home'
         return context
 
+
 class AboutView(TemplateView):
     template_name = 'core/about.html'
 
@@ -41,6 +47,7 @@ class AboutView(TemplateView):
         context = super(AboutView, self).get_context_data(**kwargs)
         context['title'] = 'About'
         return context    
+
 
 class CompanyPageView(View):
 
@@ -61,6 +68,7 @@ class CompanyPageView(View):
             'md': md 
         }
         return render(request, 'core/company.html', context)
+
 
 class DashBoardView(TemplateView):
     template_name = 'core/dashboard.html'
@@ -178,4 +186,71 @@ class DashBoardView(TemplateView):
                 
         return context
 
+
+class ResetView(TemplateView):
+    file_path = settings.BASE_DIR /'core'/ 'static'/ 'json' / 'choices.json'
+    CT = ''
+
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        if kwargs['group'] == 'choices':
+            with open(self.file_path) as rf:
+                content = json.load(rf)
+            context['content'] = content
+            context['group'] = kwargs['group'].title
+            if request.GET['choiceType'] == 'Add':
+                context['form'] = AddChoicesForm()
+                context['title'] = '- Add'
+                
+            elif request.GET['choiceType'] == 'Edit':
+                context['form'] = EditChoicesForm()
+                context['title'] = '- Edit'
+            
+            elif request.GET['choiceType'] == 'Delete':
+                context['form'] = DeleteChoicesForm()
+                context['title'] = '- Delete'
+            
+            global CT
+            CT = request.GET['choiceType']
+        else:
+            context = {
+                
+            }
+        return render(request, 'core/resetting/resetting.html', context)
+
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            with open(self.file_path) as rf:
+                content = json.load(rf)
+            if CT == 'Add':
+                if request.POST['input_value'] in content[request.POST['select']]:
+                    messages.warning(request, f"{request.POST['input_value'].upper()} already in {request.POST['select'].upper()} database")
+                    return redirect('resets', kwargs['group'])
+                content[request.POST['select']].append(request.POST['input_value'])
+                messages.success(request, f"{request.POST['input_value'].upper()} added to {request.POST['select'].upper()} successfully !!!")
+            elif CT == 'Edit':
+                old_value = request.POST['select'].split('-')[1]
+                new_value = request.POST['input_value']
+                key = request.POST['select'].split('-')[0]
+                I = content[key].index(old_value)
+                content[key].insert(I, new_value)
+                content[key].remove(old_value)
+                messages.success(request, f"{new_value.upper()} replaced {old_value.upper()} in {key} dataset successfully !!!")
+            elif CT == 'Delete': # This is for delete
+                value = request.POST['select'].split('-')[1]
+                key = request.POST['select'].split('-')[0]
+                
+                content[key].remove(value)
+                if content[key]:
+                    messages.success(request, f"{value.upper()} in {key.upper()} Dataset Deleted !!!")
+                else:
+                    del content[key]
+                    messages.warning(request, f"{value.upper()} and {key.upper()} Dataset Deleted")
+            with open(self.file_path, 'w') as wf:
+                json.dump(content, wf, indent=2)        
+        except Exception as err:
+            messages.error(request, f"Record Alteration Failed Due To ({err}) Error")
+        
+        return redirect('resets', 'reset')    
     

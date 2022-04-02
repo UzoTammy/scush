@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import *
 
+
 urlpatterns = [
 
     path('', TemplateView.as_view(template_name='core/index.html'), name='index'),
@@ -9,6 +10,8 @@ urlpatterns = [
     path('scush/', TemplateView.as_view(template_name = 'core/scush.html'), name='scush'),
     path('company/', CompanyPageView.as_view(), name='company'),
     path('dashboard/', DashBoardView.as_view(), name='dashboard'),
+    path('settings/<str:group>/', ResetView.as_view(), name='resets'),
+    path('reset/help/', TemplateView.as_view(template_name='core/resetting/settings_help.html'), name='reset-help'),
     
 ]
 

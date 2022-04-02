@@ -1,0 +1,39 @@
+{
+  "banks": [
+    "Access",
+    "Wema",
+    "UBA",
+    "Union",
+    "Sterling",
+    "First Bank",
+    "GTB",
+    "FCMB",
+    "Heritage",
+    "Diamond"
+  ],
+  "positions": [
+    "MD",
+    "GSM",
+    "SCM",
+    "Accountant",
+    "Accounts Clerk",
+    "Sales Clerk",
+    "Stock-Keeper",
+    "Store-Keeper"
+  ],
+  "branches": [
+    "Badagry",
+    "Lagos Island",
+    "Vino",
+    "Stardom",
+    "Genesis",
+    "FG"
+  ],
+  "departments": [
+    "Sales",
+    "Admin",
+    "Marketing",
+    "Human Resources",
+    "Accounts"
+  ]
+}

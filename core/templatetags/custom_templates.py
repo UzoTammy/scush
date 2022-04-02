@@ -9,9 +9,11 @@ register = template.Library()
 @register.filter(name='zeropadding')
 @stringfilter
 def zero_padding(value, n):
-    if value.isdigit():
-        return value.zfill(n)
-    return value
+    try:
+        if value.isdigit():
+            return value.zfill(n)
+    except:
+        return None
 
 
 @register.filter(name='addsep')

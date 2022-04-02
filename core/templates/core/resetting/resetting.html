@@ -1,0 +1,137 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="section mr-2">
+        <div class="p-3">
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-dark">Settings</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3 bg-dark">
+                    <ul class="list-group list-group-flush">
+                        <!--Choices-->
+                        <li class="list-group-item">
+                            <div class="row mb-1">
+                                <a class="dropdown-item"
+                                    data-toggle="modal"
+                                    data-target="#choiceModal"
+                                    href="#">
+                                    Choices
+                                </a>
+                            </div>
+                        </li>
+                        <!-- Help Guide -->
+                        <li class="list-group-item">
+                            <a href="{% url 'reset-help' %}"><i class="fa fa-close"></i> Help</a>
+                        </li>
+                            <!--Return Home-->
+                        <li class="list-group-item">
+                            <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
+                        </li>
+                    </ul>
+            </div>
+            <div class="col-6 ml-3 shadow-lg">
+                <h3 class="mb-3">{{group}} {{title}}</h3>
+                {% if title == '- Add' %}
+                <form action="." method="post">
+                    {% csrf_token %}
+                    <fieldset>
+                        {{form|crispy}}
+                    </fieldset>
+                    <div class="text-right mb-3">
+                        <button class="btn btn-outline-primary" type="submit">Add</button>
+                        <a class="btn btn-outline-dark" href="{% url 'resets' 'reset' %}">Cancel</a>
+                    </div>
+                </form>
+                {% elif title == '- Edit' %}
+                <form action="." method="post">
+                    {% csrf_token %}
+                    <fieldset>
+                        {{form|crispy}}
+                    </fieldset>
+                    <div class="text-right mb-3">
+                        <button class="btn btn-outline-primary" type="submit">Edit</button>
+                        <a class="btn btn-outline-dark" href="{% url 'resets' 'reset' %}">Cancel</a>
+                    </div>
+                </form>
+                {% elif title == '- Delete' %}
+                <form action="." method="post">
+                    {% csrf_token %}
+                    <fieldset>
+                        {{form|crispy}}
+                    </fieldset>
+                    <div class="text-right mb-3">
+                        
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <a class="btn btn-outline-dark" href="{% url 'resets' 'reset' %}">Cancel</a>
+                    </div>
+                </form>
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+<!--Database Field Choice - Add-->
+<div class="modal fade"
+     id="choiceModal"
+     tabindex="-1"
+     aria-labelledby="banks"
+     aria-hidden="true">
+    
+    <div class="modal-dialog">
+        <div class="modal-content bg-secondary text-white">
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="banks">
+                    <span class="text-warning">Select Action To Take</span> 
+                </h5>
+                <button type="button"
+                        class="btn-close"
+                        data-dismiss="modal"
+                        aria-label="Close">
+                    <i class="fa fa-close"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'resets' 'choices' %}">
+                    <div class="row">
+                        <div class="col text-center">
+                            <div class="form-group">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="choiceType" id="inlineRadio1" value="Add" checked>
+                                    <label class="form-check-label" for="inlineRadio1">Add</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="choiceType" id="inlineRadio2" value="Edit">
+                                    <label class="form-check-label" for="inlineRadio2">Edit</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="choiceType" id="inlineRadio3" value="Delete">
+                                    <label class="form-check-label" for="inlineRadio3">Delete</label>
+                                </div>
+                            </div>
+                        </div>  
+                    </div>
+                    <div class="modal-footer">
+                        <input value="Continue" type="submit" class="btn btn-primary">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-dismiss="modal">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

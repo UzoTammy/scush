@@ -59,7 +59,7 @@ class ApplyListViewPending(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context['employed'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1, status=True).count()
         context['rejected'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1, status=False).count()
         context['pending'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1, status=None).count()
-        
+        context['year'] = str(datetime.datetime.today().year - 1)
         return context
 
 

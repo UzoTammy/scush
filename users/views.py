@@ -1,11 +1,12 @@
+import json
 from django.shortcuts import render, redirect
-from .forms import UserRegisterForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .forms import UserUpdateForm, ProfileUpdateForm
-import json
 from django.views.generic import ListView
 from django.contrib.auth.models import User
+from django.conf import settings
+from .forms import UserRegisterForm
+from .forms import UserUpdateForm, ProfileUpdateForm
 
 
 def allow_admin(user):
@@ -63,8 +64,10 @@ def profile(request):
 
 @login_required
 def add_choice(request):
-    with open('extrafiles/choices.json') as rf:
+    base_root = settings.BASE_DIR
+    with open(base_root / 'json' / 'choices.json') as rf:
         content = json.load(rf)
+
     if request.GET['choiceValue'] != '':
         if request.GET['choiceType'] == 'bank':
             banks = content['banks']
@@ -83,7 +86,7 @@ def add_choice(request):
             positions.append(request.GET['choiceValue'])
             content['positions'] = positions
 
-        with open('extrafiles/choices.json', 'w') as wf:
+        with open(base_root / 'json' / 'choices.json', 'w') as wf:
             json.dump(content, wf, indent=2)
     else:
         messages.info(request, 'no choice value to add')

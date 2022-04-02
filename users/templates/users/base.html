@@ -182,15 +182,20 @@
                 <a class="nav-link active text-light" href="{% url 'delivery-home' %}">
                     <i class="fa fa-truck text-white"></i> Delivery</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link active text-light" href="{% url 'resets' 'reset' %}">
+                    <i class="fa fa-gears text-white"></i> Settings</a>
+            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
                    aria-haspopup="true"
                    aria-expanded="false">
                     <i class="fa fa-gears text-white"></i> Administration</a>
                 <div class="dropdown-menu">
-                    <!-- <a class="dropdown-item" href="{% url 'pk-reset' %}">Primary Key Reset</a> -->
+                    <a class="dropdown-item" href="#">Choices</a>
                     <ul class="list-group">
-                        <li class="list-group-item"><a class="dropdown-item"
+                        <li class="list-group-item">
+                            <a class="dropdown-item"
                             data-toggle="modal"
                             data-target="#choiceModalAdd"
                             href="#">Add Choice</a>
@@ -275,71 +280,6 @@
 {{development}}
 {% block content %} {% endblock %}
 
-<!--Database Field Choice - Add-->
-<div class="modal fade"
-     id="choiceModalAdd"
-     tabindex="-1"
-     aria-labelledby="banks"
-     aria-hidden="true">
-    
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark text-white">
-            <div class="modal-header">
-                <h5 class="modal-title"
-                    id="banks">
-                    Database Field Choice Value - <span class="text-warning">Add</span> 
-                </h5>
-                <button type="button"
-                        class="btn-close"
-                        data-dismiss="modal"
-                        aria-label="Close">
-                    <i class="fa fa-close"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form action="{% url 'xx' %}" method="GET">
-                    <div class="form-group">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="choiceType" id="inlineRadio1" value="bank" checked>
-                            <label class="form-check-label" for="inlineRadio1">Bank</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="choiceType" id="inlineRadio2" value="branch">
-                            <label class="form-check-label" for="inlineRadio2">Branch</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="choiceType" id="inlineRadio3" value="department">
-                            <label class="form-check-label" for="inlineRadio3">Department</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="choiceType" id="inlineRadio4" value="position">
-                            <label class="form-check-label" for="inlineRadio4">Position</label>
-                        </div>
-                    </div>
-                    <div class="form-group mt-3">
-                        <label class="text-primary"
-                               for="choiceValue">Choice Value</label>
-                        <input id="choiceValue"
-                               class="form-control"
-                               name="choiceValue"
-                               placeholder=""
-                               type="text">
-                    </div>
-                    <div class="modal-footer">
-                        <!--          <a type="submit" href="#" class="btn btn-primary">OK</a>-->
-                        <input value="Add" type="submit" class="btn btn-primary">
-                        <button type="button"
-                                class="btn btn-secondary"
-                                data-dismiss="modal">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-</div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
     integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

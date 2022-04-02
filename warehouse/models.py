@@ -63,15 +63,16 @@ class Renewal(models.Model):
     def __str__(self):
         return f'{self.store.name}-{self.date}'
 
+
 class BankAccount(models.Model):
 
     root_dir = settings.BASE_DIR #Path(__file__).resolve().parent.parent
     
-    with open(root_dir / 'json' / 'choices.json') as rf:
+    with open(root_dir /'core'/'static'/ 'json' / 'choices.json') as rf:
         content = json.load(rf)
     banks = [(bank, bank) for bank in content['banks']]
 
     store = models.OneToOneField(Stores, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     account_number = models.CharField(max_length=10)
-    bank = models.CharField(max_length=10, choices=banks)
+    bank = models.CharField(max_length=30, choices=banks)
