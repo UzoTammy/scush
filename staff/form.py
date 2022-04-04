@@ -3,9 +3,9 @@ import datetime
 from django.forms import ModelForm
 from django import forms
 from django.forms.widgets import DateTimeInput
+from django.shortcuts import get_object_or_404
 from .models import CreditNote, DebitNote, Employee, RequestPermission
 from core.models import JsonDataset
-
 
 
 class CreditForm(ModelForm):
@@ -24,7 +24,7 @@ class DebitForm(ModelForm):
 class EmployeeForm(ModelForm):
 
     """Get the specific record from database for this form"""
-    content = JsonDataset.objects.get(pk=1).dataset
+    content = get_object_or_404(JsonDataset, pk=1).dataset
 
     BANKS = sorted(list((i, i) for i in content['Banks'])) if content['Banks'] else [('', '-----')] 
     BRANCHES = sorted(list((i, i) for i in content['Branches'])) if content['Branches'] else [('', '-----')]

@@ -1,6 +1,7 @@
 import calendar
 import datetime
 from django.db import models
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.urls import reverse
 from djmoney.money import Money
@@ -166,7 +167,7 @@ class Payroll(models.Model):
 class Reassign(models.Model):
     
     """Get the specific record from database for this form"""
-    content = JsonDataset.objects.get(pk=1).dataset
+    content = get_object_or_404(JsonDataset, pk=1).dataset
 
     BANKS = sorted(list((i, i) for i in content['Banks'])) if content['Banks'] else [('', '-----')] 
     BRANCHES = sorted(list((i, i) for i in content['Branches'])) if content['Branches'] else [('', '-----')]

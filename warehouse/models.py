@@ -1,4 +1,5 @@
 import datetime
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.db import models
 from djmoney.models.fields import MoneyField
@@ -65,7 +66,7 @@ class Renewal(models.Model):
 
 class BankAccount(models.Model):
 
-    json_data = JsonDataset.objects.get(pk=1).dataset
+    json_data = get_object_or_404(JsonDataset, pk=1).dataset
 
     banks = list((bank, bank) for bank in json_data['Banks']) if json_data['Banks'] else [('', '------')]
 
