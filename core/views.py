@@ -1,12 +1,10 @@
 
 import datetime
 import calendar
-import json
-from django.conf import settings
-from django.http import HttpResponse
-from django.shortcuts import redirect, render
-from django.views.generic import View, TemplateView
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.generic import (View, TemplateView, ListView, CreateView, DetailView, UpdateView)
 from django.db.models import F, Sum 
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from staff.models import Employee, Payroll, EmployeeBalance
 from stock.models import Product
 from customer.models import CustomerProfile
@@ -16,19 +14,7 @@ from trade.models import TradeDaily, TradeMonthly
 from warehouse.models import Stores, Renewal
 from ozone import mytools
 from .forms import *
-from django.contrib import messages
-
-
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
-# formatter = logging.Formatter('%(name)s:%(levelname)s %(asctime)s %(message)s', datefmt='%d-%b-%Y @ %I:%M %p')
-
-# root_dir = settings.BASE_DIR  #Path(__file__).resolve().parent.parent
-# file_handler = logging.FileHandler(root_dir / 'logs' / 'views.log')
-
-# file_handler.setFormatter(formatter)
-# logger.addHandler(file_handler)
-
+from .models import JsonDataset
 
 
 class HomeView(TemplateView):
@@ -185,72 +171,71 @@ class DashBoardView(TemplateView):
                 context['msg'] =  'RNR - Record Not Ready'         
                 
         return context
+    
+
+class JsonListView(LoginRequiredMixin, ListView):
+    model = JsonDataset
+
+class JsonDetailView(LoginRequiredMixin, DetailView):
+    model = JsonDataset
+
+class JsonCreateView(LoginRequiredMixin, CreateView):
+    model = JsonDataset
+    fields = '__all__'
+
+class JsonUpdateView(LoginRequiredMixin, UpdateView):
+    model = JsonDataset
+    fields = '__all__'
+
+class JsonCategoryKeyView(LoginRequiredMixin, DetailView):
+    model = JsonDataset
+    template_name='core/resetting/json_cat_key.html'
 
 
-class ResetView(TemplateView):
-    file_path = settings.BASE_DIR /'core'/ 'static'/ 'json' / 'choices.json'
-    CT = ''
-
+class JsonCategoryKeyValueCreateView(LoginRequiredMixin, View):
+    
     def get(self, request, *args, **kwargs):
-        context = dict()
-        if kwargs['group'] == 'choices':
-            with open(self.file_path) as rf:
-                content = json.load(rf)
-            context['content'] = content
-            context['group'] = kwargs['group'].title
-            if request.GET['choiceType'] == 'Add':
-                context['form'] = AddChoicesForm()
-                context['title'] = '- Add'
-                
-            elif request.GET['choiceType'] == 'Edit':
-                context['form'] = EditChoicesForm()
-                context['title'] = '- Edit'
-            
-            elif request.GET['choiceType'] == 'Delete':
-                context['form'] = DeleteChoicesForm()
-                context['title'] = '- Delete'
-            
-            global CT
-            CT = request.GET['choiceType']
-        else:
-            context = {
-                
-            }
-        return render(request, 'core/resetting/resetting.html', context)
-
-    
-    def post(self, request, *args, **kwargs):
-        try:
-            with open(self.file_path) as rf:
-                content = json.load(rf)
-            if CT == 'Add':
-                if request.POST['input_value'] in content[request.POST['select']]:
-                    messages.warning(request, f"{request.POST['input_value'].upper()} already in {request.POST['select'].upper()} database")
-                    return redirect('resets', kwargs['group'])
-                content[request.POST['select']].append(request.POST['input_value'])
-                messages.success(request, f"{request.POST['input_value'].upper()} added to {request.POST['select'].upper()} successfully !!!")
-            elif CT == 'Edit':
-                old_value = request.POST['select'].split('-')[1]
-                new_value = request.POST['input_value']
-                key = request.POST['select'].split('-')[0]
-                I = content[key].index(old_value)
-                content[key].insert(I, new_value)
-                content[key].remove(old_value)
-                messages.success(request, f"{new_value.upper()} replaced {old_value.upper()} in {key} dataset successfully !!!")
-            elif CT == 'Delete': # This is for delete
-                value = request.POST['select'].split('-')[1]
-                key = request.POST['select'].split('-')[0]
-                
-                content[key].remove(value)
-                if content[key]:
-                    messages.success(request, f"{value.upper()} in {key.upper()} Dataset Deleted !!!")
-                else:
-                    del content[key]
-                    messages.warning(request, f"{value.upper()} and {key.upper()} Dataset Deleted")
-            with open(self.file_path, 'w') as wf:
-                json.dump(content, wf, indent=2)        
-        except Exception as err:
-            messages.error(request, f"Record Alteration Failed Due To ({err}) Error")
+        obj = get_object_or_404(JsonDataset, pk=kwargs['id'])
         
-        return redirect('resets', 'reset')    
+        context = {
+            'title': f"{obj}-{kwargs['key']}-Add New Value",
+            'form': JsonDatasetForm()
+        }
+        return render(request, 'core/resetting/json_new_value.html', context)
+
+    def post(self, request, *args, **kwargs):
+        obj = get_object_or_404(JsonDataset, pk=kwargs['id'])
+        dict_obj = obj.dataset
+        list_obj = dict_obj[kwargs['key']]
+        list_obj.append(request.POST['input_value'])
+
+        dict_obj[kwargs['key']] = list_obj
+        obj.dataset = dict_obj
+        obj.save()
+
+        return redirect('json-cat-key', kwargs['id'], kwargs['key'])
     
+class JsonCategoryKeyValueUpdateView(LoginRequiredMixin, View):
+    
+    def get(self, request, *args, **kwargs):
+        obj = get_object_or_404(JsonDataset, pk=kwargs['id'])
+        
+        context = {
+            'title': f"{obj}-{kwargs['key']}-{kwargs['value']}",
+            'form': EditJsonDatasetForm()
+        }
+        return render(request, 'core/resetting/json_cat_key_value.html', context)
+
+    def post(self, request, *args, **kwargs):
+        obj = get_object_or_404(JsonDataset, pk=kwargs['id'])
+        dict_obj = obj.dataset
+        list_obj = dict_obj[kwargs['key']]
+        I = list_obj.index(kwargs['value'])
+        list_obj.remove(kwargs['value'])
+        list_obj.insert(I, request.POST['input_value'])
+
+        dict_obj[kwargs['key']] = list_obj
+        obj.dataset = dict_obj
+        obj.save()
+
+        return redirect('json-cat-key', kwargs['id'], kwargs['key'])

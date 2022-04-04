@@ -1,0 +1,60 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container mt-2">
+    <div class="row">
+        <div class="col">
+            <h3>Settings</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table" data-toggle="table">
+                <thead class="bg-dark text-white">
+                    <tr class="text-center">
+                        <th>Name</th>
+                        <th>Dataset</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    {% for object in object_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'json-detail' object.pk %}">{{object}}</a>
+                        </td>
+                        <td>
+                            <table class="table table-borderless">
+                                <thead class="bg-primary text-white">
+                                    <tr class="text-center">
+                                        <th>Title</th>
+                                        <th>List Items</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for key, value in object.dataset.items%}
+                                    <tr class="text-center">
+                                        <td><a href="{% url 'json-cat-key' object.pk key %}">{{key}}</a></td>
+                                        <td>
+                                            {% for item in value %}
+                                            {{item}}{% if not forloop.last %}<span class="text-danger">, </span>{% endif %}
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row mt-3 mb-3">
+        <div class="col text-right">
+            <a class="btn btn-dark" href="{% url 'home' %}">Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

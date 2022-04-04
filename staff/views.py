@@ -5,7 +5,6 @@ from survey.models import Question
 from users.models import Profile
 from apply.models import Applicant
 from .models import *
-from .models import POSITIONS, BRANCHES
 from .form import *
 from .form import DebitForm, CreditForm, RequestPermissionForm
 from django.shortcuts import render, reverse, redirect, get_object_or_404

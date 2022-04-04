@@ -1,0 +1,30 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-3">
+        <div class="col">
+            <h3>Settings-{{object}}</h3>
+            <hr>
+            <h5>Name: {{object.name}}</h5>
+
+            <ul class="list-group">
+                List items:
+                {% for key, value in object.dataset.items %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  {{key}}:
+                  <span class="list-group-item"> {{value}}</span>
+                </li>
+                {% endfor %}
+                
+            </ul>
+        </div>
+    </div>
+    <div class="row mt-3 mb-3">
+        <div class="col text-right">
+            <a class="btn btn-primary" href="{% url 'json-update' object.pk %}">Edit</a>
+            <a class="btn btn-dark" href="{% url 'json-list' %}">Return</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

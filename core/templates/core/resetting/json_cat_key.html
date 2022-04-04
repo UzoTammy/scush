@@ -1,0 +1,31 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row">
+        <div class="col shadow-lg">
+            <h3>{{object.name}}-{{view.kwargs.key}}</h3>
+            <p> <span class="text-info">List of {{view.kwargs.key}}:</span>   
+            {% for key, values in object.dataset.items %}
+                {% if key == view.kwargs.key %}
+                {% for value in values %}
+                   <a href="{% url 'json-cat-key-value' object.pk key value %}">{{value}}</a><span>{% if not forloop.last %}, {% endif %}</span>
+                {% endfor %}
+                {% endif %}
+            {% endfor %}
+            </p>
+            <div class="row">
+                <div class="col text-right">
+                    <a class="btn btn-primary" href="{% url 'json-cat-key-new' object.pk view.kwargs.key %}">Add</a>
+                    <a class="btn btn-dark" href="{% url 'json-list' %}">Return</a>
+                </div>
+            </div>
+
+            <p class="text-muted">Help Note: To Edit any item of the dataset above, click on the item and change to desired value</p>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

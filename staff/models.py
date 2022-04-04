@@ -1,31 +1,15 @@
 import calendar
 import datetime
-import json
 from django.db import models
 from django.utils import timezone
 from django.urls import reverse
 from djmoney.money import Money
 from django.contrib.auth.models import User
-from django.conf import settings
 from djmoney.models.fields import MoneyField
 from djmoney.models.validators import MaxMoneyValidator, MinMoneyValidator
 from ozone import mytools
 from apply.models import Applicant
-
-
-root_dir = settings.BASE_DIR #Path(__file__).resolve().parent.parent
-
-with open(root_dir / 'core'/'static'/ 'json' / 'choices.json') as jsf:
-        content = json.load(jsf)
-
-if content['banks']:
-    BANKS = sorted(list((i, i) for i in content['banks']))
-if content['branches']:
-    BRANCHES = sorted(list((i, i) for i in content['branches']))
-if content['positions']:
-    POSITIONS = sorted(list((i, i) for i in content['positions']))
-if content['departments']:
-    DEPARTMENTS = sorted(list((i, i) for i in content['departments']))
+from core.models import JsonDataset
 
 
 class ActiveEmployeeManager(models.Manager):
@@ -180,6 +164,15 @@ class Payroll(models.Model):
 
 
 class Reassign(models.Model):
+    
+    """Get the specific record from database for this form"""
+    content = JsonDataset.objects.get(pk=1).dataset
+
+    BANKS = sorted(list((i, i) for i in content['Banks'])) if content['Banks'] else [('', '-----')] 
+    BRANCHES = sorted(list((i, i) for i in content['Branches'])) if content['Branches'] else [('', '-----')]
+    POSITIONS = sorted(list((i, i) for i in content['Positions'])) if content['Positions'] else [('', '-----')]
+    DEPARTMENTS = sorted(list((i, i) for i in content['Departments'])) if content['Departments'] else [('', '-----')]
+
     staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
     reassign_type = models.CharField(max_length=10, default='Temporal',
                                      choices=[('T', 'Temporal'),

@@ -1,9 +1,8 @@
-from django import forms
-from django.contrib.auth.models import User
-from django.forms import fields
-from .models import Profile
-from django.contrib.auth.forms import UserCreationForm
 import datetime
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from django import forms
+from .models import Profile
 from apply.models import Applicant
 
 
@@ -86,3 +85,4 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['staff']
+

@@ -3,9 +3,7 @@ from django.urls import reverse
 from django.db import models
 from djmoney.models.fields import MoneyField
 from django.utils import timezone
-from django.conf import settings
-import json
-
+from core.models import JsonDataset
 
 
 
@@ -66,11 +64,9 @@ class Renewal(models.Model):
 
 class BankAccount(models.Model):
 
-    root_dir = settings.BASE_DIR #Path(__file__).resolve().parent.parent
-    
-    with open(root_dir /'core'/'static'/ 'json' / 'choices.json') as rf:
-        content = json.load(rf)
-    banks = [(bank, bank) for bank in content['banks']]
+    json_data = JsonDataset.objects.get(pk=1).dataset
+
+    banks = list((bank, bank) for bank in json_data['Banks']) if json_data['Banks'] else [('', '------')]
 
     store = models.OneToOneField(Stores, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)

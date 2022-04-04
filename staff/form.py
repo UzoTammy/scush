@@ -1,10 +1,10 @@
 import json
 import datetime
-from django.conf import settings
 from django.forms import ModelForm
 from django import forms
 from django.forms.widgets import DateTimeInput
 from .models import CreditNote, DebitNote, Employee, RequestPermission
+from core.models import JsonDataset
 
 
 
@@ -22,24 +22,18 @@ class DebitForm(ModelForm):
 
 
 class EmployeeForm(ModelForm):
-    root_dir = settings.BASE_DIR #Path(__file__).resolve().parent.parent
 
-    with open(root_dir /'core'/'static'/ 'json' / 'choices.json') as jsf:
-        content = json.load(jsf)
+    """Get the specific record from database for this form"""
+    content = JsonDataset.objects.get(pk=1).dataset
 
-    if content['banks']:
-        BANKS = sorted(list((i, i) for i in content['banks']))
-    if content['branches']:
-        BRANCHES = sorted(list((i, i) for i in content['branches']))
-    if content['positions']:
-        POSITIONS = sorted(list((i, i) for i in content['positions']))
-    if content['departments']:
-        DEPARTMENTS = sorted(list((i, i) for i in content['departments']))
-
-    BRANCHES.append(('', '----------'))
-    POSITIONS.append(('', '----------'))
-    DEPARTMENTS.append(('', '----------'))
-
+    BANKS = sorted(list((i, i) for i in content['Banks'])) if content['Banks'] else [('', '-----')] 
+    BRANCHES = sorted(list((i, i) for i in content['Branches'])) if content['Branches'] else [('', '-----')]
+    POSITIONS = sorted(list((i, i) for i in content['Positions'])) if content['Positions'] else [('', '-----')]
+    DEPARTMENTS = sorted(list((i, i) for i in content['Departments'])) if content['Departments'] else [('', '-----')]
+    
+    BRANCHES.insert(0, ('', '----------'))
+    POSITIONS.insert(0, ('', '----------'))
+    DEPARTMENTS.insert(0, ('', '----------'))
 
     banker = forms.ChoiceField(choices=BANKS, initial='UBA')
     branch = forms.ChoiceField(choices=BRANCHES, required=False)
