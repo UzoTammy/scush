@@ -47,6 +47,7 @@ class Stores(models.Model):
         return reverse('warehouse-detail', kwargs={'pk': self.pk})
 
 
+
 class Renewal(models.Model):
     store = models.ForeignKey(Stores, on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now)
