@@ -3,7 +3,7 @@ from django.urls import reverse
 
 class JsonDataset(models.Model):
     name = models.CharField(max_length=30)
-    dataset = models.JSONField(verbose_name="Json Data Format")
+    dataset = models.JSONField(default=dict, verbose_name="Json Format")
 
 
     def __str__(self) -> str:

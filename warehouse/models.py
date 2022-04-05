@@ -1,7 +1,7 @@
 import datetime
-from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.db import models
+from django.shortcuts import get_object_or_404
 from djmoney.models.fields import MoneyField
 from django.utils import timezone
 from core.models import JsonDataset
@@ -46,7 +46,6 @@ class Stores(models.Model):
     def get_absolute_url(self):
 
         return reverse('warehouse-detail', kwargs={'pk': self.pk})
-
 
 
 class Renewal(models.Model):
