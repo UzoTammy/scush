@@ -65,10 +65,10 @@ class Renewal(models.Model):
 
 class BankAccount(models.Model):
 
-    # json_data = get_object_or_404(JsonDataset, pk=1).dataset
+    json_data = get_object_or_404(JsonDataset, pk=1).dataset
 
-    # banks = list((bank, bank) for bank in json_data['Banks']) if json_data['Banks'] else [('', '------')]
-    banks = [('UBA', 'UBA')]
+    banks = list((bank, bank) for bank in json_data['Banks']) if json_data['Banks'] else [('', '------')]
+    
     store = models.OneToOneField(Stores, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     account_number = models.CharField(max_length=10)
