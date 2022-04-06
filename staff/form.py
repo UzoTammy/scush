@@ -24,7 +24,7 @@ class DebitForm(ModelForm):
 class EmployeeForm(ModelForm):
 
     """Get the specific record from database for this form"""
-    content = get_object_or_404(JsonDataset, pk=1).dataset
+    # content = get_object_or_404(JsonDataset, pk=1).dataset
 
     # BANKS = sorted(list((i, i) for i in content['Banks'])) if content['Banks'] else [('', '-----')] 
     # BRANCHES = sorted(list((i, i) for i in content['Branches'])) if content['Branches'] else [('', '-----')]
