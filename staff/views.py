@@ -4,9 +4,13 @@ import datetime
 from survey.models import Question
 from users.models import Profile
 from apply.models import Applicant
-from .models import *
-from .form import *
-from .form import DebitForm, CreditForm, RequestPermissionForm
+from .models import (
+    Employee, EmployeeBalance, CreditNote, DebitNote, Payroll, 
+    Reassign, Terminate, Suspend, Permit,SalaryChange, 
+    RequestPermission
+)
+from .form import (DebitForm, CreditForm, RequestPermissionForm, EmployeeForm)
+from django.contrib.auth.models import User
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect

@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 from django.urls import reverse
-from stock.models import Product
 
 
 class DeliveryNote(models.Model):

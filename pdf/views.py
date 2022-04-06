@@ -23,7 +23,7 @@ from django.utils import timezone
 
 class Ozone:
     def logo():
-        path = os.path.join(settings.BASE_DIR, 'customer/static/customer/logo.png')
+        path = os.path.join(settings.BASE_DIR, 'core/static/customer/logo.png')
         with open(path, 'rb') as rf:
             content = rf.read()
         buf = BytesIO(content)

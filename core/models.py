@@ -2,7 +2,7 @@ from django.db import models
 from django.urls import reverse
 
 class JsonDataset(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=50)
     dataset = models.JSONField(default=dict, verbose_name="Json Format")
 
 
