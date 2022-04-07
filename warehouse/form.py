@@ -20,7 +20,7 @@ class StoreForm(forms.ModelForm):
 class BankAccountForm(forms.ModelForm):
     json_data = get_object_or_404(JsonDataset, pk=1).dataset
 
-    banks = list((bank, bank) for bank in json_data['Banks']) if json_data['Banks'] else [(None, '------')]
+    banks = list((bank, bank) for bank in json_data['banks']) if json_data['banks'] else [(None, '------')]
 
     bank = forms.ChoiceField(choices=banks)
     

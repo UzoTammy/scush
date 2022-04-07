@@ -26,14 +26,14 @@ class EmployeeForm(ModelForm):
     """Get the specific record from database for this form"""
     content = get_object_or_404(JsonDataset, pk=1).dataset
 
-    BANKS = sorted(list((i, i) for i in content['Banks'])) if content['Banks'] else [('', '-----')] 
-    BRANCHES = sorted(list((i, i) for i in content['Branches'])) if content['Branches'] else [('', '-----')]
-    POSITIONS = sorted(list((i, i) for i in content['Positions'])) if content['Positions'] else [('', '-----')]
-    DEPARTMENTS = sorted(list((i, i) for i in content['Departments'])) if content['Departments'] else [('', '-----')]
+    BANKS = sorted(list((i, i) for i in content['banks'])) if content['banks'] else [('', '-----')] 
+    BRANCHES = sorted(list((i, i) for i in content['branches'])) if content['branches'] else [('', '-----')]
+    POSITIONS = sorted(list((i, i) for i in content['positions'])) if content['positions'] else [('', '-----')]
+    DEPARTMENTS = sorted(list((i, i) for i in content['departments'])) if content['departments'] else [('', '-----')]
     
-    BRANCHES.insert(0, ('', '----------'))
-    POSITIONS.insert(0, ('', '----------'))
-    DEPARTMENTS.insert(0, ('', '----------'))
+    BRANCHES.insert(0, (None, '----------'))
+    POSITIONS.insert(0, (None, '----------'))
+    DEPARTMENTS.insert(0, (None, '----------'))
 
     banker = forms.ChoiceField(choices=BANKS, initial='UBA')
     branch = forms.ChoiceField(choices=BRANCHES, required=False)

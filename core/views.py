@@ -191,7 +191,6 @@ class JsonCategoryKeyView(LoginRequiredMixin, DetailView):
     model = JsonDataset
     template_name='core/resetting/json_cat_key.html'
 
-
 class JsonCategoryKeyValueCreateView(LoginRequiredMixin, View):
     
     def get(self, request, *args, **kwargs):

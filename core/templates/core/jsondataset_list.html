@@ -34,7 +34,7 @@
                                 <tbody>
                                     {% for key, value in object.dataset.items%}
                                     <tr class="text-center">
-                                        <td><a href="{% url 'json-cat-key' object.pk key %}">{{key}}</a></td>
+                                        <td><a href="{% url 'json-cat-key' object.pk key %}">{{key|title}}</a></td>
                                         <td>
                                             {% for item in value %}
                                             {{item}}{% if not forloop.last %}<span class="text-danger">, </span>{% endif %}
