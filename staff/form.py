@@ -25,12 +25,23 @@ class EmployeeForm(ModelForm):
 
     """Get the specific record from database for this form"""
     content = get_object_or_404(JsonDataset, pk=1).dataset
+    try:
+        BANKS = sorted(list((i, i) for i in content['banks'])) if content['banks'] else [('', '-----')] 
+    except KeyError as err:
+        BANKS = [('UBA', 'UBA')]
+    try:
+        BRANCHES = sorted(list((i, i) for i in content['branches'])) if content['branches'] else [('', '-----')]
+    except KeyError as err:
+        BRANCHES = [('FG', 'FG')]
+    try:    
+        POSITIONS = sorted(list((i, i) for i in content['positions'])) if content['positions'] else [('', '-----')]
+    except KeyError as err:
+        POSITIONS = [('GSM', 'GSM')]
+    try:        
+        DEPARTMENTS = sorted(list((i, i) for i in content['departments'])) if content['departments'] else [('', '-----')]
+    except KeyError as err:
+        DEPARTMENTS = [('Sales', 'Sales')]
 
-    BANKS = sorted(list((i, i) for i in content['banks'])) if content['banks'] else [('', '-----')] 
-    BRANCHES = sorted(list((i, i) for i in content['branches'])) if content['branches'] else [('', '-----')]
-    POSITIONS = sorted(list((i, i) for i in content['positions'])) if content['positions'] else [('', '-----')]
-    DEPARTMENTS = sorted(list((i, i) for i in content['departments'])) if content['departments'] else [('', '-----')]
-    
     BRANCHES.insert(0, (None, '----------'))
     POSITIONS.insert(0, (None, '----------'))
     DEPARTMENTS.insert(0, (None, '----------'))
