@@ -215,6 +215,7 @@ class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class BankAccountCreate(CreateView):
     form_class = BankAccountForm
+    template_name = 'warehouse/bankaccount_form.html'
     success_url = reverse_lazy('warehouse-home')
     
     def get_context_data(self, **kwargs):

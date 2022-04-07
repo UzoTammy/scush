@@ -179,17 +179,21 @@ class JsonListView(LoginRequiredMixin, ListView):
 class JsonDetailView(LoginRequiredMixin, DetailView):
     model = JsonDataset
 
+
 class JsonCreateView(LoginRequiredMixin, CreateView):
     model = JsonDataset
     fields = '__all__'
+
 
 class JsonUpdateView(LoginRequiredMixin, UpdateView):
     model = JsonDataset
     fields = '__all__'
 
+
 class JsonCategoryKeyView(LoginRequiredMixin, DetailView):
     model = JsonDataset
     template_name='core/resetting/json_cat_key.html'
+
 
 class JsonCategoryKeyValueCreateView(LoginRequiredMixin, View):
     
@@ -198,8 +202,10 @@ class JsonCategoryKeyValueCreateView(LoginRequiredMixin, View):
         
         context = {
             'title': f"{obj}-{kwargs['key']}-Add New Value",
-            'form': JsonDatasetForm()
+            'form': JsonDatasetForm(),
+            'vars': {'pk': obj.pk, 'key': kwargs['key']}
         }
+        
         return render(request, 'core/resetting/json_new_value.html', context)
 
     def post(self, request, *args, **kwargs):
@@ -213,7 +219,8 @@ class JsonCategoryKeyValueCreateView(LoginRequiredMixin, View):
         obj.save()
 
         return redirect('json-cat-key', kwargs['id'], kwargs['key'])
-    
+
+
 class JsonCategoryKeyValueUpdateView(LoginRequiredMixin, View):
     
     def get(self, request, *args, **kwargs):
@@ -221,7 +228,8 @@ class JsonCategoryKeyValueUpdateView(LoginRequiredMixin, View):
         
         context = {
             'title': f"{obj}-{kwargs['key']}-{kwargs['value']}",
-            'form': JsonDatasetForm() #EditJsonDatasetForm()
+            'form': JsonDatasetForm(), #EditJsonDatasetForm()
+            'vars': {'pk': obj.pk, 'key': kwargs['key']}
         }
         return render(request, 'core/resetting/json_cat_key_value.html', context)
 
