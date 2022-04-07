@@ -1,6 +1,4 @@
-import json
 import datetime
-from django.forms import ModelForm
 from django import forms
 from django.forms.widgets import DateTimeInput
 from django.shortcuts import get_object_or_404
@@ -8,43 +6,43 @@ from .models import CreditNote, DebitNote, Employee, RequestPermission, Reassign
 from core.models import JsonDataset
 
 
-class CreditForm(ModelForm):
+class CreditForm(forms.ModelForm):
     class Meta:
         model = CreditNote
         exclude = ('status',)
 
 
-class DebitForm(ModelForm):
+class DebitForm(forms.ModelForm):
 
     class Meta:
         model = DebitNote
         exclude = ('status',)
 
 
-class EmployeeForm(ModelForm):
+class EmployeeForm(forms.ModelForm):
 
     """Get the specific record from database for this form"""
     content = get_object_or_404(JsonDataset, pk=1).dataset
     try:
-        BANKS = sorted(list((i, i) for i in content['banks'])) if content['banks'] else [('', '-----')] 
-    except KeyError as err:
+        BANKS = sorted(list((i, i) for i in content['banks'])) if content['banks'] else [(None, '-----')] 
+    except KeyError:
         BANKS = [('UBA', 'UBA')]
     try:
-        BRANCHES = sorted(list((i, i) for i in content['branches'])) if content['branches'] else [('', '-----')]
-    except KeyError as err:
+        BRANCHES = sorted(list((i, i) for i in content['branches'])) if content['branches'] else [(None, '-----')]
+    except KeyError:
         BRANCHES = [('FG', 'FG')]
     try:    
-        POSITIONS = sorted(list((i, i) for i in content['positions'])) if content['positions'] else [('', '-----')]
-    except KeyError as err:
+        POSITIONS = sorted(list((i, i) for i in content['positions'])) if content['positions'] else [(None, '-----')]
+    except KeyError:
         POSITIONS = [('GSM', 'GSM')]
     try:        
-        DEPARTMENTS = sorted(list((i, i) for i in content['departments'])) if content['departments'] else [('', '-----')]
-    except KeyError as err:
+        DEPARTMENTS = sorted(list((i, i) for i in content['departments'])) if content['departments'] else [(None, '-----')]
+    except KeyError:
         DEPARTMENTS = [('Sales', 'Sales')]
 
-    BRANCHES.insert(0, (None, '----------'))
-    POSITIONS.insert(0, (None, '----------'))
-    DEPARTMENTS.insert(0, (None, '----------'))
+    BRANCHES.insert(0, (None, '--------'))
+    POSITIONS.insert(0, (None, '--------'))
+    DEPARTMENTS.insert(0, (None, '--------'))
 
     banker = forms.ChoiceField(choices=BANKS, initial='UBA')
     branch = forms.ChoiceField(choices=BRANCHES, required=False)
@@ -93,7 +91,7 @@ class DateTimeSelectorWidget(forms.MultiWidget):
         return f'{year}-{month}-{day} {hour}:{minute}'
 
 
-class RequestPermissionForm(ModelForm):
+class RequestPermissionForm(forms.ModelForm):
     start_date = forms.DateTimeField(widget=DateTimeInput(attrs={
         'class':'form-control col-6', 'type':'datetime-local'
     }))

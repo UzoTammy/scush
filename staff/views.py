@@ -417,8 +417,9 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         # context['balance_days'] = int(leave) - days_consumed
         
         json_dict = JsonDataset.objects.get(pk=1).dataset
-        context['positions'] = json_dict['Positions']
-        context['branches'] = json_dict['Branches']
+        
+        context['positions'] = json_dict['positions']
+        context['branches'] = json_dict['branches']
         
         context['reassigned'] = Reassign.objects.filter(staff_id=person)
         context['permissions'] = Permit.objects.filter(staff_id=person)
