@@ -1,6 +1,7 @@
 {% extends 'users/base.html' %}
 {% load static %}
 {% load custom_templates %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 <div class="container-fluid">
@@ -500,6 +501,13 @@
                     <form action="{% url 'employee-reassign' object.pk %}"
                           method="post">
                     {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col">
+                            {{form|crispy}}
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col">
                             <div class="form-group">

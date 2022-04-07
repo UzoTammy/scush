@@ -4,7 +4,7 @@ from django.forms import ModelForm
 from django import forms
 from django.forms.widgets import DateTimeInput
 from django.shortcuts import get_object_or_404
-from .models import CreditNote, DebitNote, Employee, RequestPermission
+from .models import CreditNote, DebitNote, Employee, RequestPermission, Reassign
 from core.models import JsonDataset
 
 
@@ -93,5 +93,7 @@ class RequestPermissionForm(ModelForm):
     class Meta:
         model = RequestPermission
         fields = ('staff', 'reason', 'start_date', 'resume_date')
+
     
-        
+    
+    

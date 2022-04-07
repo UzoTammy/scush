@@ -1,6 +1,7 @@
 import decimal
 import calendar
 import datetime
+from sre_constants import BRANCH
 from survey.models import Question
 from users.models import Profile
 from apply.models import Applicant
@@ -10,6 +11,7 @@ from .models import (
     RequestPermission
 )
 from .form import (DebitForm, CreditForm, RequestPermissionForm, EmployeeForm)
+from core.models import JsonDataset
 from django.contrib.auth.models import User
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
@@ -413,9 +415,11 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['consumed_days'] = consumed
         context['permit_count'] = 'None' if consumed == (0, 0) else permit.count()
         # context['balance_days'] = int(leave) - days_consumed
-        context['positions'] = (i[0] for i in POSITIONS)
-        context['branches'] = (i[0] for i in BRANCHES)
-
+        
+        json_dict = JsonDataset.objects.get(pk=1).dataset
+        context['positions'] = json_dict['Positions']
+        context['branches'] = json_dict['Branches']
+        
         context['reassigned'] = Reassign.objects.filter(staff_id=person)
         context['permissions'] = Permit.objects.filter(staff_id=person)
         context['suspensions'] = Suspend.objects.filter(staff_id=person)

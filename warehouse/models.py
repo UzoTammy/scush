@@ -1,10 +1,8 @@
 import datetime
 from django.urls import reverse
 from django.db import models
-from django.shortcuts import get_object_or_404
 from djmoney.models.fields import MoneyField
 from django.utils import timezone
-from core.models import JsonDataset
 
 
 
@@ -64,12 +62,7 @@ class Renewal(models.Model):
 
 
 class BankAccount(models.Model):
-
-    json_data = get_object_or_404(JsonDataset, pk=1).dataset
-
-    banks = list((bank, bank) for bank in json_data['Banks']) if json_data['Banks'] else [('', '------')]
-    
     store = models.OneToOneField(Stores, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     account_number = models.CharField(max_length=10)
-    bank = models.CharField(max_length=30, choices=banks)
+    bank = models.CharField(max_length=30)

@@ -166,19 +166,6 @@ class Payroll(models.Model):
 
 class Reassign(models.Model):
     
-    """Get the specific record from database for this form"""
-    content = get_object_or_404(JsonDataset, pk=1).dataset
-
-    BANKS = sorted(list((i, i) for i in content['Banks'])) if content['Banks'] else [('', '-----')] 
-    BRANCHES = sorted(list((i, i) for i in content['Branches'])) if content['Branches'] else [('', '-----')]
-    POSITIONS = sorted(list((i, i) for i in content['Positions'])) if content['Positions'] else [('', '-----')]
-    DEPARTMENTS = sorted(list((i, i) for i in content['Departments'])) if content['Departments'] else [('', '-----')]
-
-    POSITIONS = [('GSM', 'GSM')]
-    BRANCHES = [('FG', 'FG')]
-    BANKS = [('UBA', 'UBA')]
-    DEPARTMENTS = [('Sales', 'Sales')]
-
     staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
     reassign_type = models.CharField(max_length=10, default='Temporal',
                                      choices=[('T', 'Temporal'),
@@ -186,9 +173,9 @@ class Reassign(models.Model):
                                               ('C', 'Confirmed')]
                                      )
     from_position = models.CharField(max_length=30, null=True, blank=True)
-    to_position = models.CharField(max_length=30, choices=POSITIONS, null=True, blank=True)
+    to_position = models.CharField(max_length=30, null=True, blank=True)
     from_branch = models.CharField(max_length=30, null=True, blank=True)
-    to_branch = models.CharField(max_length=30, choices=BRANCHES, null=True, blank=True)
+    to_branch = models.CharField(max_length=30, null=True, blank=True)
     start_date = models.DateField(default=timezone.now)
     duration = models.SmallIntegerField(default=0)
     remark = models.CharField(max_length=100)

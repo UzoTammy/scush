@@ -1,11 +1,11 @@
-from dataclasses import field
-from .models import Stores
+from .models import Stores, BankAccount
+from core.models import JsonDataset
+from django.shortcuts import get_object_or_404
 from django import forms
-from django.forms import ModelForm
 import datetime
 
 
-class StoreForm(ModelForm):
+class StoreForm(forms.ModelForm):
     expiry_date = forms.DateField(
         widget=forms.DateInput(format='%d-%m-%Y',
                                attrs={'type': 'date',
@@ -14,4 +14,16 @@ class StoreForm(ModelForm):
 
     class Meta:
         model = Stores
+        fields = '__all__'
+
+
+class BankAccountForm(forms.ModelForm):
+    json_data = get_object_or_404(JsonDataset, pk=1).dataset
+
+    banks = list((bank, bank) for bank in json_data['Banks']) if json_data['Banks'] else [(None, '------')]
+
+    bank = forms.ChoiceField(choices=banks)
+    
+    class Meta:
+        model = BankAccount
         fields = '__all__'

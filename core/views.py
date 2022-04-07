@@ -13,7 +13,7 @@ from apply.models import Applicant
 from trade.models import TradeDaily, TradeMonthly
 from warehouse.models import Stores, Renewal
 from ozone import mytools
-from .forms import *
+from .forms import JsonDatasetForm
 from .models import JsonDataset
 
 
@@ -222,7 +222,7 @@ class JsonCategoryKeyValueUpdateView(LoginRequiredMixin, View):
         
         context = {
             'title': f"{obj}-{kwargs['key']}-{kwargs['value']}",
-            'form': EditJsonDatasetForm()
+            'form': JsonDatasetForm() #EditJsonDatasetForm()
         }
         return render(request, 'core/resetting/json_cat_key_value.html', context)
 

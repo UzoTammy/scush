@@ -4,7 +4,7 @@ from django.http.response import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import (View, TemplateView, ListView, CreateView, UpdateView, DetailView)
 from .models import Stores, Renewal, BankAccount
-from .form import StoreForm
+from .form import BankAccountForm, StoreForm
 from django.db.models import Sum
 from django.shortcuts import redirect
 from django.contrib import messages
@@ -214,10 +214,9 @@ class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 class BankAccountCreate(CreateView):
-    model = BankAccount
+    form_class = BankAccountForm
     success_url = reverse_lazy('warehouse-home')
-    fields = '__all__'
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Add'
