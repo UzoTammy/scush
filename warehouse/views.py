@@ -1,8 +1,8 @@
 import datetime
 import calendar
-from django.http.response import HttpResponseRedirect
-from django.urls import reverse_lazy
-from django.views.generic import (View, TemplateView, ListView, CreateView, UpdateView, DetailView)
+from django.http import HttpResponse
+from django.urls import reverse, reverse_lazy
+from django.views.generic import (TemplateView, ListView, CreateView, UpdateView, DetailView)
 from .models import Stores, Renewal, BankAccount
 from .form import BankAccountForm, StoreForm
 from django.db.models import Sum
@@ -137,6 +137,7 @@ class StoresCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         context['title'] = 'Add New'
         return context
 
+    
 
 class StoresUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Stores
@@ -216,20 +217,33 @@ class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class BankAccountCreate(CreateView):
     form_class = BankAccountForm
     template_name = 'warehouse/bankaccount_form.html'
-    success_url = reverse_lazy('warehouse-home')
     
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Add'
+        context['store'] = Stores.objects.get(pk=self.kwargs['pk'])
         return context
+
+    def form_valid(self, form):
+        form.instance.store = Stores.objects.get(pk=self.kwargs['pk'])
+        try:
+            return super().form_valid(form)
+        except:
+            messages.info(self.request, f'{form.instance.store} already have existing bank account !!!')
+            return redirect('warehouse-list-all')   
 
 
 class BankAccountUpdate(UpdateView):
     model = BankAccount
-    success_url = reverse_lazy('warehouse-home')
     fields = '__all__'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Update'
         return context
+
+class BankAccountDetail(DetailView):
+    model = BankAccount
+    
+    

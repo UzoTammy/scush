@@ -45,12 +45,11 @@
                 </tr>
             {% endfor %}
                 </tbody>
-            </table>
-
+        </table>
     </div>
     </div>
 
-    <div class="row m-2 bg-light">
+    <div class="row m-2">
         <div class="col">
             <table data-search="true"
                    data-pagination="true"
@@ -72,9 +71,9 @@
                 </tr>
                 </thead>
                 <tbody>
-            {% for object in stores_bank %}
+                    {% for object in stores_bank %}
                 <tr>
-                    <th scope="row"><a href="{% url 'warehouse-bank-update' object.pk %}">{{object.store.name}}</a></th>
+                    <th scope="row"><a href="{% url 'warehouse-bank-detail' object.pk %}">{{object.store.name}}</a></th>
                     <td>{{object.name}}</td>
                     <td>{{object.account_number}}</td>
                     <td>{{object.bank}}</td>

@@ -15,7 +15,7 @@
                        data-toggle="modal"
                        data-target="#payModal"
                        href="#">
-                        Renew
+                        Renew/Pay Rent
                     </a>
                 </li>
             </ul>
@@ -64,7 +64,7 @@
                         <li class="list-group-item">Capacity: {{object.capacity}}</li>
                         <li class="list-group-item">Expiry Date: {{object.expiry_date}}</li>
                         <li class="list-group-item">Status: {{object.status|yesno:'Paid, Not paid'}}</li>
-
+                        <li class="list-group-item"><a class="btn btn-primary float-right" href="{% url 'warehouse-bank-create' object.pk %}">Add Bank Account</a></li>
                     </ul>
                 </div>
             </div>

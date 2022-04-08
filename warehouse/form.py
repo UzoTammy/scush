@@ -25,8 +25,9 @@ class BankAccountForm(forms.ModelForm):
     except KeyError:
         banks = [('UBA', 'UBA')]
 
+    name = forms.CharField(label='Account Name')
     bank = forms.ChoiceField(choices=banks)
     
     class Meta:
         model = BankAccount
-        fields = '__all__'
+        fields = ['name', 'account_number', 'bank']

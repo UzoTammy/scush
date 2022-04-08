@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     HomeView, StoresListView, StoreHelpView, StoresDetailView,
-     StoresCreateView, StoresUpdateView, PayRent, BankAccountCreate, BankAccountUpdate
+     StoresCreateView, StoresUpdateView, PayRent, BankAccountCreate, BankAccountUpdate, BankAccountDetail
      )
 
 urlpatterns = [
@@ -12,7 +12,8 @@ urlpatterns = [
     path('new/', StoresCreateView.as_view(), name='warehouse-create'),
     path('update/<int:pk>/', StoresUpdateView.as_view(), name='warehouse-update'),
     path('pay/<int:pk>/rent/', PayRent.as_view(), name='warehouse-pay-rent'),
-    path('bank/add/', BankAccountCreate.as_view(), name='warehouse-bank-create'),
-    path('<int:pk>/update/', BankAccountUpdate.as_view(), name='warehouse-bank-update'),
+    path('bank/<int:pk>/add/', BankAccountCreate.as_view(), name='warehouse-bank-create'),
+    path('bank/<int:pk>/update/', BankAccountUpdate.as_view(), name='warehouse-bank-update'),
+    path('bank/<int:pk>/detail/', BankAccountDetail.as_view(), name='warehouse-bank-detail'),
     path('<int:pk>/payment/', StoresDetailView.as_view(), name='payment')
 ]
