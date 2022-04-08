@@ -11,6 +11,11 @@ class ActiveStoreManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(disabled=False)
 
+class ActiveBankAccountManager(models.Manager):
+    """"To work those stores that are not disabled"""
+    def get_queryset(self):
+        return super().get_queryset().filter(disabled=False)
+
 
 class Stores(models.Model):
     today = datetime.date.today()
@@ -31,9 +36,9 @@ class Stores(models.Model):
     status = models.BooleanField(default=False)  # paid & not paid
     disabled = models.BooleanField(default=False)  # quit & still in use
 
-    active = ActiveStoreManager()
     objects = models.Manager()
-
+    active = ActiveStoreManager()
+    
     class Meta:
         verbose_name_plural = 'Stores'
 
@@ -42,7 +47,6 @@ class Stores(models.Model):
         return self.name
 
     def get_absolute_url(self):
-
         return reverse('warehouse-detail', kwargs={'pk': self.pk})
 
 
@@ -66,9 +70,14 @@ class BankAccount(models.Model):
     name = models.CharField(max_length=50)
     account_number = models.CharField(max_length=10)
     bank = models.CharField(max_length=30)
+    disabled = models.BooleanField(default=False)
 
     def __str__(self):
         return self.store
 
     def get_absolute_url(self):
          return reverse('warehouse-bank-detail', kwargs={'pk': self.pk})
+
+    objects = models.Manager()
+    active = ActiveBankAccountManager()
+    

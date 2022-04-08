@@ -15,7 +15,7 @@
                        data-toggle="modal"
                        data-target="#payModal"
                        href="#">
-                        Renew/Pay Rent
+                        Renew or Pay Rent
                     </a>
                 </li>
             </ul>
@@ -29,11 +29,16 @@
                         Update
                     </a>
                 </li>
+                {% if not object.disabled %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link"
+                       data-toggle="modal"
+                       data-target="#disableModal"
+                       href="#">
                         Disable
                     </a>
                 </li>
+                {% endif %}
             </ul>
             <p class="m-2 text-white">
                 <i class="fa fa-minus text-warning"></i>
@@ -64,7 +69,13 @@
                         <li class="list-group-item">Capacity: {{object.capacity}}</li>
                         <li class="list-group-item">Expiry Date: {{object.expiry_date}}</li>
                         <li class="list-group-item">Status: {{object.status|yesno:'Paid, Not paid'}}</li>
-                        <li class="list-group-item"><a class="btn btn-primary float-right" href="{% url 'warehouse-bank-create' object.pk %}">Add Bank Account</a></li>
+
+                        <li class="list-group-item">
+                            {% if not object.disabled %}
+                            <a class="btn btn-primary float-right" href="{% url 'warehouse-bank-create' object.pk %}">Add Bank Account</a></li>
+                            {% else %}
+                            <h4 class="text-danger float-right">Store is disabled</h4>
+                            {% endif %}
                     </ul>
                 </div>
             </div>
@@ -141,5 +152,30 @@
             </div>
         </div>
     </div>
+
+    <!-- Disable Store and Bank Account -->
+    <!-- Button trigger modal -->
+  
+  
+  <div class="modal fade" id="disableModal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalLabel">Disable {{object}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>{{object}} will be disabled, and will no longer appear on the list, Proceed?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+          <a class="nav-link btn btn-danger" href="{% url 'disable-store-bank' object.pk %}">Yes</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

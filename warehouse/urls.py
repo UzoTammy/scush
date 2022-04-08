@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    HomeView, StoresListView, StoreHelpView, StoresDetailView,
+    DisableStoreAndAccount, HomeView, StoresListView, StoreHelpView, StoresDetailView,
      StoresCreateView, StoresUpdateView, PayRent, BankAccountCreate, BankAccountUpdate, BankAccountDetail
      )
 
@@ -15,5 +15,6 @@ urlpatterns = [
     path('bank/<int:pk>/add/', BankAccountCreate.as_view(), name='warehouse-bank-create'),
     path('bank/<int:pk>/update/', BankAccountUpdate.as_view(), name='warehouse-bank-update'),
     path('bank/<int:pk>/detail/', BankAccountDetail.as_view(), name='warehouse-bank-detail'),
-    path('<int:pk>/payment/', StoresDetailView.as_view(), name='payment')
+    path('<int:pk>/payment/', StoresDetailView.as_view(), name='payment'),
+    path('<int:pk>/store/bank', DisableStoreAndAccount.as_view(), name='disable-store-bank')
 ]

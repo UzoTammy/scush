@@ -434,10 +434,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 class StaffCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Employee
     form_class = EmployeeForm
-    # fields = ('date_employed', 'is_management', 'position',
-    #           'department', 'branch', 'banker', 'account_number',
-    #           'basic_salary', 'allowance', 'tax_amount')
-
+   
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
         if self.request.user.groups.filter(name='HRD').exists():

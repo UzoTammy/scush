@@ -1,8 +1,7 @@
 import datetime
 import calendar
-from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
-from django.views.generic import (TemplateView, ListView, CreateView, UpdateView, DetailView)
+from django.views.generic import (View, TemplateView, ListView, CreateView, UpdateView, DetailView)
 from .models import Stores, Renewal, BankAccount
 from .form import BankAccountForm, StoreForm
 from django.db.models import Sum
@@ -89,9 +88,12 @@ class StoresListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             return True
         return False
 
+    def get_queryset(self):
+        return super().get_queryset().filter(disabled=False)
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(StoresListView, self).get_context_data(**kwargs)
-        context['stores_bank'] = BankAccount.objects.all()
+        context['stores_bank'] = BankAccount.active.all()
         return context
 
 
@@ -222,11 +224,12 @@ class BankAccountCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Add'
-        context['store'] = Stores.objects.get(pk=self.kwargs['pk'])
+        context['store'] = Stores.active.get(pk=self.kwargs['pk'])
+
         return context
 
     def form_valid(self, form):
-        form.instance.store = Stores.objects.get(pk=self.kwargs['pk'])
+        form.instance.store = Stores.active.get(pk=self.kwargs['pk'])
         try:
             return super().form_valid(form)
         except:
@@ -243,7 +246,21 @@ class BankAccountUpdate(UpdateView):
         context['title'] = 'Update'
         return context
 
+
 class BankAccountDetail(DetailView):
     model = BankAccount
     
+
+class DisableStoreAndAccount(View):
+
+    def get(self, request, **kwargs):
+        store = Stores.active.get(pk=kwargs['pk'])
+        bank_account = BankAccount.objects.get(store=store)
+        store.disabled = True
+        bank_account.disabled = True
+        store.save()
+        bank_account.save()
+        messages.info(request, 'This Store and its Bank Account is disabled')
+        return redirect('warehouse-detail', kwargs['pk'])
+
     
