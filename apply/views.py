@@ -118,9 +118,8 @@ class ApplyCreateView(CreateView):
     """No login required and no restriction on user's needed, making it available
     to the public.
     """
-    model = Applicant
     form_class = ApplicantForm
-    
+    template_name = 'apply/applicant_form.html'
    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -128,7 +127,7 @@ class ApplyCreateView(CreateView):
         return context
 
     def form_valid(self, form):
-        hr_email = 'dickson.abanum@ozonefl.com'
+        hr_email = 'ogechukwu.okpala@ozonefl.com'
         context = {
             'first_name': form.instance.first_name,
             'second_name': form.instance.second_name,
@@ -153,7 +152,6 @@ class ApplyCreateView(CreateView):
             )
             email.content_subtype = 'html'
             email.send(fail_silently=True)
-
         # return HttpResponse('testing')
         return super().form_valid(form)
 

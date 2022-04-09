@@ -1,7 +1,6 @@
 import decimal
 import calendar
 import datetime
-from sre_constants import BRANCH
 from survey.models import Question
 from users.models import Profile
 from apply.models import Applicant
@@ -16,6 +15,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
+from django.utils import timezone
 from django.views.generic import (View,
                                   TemplateView,
                                   ListView,

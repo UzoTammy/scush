@@ -5,9 +5,64 @@
 
 {% block content %}
 
-<div class="container mt-5">
-<!--    The detailed view-->
-    <div class="row">
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-3 bg-dark">
+      <ul class="nav flex-column">
+          <li class="nav-item mt-3">
+              {% if object.status is None %}
+                <a href="{% url 'employee-create' object.pk %}" class="nav-link">
+                    Employ</a>
+              {% else %}
+                <a href="{% url 'employee-create' object.pk %}" class="nav-link"
+                  style="pointer-events: none;">
+                    Employ</a>
+              {% endif %}
+          </li>
+      </ul>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+              <a href="{% url 'apply-update' object.pk %}" class="nav-link">
+                  Update</a>
+        </li>
+      </ul>
+      <ul class="nav flex-column">
+          <li class="nav-item">
+              <a href="#"
+                data-target="#rejectModal"
+                data-toggle="modal"
+                tabindex="-1"
+                class="nav-link">
+                  Reject
+              </a>
+          </li>
+      </ul>
+      
+      <ul class="nav flex-column">
+          <li class="nav-item">
+               <!--       Delete -->
+              <!-- Button trigger modal -->
+              {% if user.is_superuser %}
+                  <a href="#"    
+                    class="nav-link"
+                    data-toggle="modal"
+                    data-target="#deleteModal">
+                      Delete
+                  </a>
+              {% endif %}
+          </li>
+      </ul>
+      <ul class="nav flex-column">
+          <li class="nav-item">
+              <!--        return-->
+            <a href="{% url 'apply' %}" class="nav-link">
+                <i class="fa fa-reply text-danger"></i> Return</a>
+          </li>
+      </ul>
+    </div>
+  <!--    The detailed view-->
+    <div class="col-9">
+      <div class="row">
         <div class="col">
             <ul class="list-group">
               <li class="list-group-item text-right"><img src="{% static 'customer/logo.png' %}"
@@ -35,48 +90,14 @@
             </ul>   
         </div>
     </div>
-    <!--The buttons-->
-    <div class="row ml-2 mb-2 mt-4">
-      <!--        Employ-->
-      <div class="col">
-          {% if object.status is None %}
-              <a href="{% url 'employee-create' object.pk %}" class="btn btn-success btn-sm">
-                  Employ</a>
-          {% else %}
-              <a href="{% url 'employee-create' object.pk %}" class="btn btn-secondary btn-sm"
-                 style="pointer-events: none;">
-                  Employ</a>
-          {% endif %}
+    </div>
+  </div>
+  
+   
 
-      </div>
-
-      <!--Reject-->
-      <div class="col">
-          <a href="#"
-             data-target="#rejectModal"
-             data-toggle="modal"
-             tabindex="-1"
-             class="btn btn-info btn-sm">
-              Reject
-          </a>
-      </div>
-      <!--       Delete -->
-      <!-- Button trigger modal -->
-      {% if user.is_superuser %}
-      <div class="col">
-          <button type="button"
-                  class="btn btn-danger btn-sm"
-                  data-toggle="modal"
-                  data-target="#deleteModal">
-              Delete
-          </button>
-      </div>
-      {% endif %}
-      <!--        return-->
-      <div class="col">
-          <a href="{% url 'apply' %}" class="btn btn-secondary btn-sm">
-              <i class="fa fa-reply text-danger"></i></a>
-      </div>
+      
+     
+      
   </div>
 </div>
 <!--    Modals-->
