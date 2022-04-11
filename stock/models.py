@@ -5,68 +5,36 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator
 from djmoney.money import Money
 from outlet.models import SalesCenter
+from core.models import JsonDataset
 
 
-SOURCES = [('NB', 'NBPlc'),
-           ('GN', 'GNPlc'),
-           ('IB', "Int'l Plc"),
-           ('FE', 'FarEast'),
-           ('SW', 'SellWell'),
-           ('MD', 'Monument'),
-           ('GG', 'Golden Guinea'),
-           ('BD', 'BigDist'),
-           ('MSC', 'Miscellaneous'),
-           ]
 
-CATEGORIES = [('Malt', 'Malt'),
-              ('Lager', 'Lager'),
-              ('Stout', 'Stout'),
-              ('RTD', 'RTD'),
-              ('ED', 'Energy Drink'),
-              ('Bitters', 'Bitters'),
-              ('Soft', 'Soft Drink'),
-              ('Others', 'Others'),
-              ('NA Wine', 'Non Alcoholic Wine'),
-              ('Wine', 'Alcoholic Wine')]
-
-UNITS = [('Pieces', 'Pieces'),
-         ('Pack', 'Pack'),
-         ('Pallet', 'Pallet')]
-
-PACKS = [('Can', 'Can'),
-         ('Pet', 'Pet'),
-         ('Bottle', 'Bottle'),
-         ('Tetra', 'Tetra Pak'),
-         ('Crate', 'Crate'),
-         ('Sachet', 'Sachet')]
-
-STATES = [('Liquid', 'Liquid'),
-          ('Solid', 'Solid'),
-          ('Gas', 'Gas')
-          ]
-
-SIZE_VALUE_UNIT = [('ml', 'Millilitres'),
-                   ('cl', 'Centilitres'),
-                   ('l', 'Litres')]
-PARAMETER = [('Classic', 'Classic'), ('Ultra', 'Ultra'), ('Mini', 'Mini')]
-
+class ChoiceOption:
+    json_dict = JsonDataset.objects.get(pk=1).dataset
+    SOURCES = [(i, i) for i in json_dict['product-source']]
+    CATEGORY = [(i, i) for i in json_dict['product-category']]
+    UNITS = [(i, i) for i in json_dict['product-units']]
+    PACKS = [(i, i) for i in json_dict['product-packs']]
+    STATES = [(i, i) for i in json_dict['product-states']]
+    VOLUME_UNITS = [(i, i) for i in json_dict['product-volume-units']]
+    PARAMETERS = [(i, i) for i in json_dict['product-parameters']]
 
 class Product(models.Model):
     name = models.CharField(max_length=20)
     source = models.CharField(max_length=50,
-                              choices=SOURCES)
-    category = models.CharField(max_length=50, choices=CATEGORIES)
+                              choices=ChoiceOption.SOURCES)
+    category = models.CharField(max_length=50, choices=ChoiceOption.CATEGORY)
     unit_price = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN', default=0.0)
     pack_type = models.CharField(max_length=20, default='Pack',
-                                 choices=UNITS)
+                                 choices=ChoiceOption.PACKS)
     quantity_per_pack = models.IntegerField(default=24)
     unit_type = models.CharField(max_length=20,
                                  default='Can',
-                                 choices=PACKS,)
-    product_state = models.CharField(max_length=20, default='Liquid', choices=STATES)
+                                 choices=ChoiceOption.UNITS,)
+    product_state = models.CharField(max_length=20, default='Liquid', choices=ChoiceOption.STATES)
     size_value = models.FloatField(default=33, blank=True, null=True)
     size_value_unit = models.CharField(max_length=20, default='cl',
-                                       choices=SIZE_VALUE_UNIT, blank=True,
+                                       choices=ChoiceOption.VOLUME_UNITS, blank=True,
                                        null=True)
     alcohol_content = models.FloatField(default=0.0)
     vat = models.FloatField(default=7.5, choices=[(7.5, 'Vatable'), (0.0, 'Exempted')])
@@ -75,7 +43,7 @@ class Product(models.Model):
         max_digits=8, decimal_places=2, default_currency='NGN', 
         validators=[MinValueValidator(Money(1, 'NGN'), 
         message="Cost price can't be NGN0.00")])
-    parameter = models.CharField(max_length=20,
+    parameter = models.CharField(max_length=20, choices=ChoiceOption.PARAMETERS, default='Normal',
                                  help_text='<span class="text-danger">types but of same price e.g. maltina classic, maltina pineaple</span>')
     active = models.BooleanField(default=True, choices=[(True, 'Yes'), (False, 'No')], verbose_name='Active?')
     discount = models.FloatField(default=0.0)
@@ -99,6 +67,7 @@ class Product(models.Model):
     def margin(self):
         return self.unit_price - self.cost_price
 
+    
     
 class ProductPerformance(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -145,8 +114,10 @@ class ProductExtension(models.Model):
     def __str__(self) -> str:
         return f'{self.product}-{self.date}'
 
-    # def get_absolute_url(self):
-    #     return reverse('product-performance-detail', kwargs={'pk':self.pk})
+    def get_absolute_url(self):
+        return reverse('product-ext-detail', kwargs={'pk':self.pk})
     
-    
+    def value_of_stock(self):
+        return self.cost_price * self.stock_value
+
     

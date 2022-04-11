@@ -1,38 +1,22 @@
 import datetime
-from django.contrib import messages
-from django.conf import settings
-from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy
+from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.generic.base import TemplateView
-from .models import (Product, ProductPerformance, ProductExtension, SOURCES)
+from django.contrib import messages
+from numpy import product
+from .models import (Product, ProductPerformance, ProductExtension)
+from core.models import JsonDataset
 from delivery.models import DeliveryNote
-from django.views.generic import View
-from django.template.loader import get_template
-from django.http import HttpResponse
-from django.views.generic import (ListView,
-                                  DetailView,
-                                  CreateView,
-                                  UpdateView,
-                                  DeleteView)
+from django.db.models import Sum, F
+from django.views.generic import (
+    View, ListView, DetailView, CreateView, UpdateView, DeleteView)
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 
 permitted_group_name = 'Sales'
 
 
-class MyFirstView(View):
-
-    def get(self, request):
-
-        context = {
-            'products': Product.objects.all(),
-        }
-        response = get_template('stock/myfirst.html').render(context, request)
-        return HttpResponse(response)
-
-
-class ProductHomeView(View):
+class ProductHomeView(LoginRequiredMixin, View):
 
     @staticmethod
     def delivery_qty_values(obj):
@@ -112,7 +96,8 @@ class ProductHomeView(View):
                 sum(data_others))
 
     def get(self, request):
-        
+        json_data = JsonDataset.objects.get(pk=1).dataset
+            
         context = {
             'total_count': Product.objects.all().count(),
             'nb_count': Product.objects.filter(source='NB').count(),
@@ -140,13 +125,14 @@ class ProductHomeView(View):
             'gn_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='GN'))[3]:,.2f}",
             'ib_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[0],
             'ib_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[3]:,.2f}",
+            'sources': json_data['product-source']
             
         }
         return render(request, 'stock/product_home.html', context=context)
 
 
-class StockValueView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    template_name = 'stock/stock_value.html'
+class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'stock/report/home.html'
 
     def test_func(self):
         """if user is a member of the group Sales then grant access to this view"""
@@ -156,14 +142,44 @@ class StockValueView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         with open('stock/text/stock_valued.txt', 'r') as rf:
             content = rf.read()
         if content == 'complete':
             Product.objects.all().update(is_stock_valued=False)
        
         context['is_product_extension'] = ProductExtension.objects.exists()
+
+        content_dict = JsonDataset.objects.get(pk=1).dataset
+        context['sources'] = content_dict['product-source']
+
+        obj = JsonDataset.objects.get(pk=2)
+        if self.request.GET != {}:
+            content = obj.dataset
+            content['closing-stock-date'] = [self.request.GET['theDate']]
+            obj.dataset = content
+            obj.save()
+        date_string = obj.dataset['closing-stock-date'][0]
+        context['current_date'] = datetime.datetime.strptime(date_string, "%Y-%m-%d").date()
+
+        source_list, total_list = list(), list()
+        for source in context['sources']:
+            qs = ProductExtension.objects.filter(date=context['current_date'], product__source=source)
+            qs = qs.annotate(value=F('stock_value')*F('cost_price'))
+            source_list.append(qs)
+            total_list.append(
+                (qs.aggregate(Sum('stock_value'))['stock_value__sum'],
+                qs.aggregate(Sum('value'))['value__sum'])
+            )
+        context['obj'] = source_list
+        context['totals'] = [i for i in total_list if i[0] is not None]
         return context
+
+
+class ReportStockCategory(LoginRequiredMixin, ListView):
+    model = Product
+
+    def get_queryset(self):
+        return super().get_queryset().filter(source=self.kwargs['source'])
 
 
 class ProductListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -180,85 +196,6 @@ class ProductListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return super().get_queryset().filter(active=True)
 
 
-class ProductTabularCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = ProductExtension
-    template_name = 'stock/product_tabular.html'
-    fields = ('stock_value',)
-    success_url = reverse_lazy('product-tabular')
-
-    def test_func(self):
-        """if user is a member of the group Sales then grant access to this view"""
-        if self.request.user.groups.filter(name=permitted_group_name).exists():
-            return True
-        return False
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        try:
-            the_date = datetime.datetime.strptime(self.request.GET.get('theDate'), '%Y-%m-%d').date()
-            context['the_date'] = the_date
-            with open('stock/text/date.txt', 'w') as wf:
-                wf.write(self.request.GET.get('theDate'))
-        except Exception as err:
-            with open('stock/text/date.txt', 'r') as rf:
-                the_date = rf.read()
-            the_date = datetime.datetime.strptime(the_date, '%Y-%m-%d').date()    
-            context['the_date'] = the_date
-
-        context['products'] = Product.objects.filter(is_stock_valued=False)
-
-        if context['products'].count()==0:
-            context['complete'] = True
-            with open('stock/text/stock_valued.txt', 'w') as wf:
-                wf.write('complete')  
-        else:
-            context['complete'] = False 
-            with open('stock/text/stock_valued.txt', 'w') as wf:
-                wf.write('incomplete')
-        
-        """Check the latest entry"""
-        if ProductExtension.objects.exists():
-            latest_date = ProductExtension.objects.latest('date').date
-            qs_count = ProductExtension.objects.filter(date=latest_date).count()
-            product_count = Product.objects.count()
-            if qs_count != product_count and latest_date != the_date:
-                context['product_assesment'] = (latest_date, True, qs_count, product_count)
-        return context
-
-    def form_valid(self, form):
-        product = get_object_or_404(Product, pk=self.request.POST['pk'])
-        form.instance.product = product
-        form.instance.cost_price = product.cost_price
-        form.instance.selling_price = product.unit_price
-        form.instance.date = self.get_context_data(kwargs={}).get('the_date')
-        product.is_stock_valued = True
-        product.save()
-        messages.info(self.request, f'Stock Value for {form.instance.product} added Successfully !!!')
-        return super().form_valid(form)
-
-
-class ProductTabularListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = ProductExtension
-    template_name = 'stock/product_stock_list.html'            
-
-    def test_func(self):
-        """if user is a member of the group Sales then grant access to this view"""
-        if self.request.user.groups.filter(name=permitted_group_name).exists():
-            return True
-        return False
-
-    def get_queryset(self):
-        date = self.request.GET.get('theDate')
-        return super().get_queryset().filter(date=date)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['the_date'] = datetime.datetime.strptime(self.request.GET['theDate'], '%Y-%m-%d')
-        context['qs'] = list((data, self.get_queryset().filter(product__source=data[0]))  for data in SOURCES)
-        return context
-
-
 class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Product
 
@@ -267,6 +204,44 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        the_date = JsonDataset.objects.get(pk=2).dataset['closing-stock-date'][0]
+        context['theDate'] = datetime.datetime.strptime(the_date, "%Y-%m-%d").date()
+        
+        product = Product.objects.get(pk=self.kwargs['pk'])
+        qs = ProductExtension.objects.filter(product=product).filter(date=context['theDate'])
+        
+        if qs.exists():
+            obj_ext = qs.first()
+            context['obj_ext'] = obj_ext
+        
+        context['is_qs'] = qs.exists()
+        return context
+
+    def post(self, request, **kwargs):
+        obj = get_object_or_404(Product, pk=self.kwargs['pk'])
+        content_dict = JsonDataset.objects.get(pk=2).dataset
+        date_string = content_dict['closing-stock-date'][0]
+        date_object = datetime.datetime.strptime(date_string, "%Y-%m-%d").date()
+        if 'quantity' in request.POST:
+            quantity = request.POST['quantity']    
+            ProductExtension.objects.create(
+                product=obj,
+                stock_value=quantity,
+                date=date_object,
+                cost_price=obj.cost_price)
+        else:
+            qs = ProductExtension.objects.filter(product=obj).filter(date=date_object)
+            if qs.exists():
+                stock_obj = qs.first()
+                stock_obj.stock_value = request.POST['edit_quantity']
+                stock_obj.cost_price = obj.cost_price
+                stock_obj.save()
+            else:
+                messages.info(request, "This product's stock does not exist")
+        return redirect(obj)
 
 
 class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -322,7 +297,10 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
     
     def post(self, request, *args, **kwargs):
         product = get_object_or_404(Product, pk=kwargs['pk'])
-        product.unit_price = request.POST['selling']
+        # selling price gotten from modal form for selling price update only
+        product.unit_price = request.POST['selling'] if "selling" in request.POST else product.unit_price
+        # Cost price gotten from modal form for cost price update only
+        product.cost_price = request.POST['cost'] if "cost" in request.POST else product.cost_price
         product.date_modified = timezone.now()
         product.save()
         return redirect(product)
@@ -391,3 +369,17 @@ class ProductPerformanceDetailView(LoginRequiredMixin, UserPassesTestMixin, Deta
         return False
 
 
+class ProductExtensionUpdateView(LoginRequiredMixin, UpdateView):
+    model = ProductExtension
+    fields = '__all__'
+    template_name = 'stock/report/productextension_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Update'
+        return context
+
+
+class ProductExtensionDetailView(LoginRequiredMixin, DetailView):
+    model = ProductExtension
+    template_name = 'stock/report/productextension_detail.html'

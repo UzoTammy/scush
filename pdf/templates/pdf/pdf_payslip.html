@@ -13,7 +13,7 @@
     </div>
 </div>
 <div class="details">
-    <p>Dispatch Date: {% now "d-M-Y" %}</p>
+    <p>Dispatch Date: {{ person.date_paid }}</p>
     <p>Pay Date: {{ person.date_paid }}</p>
     <p>Pay Code: <span style="color: chocolate;">{{ paycode }}</span></p>
     

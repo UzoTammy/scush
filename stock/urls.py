@@ -3,19 +3,21 @@ from .views import *
 from pdf.views import PriceUpdateFootNote
 
 urlpatterns = [
-    path('see-me/', MyFirstView.as_view(), name='see-me'),
     path('home/', ProductHomeView.as_view(), name='product-home'),
-    path('stock-value/', StockValueView.as_view(), name='stock-value'),
     path('list/', ProductListView.as_view(), name='product-list'),
-    path('tabular/', ProductTabularCreateView.as_view(), name='product-tabular'),
-    path('tabular/List/', ProductTabularListView.as_view(), name='product-tabular-list'),
     path('<int:pk>/detail/', ProductDetailedView.as_view(), name='product-detail'),
     path('new/', ProductCreateView.as_view(), name='product-create'),
     path('<int:pk>/update/', ProductUpdateView.as_view(), name='product-update'),
     path('<int:pk>/delete/', ProductDeleteView.as_view(), name='product-delete'),
+
     path('price/list/', PricePageView.as_view(), name='price-list'),
     path('<int:pk>/price/update/', PriceUpdate.as_view(), name='price-update'),
-    path('home/footnote/', PriceUpdateFootNote.as_view(), name='price-update-footnote')
+    path('home/footnote/', PriceUpdateFootNote.as_view(), name='price-update-footnote'),
+    
+    path('stock/report/', ReportHomeView.as_view(), name='stock-report'),
+    path('stock/<str:source>/', ReportStockCategory.as_view(), name='stock-report-source'),
+    path('stock/<int:pk>/update/', ProductExtensionUpdateView.as_view(), name='product-ext-update'),
+    path('stock/<int:pk>/detail/', ProductExtensionDetailView.as_view(), name='product-ext-detail')
 ]
 
 urlpatterns += [

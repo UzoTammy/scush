@@ -307,33 +307,16 @@ class PriceChange(LoginRequiredMixin, TemplateView):
 class ProductBySource(LoginRequiredMixin, TemplateView):
     template_name = 'pdf/current_price.html'
 
-    # def footnote():
-    #     with open()
-
     def get(self, request, *args, **kwargs):
         products = Product.objects.filter(active=True)
-        if kwargs['source'] == 'Others':
-            products = products.exclude(source='NB').exclude(source='GN').exclude(source='IB')
-        elif kwargs['source'] == 'All':
-            pass
-        else:
+        
+        if kwargs['source'] != 'All':
             products = products.filter(source=kwargs['source'])
         
-        if kwargs['source'] == 'NB':
-            title = "Nigerian Breweries"
-        elif kwargs['source'] == 'GN':
-            title = 'Guinness Nigeria Plc'
-        elif kwargs['source'] == 'IB':
-            title = 'International Breweries'
-        elif kwargs['source'] == 'Others':
-            title = 'Others'
-        else:
-            title = 'All'
-
         context = {
             'products': products,
             'logo_image': Ozone.logo(),
-            'title': title 
+            'title': kwargs['source'] 
             
         }
         pdf = render_to_pdf(self.template_name, context_dict=context)

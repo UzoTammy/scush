@@ -12,7 +12,10 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
                         <!-- Button trigger modal -->
-                        <a href="{% url 'stock-value' %}">Stock Value</a>
+                        <a href="{% url 'stock-report' %}">Stock Report</a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="{% url 'product-performance-list' %}">Product Performance</a>
                     </li>
                     <li class="list-group-item">
                         <a href="{% url 'product-list' %}">View Products</a>
@@ -27,14 +30,13 @@
                     <li class="list-group-item">
                         Products by Source (PDF)
                         <ul>
-                            <li><a href="{% url 'pdf-prices' 'NB' %}">NB</a></li>
-                            <li><a href="{% url 'pdf-prices' 'GN' %}">GN</a></li>
-                            <li><a href="{% url 'pdf-prices' 'IB' %}">IB</a></li>
-                            <li><a href="{% url 'pdf-prices' 'Others' %}">Others</a></li>
+                            {% for source in sources %}
+                            <li><a href="{% url 'pdf-prices' source %}">{{source}}</a></li>
+                            {% endfor %}
                             <li><a href="{% url 'pdf-prices' 'All' %}">All</a></li>
                         </ul>
                         
-                    </li>
+                
                     <li class="list-group-item">
                         <a href="" 
                         data-toggle="modal" 
@@ -43,9 +45,6 @@
                     
                     <li class="list-group-item">
                         <a href="{% url 'pdf-price-change' %}">Today's Price Update (PDF)</a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="{% url 'product-performance-list' %}">Product Performance</a>
                     </li>
                     <li class="list-group-item">
                         <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
@@ -105,12 +104,8 @@
                             <li class="list-group-item list-group-item-info">
                                 <i>Rejected: {{total_amount_credit}}</i>
                             </li>
-<!--                            <li class="list-group-item">-->
-<!--                                <i>{{percent_credited}} of all deliveries were rejected.</i>-->
-<!--                            </li>-->
-                        </ul>
+                            </ul>
                     </div>
-<!--                    Sources-->
                     <div class="col-6">
                         <h4 style="font-family: cursive"
                             class="text-danger">Sources</h4>
@@ -124,9 +119,6 @@
                             <li class="list-group-item list-group-item-info">
                                 <i>IB: {{ib_delivered}} ({{ib_amount}})</i>
                             </li>
-<!--                            <li class="list-group-item">-->
-<!--                                <i>{{percent_credited}} of all deliveries were rejected.</i>-->
-<!--                            </li>-->
                         </ul>
                     </div>
                 </div>
@@ -224,7 +216,7 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form action="{% url 'product-tabular' %}" method="GET">
+        <form action="#" method="GET">
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label" for="">Date</label>
@@ -250,7 +242,7 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form action="{% url 'product-tabular-list' %}" method="GET">
+        <form action="#" method="GET">
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label" for="">Date</label>

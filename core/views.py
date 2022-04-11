@@ -17,7 +17,8 @@ from .forms import JsonDatasetForm
 from .models import JsonDataset
 
 
-class HomeView(TemplateView):
+
+class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'core/home.html'
 
     def get_context_data(self, **kwargs):
@@ -56,7 +57,7 @@ class CompanyPageView(View):
         return render(request, 'core/company.html', context)
 
 
-class DashBoardView(TemplateView):
+class DashBoardView(LoginRequiredMixin, TemplateView):
     template_name = 'core/dashboard.html'
     
     def get_context_data(self, **kwargs):
@@ -175,6 +176,7 @@ class DashBoardView(TemplateView):
 
 class JsonListView(LoginRequiredMixin, ListView):
     model = JsonDataset
+
 
 class JsonDetailView(LoginRequiredMixin, DetailView):
     model = JsonDataset

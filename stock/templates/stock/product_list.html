@@ -34,14 +34,13 @@
                     <th scope="col">Cost Price</th>
                     <th scope="col">Sales Price</th>
                     <th scope="col">Margin</th>
-                    <!-- <th scope="col">% Margin</th> -->
                 </tr>
                 </thead>
                 <tbody>
                 {% for product in object_list %}
                 <tr>
                     <th scope="row">{{ product.id|zeropadding:3 }}</th>
-                    <th scope="col">
+                    <th class="text-center" scope="col">
                         <img src="{{ product.image.url }}"
                              class="rounded-circle mr-3"
                              width="64px"
@@ -54,7 +53,6 @@
                     <td>{{product.cost_price}}</td>
                     <td>{{product.unit_price}}</td>
                     <th>{{product.margin}}</th>
-                    <!-- <th>{{product.percentage_margin|floatformat:3}}</th> -->
                 </tr>
                 {% endfor %}
                 </tbody>

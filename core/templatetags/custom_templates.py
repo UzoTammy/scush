@@ -80,7 +80,10 @@ def dividedby(value, arg):
 
 @register.filter
 def array(value, arg):
-    return value[arg-1]
+    try:
+        return value[arg-1]
+    except:
+        return []
 
 
 @register.filter

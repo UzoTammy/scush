@@ -1,0 +1,216 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container-fluid p-3">
+  <div class="row">
+      <div class="col text-center">
+          <h3>Stock Report Page</h3>
+      </div>
+  </div>
+  <div class="row mt-2">
+      <div class="col-3 bg-light">
+          <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                Category
+                <ul class="list-group list-group-flush">
+                  {% for source in sources %}
+                  <li class="list-group-item"><a href="{% url 'stock-report-source' source %}">{{source}}</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+              
+              <li class="list-group-item">
+                  <!-- Button trigger modal -->
+                  <a href="#" data-toggle="modal" data-target="#stockAddModal">
+                      Fix Date
+                  </a>
+              </li>
+              
+              <li class="list-group-item">
+                  <a href="{% url 'product-home' %}"><i class="fa fa-reply"></i> Return</a>
+              </li>
+          </ul>
+      </div>
+      <div class="col-9">
+        <h5 class="text-italics text-left">Current Date: {{current_date|date:'d-M-Y'}}</h5>
+        <div class="row">
+          {% for source in obj %}
+          {% if source %}
+          <div class="col">
+              <table class="table table-responsive" data-toogle="table">
+                {% with source|first as first_source %}
+                <legend class="text-danger">{{first_source.product.source}}</legend>
+                {% endwith %}
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th class="text-right">Cost Price</th>
+                    <th class="text-right">Quantity</th>
+                    <th class="text-right">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  
+                  {% for item in source %}
+                  <tr>
+                    <td>{{item.product}}</td>
+                    <td class="text-right">{{item.cost_price.amount}}</td>
+                    <td class="text-right">{{item.stock_value}}</td>
+                    <td class="text-right">{{item.value|floatformat:'2g'}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+                <tfoot>
+                  <tr class="text-danger text-right">
+                    <td colspan="2">Total</td>
+                    <td>{{totals|array:forloop.counter|first}}</td>
+                    <td>{{totals|array:forloop.counter|last|floatformat:'2g'}}</td>
+                  </tr>
+                </tfoot>
+              </table>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+              
+      </div>
+  </div>
+</div>  
+  <!-- Modal footnote-->
+<div class="modal fade" 
+id="footNotePriceUpdate" 
+data-backdrop="static" 
+data-keyboard="false" 
+tabindex="-1" 
+aria-labelledby="staticBackdropLabel" 
+aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Price Update Footnote</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{% url 'price-update-footnote' %}">
+      <div class="modal-body">
+          <div class="form-group">
+              <label for="footNote">Note</label>
+              <textarea class="form-control"
+              placeholder="enter your footnotes here to add more infomation to the price review"
+              name="footnote" 
+              id="footNote" 
+              cols="30" 
+              rows="10"></textarea>
+          </div> 
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" 
+        class="btn btn-secondary" 
+        data-dismiss="modal">Close</button>
+      </div>
+  </form>
+    </div>
+  </div>
+</div>
+
+  <!-- Stock Report Date Modal -->
+<div class="modal fade" id="stockAddModal" tabindex="-1" aria-labelledby="stockAddModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="stockUpdateModalLabel">Stock Report - Change Date</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="." method="GET">
+          <div class="modal-body">
+              <div class="form-group">
+                  <label class="form-label" for="">Pick a Date</label>
+                  <input id="stockAddInput" class="form-control" type="date" name="theDate" onchange="addFunc()">
+              </div>   
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button id="btnAdd" type="submit" class="btn btn-primary" disabled>Fix Date</button>           
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+  <!-- modify Stock  Modal -->
+<div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="stockReportModalLabel">Modify Stock - Pick A Date</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="#" method="GET">
+          <div class="modal-body">
+              <div class="form-group">
+                  <label class="form-label" for="">Date</label>
+                  <input id="stockReportInput" class="form-control" type="date" name="theDate" onchange="reportFunc()">
+              </div>   
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button id="btnReport" type="submit" class="btn btn-primary" disabled>Report</button>           
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+  <!-- View Stock  Modal -->
+<div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="stockReportModalLabel">Modify Stock - Pick A Date</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="#" method="GET">
+          <div class="modal-body">
+              <div class="form-group">
+                  <label class="form-label" for="">Date</label>
+                  <input id="stockReportInput" class="form-control" type="date" name="theDate" onchange="reportFunc()">
+              </div>   
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button id="btnReport" type="submit" class="btn btn-primary" disabled>Report</button>           
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    function addFunc() {
+      
+      if (document.getElementById('stockAddInput').value == '') {
+          document.getElementById('btnAdd').disabled = true;
+      } else {
+          document.getElementById('btnAdd').disabled = false;
+      }  
+    }
+
+    function reportFunc() {
+      
+      if (document.getElementById('stockReportInput').value == '') {
+          document.getElementById('btnReport').disabled = true;
+      } else {
+          document.getElementById('btnReport').disabled = false;
+      }  
+    }
+</script>
+{% endblock %}

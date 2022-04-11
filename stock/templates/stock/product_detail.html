@@ -1,9 +1,10 @@
 {% extends 'users/base.html' %}
 {% load static %}
 {% load custom_templates %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container p-4">
+<div class="container-fluid mt-3">
     <h2 class="text-secondary text-center">{{object}}</h2>
     <div class="row">
         <div class="col-sm-4">
@@ -14,39 +15,55 @@
                         <li class="list-group-item">
                             <a href="#" 
                             data-toggle="modal" 
-                            data-target="#priceReview">Price Update</a></li>
+                            data-target="#priceReview">Update Selling Price</a></li>
+                        
                         <li class="list-group-item"><a href="{% url 'product-update' object.pk %}">Update</a></li>
                         {% if user.is_superuser %}
                         <li class="list-group-item"><a href="{% url 'product-delete' object.pk %}">Delete</a></li>
                         {% endif %}
+                        <li class="list-group-item">Closing Stock
+                          <ul>
+                            {% if is_qs %}
+                             
+                            <li><a href="." data-toggle="modal" data-target="#addStockExist">Add</a></li> 
+                            {% else %}
+                            <li><a href="." data-toggle="modal" data-target="#addStock">Add</a></li>
+                            
+                            {% endif %}
+                            <li><a href="." data-toggle="modal" data-target="#editStock">Edit</a></li>
+                            <!-- <li><a href="{% url 'product-ext-update' object.pk %}">Edit</a></li> -->
+                            <li><a href="." data-toggle="modal" data-target="#costPriceReview">Update Cost Price</a></li>
+                            </ul>
+                        </li>
                         <li class="list-group-item"><a href="{% url 'product-list' %}"><i class="fa fa-reply"></i> Return</a></li>
                     </ul>
                 </div>
+
             </div>
             <!--derived data-->
-            <div class="row">
+            {% if is_qs %}
+            <div class="row mb-3">
                 <div class="col">
                     <button type="button"
                     class="list-group-item list-group-item-action bg-light text-center"
                     aria-current="true">
-                <b>Derived Data Section</b>
-            </button>
+                    <b>Stock Report as at {{theDate}}</b>
+                    </button>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item text-info">Sourced: Quantity Value</li>
-                        <li class="list-group-item text-success">Sold: Quantity Value</li>
-<!--                        <li class="list-group-item">C</li>-->
-<!--                        <li class="list-group-item">D</li>-->
-<!--                        <li class="list-group-item text-danger">E</li>-->
+                        <li class="list-group-item">Quantity: {{obj_ext.stock_value}} 
+                          <span class="float-right">Value: {{obj_ext.value_of_stock}}</span> </li>
+                        <!-- <li class="list-group-item text-success">Sales: Quantity: Value:</li> -->
                     </ul>
                 </div>
             </div>
+            {% endif %}
         </div>
         <div class="col-sm-8">
             <div class="media">
               <img src="{{object.image.url}}"
                    width="150px"
                    height="150px"
-                   class="rounded mr-3"
+                   class="rounded mr-3 float-right"
                    alt="...">
               <div class="media-body">
                 <h3 class="text-success">Product Code: {{object.id|zeropadding:4}}</h3>
@@ -55,10 +72,10 @@
             <div class="row p-2">
                     <div class="col">
                         <button type="button"
-                    class="list-group-item list-group-item-action bg-light"
-                    aria-current="true">
-                <b class="text-center">{{object.name}} {{object.unit_type}} {{object.parameter}}</b>
-            </button>
+                          class="list-group-item list-group-item-action bg-light"
+                          aria-current="true">
+                          <b class="text-center">{{object.name}} {{object.unit_type}} {{object.parameter}}</b>
+                        </button>
                         <ul class="list-group list-group-flush">
                         <li class="list-group-item">Name: {{object.name}} </li>
                         <li class="list-group-item">Date & Time Last Modified: {{object.date_modified}} </li>
@@ -80,18 +97,19 @@
                         <li class="list-group-item">Product Description: {{object}}</li>
                     </ul>
                     </div>
-                </div>
+            </div>
         </div>
         
     </div>
 </div>
 
-<!-- Price Update Modal -->
+<!-- Selling Price Update Modal -->
 <div class="modal fade" 
 id="priceReview" 
 data-backdrop="static"
 role="dialog" 
 tabindex="-1">
+  
     <form action="{% url 'price-update' object.pk %}" method="post">{% csrf_token %}
     <div class="modal-dialog">
       <div class="modal-content">
@@ -106,24 +124,240 @@ tabindex="-1">
         </div>
         <div class="modal-body">
           <fieldset>
-              <p>Currently selling at <span class="text-primary">{{object.unit_price}}</span> from 
-                <span class="text-primary">{{object.source}}</span>. 
-                Category is 
-                <span class="text-primary">{{object.category}}</span></p>
+              <div class="row">
+                <div class="col">
+                    <p>Selling Price:  <span class="text-primary">{{object.unit_price}}</span></p>
+                </div>
+                
+              </div>
               <div class="form-group">
-                <label for="sell">Enter New Selling Price Below</label>  
-                <input type="number" 
-                class="form-control" 
-                name="selling" value="">
+                <div class="row">
+                  <div class="col">
+                    <input id="inputSelling" placeholder="Enter New Selling Price" 
+                    type="number"
+                    step=".01"
+                    onchange="sellingFunc()" 
+                    class="form-control" 
+                    name="selling" value="">
+                  </div>
+                  
+                </div>
+                
               </div>
           </fieldset>
         </div>
         <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Update</button>  
+
+          <button id="btnSellingPrice" type="submit" class="btn btn-primary" disabled>Update</button>  
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>
     </form>
+</div>
+
+
+<!-- Add Stock Modal -->
+<div class="modal fade" tabindex="-1" 
+    data-backdrop="static" id="addStockExist">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add Stock Quantity for {{object}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h5 class="text-muted">Record already exist. However, you can edit it.</h5>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
   </div>
+</div>
+
+<div class="modal fade" 
+id="addStock" 
+data-backdrop="static"
+role="dialog" 
+tabindex="-1">
+    <form action="." method="post">
+      {% csrf_token %}
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Stock Quantity for {{object}}</h5>
+          <button type="button" 
+          class="close" 
+          data-dismiss="modal" 
+          aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">                  
+          <fieldset>
+            <div class="row">
+              <div class="col ml-2">
+                <p>Cost Price: {{object.cost_price}}</p>
+                <p>Date: {{theDate|date:'d-M-Y'}}</p>
+              </div>
+            </div>
+              
+              <div class="form-group">
+                
+                <input id="inputStock" onchange="stockFunc()" type="number" 
+                placeholder="Enter Closing Stock Quantity Here"
+                class="form-control" 
+                name="quantity" value="">
+              </div>
+          </fieldset>
+        </div>
+        <div class="modal-footer">
+            <button id="btnStock" type="submit" class="btn btn-primary" disabled>Submit</button>  
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+    </form>
+</div>
+
+<!-- Edit Stock Modal -->
+<div class="modal fade" 
+id="editStock" 
+data-backdrop="static"
+role="dialog" 
+tabindex="-1">
+    <form action="." method="post">
+      {% csrf_token %}
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Stock for {{object}}</h5>
+          <button type="button" 
+          class="close" 
+          data-dismiss="modal" 
+          aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <fieldset>
+            <div class="row">
+              <div class="col ml-2">
+                <p>Cost Price: {{object.cost_price}}</p>
+                <p>Date: {{theDate|date:'d-M-Y'}}</p>
+              </div>
+            </div>
+              <div class="form-group">
+                
+                <input id="inputEditStock" onchange="editFunc()" type="number"
+                placeholder="Edit Stock Quantity here"
+                class="form-control" 
+                name="edit_quantity" value="">
+              </div>
+          </fieldset>
+        </div>
+        <div class="modal-footer">
+            <button id="btnEditStock" type="submit" class="btn btn-primary" disabled>Submit</button>  
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+    </form>
+</div>
+
+
+<!-- Cost Price Update Modal -->
+<div class="modal fade" 
+id="costPriceReview" 
+data-backdrop="static"
+role="dialog" 
+tabindex="-1">
+  
+    <form action="{% url 'price-update' object.pk %}" method="post">{% csrf_token %}
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{object}}</h5>
+          <button type="button" 
+          class="close" 
+          data-dismiss="modal" 
+          aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <fieldset>
+              <div class="row">
+                <div class="col">
+                    <p>Cost Price:  <span class="text-primary">{{object.cost_price}}</span></p>
+                </div>
+                
+              </div>
+              <div class="form-group">
+                <div class="row">
+                  <div class="col">
+                    <input id="inputCost" placeholder="Enter New Cost Price" 
+                    type="number"
+                    step=".01"
+                    onchange="costFunc()" 
+                    class="form-control" 
+                    name="cost" value="">
+                  </div>
+                  
+                </div>
+                
+              </div>
+          </fieldset>
+        </div>
+        <div class="modal-footer">
+
+          <button id="btnCostPrice" type="submit" class="btn btn-primary" disabled>Update</button>  
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+    </form>
+</div>
+
+<script>
+    function sellingFunc() {
+      
+      if (document.getElementById('inputSelling').value == '') {
+          document.getElementById('btnSellingPrice').disabled = true;
+      } else {
+          document.getElementById('btnSellingPrice').disabled = false;
+      }  
+    }
+
+    function costFunc() {
+      
+      if (document.getElementById('inputCost').value == '') {
+          document.getElementById('btnCostPrice').disabled = true;
+      } else {
+          document.getElementById('btnCostPrice').disabled = false;
+      }  
+    }
+  
+    function stockFunc() {
+      if (document.getElementById('inputStock').value == '') {
+          document.getElementById('btnStock').disabled = true;
+      } else {
+          document.getElementById('btnStock').disabled = false;
+      }  
+    }
+
+    function editFunc() {
+      if (document.getElementById('inputEditStock').value == '') {
+          document.getElementById('btnEditStock').disabled = true;
+      } else {
+          document.getElementById('btnEditStock').disabled = false;
+      }  
+    }
+    
+</script>
+
 {% endblock content %}
