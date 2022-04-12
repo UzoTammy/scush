@@ -28,7 +28,7 @@ urlpatterns = [
     path('employee/<int:pk>/gratity/', EmployeeGratuityList.as_view(), name='employee-gratuity-list'),
     path('user/<int:pk>/create/', UserHandleCreateView.as_view(), name='create-user')
     ]
-
+    
 urlpatterns += [
     path('payroll/credit/', CreditNoteListView.as_view(), name='credit-list'),
     path('payroll/credit-note/new/', CreditNoteCreateView.as_view(), name='credit-create'),
