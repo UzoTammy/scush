@@ -99,12 +99,6 @@
                 <a class="nav-link active text-light" href="{% url 'index' %}">
                     <i class="fa fa-home text-white fa-2x"></i><span class="sr-only">(current)</span></a>
             </li>
-            {% if user.username == 'Uzo-02' %}
-            <li class="nav-item">
-                <a class="nav-link text-light" href="{% url 'email-sample' %}">
-                    <i class="fa fa-pencil-square text-white"></i> Sampler</a>
-            </li>
-            {% endif %}
             <li class="nav-item">
                 <a class="nav-link text-light" href="{% url 'apply-pending' %}">
                     <i class="fa fa-pencil-square text-white"></i> Applicants</a>
@@ -144,7 +138,7 @@
                     <a class="dropdown-item" href="{% url 'post-list' %}">Briefs</a>  
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'article-list' %}">Materials</a>        
-            </li>
+                </div>
 
             <li class="nav-item">
                 <a class="nav-link active text-light" href="{% url 'request-home' %}">
@@ -182,6 +176,7 @@
                 <a class="nav-link active text-light" href="{% url 'delivery-home' %}">
                     <i class="fa fa-truck text-white"></i> Delivery</a>
             </li>
+            {% if user.is_superuser %}
             <li class="nav-item">
                 <a class="nav-link active text-light" href="{% url 'json-list' %}">
                     <i class="fa fa-gears text-white"></i> Settings</a>
@@ -192,18 +187,11 @@
                    aria-expanded="false">
                     <i class="fa fa-gears text-white"></i> Administration</a>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'json-new' %}">Add to Json</a>
-                    <!-- <ul class="list-group">
-                        <li class="list-group-item">
-                            <a class="dropdown-item"
-                            data-toggle="modal"
-                            data-target="#choiceModalAdd"
-                            href="#">Add Choice</a>
-                        </li>
-                    </ul>           
-                 -->
+                    <a class="dropdown-item" href="{% url 'json-new' %}">Add to Settings</a>
+                    <a class="dropdown-item" href="{% url 'email-sample' %}">Sampler</a>
                 </div>
             </li>
+            {% endif %}
         </ul>
         <ul class="navbar-nav">
             

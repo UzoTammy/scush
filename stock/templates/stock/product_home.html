@@ -11,14 +11,14 @@
             <div class="col-3 bg-light">
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
+                        <a href="{% url 'product-performance-list' %}">Product Performance</a>
+                    </li>
+                    <li class="list-group-item">
                         <!-- Button trigger modal -->
                         <a href="{% url 'stock-report' %}">Stock Report</a>
                     </li>
                     <li class="list-group-item">
-                        <a href="{% url 'product-performance-list' %}">Product Performance</a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="{% url 'product-list' %}">View Products</a>
+                        <a href="{% url 'stock-report-source' 'All' %}">View Products</a>
                     </li>
                     <li class="list-group-item">
                         <a href="{% url 'product-create' %}">Create Product</a>
@@ -27,16 +27,23 @@
                         <a href="{% url 'delivery-home' %}">Deliveries</a>
                     </li>
                 
-                    <li class="list-group-item">
-                        Products by Source (PDF)
-                        <ul>
-                            {% for source in sources %}
-                            <li><a href="{% url 'pdf-prices' source %}">{{source}}</a></li>
-                            {% endfor %}
-                            <li><a href="{% url 'pdf-prices' 'All' %}">All</a></li>
-                        </ul>
+                    <li class="list-group nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" 
+                        href="#" 
+                        data-toggle="dropdown"
+                        role="button"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        >PDF View</a>
                         
-                
+                        <ul class="dropdown-menu">
+                            {% for source in sources %}
+                            <li class="dropdown-item"><a href="{% url 'pdf-prices' source %}">{{source}}</a></li>
+                            {% endfor %}
+                            <li class="dropdown-item"><a href="{% url 'pdf-prices' 'All' %}">All</a></li>
+                        </ul>
+                    </li>   
+                    <hr class="dropdown-divider">    
                     <li class="list-group-item">
                         <a href="" 
                         data-toggle="modal" 

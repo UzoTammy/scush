@@ -4,7 +4,6 @@ from pdf.views import PriceUpdateFootNote
 
 urlpatterns = [
     path('home/', ProductHomeView.as_view(), name='product-home'),
-    path('list/', ProductListView.as_view(), name='product-list'),
     path('<int:pk>/detail/', ProductDetailedView.as_view(), name='product-detail'),
     path('new/', ProductCreateView.as_view(), name='product-create'),
     path('<int:pk>/update/', ProductUpdateView.as_view(), name='product-update'),

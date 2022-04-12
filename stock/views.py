@@ -3,7 +3,6 @@ from django.shortcuts import get_list_or_404, get_object_or_404, redirect, rende
 from django.utils import timezone
 from django.views.generic.base import TemplateView
 from django.contrib import messages
-from numpy import product
 from .models import (Product, ProductPerformance, ProductExtension)
 from core.models import JsonDataset
 from delivery.models import DeliveryNote
@@ -177,23 +176,12 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
 class ReportStockCategory(LoginRequiredMixin, ListView):
     model = Product
+    ordering = 'name'
 
     def get_queryset(self):
-        return super().get_queryset().filter(source=self.kwargs['source'])
-
-
-class ProductListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = Product
-    ordering = '-pk'
-
-    def test_func(self):
-        """if user is a member of the group Sales then grant access to this view"""
-        if self.request.user.groups.filter(name=permitted_group_name).exists():
-            return True
-        return False
-
-    def get_queryset(self):
-        return super().get_queryset().filter(active=True)
+        if self.kwargs['source'] == 'All':
+            return super().get_queryset().filter(active=True)
+        return super().get_queryset().filter(active=True).filter(source=self.kwargs['source'])
 
 
 class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -231,7 +219,8 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
                 product=obj,
                 stock_value=quantity,
                 date=date_object,
-                cost_price=obj.cost_price)
+                cost_price=obj.cost_price
+                )
         else:
             qs = ProductExtension.objects.filter(product=obj).filter(date=date_object)
             if qs.exists():
@@ -294,6 +283,7 @@ class PricePageView(LoginRequiredMixin, ListView):
 
 class PriceUpdate(LoginRequiredMixin, UpdateView):
     model = Product
+
     
     def post(self, request, *args, **kwargs):
         product = get_object_or_404(Product, pk=kwargs['pk'])
@@ -303,6 +293,15 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
         product.cost_price = request.POST['cost'] if "cost" in request.POST else product.cost_price
         product.date_modified = timezone.now()
         product.save()
+
+        json_data = JsonDataset.objects.get(pk=2).dataset
+        date_string = json_data['closing-stock-date'][0]
+        date_obj = datetime.datetime.strptime(date_string, "%Y-%m-%d")
+        qs = ProductExtension.objects.filter(product=product).filter(date=date_obj)
+        if qs.exists():
+            stock_obj = qs.first()
+            stock_obj.cost_price = product.cost_price
+            stock_obj.save()
         return redirect(product)
 
 

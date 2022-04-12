@@ -11,15 +11,18 @@
   <div class="row mt-2">
       <div class="col-3 bg-light">
           <ul class="list-group list-group-flush">
-              <li class="list-group-item">
-                Category
-                <ul class="list-group list-group-flush">
+              <li class="list-group nav-item dropdown">
+                <a class="nav-link dropdown-toggle" 
+                data-toggle="dropdown"
+                href="#">Category</a> 
+                <ul class="dropdown-menu">
                   {% for source in sources %}
-                  <li class="list-group-item"><a href="{% url 'stock-report-source' source %}">{{source}}</a></li>
+                  <li class="dropdown-item"><a href="{% url 'stock-report-source' source %}">{{source}}</a></li>
                   {% endfor %}
                 </ul>
+                
               </li>
-              
+              <hr class="dropdown-divider">
               <li class="list-group-item">
                   <!-- Button trigger modal -->
                   <a href="#" data-toggle="modal" data-target="#stockAddModal">
