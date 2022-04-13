@@ -31,7 +31,7 @@ class Product(models.Model):
                                  choices=ChoiceOption.UNITS,)
     product_state = models.CharField(max_length=20, default='Liquid', choices=ChoiceOption.STATES)
     size_value = models.FloatField(default=33, blank=True, null=True)
-    size_value_unit = models.CharField(max_length=20, default='cl',
+    size_value_unit = models.CharField(max_length=20, default='CL',
                                        choices=ChoiceOption.VOLUME_UNITS, blank=True,
                                        null=True)
     alcohol_content = models.FloatField(default=0.0)

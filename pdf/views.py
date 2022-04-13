@@ -281,8 +281,8 @@ class PriceChange(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         products = Product.objects.filter(active=True)
-        products = products.filter(date_modified__hour=11)
-        
+        products = products.filter(date_modified__date=timezone.now().date())
+    
         try:
             with open('extrafiles/price-update-footnote.txt', 'r') as rf:
                 content = rf.read()

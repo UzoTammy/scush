@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.generic.base import TemplateView
@@ -169,8 +170,16 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 (qs.aggregate(Sum('stock_value'))['stock_value__sum'],
                 qs.aggregate(Sum('value'))['value__sum'])
             )
-        context['obj'] = source_list
-        context['totals'] = [i for i in total_list if i[0] is not None]
+        
+        context['obj'] = [i for i in source_list if i.exists()]
+        total_list = [i for i in total_list if i[0] is not None]
+        context['totals'] = total_list
+        qty, val = 0, Decimal('0')
+        for x, y in total_list:
+            qty += x
+            val += y
+        context['grand_total'] = (qty, val)
+        
         return context
 
 
@@ -288,18 +297,12 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         product = get_object_or_404(Product, pk=kwargs['pk'])
         # selling price gotten from modal form for selling price update only
-        product.unit_price = request.POST['selling'] if "selling" in request.POST else product.unit_price
-        # Cost price gotten from modal form for cost price update only
-        product.cost_price = request.POST['cost'] if "cost" in request.POST else product.cost_price
-
-        date = timezone.datetime(
-            timezone.now().year,
-            timezone.now().month,
-            timezone.now().day,
-            hour=11
-        )
-        product.date_modified = timezone.make_aware(date)
-        
+        if "selling" in request.POST:
+            product.unit_price = request.POST['selling']
+            product.date_modified = timezone.now()
+        else:
+            # Cost price gotten from modal form for cost price update only
+            product.cost_price = request.POST['cost'] 
         product.save()
 
         json_data = JsonDataset.objects.get(pk=2).dataset

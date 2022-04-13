@@ -37,6 +37,9 @@
       </div>
       <div class="col-9">
         <h5 class="text-italics text-left">Current Date: {{current_date|date:'d-M-Y'}}</h5>
+        {% if grand_total|first != 0 %}
+        <h6>Grand Total: Quantity: {{grand_total|first}} and Value: N{{grand_total|last|floatformat:'2g'}}</h6>
+        {% endif %}
         <div class="row">
           {% for source in obj %}
           {% if source %}
