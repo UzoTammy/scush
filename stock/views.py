@@ -291,7 +291,15 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
         product.unit_price = request.POST['selling'] if "selling" in request.POST else product.unit_price
         # Cost price gotten from modal form for cost price update only
         product.cost_price = request.POST['cost'] if "cost" in request.POST else product.cost_price
-        product.date_modified = timezone.now()
+
+        date = timezone.datetime(
+            timezone.now().year,
+            timezone.now().month,
+            timezone.now().day,
+            hour=11
+        )
+        product.date_modified = timezone.make_aware(date)
+        
         product.save()
 
         json_data = JsonDataset.objects.get(pk=2).dataset

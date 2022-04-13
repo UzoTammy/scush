@@ -281,7 +281,7 @@ class PriceChange(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         products = Product.objects.filter(active=True)
-        products = products.filter(date_modified__date=timezone.now())
+        products = products.filter(date_modified__hour=11)
         
         try:
             with open('extrafiles/price-update-footnote.txt', 'r') as rf:
@@ -292,7 +292,8 @@ class PriceChange(LoginRequiredMixin, TemplateView):
             'products': products,
             'logo_image': Ozone.logo(),
             'title': 'Recently Updated Prices',
-            'price_update_footnote': content
+            'price_update_footnote': content,
+            'user': request.user.username
         }
         pdf = render_to_pdf(self.template_name, context_dict=context)
         

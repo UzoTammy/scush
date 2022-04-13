@@ -8,7 +8,6 @@ from outlet.models import SalesCenter
 from core.models import JsonDataset
 
 
-
 class ChoiceOption:
     json_dict = JsonDataset.objects.get(pk=1).dataset
     SOURCES = [(i, i) for i in json_dict['product-source']]
@@ -17,8 +16,7 @@ class ChoiceOption:
     PACKS = [(i, i) for i in json_dict['product-packs']]
     STATES = [(i, i) for i in json_dict['product-states']]
     VOLUME_UNITS = [(i, i) for i in json_dict['product-volume-units']]
-    PARAMETERS = [(i, i) for i in json_dict['product-parameters']]
-
+    
 class Product(models.Model):
     name = models.CharField(max_length=20)
     source = models.CharField(max_length=50,
@@ -43,8 +41,8 @@ class Product(models.Model):
         max_digits=8, decimal_places=2, default_currency='NGN', 
         validators=[MinValueValidator(Money(1, 'NGN'), 
         message="Cost price can't be NGN0.00")])
-    parameter = models.CharField(max_length=20, choices=ChoiceOption.PARAMETERS, default='Normal',
-                                 help_text='<span class="text-danger">types but of same price e.g. maltina classic, maltina pineaple</span>')
+    parameter = models.CharField(max_length=20, default='Standard', verbose_name='Flavour, Shape or Size',
+                                 help_text='<span class="text-danger">products of the same name but different shape or flavour e.g. maltina: classic, pineaple, vanilla</span>')
     active = models.BooleanField(default=True, choices=[(True, 'Yes'), (False, 'No')], verbose_name='Active?')
     discount = models.FloatField(default=0.0)
     discount_type = models.CharField(max_length=20,
@@ -59,7 +57,9 @@ class Product(models.Model):
 
     
     def __str__(self):
-        return f"{self.name} {self.parameter} {self.unit_type}~{self.size_value}{self.size_value_unit}x{self.quantity_per_pack}{self.pack_type}"
+        if self.parameter == 'Standard':
+            return f"{self.name}~{self.size_value}{self.size_value_unit}x{self.quantity_per_pack}{self.pack_type}"
+        return f"{self.name} {self.parameter}~{self.size_value}{self.size_value_unit}x{self.quantity_per_pack}{self.pack_type}"
 
     def get_absolute_url(self):
         return reverse('product-detail', kwargs={'pk': self.pk})
