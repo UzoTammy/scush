@@ -11,6 +11,11 @@
   <div class="row mt-2">
       <div class="col-3 bg-light">
           <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <a href="#" 
+              data-toggle="modal" 
+              data-target="#stockReport"><i class="fa fa-vcard text-danger"></i> Report</a>
+            </li>
               <li class="list-group nav-item dropdown">
                 <a class="nav-link dropdown-toggle" 
                 data-toggle="dropdown"
@@ -20,7 +25,6 @@
                   <li class="dropdown-item"><a href="{% url 'stock-report-source' source %}">{{source}}</a></li>
                   {% endfor %}
                 </ul>
-                
               </li>
               <hr class="dropdown-divider">
               <li class="list-group-item">
@@ -36,7 +40,14 @@
           </ul>
       </div>
       <div class="col-9">
-        <h5 class="text-italics text-left">Current Date: {{current_date|date:'d-M-Y'}}</h5>
+        <h5 class="text-italics text-left">{{msg}}: {{current_date|date:'d-M-Y'}}</h5>
+        {% if not obj %}
+        <h6 class="ml-5">No Record Found 
+          <i class="fa fa-exclamation text-danger"></i>
+          <i class="fa fa-exclamation text-danger"></i>
+          <i class="fa fa-exclamation text-danger"></i>
+        </h6>
+        {% else %}
         {% if grand_total|first != 0 %}
         <h6>Grand Total: Quantity: {{grand_total|first}} and Value: N{{grand_total|last|floatformat:'2g'}}</h6>
         {% endif %}
@@ -79,12 +90,14 @@
           {% endif %}
           {% endfor %}
         </div>
-              
+        {% endif %}      
       </div>
   </div>
 </div>  
+
+
   <!-- Modal footnote-->
-<div class="modal fade" 
+<!-- <div class="modal fade" 
 id="footNotePriceUpdate" 
 data-backdrop="static" 
 data-keyboard="false" 
@@ -120,9 +133,35 @@ aria-hidden="true">
   </form>
     </div>
   </div>
+</div> -->
+
+<!-- Stock report Modal -->
+<div class="modal fade" id="stockReport" tabindex="-1" aria-labelledby="stockReportTitle" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="stockReportTitle">Stock Report - Select Date</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="." method="GET">
+          <div class="modal-body">
+              <div class="form-group">
+                  <label class="form-label" for="#">Pick a Date</label>
+                  <input id="stockReportInput" class="form-control" type="date" name="reportDate" onchange="reportDateFunc()">
+              </div>   
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
+              <button id="btnReportOK" type="submit" class="btn btn-info" disabled>OK</button>        
+          </div>
+      </form>
+    </div>
+  </div>
 </div>
 
-  <!-- Stock Report Date Modal -->
+<!-- Stock add Modal -->
 <div class="modal fade" id="stockAddModal" tabindex="-1" aria-labelledby="stockAddModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -149,7 +188,7 @@ aria-hidden="true">
 </div>
 
   <!-- modify Stock  Modal -->
-<div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -172,10 +211,10 @@ aria-hidden="true">
       </form>
     </div>
   </div>
-</div>
+</div> -->
 
   <!-- View Stock  Modal -->
-<div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -198,15 +237,28 @@ aria-hidden="true">
       </form>
     </div>
   </div>
-</div>
+</div> -->
+
 
 <script>
+
+    function reportDateFunc() {
+      
+      if (document.getElementById('stockReportInput').value == '') {
+          document.getElementById('btnReportOK').disabled = true;
+      } else {
+          document.getElementById('btnReportOK').disabled = false;
+      }  
+    }
+
     function addFunc() {
       
       if (document.getElementById('stockAddInput').value == '') {
           document.getElementById('btnAdd').disabled = true;
+          console.log('true')
       } else {
           document.getElementById('btnAdd').disabled = false;
+          console.log(false)
       }  
     }
 

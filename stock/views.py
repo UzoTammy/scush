@@ -102,6 +102,8 @@ class ProductHomeView(LoginRequiredMixin, View):
             'total_count': Product.objects.all().count(),
             'nb_count': Product.objects.filter(source='NB').count(),
             'gn_count': Product.objects.filter(source='GN').count(),
+            'mss_count': Product.objects.filter(source='MSS').count(),
+            'ips_count': Product.objects.filter(source='IPS').count(),
             'ib_count': Product.objects.filter(source='IB').count(),
             'quantity_delivered': self.delivery_qty_values(DeliveryNote.objects.all())[0],
             'quantity_rejected': self.delivery_qty_values(DeliveryNote.objects.all())[1],
@@ -153,12 +155,20 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['sources'] = content_dict['product-source']
 
         obj = JsonDataset.objects.get(pk=2)
-        if self.request.GET != {}:
-            content = obj.dataset
-            content['closing-stock-date'] = [self.request.GET['theDate']]
-            obj.dataset = content
-            obj.save()
         date_string = obj.dataset['closing-stock-date'][0]
+        context['msg'] = 'Report Based On Fixed Date'
+        if self.request.GET != {}:
+            if 'theDate' in self.request.GET.keys():
+                content = obj.dataset
+                content['closing-stock-date'] = [self.request.GET['theDate']]
+                obj.dataset = content
+                obj.save()
+                date_string = obj.dataset['closing-stock-date'][0]
+                
+            if 'reportDate' in self.request.GET.keys():
+                date_string = self.request.GET['reportDate']
+                context['msg'] = 'Report Based On Selected Date'
+        
         context['current_date'] = datetime.datetime.strptime(date_string, "%Y-%m-%d").date()
 
         source_list, total_list = list(), list()
