@@ -29,7 +29,9 @@
                     <th scope="col">ID</th>
                     <th scope="col">Image</th>
                     <th scope="col">Product Description</th>
+                    {% if view.kwargs.source == 'All' %}
                     <th scope="col">Source</th>
+                    {% endif %}
                     <th scope="col">Category</th>
                     <th scope="col">Cost Price</th>
                     <th scope="col">Sales Price</th>
@@ -48,7 +50,9 @@
                              alt="">
                     </th>
                     <td><a href="{% url 'product-detail' product.pk %}">{{product}}</a></td>
+                    {% if view.kwargs.source == 'All' %}
                     <td>{{product.source}}</td>
+                    {% endif %}
                     <td>{{product.category}}</td>
                     <td>{{product.cost_price}}</td>
                     <td>{{product.unit_price}}</td>

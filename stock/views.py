@@ -171,7 +171,7 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         
         context['current_date'] = datetime.datetime.strptime(date_string, "%Y-%m-%d").date()
 
-        source_list, total_list = list(), list()
+        source_list, total_list, sources = list(), list(), list()
         for source in context['sources']:
             qs = ProductExtension.objects.filter(date=context['current_date'], product__source=source)
             qs = qs.annotate(value=F('stock_value')*F('cost_price'))
@@ -180,10 +180,17 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 (qs.aggregate(Sum('stock_value'))['stock_value__sum'],
                 qs.aggregate(Sum('value'))['value__sum'])
             )
+            sources.append((
+                    {'source': source,
+                    'qty': qs.aggregate(Sum('stock_value'))['stock_value__sum'],
+                    'value': qs.aggregate(Sum('value'))['value__sum'],
+                    'percent': '%'}
+                    ))
         
         context['obj'] = [i for i in source_list if i.exists()]
         total_list = [i for i in total_list if i[0] is not None]
         context['totals'] = total_list
+        context['source_total'] = [i for i in sources if i['qty'] is not None]
         qty, val = 0, Decimal('0')
         for x, y in total_list:
             qty += x
@@ -391,7 +398,7 @@ class ProductPerformanceDetailView(LoginRequiredMixin, UserPassesTestMixin, Deta
 
 class ProductExtensionUpdateView(LoginRequiredMixin, UpdateView):
     model = ProductExtension
-    fields = '__all__'
+    fields = ('product', 'date', 'stock_value')
     template_name = 'stock/report/productextension_form.html'
 
     def get_context_data(self, **kwargs):

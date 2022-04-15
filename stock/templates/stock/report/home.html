@@ -14,12 +14,12 @@
             <li class="list-group-item">
               <a href="#" 
               data-toggle="modal" 
-              data-target="#stockReport"><i class="fa fa-vcard text-danger"></i>Daily Report</a>
+              data-target="#stockReport"><i class="fa fa-vcard text-danger"></i> Daily Report</a>
             </li>
               <li class="list-group nav-item dropdown">
                 <a class="nav-link dropdown-toggle" 
                 data-toggle="dropdown"
-                href="#">Category</a> 
+                href="#">Sources</a> 
                 <ul class="dropdown-menu">
                   {% for source in sources %}
                   <li class="dropdown-item"><a href="{% url 'stock-report-source' source %}">{{source}}</a></li>
@@ -49,13 +49,59 @@
         </h6>
         {% else %}
         {% if grand_total|first != 0 %}
-        <h6>Grand Total: Quantity: {{grand_total|first}} and Value: N{{grand_total|last|floatformat:'2g'}}</h6>
+        
+        <div class="row mb-3">
+          <div class="col">
+            <div class="accordion" id="accordionExample">
+              <div class="card">
+                <div class="card-header" id="headingOne">
+                  <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      <h6>Grand Total: Quantity: {{grand_total|first}} and Value: N{{grand_total|last|floatformat:'2g'}}</h6>
+                    </button>
+                  </h2>
+                </div>
+            
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                  <div class="card-body">
+                    <table class="table">
+                      <thead>
+                        <tr class="text-right">
+                          <th class="text-left">Source</th>
+                          <th>Qty</th>
+                          <th>Value</th>
+                          <th>%</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for dict_object in source_total %}
+                        <tr class="text-right">
+                          <td class="text-left">{{dict_object.source}}</td>
+                          <td>{{dict_object.qty}}</td>
+                          <td>{{dict_object.value|floatformat:'2g'}}</td>
+                          {% with grand_total|last as gtl %}
+                          <td>{{dict_object.value|div:gtl|multiply:100|floatformat:'2g'}}</td>
+                          {% endwith %}
+                        </tr>
+                        {% endfor%}
+                      </tbody>
+                    </table>
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        
         {% endif %}
+
         <div class="row">
           {% for source in obj %}
-          {% if source %}
+          
           <div class="col">
-              <table class="table table-responsive" data-toogle="table">
+              <table class="table table-responsive">
                 {% with source|first as first_source %}
                 <legend class="text-danger">{{first_source.product.source}}</legend>
                 {% endwith %}
@@ -71,7 +117,7 @@
                   
                   {% for item in source %}
                   <tr>
-                    <td>{{item.product}}</td>
+                    <td><a href="{% url 'product-ext-update' item.pk %}">{{item.product}}</a></td>
                     <td class="text-right">{{item.cost_price.amount}}</td>
                     <td class="text-right">{{item.stock_value}}</td>
                     <td class="text-right">{{item.value|floatformat:'2g'}}</td>
@@ -87,7 +133,7 @@
                 </tfoot>
               </table>
           </div>
-          {% endif %}
+          
           {% endfor %}
         </div>
         {% endif %}      

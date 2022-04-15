@@ -1,10 +1,22 @@
 {% extends 'users/base.html' %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-3">
+    <h3 class="text-center">Detailed View of Stock</h3>
+        
     <div class="row">
         <div class="col">
-            {{object}}
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Product: {{object.product}}</li>
+                <li class="list-group-item">Cost: {{object.cost_price}}</li>
+                <li class="list-group-item">Selling: {{object.selling_price}}</li>
+                <li class="list-group-item">Quantity: {{object.stock_value}}</li>
+                <li class="list-group-item">Date: {{object.date}}</li>
+                <li class="list-group-item">Sellout: {{object.sell_out}}</li>
+                <li class="list-group-item">Status: {{object.status}}</li>
+                <li class="list-group-item">Value: {{object.value_of_stock}}</li>
+              </ul>
+              <a class="btn btn-dark float-right mt-3" href="{% url 'stock-report' %}"><i class="fa fa-reply text-danger"></i> Return</a>
         </div>
     </div>
 </div>
