@@ -472,9 +472,9 @@ class ProductExtensionProduct(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         products = list()
-        list_of_products = self.get_queryset().values_list('product__name', flat=True).distinct()
+        list_of_products = self.get_queryset().values_list('product__pk', flat=True).distinct()
         for product in list_of_products:
-            qs = self.get_queryset().filter(product__name=product).order_by('date')
+            qs = self.get_queryset().filter(product__pk=product).order_by('date')
             if qs.exists():
                 products.append(qs)
         context['products'] = products

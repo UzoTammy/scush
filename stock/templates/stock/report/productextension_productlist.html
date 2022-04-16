@@ -16,7 +16,11 @@
                                 <h2 class="mb-0">
                                   <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{forloop.counter}}" aria-expanded="true" aria-controls="collapseOne">
                                     {% with product_obj|first as obj %}
+                                    {% if parameter == 'Standard' %}
+                                    {{obj.product.name}}
+                                    {% else %}
                                     {{obj.product.name}} {{obj.product.parameter}}
+                                    {% endif %}
                                     {% endwith %}
                                     <a class="float-right ml-3" href="{% url 'stock-month' view.kwargs.month %}"><i class="fa fa-reply"></i> Return</a>
                                     <!-- <a class="float-right" href="{% url 'stock-month' view.kwargs.month %}">Products</a> -->
@@ -35,7 +39,6 @@
                                             <tr>
                                                 <th>Date</th>
                                                 <th class="text-right">Cost</th>
-                                                <th class="text-right">Selling</th>
                                                 <th class="text-right">Qty</th>
                                                 <th class="text-right">Value(N)</th>
                                             </tr>
@@ -44,8 +47,7 @@
                                             {% for product in product_obj %}
                                             <tr>
                                                 <td>{{product.date|date:'jS'}}</td>
-                                                <td class="text-center">{{product.cost_price.amount}}</td>
-                                                <td class="text-right">{{product.selling_price.amount}}</td>
+                                                <td class="text-right">{{product.cost_price.amount}}</td>
                                                 <td class="text-right">{{product.stock_value}}</td>
                                                 <td class="text-right">{{product.value|floatformat:'2g'}}</td>
                                             </tr>
