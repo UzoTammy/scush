@@ -271,6 +271,13 @@ class Month:
             return len(week_one + result)
 
 
+    @staticmethod
+    def month_int(month):
+        for i in range(1, 13):
+            if month == calendar.month_name[i]:
+                break
+        return i    
+
 class DateRange:
     def __init__(self, start_date, end_date):
         self.start_date = start_date
@@ -392,6 +399,7 @@ class Taxation:
             return first + second + third + forth + fifth
         else:
             return annual_taxable_amount * Decimal(24)/Decimal(100)
+
 
 
 

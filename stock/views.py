@@ -1,9 +1,11 @@
+import calendar
 import datetime
 from decimal import Decimal
 from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.generic.base import TemplateView
 from django.contrib import messages
+from numpy import append
 from .models import (Product, ProductPerformance, ProductExtension)
 from core.models import JsonDataset
 from delivery.models import DeliveryNote
@@ -11,6 +13,7 @@ from django.db.models import Sum, F
 from django.views.generic import (
     View, ListView, DetailView, CreateView, UpdateView, DeleteView)
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from ozone import mytools
 
 
 permitted_group_name = 'Sales'
@@ -196,7 +199,7 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             qty += x
             val += y
         context['grand_total'] = (qty, val)
-        
+        context['months'] = (calendar.month_name[x] for x in range(1, 13))
         return context
 
 
@@ -319,7 +322,7 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
             product.date_modified = timezone.now()
         else:
             # Cost price gotten from modal form for cost price update only
-            product.cost_price = request.POST['cost'] 
+            product.cost_price = request.POST['cost']
         product.save()
 
         json_data = JsonDataset.objects.get(pk=2).dataset
@@ -410,3 +413,69 @@ class ProductExtensionUpdateView(LoginRequiredMixin, UpdateView):
 class ProductExtensionDetailView(LoginRequiredMixin, DetailView):
     model = ProductExtension
     template_name = 'stock/report/productextension_detail.html'
+
+
+class ProductExtensionListView(LoginRequiredMixin, ListView):
+
+    model = ProductExtension
+    template_name = 'stock/report/productextension_monthly.html'
+
+    def get_queryset(self):
+        year = datetime.date.today().year
+        qs = super().get_queryset().filter(date__year=year)
+        qs = qs.annotate(value=F('cost_price')*F('stock_value'))
+        
+        if self.kwargs['month'] != year:
+            return qs.filter(date__month=mytools.Month.month_int(self.kwargs['month']))
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        content_dict = JsonDataset.objects.get(pk=1).dataset
+        dataset = list()
+        for source in content_dict['product-source']:
+            data = list()
+            qs = self.get_queryset().filter(product__source=source)
+            
+            year = datetime.date.today().year
+            month = mytools.Month.month_int(self.kwargs['month'])
+            for day in range(1, calendar.monthrange(year, month)[1]): 
+                date = datetime.date(year, month, day)
+                obj = qs.filter(date=date)
+                if obj.exists():
+                    data.append(
+                        {
+                        'date': date, 'source': source, 'objs': {
+                            'count': f'({obj.count()} of {Product.objects.filter(source=source).count()})',
+                            'qty': obj.aggregate(Sum('stock_value'))['stock_value__sum'],
+                            'value': obj.aggregate(Sum('value'))['value__sum']}
+                        }
+                                )
+            dataset.append(data)        
+        context['dataset'] = dataset
+        
+        return context
+
+
+
+class ProductExtensionProduct(LoginRequiredMixin, ListView):
+    model = ProductExtension
+    template_name = 'stock/report/productextension_productlist.html' 
+
+    def get_queryset(self):
+        qs = super().get_queryset().annotate(value=F('cost_price')*F('stock_value'))
+        return qs.filter(
+            product__source=self.kwargs['source'],
+            date__month=mytools.Month.month_int(self.kwargs['month'])
+            )     
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        products = list()
+        list_of_products = self.get_queryset().values_list('product__name', flat=True).distinct()
+        for product in list_of_products:
+            qs = self.get_queryset().filter(product__name=product).order_by('date')
+            if qs.exists():
+                products.append(qs)
+        context['products'] = products
+        return context

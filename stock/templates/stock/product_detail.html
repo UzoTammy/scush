@@ -135,6 +135,8 @@ tabindex="-1">
                   <div class="col">
                     <input id="inputSelling" placeholder="Enter New Selling Price" 
                     type="number"
+                    min="0"
+                    max="200000"
                     step=".01"
                     onchange="sellingFunc()" 
                     class="form-control" 
@@ -209,9 +211,13 @@ tabindex="-1">
               <div class="form-group">
                 
                 <input id="inputStock" onchange="stockFunc()" type="number" 
+                max="100000"
+                min="-100000"
+                step="1"
                 placeholder="Enter Closing Stock Quantity Here"
                 class="form-control" 
                 name="quantity" value="">
+                <span class="help-block text-danger">min</span>
               </div>
           </fieldset>
         </div>
@@ -302,10 +308,13 @@ tabindex="-1">
                   <div class="col">
                     <input id="inputCost" placeholder="Enter New Cost Price" 
                     type="number"
+                    min="0.1"
+                    max="200000"
                     step=".01"
                     onchange="costFunc()" 
                     class="form-control" 
                     name="cost" value="">
+                    <span class="help-block text-muted ml-3">Maximum price allowed is NGN200,000.00</span>
                   </div>
                   
                 </div>

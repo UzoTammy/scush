@@ -1,0 +1,66 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+{% block content %}
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col">
+                <h3 class="text-center">Monthly Report - {{view.kwargs.month}}, {% now 'Y' %}</h3>
+                {% for datas in dataset %}
+                {% if datas %}
+                <div class="accordion mb-3" id="accordionExample">
+                    <div class="card">
+                      <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                          <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{forloop.counter}}" aria-expanded="true" aria-controls="collapseOne">
+                            {% with datas|first as first_data %}
+                            {{first_data.source}}
+                            <a class="float-right ml-3" href="{% url 'stock-report' %}"><i class="fa fa-reply"></i> Return</a>
+                            <a class="float-right" href="{% url 'stock-report-product' view.kwargs.month first_data.source %}">Products</a>
+                            {% endwith %}
+                          </button>
+                        </h2>
+                      </div>
+                      
+                      <div id="collapse{{forloop.counter}}" 
+                        {% if forloop.counter == 1 %}
+                            class="collapse show" 
+                        {% else %}
+                            class="collapse"
+                        {% endif %}
+                      aria-labelledby="headingOne" 
+                      data-parent="#accordionExample">
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Source</th>
+                                        <th>Date</th>
+                                        <th class="text-center">Count</th>
+                                        <th class="text-right">Qty</th>
+                                        <th class="text-right">Value(N)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for data in datas %}
+                                    <tr>
+                                        <td>{{data.source}}</td>
+                                        <td>{{data.date|date:'d-m-Y'}}</td>
+                                        <td class="text-center">{{data.objs.count}}</td>
+                                        <td class="text-right">{{data.objs.qty}}</td>
+                                        <td class="text-right">{{data.objs.value|floatformat:'2g'}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                      </div>
+                    </div>
+                    
+                </div>
+                {% endif %}
+                {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}

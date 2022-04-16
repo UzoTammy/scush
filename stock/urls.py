@@ -16,7 +16,9 @@ urlpatterns = [
     path('stock/report/', ReportHomeView.as_view(), name='stock-report'),
     path('stock/<str:source>/', ReportStockCategory.as_view(), name='stock-report-source'),
     path('stock/<int:pk>/update/', ProductExtensionUpdateView.as_view(), name='product-ext-update'),
-    path('stock/<int:pk>/detail/', ProductExtensionDetailView.as_view(), name='product-ext-detail')
+    path('stock/<int:pk>/detail/', ProductExtensionDetailView.as_view(), name='product-ext-detail'),
+    path('stock/report/<str:month>/', ProductExtensionListView.as_view(), name='stock-month'),
+    path('stock/report/<str:month>/<str:source>/', ProductExtensionProduct.as_view(), name='stock-report-product')
 ]
 
 urlpatterns += [
