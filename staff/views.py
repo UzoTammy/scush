@@ -166,14 +166,36 @@ happiness of our staff is important, that is what we expect them to transfer to 
     def get(self, request):
         data, recordset = dict(), list()
         queryset = Employee.active.all()
-
-        if queryset:
+        ids = Permit.objects.filter(starting_from__year=datetime.date.today().year).values_list('staff__pk', flat=True).distinct()
+        permits = list()
+        for id in ids:
+            permits.append(Permit.objects.filter(staff__pk=id))
+        
+        permit_list = list()
+        for permit in permits:
+            hours, days = list(), list()
+            for obj in permit:
+                if obj.duration()[-1] == 'H':
+                    hours.append(int(obj.duration().replace('H', '')))
+                else:
+                    days.append(int(obj.duration().replace('D', '')))
+                
+            h = divmod(sum(hours), 10) if sum(hours) > 0 else (0, 0)
+            result = (sum(days) + h[0], h[1])
+            
+            permit_list.append({
+                'code': obj.staff.pk,
+                'name': obj.staff.fullname(),
+                'duration': result
+                })
+        
+        if queryset.exists():
             for obj in queryset:
                 countdown = mytools.DatePeriod.countdown(obj.staff.birth_date.strftime('%d-%m-%Y'), 10)
                 if countdown >= 0:
                     data[obj.staff.first_name] = countdown
 
-        if Reassign:
+        if Reassign.objects.exists():
             qs_reassign = Reassign.objects.filter(reassign_type='A')
 
             for record in qs_reassign:
@@ -213,7 +235,7 @@ happiness of our staff is important, that is what we expect them to transfer to 
             'reassign_data': recordset,
             'today': datetime.date.today(),
             'staff_category': 'terminate',
-            'permissions': Permit.objects.all().order_by('-staff__pk')
+            'permissions': permit_list #Permit.objects.all().order_by('-starting_from')
         }
         return render(request, self.template_name, context=context)
 

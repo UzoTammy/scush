@@ -235,9 +235,17 @@
                         <tbody>
                         {% for permit in permissions %}
                         <tr>
-                            <td>{{permit.staff.id|zeropadding:3}}</td>
-                            <td>{{permit.staff.fullname}}</td>
-                            <td>{{permit.duration }}</td>
+                            <td>{{permit.code|zeropadding:3}}</td>
+                            <td>{{permit.name}}</td>
+                            <td>
+                                {% if permit.duration|first != 0 %}
+                                {{permit.duration|first }}Day{{permit.duration|first|pluralize}}
+                                {% endif %}
+
+                                {% if permit.duration|last != 0 %}
+                                {{permit.duration|last}}Hr{{permit.duration|last|pluralize}}
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
 
