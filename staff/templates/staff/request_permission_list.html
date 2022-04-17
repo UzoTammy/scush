@@ -41,33 +41,35 @@
     <hr>
     <div class="row">
         <div class="col">
-            <table class="table table-info" 
+            <table class="table" 
             data-toggle="table" 
             data-pagination="true">
-                <caption>List of Granted Permissions</caption>
+                <caption>Cummulative List of Granted Permissions</caption>
                 <thead class="bg-light">
                     <tr>
                         <th>ID</th>
-                        <!-- Request id -->
                         <th>Staff</th>
-                        <th>Reason</th>
-                        <th>Start Date</th>
-                        <th>Resume Date</th>
                         <th>Duration</th>
+                        <th>Count</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for object in permissions %}
                     <tr>
                         <td><a href="" class="fa fa-edit ml-2"></a>
-                            <a href="#">{{object.id|zeropadding:3}}</a>
+                            <a href="#">{{object.code|zeropadding:3}}</a>
                         </td>
-                        <!-- Request id -->
-                        <td>{{object.staff}}</td>
-                        <td>{{object.reason}}</td>
-                        <td>{{object.starting_from}}</td>
-                        <td>{{object.ending_at}}</td>
-                        <td>{{object.duration}}</td>
+                        <td>{{object.name}}</td>
+                        <td>
+                            {% if object.duration|first != 0 %}
+                            {{object.duration|first }}Day{{object.duration|first|pluralize}}
+                            {% endif %}
+
+                            {% if object.duration|last != 0 %}
+                            {{object.duration|last}}Hr{{object.duration|last|pluralize}}
+                            {% endif %}
+                        </td>
+                        <td>{{object.count}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

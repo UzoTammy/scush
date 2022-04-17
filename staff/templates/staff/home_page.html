@@ -62,7 +62,7 @@
                 <div class="row mb-1">
                   <a class="ml-1" href="{% url 'request-permission-list' %}">
                       <i class="fa fa-thumbs-up text-success"></i> 
-                      Pending Permission
+                      Permission
                       <sup class="badge badge-danger">new</sup>
                   </a>
                   </div>
@@ -224,12 +224,13 @@
                     data-pagination="true"
                     data-page-list="[5, 10, All]"
                     data-page-size="5">
-                        <caption>Permissions</caption>
+                        <caption>Permission This Year</caption>
                         <thead>
                         <tr>
                             <th>ID</th>
                             <th>Employee</th>
                             <th>Duration</th>
+                            <th>Count</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -246,6 +247,7 @@
                                 {{permit.duration|last}}Hr{{permit.duration|last|pluralize}}
                                 {% endif %}
                             </td>
+                            <td>{{permit.count}}</td>
                         </tr>
                         {% endfor %}
 

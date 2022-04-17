@@ -169,7 +169,7 @@ happiness of our staff is important, that is what we expect them to transfer to 
         ids = Permit.objects.filter(starting_from__year=datetime.date.today().year).values_list('staff__pk', flat=True).distinct()
         permits = list()
         for id in ids:
-            permits.append(Permit.objects.filter(staff__pk=id))
+            permits.append(Permit.objects.filter(starting_from__year=datetime.date.today().year).filter(staff__pk=id))
         
         permit_list = list()
         for permit in permits:
@@ -186,7 +186,8 @@ happiness of our staff is important, that is what we expect them to transfer to 
             permit_list.append({
                 'code': obj.staff.pk,
                 'name': obj.staff.fullname(),
-                'duration': result
+                'duration': result,
+                'count': permit.count()
                 })
         
         if queryset.exists():
@@ -1572,7 +1573,32 @@ class RequestPermissionListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['permissions'] = Permit.objects.all().order_by('-pk')
+
+        # get the list of all the staff that have taken permission this year
+        staff_taken_permission = Permit.objects.values_list('staff__pk', flat=True).distinct()
+        staff_list = list()
+        for staff in staff_taken_permission:
+            staff_list.append(Permit.objects.filter(staff__pk=staff))
+        
+        permit_list = list()
+        for permit in staff_list:
+            hours, days = list(), list()
+            for obj in permit:
+                if obj.duration()[-1] == 'H':
+                    hours.append(int(obj.duration().replace('H', '')))
+                else:
+                    days.append(int(obj.duration().replace('D', '')))
+                
+            h = divmod(sum(hours), 10) if sum(hours) > 0 else (0, 0)
+            result = (sum(days) + h[0], h[1])
+            
+            permit_list.append({
+                'code': obj.staff.pk,
+                'name': obj.staff.fullname(),
+                'duration': result,
+                'count': permit.count()
+                })
+        context['permissions'] = permit_list
         return context
 
 
