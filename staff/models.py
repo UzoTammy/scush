@@ -163,6 +163,9 @@ class Payroll(models.Model):
         period_month = mytools.Period.full_months[month]
         return f'{period_month}, {year}'
 
+    def gross_pay(self):
+        return self.salary - self.tax
+
 
 class Reassign(models.Model):
     

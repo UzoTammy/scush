@@ -1,8 +1,4 @@
-from django.db import models
-from django.db.models import fields
-from django.http.response import HttpResponse
-from django.shortcuts import render
-from django.views.generic import ListView, CreateView, DetailView, UpdateView, TemplateView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView
 from .models import Post
 from staff.models import Employee
 
@@ -12,7 +8,7 @@ class PostListView(ListView):
     ordering = ['-pk']
     paginate_by = 4
 
-
+    
 class PostCreateView(CreateView):
     model = Post
     fields = ('title', 'content')

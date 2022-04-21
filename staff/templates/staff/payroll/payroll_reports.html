@@ -13,11 +13,11 @@
                         !!!
                     </span>
                 </h5>
-                <h5>
+                <h6>
                     <i class="fa fa-warning text-warning"></i>
                      A mail has been sent out for confirmation with the data below.
                     Kindly wait for approval before you proceed to pay
-                </h5>
+                </h6>
             </div>
         </div>
         <div class="row mt-3">
@@ -26,16 +26,14 @@
         </div>
     </div>
     <div class="row mt-3">
-        <div class="col">
+        <div class="col-6">
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">Salary: {{salary}}</li>
-                <li class="list-group-item">Tax: {{tax}}</li>
-                <li class="list-group-item">Balance: {{balance}}</li>
-                <li class="list-group-item">Credit: {{credit}}</li>
-                <li class="list-group-item">Debit: {{debit}}</li>
-                <li class="list-group-item">Net Pay: {{net_pay}}</li>
-                <li class="list-group-item">Deductions: {{deduction}}</li>
-                <li class="list-group-item">Outstanding: {{outstanding}}</li>
+                <li class="list-group-item">Salary <span class="badge badge-pill badge-light float-right">{{salary}}</span></li>
+                <li class="list-group-item">Tax <span class="badge badge-pill badge-light float-right">{{tax}}</span></li>
+                <li class="list-group-item">Gross Pay <span class="badge badge-pill badge-light float-right">{{gross_pay}}</span></li>
+                <li class="list-group-item">Credit <span class="badge badge-pill badge-light float-right">{{credit}}</span></li>
+                <li class="list-group-item">Debit <span class="badge badge-pill badge-light float-right">{{debit}}</span></li>
+                <li class="list-group-item">Net Pay <span class="badge badge-pill badge-light float-right">{{net_pay}}</span></li>
             </ul>
             <hr>
         </div>

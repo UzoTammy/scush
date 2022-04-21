@@ -22,14 +22,11 @@
             <th>Average</th>
             <th>Minimum</th>
             <th>Maximum</th>
-            <th>Balance</th>
             <th>Salary</th>
             <th>Tax</th>
             <th>Credit</th>
             <th>Debit</th>
             <th>Net Pay</th>
-            <th>Deduction</th>
-            <th>Outstanding</th>
           </tr>
         </thead>
         <tbody>
@@ -40,17 +37,21 @@
             <td class="text-right">{{data.average.net_pay|floatformat:2}}</td>
             <td class="text-right">{{data.minimum.net_pay|floatformat:2}}</td>
             <td class="text-right">{{data.maximum.net_pay|floatformat:2}}</td>
-            <td class="text-right">{{data.balance.total|floatformat:2}}</td>
             <td class="text-right">{{data.salary.total|floatformat:2}}</td>
             <td class="text-right">{{data.tax.total|floatformat:2}}</td>
             <td class="text-right">{{data.credit.total|floatformat:2}}</td>
             <td class="text-right">{{data.debit.total|floatformat:2}}</td>
             <td class="text-right">{{data.net_pay.total|floatformat:2}}</td>
-            <td class="text-right">{{data.deduction.total|floatformat:2}}</td>
-            <td class="text-right">{{data.outstanding.total|floatformat:2}}</td>
           </tr>
           {% endfor %}
+          <tr class="bg-light">
+            <td class="text-center" colspan="5"><b>Total</b></td>
+            {% for item in totals %}
+            <td class="text-right"><b>{{item|floatformat:'2g'}}</b></td>
+            {% endfor %}
+          </tr>
         </tbody>
+          
       </table>
       </div>
   </div>

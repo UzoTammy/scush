@@ -11,88 +11,85 @@
             <h5 class="text-danger">Periods that can be regenerated</h5>
         </div>
     </div>
-        <form action="#" method="post">
-        {% csrf_token %}
-        <div class="row d-flex justify-content-center row-cols-1 row-cols-sm-2 row-cols-md-4">
-        {% for str_period, period in periods %}
-            <div class="col">
-                <div class="form-group form-inline">
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body text-white bg-dark">
-                            <h5 class="card-title">{{str_period}}</h5>
-                            <p class="card-text text-center">
-                            <input type="submit"
-                            class="btn btn-sm btn-outline-warning"
-                            id="{{str_period}}"
-                            name="period"
-                            value="{{period}}"></p>
-                        </div>
+    <form action="#" method="post">
+    {% csrf_token %}
+    <div class="row d-flex justify-content-center row-cols-1 row-cols-sm-2 row-cols-md-4">
+    {% for str_period, period in periods %}
+        <div class="col">
+            <div class="form-group form-inline">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body text-white bg-dark">
+                        <h5 class="card-title">{{str_period}}</h5>
+                        <p class="card-text text-center">
+                        <input type="submit"
+                        class="btn btn-sm btn-outline-warning"
+                        id="{{str_period}}"
+                        name="period"
+                        value="{{period}}"></p>
                     </div>
                 </div>
             </div>
-        {% endfor %}
         </div>
+    {% endfor %}
+    </div>
     </form>
+
     <div class="row">
     {% if period %}
     <div class="col m-3">
         <table data-toggle="table"
                data-pagination="true"
                data-search="true"
+               data-page-list="[5, 10, 15, All]"
                data-show-columns="true"
                data-show-footer="true"
-               class="table table-bordered caption-top table-sm"
-               width="40px" bgcolor="#efe3de">
-            <caption class="text-secondary">Current Payroll Table for the period {{period}}
+               class="table table-bordered table-sm"
+               width="40px" bgcolor="#ffffff">
+            <caption>Current Payroll Table for the period {{period}}
                 <span class="text-success float-right">{{the_period}}</span>
             </caption>
-    <thead class="bg-secondary text-white text-center">
-        <tr>
-          <th scope="col">ID</th>
-          <th scope="col">Staff</th>
-          <th scope="col">Status</th>
-          <th scope="col">Salary</th>
-          <th scope="col">Tax</th>
-          <th scope="col">Balance</th>
-          <th scope="col">Credit Amount</th>
-          <th scope="col">Debit Amount</th>
-          <th scope="col" class="bg-success">Net Pay</th>
-          <th scope="col">Deduction</th>
-          <th scope="col">Outstanding</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for record in records  %}
-            <tr>
-                <th scope="row">{{ record.staff.id|zeropadding:3 }}</th>
-                <td><a href="#">{{record.staff}}</a></td>
-                <td>{{record.status|yesno:"Paid, Not Paid"}}</td>
-                <td class="text-right">{{record.salary}}</td>
-                <td class="text-right">{{record.tax}}</td>
-                {% if record.staff.balance.amount >= 0 %}
-                <td class="text-right">{{record.staff.balance}}</td>
-                {% else %}
-                <td class="text-right text-danger">{{record.staff.balance|abs}}</td>
-                {% endif %}
-                <td class="text-right">{{record.credit_amount}}</td>
-                <td class="text-right text-danger">{{record.debit_amount}}</td>
-                <td class="bg-success text-white text-right">
-                    <b>{{record.net_pay}}</b></td>
-                <td class="text-right">{{record.deduction}}</td>
-                {% if record.outstanding.amount >= 0 %}
-                <td class="text-right">{{record.outstanding}}</td>
-                {% else %}
-                <td class="text-right text-danger">{{record.outstanding|abs}}</td>
-                {% endif %}
-            </tr>
-        {% endfor %}
-    </tbody>
-<tfoot>
-    <tr>
-        <th colspan="2"></th>
-    </tr>
-</tfoot>
-</table>
+            <thead class="bg-secondary text-white text-center">
+                <tr>
+                <th>ID</th>
+                <th>Staff</th>
+                <th>Salary</th>
+                <th>Tax</th>
+                <th>Gross</th>
+                <th>Credit Amount</th>
+                <th>Debit Amount</th>
+                <th class="bg-success">Net Pay</th>
+                <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records  %}
+                    <tr>
+                        <th>{{ record.staff.id|zeropadding:3 }}</th>
+                        <td><a href="#">{{record.staff}}</a></td>
+                        <td class="text-right">{{record.salary}}</td>
+                        <td class="text-right">{{record.tax}}</td>
+                        <td class="text-right">{{record.gross_pay}}</td>
+                        <td class="text-right">{{record.credit_amount}}</td>
+                        <td class="text-right text-danger">{{record.debit_amount}}</td>
+                        <td class="bg-success text-white text-right">
+                            <b>{{record.net_pay}}</b>
+                        </td>
+                        <td>{{record.status|yesno:"P, NP"}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="bg-secondary text-white">
+                <tr>
+                    <td class="text-center" colspan="3"> <b>Total</b></td>
+                    <td class="text-right"><b>1</b></td>
+                    <td class="text-right"><b>2</b></td>
+                    <td class="text-right"><b>3</b></td>
+                    <td class="text-right"><b>4</b></td>
+                    <td class="text-right text-danger"><b>5</b></td>
+                    <td class="text-right text-success"><b>6</b></td>
+                </tr>
+            </tfoot>
+        </table>
         {% if request.POST %}
             <form action="{% url 'regenerated-payroll' %}" method="post">{% csrf_token %}
                 <button name="period" value="{{period}}" type="submit"
@@ -107,7 +104,8 @@
         <h5>Click on the period above if you wish to regenerate payroll</h5>
     </div>
     {% endif %}
-</div>
+    </div>
+
     <div class="row">
         <div class="col">
             <ul class="text-danger">
@@ -125,7 +123,6 @@
     </div>
 {% else %}
     <h1>No payroll to regenerate</h1>
-<!--    <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>-->
 {% endif %}
     <div class="row float-right">
         <div class="col">

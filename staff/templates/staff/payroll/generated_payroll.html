@@ -11,8 +11,9 @@
                    data-pagination="true"
                    data-search="true"
                    data-show-columns="true"
+                   data-page-list="[5, 10, All]"
                    class="table table-bordered table-sm"
-                   width="40px" bgcolor="#e7efef">
+                   width="40px" bgcolor="#ffffff">
                 <caption>Generated Payroll for the period {{period}}
                     <span class="text-success float-right">{{month}}, {{year}}</span>
                 </caption>
@@ -26,8 +27,6 @@
                     <th>Credit</th>
                     <th>Debit</th>
                     <th>Net Pay</th>
-                    <th>Deduction</th>
-                    <th>Outstanding</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -40,25 +39,20 @@
                     <td class="text-right">{{record.gross_pay.amount}}</td>
                     <td class="text-right">{{record.credit.amount|floatformat:"2g"}}</td>
                     <td class="text-right text-danger">{{record.debit.amount|floatformat:"2g"}}</td>
-                    <td class="text-success text-right">{{record.earning}}</td>
-                    <td class="text-right">{{record.deduction.amount|floatformat:"2g"}}</td>
-                    <td class="text-right">{{record.outstanding.amount|floatformat:'2g'}}</td>
+                    <td class="text-success text-right">{{record.earning.amount}}</td>
                 </tr>
                 {% endfor %}
                 
                 </tbody>
-                <tfoot class="text-success text-bold">
+                <tfoot class="bg-dark text-white">
                     <tr>
-                        <td class="text-center" colspan="2">Total</td>
-                        <td class="text-right"><b>{{salary}}</b></td>
-                        <td class="text-right"><b>{{tax}}</b></td>
-                        <td class="text-right"><b>{{gross_pay}}</b></td>
-                        <td class="text-right"><b>{{credit}}</b></td>
-                        <td class="text-right"><b>{{debit}}</b></td>
-                        <td class="text-right"><b>{{net_pay}}</b></td>
-                        <td class="text-right"><b>{{deduction}}</b></td>
-                        <td class="text-right"><b>{% if outstanding < 0 %}{{ outstanding|abs}}{% else %}{{ outstanding}}{% endif %}</b></td>
-                    
+                        <td class="text-center" colspan="2"> <b>Total</b></td>
+                        <td class="text-right"><b>{{salary.amount}}</b></td>
+                        <td class="text-right"><b>{{tax.amount}}</b></td>
+                        <td class="text-right"><b>{{gross_pay.amount}}</b></td>
+                        <td class="text-right"><b>{{credit.amount}}</b></td>
+                        <td class="text-right text-danger"><b>{{debit.amount}}</b></td>
+                        <td class="text-right text-success"><b>{{net_pay.amount}}</b></td>
                     </tr>
                 </tfoot>
             </table>

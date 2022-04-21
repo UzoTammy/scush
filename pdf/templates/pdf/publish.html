@@ -1,0 +1,31 @@
+{% extends 'pdf/base.html' %}
+{% load custom_templates %}
+{% load static %}
+
+{% block head %}
+    <title>SCUSH|Staff Brief</title>
+{% endblock %}        
+{% block content %}
+    <div class='wrapper'>
+        <div class='header'>
+            <p class='title'>Your Brief for {% now 'jS M. Y' %}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class='details'>
+                    <p>
+                        <b style="text-align: center; font-size: large;">{{post.title|title}}</b> 
+                        <br><br>
+                        {{post.content}} 
+                        <br><br><br><br>
+                        <span style="color:rgb(85, 150, 247);">
+                            ----from the desk of the {{post.author.position}} ({{post.author}})
+                        </span>
+                    </p>
+                    <hr style="background-color: gray; color: gray;">
+                    <p>{{content}}</p>
+            </div>
+        </div>
+    </div>
+{% endblock%}    

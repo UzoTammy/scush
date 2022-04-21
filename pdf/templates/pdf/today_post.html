@@ -6,33 +6,34 @@
 {% block head %}
     <title>SCUSH|Today's Brief</title>
 {% endblock %}        
-    {% block content %}
-        <div class='wrapper'>
-            <div class='header'>
-                <p class='title'>Daily Brief for {% now 'jS M. Y' %}</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <div class='details'>
-                   {% for post in posts %} 
-                        <p>
-                            <b style="font-size: large;">{{post.title}}</b> <br>
-                            {{post.content}} <br>
-                            <span style="color:rgb(85, 150, 247);">
-                                ----from the desk of the {{post.author.position}} ({{post.author}})
-                            </span>
-                        </p>
-                        <hr style="background-color: gray; color: gray;">
-                   {% endfor %}
-                </div>
-            </div>
-        </div>
-<!--        footnote-->
-        <div class="row">
-            <br>
-        <div class="col">
-            <i style="color:red;">It is very important you go going through the daily brief before you resume work!!!</p>       
+{% block content %}
+    <div class='wrapper'>
+        <div class='header'>
+            <p class='title'>Daily Brief for {% now 'jS M. Y' %}</p>
         </div>
     </div>
+    <div class="row">
+        <div class="col">
+            <div class='details'>
+                {% for post in posts %} 
+                    <p>
+                        <b style="font-size: large;">{{post.title}}</b> <br>
+                        {{post.content}} <br>
+                        
+                        <span style="color:rgb(85, 150, 247);">
+                            ----from the desk of the {{post.author.position}} ({{post.author}})
+                        </span>
+                    </p>
+                    <hr style="background-color: gray; color: gray;">
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+<!--        footnote-->
+    <div class="row">
+        <br>
+    <div class="col">
+        <i style="color:red;">It is very important you go going through the daily brief before you resume work!!!</p>       
+    </div>
+</div>
 {% endblock content %}

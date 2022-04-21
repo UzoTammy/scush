@@ -90,11 +90,11 @@
                                     <th>Staff</th>
                                     <th>Basic</th>
                                     <th>Allowance</th>
+                                    <th>Salary</th>
                                     <th>Tax</th>
                                     <th>Credit</th>
                                     <th>Debit</th>
                                     <th>Net Pay</th>
-                                    <th>Deduction</th>
                                     <th>Status</th>
                                 </tr>
                                 </thead>
@@ -105,11 +105,11 @@
                                     <td>{{pay.staff.fullname}}</td>
                                     <td class="text-right">{{pay.salary.amount|multiply:40|div:100}}</td>
                                     <td class="text-right">{{pay.salary.amount|multiply:60|div:100}}</td>
+                                    <td class="text-right">{{pay.salary.amount}}</td>
                                     <td class="text-right">{{pay.tax.amount}}</td>
                                     <td class="text-right">{{pay.credit_amount.amount}}</td>
                                     <td class="text-right">{{pay.debit_amount.amount}}</td>
                                     <td class="text-right">{{pay.net_pay.amount}}</td>
-                                    <td class="text-right">{{pay.deduction.amount}}</td>
                                     {% if pay.status %}
                                     <td class="text-success text-center">
                                         <i class="fa fa-check"></i>

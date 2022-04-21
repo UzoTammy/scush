@@ -41,14 +41,14 @@
                            data-target="#staffSalary">
                         <i class="fa fa-credit-card text-warning"></i>
                         Change Salary
-                        </a>
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
                        data-toggle="modal"
                        data-target="#staffBalance">
                         <i class="fa fa-book text-warning"></i>
-                        Profile Balance (Gratuity)
+                        Gratuity
                     </a>
                 </li>
                 <li class="nav-item">
@@ -123,191 +123,193 @@
                             <h5 class="float-right">Survey Code: <span class="badge badge-info">{{question_obj.code|slugify}}</span></h5>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <p class="text-success">Full Salary: {{object.salary}}</p>
-                            <p class="text-success">Age: {{object.staff.birth_date|timesince}}</p>
-                            <p class="text-success">Payout <span><small class="text-muted">(since June 2021)</small></span>: {{naira}}{{payout|floatformat:'2g'}}</p>
-            
-                            <hr>
-                            <p>First Name: {{object.staff.first_name}}</p>
-                            <p>Second Name: {{object.staff.second_name}}</p>
-                            <p>Last Name: {{object.staff.last_name}}</p>
-                            <p>Date of Birth: {{object.staff.birth_date}}</p>
-                            <p>Gender: {{object.staff.gender}}</p>
-                            <p>Marital Status: {{object.staff.marital_status}}</p>
-                            <p>Qualification: {{object.staff.qualification}}</p>
-                            <p>Course: {{object.staff.course }}</p>
-                            <p>Personal Mobile:
-                                {% if object.staff.mobile is None %}
-                                {{object.staff.mobile}}
-                                {% else %}
-                                {{object.staff.mobile|addsep}}
-                                {% endif %}
-                            </p>
-                            <p>Personal Email: {{object.staff.email}}</p>
-                            <p>Application Date: {{object.staff.apply_date}}</p>
-                            <p>Data Modified Time: {{object.staff.modified_date}}</p>
-                            <p>Residential Address: {{object.staff.address}}</p>
-                        </div>
-                        <div class="col-6">
-                            <p>Gratuity: <span class="text-success">{{naira}}{{total_balance}}</span></p>
-                            <p>Worked For: <span class="text-success">{{object.date_employed|timesince}}</span></p>
-                            {% if consumed_days|first == 0 and consumed_days|last == 0 %}
-                            <p>Permissions: <span class="text-success">No permission taken or granted</span></p>
-                            {% else %}
-                            <p>Permissions: <span class="text-danger">{{consumed_days|first}}Day{{consumed_days|first|pluralize}}, {{consumed_days|last}}Hour{{consumed_days|last|pluralize}}</span></p>
-                            {% endif %}
-                            <hr>
-                            <p>Date Employed: {{object.date_employed}}</p>
-                            <p>Official Email: {{object.official_email}}</p>
-                            <p>Official Mobile:
-                                {% if object.official_mobile is None %}
-                                {{object.official_mobile}}
-                                {% else %}
-                                {{object.official_mobile|addsep}}
-                                {% endif %}
-                            </p>
-                            <p>Management Staff?:
-                                <span>{{ object.is_management|yesno|upper }}</span>
-                            </p>
-                            <p>Duty Status: {{object.status|yesno:'Active, Terminated, Passive'}}</p>
-                            <p>Status:
-                                {{object.is_confirmed|yesno:'CONFIRMED, PROBATION'}}
-                            </p>
-                            <p>Position: {{object.position}}</p>
-                            <p>Department: {{object.department}}</p>
-                            <p>Outlet: {{object.branch}}</p>
-                            <p>Banker: {{object.banker}}</p>
-                            <p>Account Number: {{object.account_number|addsep}}</p>
-                            <p>Basic Salary: {{object.basic_salary}} | Allowance: {{object.allowance}}</p>
-                            <p>Tax Payable:{{object.tax_amount}}</p>
-                        </div>
-                    </div>
-                    <div class="row ml-2">
-                        <div class="container">
-                            {% if reassigned %}
-                            <h3 class="text-info" style="font-family:cursive;">Reassigned</h3>
-                            <div class="row bg-light mb-2">
-                                <div class="col">
-                                    <table class="table" data-toggle="table">
-                                        <thead>
-                                        <tr>
-                                            <th>Type</th>
-                                            <th>Position:From</th>
-                                            <th>Position:To</th>
-                                            <th>Branch:From</th>
-                                            <th>Branch:To</th>
-                                            <th>Date</th>
-                                            <th>Remark</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for reassign in reassigned %}
-                                        <tr>
-                                            <td>{{reassign.reassign_type}}</td>
-                                            <th>{{reassign.from_position}}</th>
-                                            <th>{{reassign.to_position}}</th>
-                                            <th>{{reassign.from_branch}}</th>
-                                            <th>{{reassign.to_branch}}</th>
-                                            <th>{{reassign.start_date}}</th>
-                                            <th>{{reassign.remark}}</th>
-                                        </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                        <tfoot></tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                            {% endif %}
-
-                            {% if salary_changed %}
-                            <h3 class="text-info" style="font-family:cursive;">Salary Changes</h3>
-                            <div class="row bg-light mb-2">
-                                <div class="col">
-                                    <table class="table" data-toggle="table">
-                                        <thead>
-                                        <tr>
-                                            <th>Date</th>
-                                            <th>Previous Salary</th>
-                                            <th>Current Salary</th>
-                                            <th>Remark</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for salary in salary_changed %}
-                                        <tr>
-                                            <td>{{salary.date}}</td>
-                                            <th>{{salary.previous_value}}</th>
-                                            <th>{{salary.value}}</th>
-                                            <th>{{salary.remark}}</th>
-                                        </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                        <tfoot></tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                            {% endif %}
-
-                            {% if permissions %}
-                            <h3 class="text-info" style="font-family:cursive;">Permissions</h3>
-                            <div class="row bg-light mb-2">
-                                <div class="col">
-                                    <table class="table">
-                                        <thead>
-                                        <tr>
-                                            <th>Start Date</th>
-                                            <th>Resumption Date</th>
-                                            <th>Reason</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for permission in permissions %}
-                                        <tr>
-                                            <td>{{permission.starting_from}}</td>
-                                            <th>{{permission.ending_at}}</th>
-                                            <th>{{permission.reason}}</th>
-                                        </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                        <tfoot></tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                            {% endif %}
-
-                            {% if suspensions %}
-                            <h3 class="text-info" style="font-family:cursive;">Suspensions</h3>
-                            <div class="row bg-light mb-2">
-                                <div class="col">
-                                    <table class="table">
-                                        <thead>
-                                        <tr>
-                                            <th>Start Date</th>
-                                            <th>Resumption Date</th>
-                                            <th>Reason</th>
-                                            <th>Penalty</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for suspension in suspensions %}
-                                        <tr>
-                                            <td>{{suspension.start_date}}</td>
-                                            <th>{{suspension.resumption_date}}</th>
-                                            <th>{{suspension.reason}}</th>
-                                            <th>{{suspension.penalty}}</th>
-                                        </tr>
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
+                    
                 </div>
                 
+            </div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <p class="text-success">Full Salary: {{object.salary}}</p>
+                    <p class="text-success">Age: {{object.staff.birth_date|timesince}}</p>
+                    <p class="text-success">Payout <span><small class="text-muted">(since June 2021)</small></span>: {{naira}}{{payout|floatformat:'2g'}}</p>
+                    <hr>
+                    <p>First Name: {{object.staff.first_name}}</p>
+                    <p>Second Name: {{object.staff.second_name}}</p>
+                    <p>Last Name: {{object.staff.last_name}}</p>
+                    <p>Date of Birth: {{object.staff.birth_date}}</p>
+                    <p>Gender: {{object.staff.gender}}</p>
+                    <p>Marital Status: {{object.staff.marital_status}}</p>
+                    <p>Qualification: {{object.staff.qualification}}</p>
+                    <p>Course: {{object.staff.course }}</p>
+                    <p>Personal Mobile:
+                        {% if object.staff.mobile is None %}
+                        {{object.staff.mobile}}
+                        {% else %}
+                        {{object.staff.mobile|addsep}}
+                        {% endif %}
+                    </p>
+                    <p>Personal Email: {{object.staff.email}}</p>
+                    <p>Application Date: {{object.staff.apply_date}}</p>
+                    <p>Data Modified Time: {{object.staff.modified_date}}</p>
+                    <p>Residential Address: {{object.staff.address}}</p>
+                </div>
+                <div class="col-sm-3">
+                    <p>Gratuity: <span class="text-success">{{naira}}{{total_balance}}</span></p>
+                    <p>Worked For: <span class="text-success">{{object.date_employed|timesince}}</span></p>
+                    {% if consumed_days|first == 0 and consumed_days|last == 0 %}
+                    <p>Permissions: <span class="text-success">No permission taken or granted</span></p>
+                    {% else %}
+                    <p>Permissions: <span class="text-danger">{{consumed_days|first}}Day{{consumed_days|first|pluralize}}, {{consumed_days|last}}Hour{{consumed_days|last|pluralize}}</span></p>
+                    {% endif %}
+                    <hr>
+                    <p>Date Employed: {{object.date_employed}}</p>
+                    <p>Official Email: {{object.official_email}}</p>
+                    <p>Official Mobile:
+                        {% if object.official_mobile is None %}
+                        {{object.official_mobile}}
+                        {% else %}
+                        {{object.official_mobile|addsep}}
+                        {% endif %}
+                    </p>
+                    <p>Management Staff?:
+                        <span>{{ object.is_management|yesno|upper }}</span>
+                    </p>
+                    <p>Duty Status: {{object.status|yesno:'Active, Terminated, Passive'}}</p>
+                    <p>Status:
+                        {{object.is_confirmed|yesno:'CONFIRMED, PROBATION'}}
+                    </p>
+                    <p>Position: {{object.position}}</p>
+                    <p>Department: {{object.department}}</p>
+                    <p>Outlet: {{object.branch}}</p>
+                    <p>Banker: {{object.banker}}</p>
+                    <p>Account Number: {{object.account_number|addsep}}</p>
+                    <p>Basic Salary: {{object.basic_salary}} | Allowance: {{object.allowance}}</p>
+                    <p>Tax Payable:{{object.tax_amount}}</p>
+                </div>
+
+                <div class="col-sm-6">
+                    {% if reassigned %}
+                    <h3 class="text-info" style="font-family:cursive;">Reassigned</h3>
+                    <div class="row bg-light mb-2">
+                        <div class="col">
+                            <table class="table" data-toggle="table">
+                                <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Position:From</th>
+                                    <th>Position:To</th>
+                                    <th>Branch:From</th>
+                                    <th>Branch:To</th>
+                                    <th>Date</th>
+                                    <th>Remark</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for reassign in reassigned %}
+                                <tr>
+                                    <td>{{reassign.reassign_type}}</td>
+                                    <th>{{reassign.from_position}}</th>
+                                    <th>{{reassign.to_position}}</th>
+                                    <th>{{reassign.from_branch}}</th>
+                                    <th>{{reassign.to_branch}}</th>
+                                    <th>{{reassign.start_date}}</th>
+                                    <th>{{reassign.remark}}</th>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                                <tfoot></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if salary_changed %}
+                    <h3 class="text-info" style="font-family:cursive;">Salary Changes</h3>
+                    <div class="row bg-light mb-2">
+                        <div class="col">
+                            <table class="table" data-toggle="table">
+                                <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Previous Salary</th>
+                                    <th>Current Salary</th>
+                                    <th>Remark</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for salary in salary_changed %}
+                                <tr>
+                                    <td>{{salary.date}}</td>
+                                    <th>{{salary.previous_value}}</th>
+                                    <th>{{salary.value}}</th>
+                                    <th>{{salary.remark}}</th>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                                <tfoot></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if permissions %}
+                    <h3 class="text-info" style="font-family:cursive;">Permissions</h3>
+                    <div class="row bg-light mb-2">
+                        <div class="col">
+                            <table class="table" data-toggle="table">
+                                <thead>
+                                <tr>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Reason</th>
+                                    <th>Duration</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for permission in permissions %}
+                                <tr>
+                                    <td>{{permission.starting_from}}</td>
+                                    <td>{{permission.ending_at}}</td>
+                                    <td>{{permission.reason}}</td>
+                                    <td>{{permission.duration}}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                                <tfoot></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if suspensions %}
+                    <h3 class="text-info" style="font-family:cursive;">Suspensions</h3>
+                    <div class="row bg-light mb-2">
+                        <div class="col">
+                            <table class="table" data-toggle="table">
+                                <thead>
+                                <tr>
+                                    <th>Start Date</th>
+                                    <th>Resumption Date</th>
+                                    <th>Reason</th>
+                                    <th>Penalty</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for suspension in suspensions %}
+                                <tr>
+                                    <td>{{suspension.start_date}}</td>
+                                    <th>{{suspension.resumption_date}}</th>
+                                    <th>{{suspension.reason}}</th>
+                                    <th>{{suspension.penalty}}</th>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                </div>
             </div>
         </div>
     </div>
@@ -349,7 +351,7 @@
                                        class="form-control"
                                        name="salary"
                                        value=""
-                                       type="number">
+                                       type="number" required>
                             </div>
                         </div>
                     </div>
@@ -361,7 +363,7 @@
                                            placeholder="Reason for the change"
                                            id="salComment"
                                            class="form-control"
-                                           type="text">
+                                           type="text" required>
                                 </div>
                             </div>
                         </div>
@@ -382,7 +384,8 @@
         </div>
     </div>
 </div>
-<!--Enter Balance-->
+
+<!--Enter Balance (gratuity)-->
 <div class="modal"
      tabindex="-1"
      data-backdrop="static"
@@ -412,13 +415,21 @@
                         <div class="col-5">
                             <div class="form-group">
                                 <label for="period">Period</label>
-                                <input class="form-control" name="period" id="period" type="text" value="{% now 'Y-m' %}">
+                                <input class="form-control" 
+                                name="period" 
+                                id="period" 
+                                type="text" 
+                                pattern="[0-9]{4}-[0-9]{2}"
+                                value="{% now 'Y-m' %}" required>
                             </div>
                         </div>
                         <div class="col-7">
                             <div class="form-group">
-                                <label for="title">Title</label>
-                                <input class="form-control" name="title" id="title" type="text">
+                                <label for="title">Title<sup class="text-danger">*</sup></label>
+                                <input class="form-control" 
+                                name="title" 
+                                id="title" 
+                                type="text" required>
                             </div>
                         </div>
                     </div>
@@ -430,7 +441,7 @@
                                        class="form-control"
                                        name="balance"
                                        value="0.00"
-                                       type="number">
+                                       type="number" required>
                             </div>
                         </div>
                         <div class="col-3">
@@ -451,7 +462,7 @@
                                        id="balComment"
                                        maxlength="50"
                                        class="form-control"
-                                       type="text">
+                                       type="text" required>
                                 <small class="form-help text-muted">Not more than 50 characters</small>
                             </div>
                         </div>
@@ -504,12 +515,6 @@
 
                     <div class="row">
                         <div class="col">
-                            {{form|crispy}}
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col">
                             <div class="form-group">
                                 <label class="form-label" for="cP">Current Position</label>
                                 <input id="cP"
@@ -534,7 +539,7 @@
                         <div class="col">
                             <div class="form-group">
                                 <label class="form-label" for="startDate">Start Date</label>
-                                <input name="start_date" id="startDate" class="form-control" type="date">
+                                <input name="start_date" id="startDate" class="form-control" type="date" required>
                             </div>
                         </div>
                         <div class="col">
@@ -580,23 +585,33 @@
                         </div>
                         </div>
                     </div>
-                    <div id="divDuration" class="row" hidden>
+                    <div class="row">
                         <div class="col-5">
                             <div class="form-group">
-                                <label class="form-label" for="duration">Duration(in days)</label>
-                                <input name="duration" value=60 id="duration" class="form-control"
-                                       type="number">
+                                <div class="row">
+                                    <div class="col">
+                                        <label class="form-label" for="duration">Duration(in days)</label>
+                                    </div>
+                                    <div class="col">
+                                        <input id="divDuration" 
+                                        name="duration" 
+                                        value=60 
+                                        id="duration" 
+                                        class="form-control"
+                                        type="number" readonly>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label class="form-label" for="comment">Remark</label>
-                                    <input name="remark" placeholder="Comment" id="comment" class="form-control" type="text">
-                                </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="form-label" for="comment">Remark</label>
+                                <input name="remark" placeholder="Comment" id="comment" class="form-control" type="text" required>
                             </div>
                         </div>
+                    </div>
                     <div class="modal-footer">
                 <button type="submit"
                         class="btn btn-outline-info">
@@ -614,6 +629,7 @@
         </div>
     </div>
 </div>
+
 <!--modal Terminate-->
 <div class="modal"
      tabindex="-1"
@@ -658,7 +674,7 @@
                                                            id="remark"
                                                            name="remark"
                                                            placeholder="State the reason"
-                                                           value="">
+                                                           value="" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="form-label" for="date">Date</label>
@@ -666,7 +682,7 @@
                                                            type="date"
                                                            name="date"
                                                            value=""
-                                                           id="date">
+                                                           id="date" required>
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="form-label"
@@ -701,6 +717,7 @@
         </div>
     </div>
 </div>
+
 <!--modal Suspend-->
 <div class="modal"
      tabindex="-1"
@@ -724,7 +741,6 @@
             </div>
             <div class="modal-body">
                 <div class="container">
-
                     <form action="{% url 'employee-suspend' object.pk %}"
                           method="post">
                     {% csrf_token %}
@@ -736,7 +752,7 @@
                                        class="form-control"
                                        name="startDate"
                                        value=""
-                                       type="date">
+                                       type="date" required>
                             </div>
                         </div>
                         <div class="col">
@@ -746,7 +762,7 @@
                                        class="form-control"
                                        name="resumptionDate"
                                        value=""
-                                       type="date">
+                                       type="date" required>
                             </div>
                         </div>
                     </div>
@@ -754,8 +770,12 @@
                     <div class="row">
                             <div class="col">
                                 <div class="form-group">
-                                    <label class="form-label" for="reason">Reason</label>
-                                    <input name="reason" placeholder="Reason for suspending" id="reason" class="form-control" type="text">
+                                    <!-- <label class="form-label" for="reason">Reason</label> -->
+                                    <input name="reason" 
+                                    placeholder="Reason for suspending" 
+                                    id="reason" 
+                                    class="form-control" 
+                                    type="text" required>
                                 </div>
                             </div>
                         </div>
@@ -776,6 +796,7 @@
         </div>
     </div>
 </div>
+
 <!--modal Permit-->
 <div class="modal"
      tabindex="-1"
@@ -816,7 +837,7 @@
                                        class="form-control"
                                        name="startFrom"
                                        value=""
-                                       type="datetime-local">
+                                       type="datetime-local" required>
                             </div>
                         </div>
                         <div class="col">
@@ -826,7 +847,7 @@
                                        class="form-control"
                                        name="endingAt"
                                        value=""
-                                       type="datetime-local">
+                                       type="datetime-local" required>
                             </div>
                         </div>
                     </div>
@@ -834,8 +855,12 @@
                     <div class="row">
                             <div class="col">
                                 <div class="form-group">
-                                    <label class="form-label" for="reasonP">Reason</label>
-                                    <input name="reason" placeholder="Reason for permission" id="reasonP" class="form-control" type="text">
+                                    <!-- <label class="form-label" for="reasonP">Reason</label> -->
+                                    <input name="reason" 
+                                    placeholder="Reason for permission" 
+                                    id="reasonP" 
+                                    class="form-control" 
+                                    type="text" required>
                                 </div>
                             </div>
                         </div>
@@ -868,8 +893,6 @@
             document.getElementById("divDuration").hidden = true;
         }
     }
-
-
 </script>
 
 {% endblock content %}

@@ -22,7 +22,8 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path('daily/post/', TodayPostPdf.as_view(), name='pdf-daily-post')
+    path('daily/post/', TodayPostPdf.as_view(), name='pdf-daily-post'),
+    path('<int:pk>/publish/', PostPublishInPDF.as_view(), name='post-publish')
 ]
 
 urlpatterns += [

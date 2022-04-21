@@ -1,11 +1,13 @@
+import calendar
 import datetime
 import decimal
 import os
 import base64
 import random
 from io import BytesIO
+import time
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from pdf.utils import render_to_pdf
 from customer.models import CustomerProfile
 from apply.models import Applicant
@@ -337,7 +339,8 @@ class TodayPostPdf(LoginRequiredMixin, TemplateView):
         posts = Post.objects.filter(date_created=datetime.date.today())
         context = {
             'posts': posts.order_by('-pk'),
-            'logo_image': Ozone.logo()
+            'logo_image': Ozone.logo(),
+            'title': 'Daily Post'
         }
         pdf = render_to_pdf(self.template_name, context_dict=context)
         
@@ -349,6 +352,27 @@ class TodayPostPdf(LoginRequiredMixin, TemplateView):
         return HttpResponse('Error')
     
 
+class PostPublishInPDF(LoginRequiredMixin, DetailView):
+    model = Post
+    template_name = 'pdf/publish.html'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'post': get_object_or_404(Post, pk=kwargs['pk']),
+            'logo_image': Ozone.logo(),
+            'title': 'Individual'
+        }
+        pdf = render_to_pdf(self.template_name, context_dict=context)
+        
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            
+            response['Content-Disposition'] = f'filename="publish{str(kwargs["pk"]).zfill(4)}.pdf"'
+            return response
+        return HttpResponse('Error')
+    
+
+
 class PriceUpdateFootNote(View):
 
     def get(self, request, *args, **kwargs):
@@ -357,6 +381,7 @@ class PriceUpdateFootNote(View):
             wf.write(content)
         return redirect('product-home')
 
+
 class ArticlesPdf(LoginRequiredMixin, TemplateView):
     template_name = 'pdf/article_pdf.html'
 
@@ -364,7 +389,8 @@ class ArticlesPdf(LoginRequiredMixin, TemplateView):
         articles = Article.available.all()
         context = {
             'articles': articles.order_by('-pk'),
-            'logo_image': Ozone.logo()
+            'logo_image': Ozone.logo(),
+            'title': 'Price Update'
         }
         pdf = render_to_pdf(self.template_name, context_dict=context)
         
