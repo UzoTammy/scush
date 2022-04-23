@@ -10,6 +10,7 @@ class Post(models.Model):
     date_created = models.DateField(default=timezone.now)
     title = models.CharField(max_length=50)
     content = models.TextField()
+    dispatch = models.BooleanField(default=False)
 
 
     def __str__(self) -> str:

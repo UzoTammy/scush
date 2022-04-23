@@ -1,11 +1,15 @@
 import calendar
 import datetime
 from decimal import Decimal
+from django.http import HttpResponse
 from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.generic.base import TemplateView
 from django.contrib import messages
 from numpy import append
+
+from pdf.utils import render_to_pdf
+from pdf.views import Ozone
 from .models import (Product, ProductPerformance, ProductExtension)
 from core.models import JsonDataset
 from delivery.models import DeliveryNote
@@ -201,6 +205,23 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['grand_total'] = (qty, val)
         context['months'] = (calendar.month_name[x] for x in range(1, 13))
         return context
+    
+    def get(self, request, *args, **kwargs):
+        if 'reportPDF' in request.GET.keys():
+            if self.request.GET['reportPDF'] == 'on':
+                context = self.get_context_data(**kwargs)
+                context['logo_image'] = Ozone.logo()
+                context['title'] = 'Daily Stock'
+                # get template in pdf view
+                pdf = render_to_pdf('pdf/pdf_stock_report.html', context_dict=context)
+        
+                if pdf:
+                    response = HttpResponse(pdf, content_type='application/pdf')
+                    
+                    response['Content-Disposition'] = f'filename="dailystock.pdf"'
+                    return response
+                return HttpResponse('Error')
+        return super().get(request, *args, **kwargs)
 
 
 class ReportStockCategory(LoginRequiredMixin, ListView):

@@ -1,0 +1,112 @@
+{% extends 'pdf/base.html' %}
+{% load custom_templates %}
+
+
+<body>
+    {% block content %}
+    <div class='wrapper'>
+        <div class='header'>
+            <p class='title'>Daily Stock Report</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class='details'>
+                <span style="color:red">CONFIDENTIAL!!! not to be shared outside the company circle</span>
+                <br/>
+                Reported on: {% now "jS \o\f F Y \@ H:i" %} WAT
+                <br>
+            </div>
+
+        </div>
+    </div>
+    <br>
+    
+    <!-- cummulative table -->
+    <div class="row">
+        <div class="col">
+            <table class="table table-responsive">
+                <caption><h6 style="text-align: center;">Cummulative Daily - {{current_date}}</h6></caption>
+                <thead>
+                  <tr class="text-right">
+                    <th class="text-left">Source</th>
+                    <th>Qty</th>
+                    <th>Value</th>
+                    <th>%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for dict_object in source_total %}
+                  <tr style="text-align: right;">
+                    <td style="text-align: left;">{{dict_object.source}}</td>
+                    <td>{{dict_object.qty}}</td>
+                    <td>{{dict_object.value|floatformat:'2g'}}</td>
+                    {% with grand_total|last as gtl %}
+                    <td>{{dict_object.value|div:gtl|multiply:100|floatformat:'2g'}}</td>
+                    {% endwith %}
+                  </tr>
+                  {% endfor%}
+                  <tr style="text-align: right;">
+                      <td>Total</td>
+                      <td>{{grand_total|first}}</td>
+                      <td>{{grand_total|last|floatformat:'2g'}}</td>
+                      <td>{{100|floatformat:'2g'}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              
+        </div>
+    </div>
+    <hr>
+    <!-- Report by sources -->
+    <div class="row">
+        {% for source in obj %}
+        <div class="col">
+            <br>
+            <table class="table table-responsive">
+              {% with source|first as first_source %}
+              <caption style="color: red;">{{first_source.product.source}}</caption>
+              {% endwith %}
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th class="text-right">Cost Price</th>
+                  <th class="text-right">Quantity</th>
+                  <th class="text-right">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                {% for item in source %}
+                <tr>
+                  <td>{{item.product}}</td>
+                  <td style="text-align: right;">{{item.cost_price.amount}}</td>
+                  <td style="text-align: right;">{{item.stock_value}}</td>
+                  <td style="text-align: right;">{{item.value|floatformat:'2g'}}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+                <tr class="text-danger text-right">
+                  <td style="text-align: center;" colspan="2">Total</td>
+                  <td style="text-align: right;">{{totals|array:forloop.counter|first}}</td>
+                  <td style="text-align: right;">{{totals|array:forloop.counter|last|floatformat:'2g'}}</td>
+                </tr>
+              </tfoot>
+            </table>
+        </div>
+        
+        {% endfor %}
+    </div>
+
+<!-- footnote-->
+<div class="row">
+        <br>
+    <div class="col">
+        <small>
+            note: WAT -> West African Time (GMT+1)
+        </small>
+    </div>
+</div>
+{% endblock %}
+</body>
