@@ -6,9 +6,15 @@
         <div class="col">
             <table class="table table-sm table-info"
             data-pagination="true" 
-
             data-toggle="table">
-                <caption>Users</caption>
+                <caption>
+                    Users
+                    <span class="float-right">
+                        <a class="btn btn-dark" href="{% url 'group-list' %}">
+                            Groups
+                        </a>
+                    </span>
+                </caption>
                 <thead class="bg-light">
                     <tr class="text-center">
                     <th>ID</th>
@@ -45,7 +51,14 @@
                 </tr>
             {% endfor %}
             </table>
-            <small class="text-danger">Please note that special users are excluded from the list. These are users without hyphen in their username. ({{A}} of {{B}})</small>
+            <small class="text-danger">Please note that special user(s) is/are excluded from the list. 
+                These are user(s) without hyphen in their username
+                <ul>
+                {% for person in user_without_dash %}
+                    <li>{{person}}</li>
+                {% endfor %}
+                </ul>
+            </small>
         
             <a type="button" href="{% url 'home' %}" class="btn btn-dark float-right mt-3">
                 <i class="fa fa-reply"></i>

@@ -1,0 +1,39 @@
+{% extends 'users/base.html' %}
+{%load custom_templates %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <table class="table table-sm table-info"
+            data-pagination="true" 
+            data-toggle="table">
+                <caption>
+                    Users and Groups
+                </caption>
+                <thead class="bg-light">
+                    <tr class="text-center">
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Staff</th>
+                </tr>
+                </thead>
+            {% for user in groups %}
+               <tr>
+                   {% with user|first as user %}
+                   <td>{{user.id}}</td>
+                   {% endwith %}
+                   <td>{{user}}</td>
+                   <td>{{user.groups.all}}</td>
+                </tr>
+            {% endfor %}
+            </table>
+            
+            <a href="{% url 'users-list' %}" class="btn btn-dark float-right mt-3">
+                <i class="fa fa-reply"></i>
+            </a>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

@@ -119,6 +119,12 @@
           <li class="nav-item">
             <a class="nav-link" href="#">Procedures</a>
           </li>
+            <!--    SCUSH-->
+            {% if user.is_superuser %}
+          <li class="list-item">
+            <a class="nav-link" href="{% url 'scush' %}">SCUSH</a>
+          </li>
+            {% endif %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'survey-update' %}">Survey</a>
           </li>

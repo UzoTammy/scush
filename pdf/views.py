@@ -38,12 +38,9 @@ class CustomerView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         query_set = CustomerProfile.objects.all()
         context = {
-            'today': datetime.datetime.now(),
-            'host': f"{request.META.get('HTTP_HOST')} | {request.user}",
-            'users': User.objects.all(),
             'customers': query_set,
-            'last_modified_object': query_set.latest('date_modified'),
-            'last_time_modified': query_set.latest('date_modified').date_modified.strftime('%a, %d %b %Y %H:%M:%S WAT')
+            'logo_image': Ozone.logo(),
+            'title': 'customers'
         }
         pdf = render_to_pdf('pdf/pdf_customer_list.html', context)
         if pdf:
@@ -180,7 +177,9 @@ class ApplicantListView(LoginRequiredMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         context = {
-            'applicants': self.get_queryset().order_by('last_name')
+            'applicants': self.get_queryset().order_by('last_name'),
+            'title': 'applicants',
+            'logo_image': Ozone.logo()
         }
         return render_to_pdf(self.template_name, context_dict=context)
 
@@ -192,7 +191,9 @@ class RejectedApplicantList(ListView):
 
     def get(self, request, *args, **kwargs):
         context = {
-            'applicants': self.get_queryset().filter(status=False).order_by('last_name')
+            'applicants': self.get_queryset().filter(status=False).order_by('last_name'),
+            'logo_image': Ozone.logo(),
+            'title': 'Rejected Applicant'
         }
         return render_to_pdf(self.template_name, context_dict=context)
 
@@ -371,7 +372,6 @@ class PostPublishInPDF(LoginRequiredMixin, DetailView):
             return response
         return HttpResponse('Error')
     
-
 
 class PriceUpdateFootNote(View):
 

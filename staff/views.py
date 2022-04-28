@@ -108,10 +108,6 @@ outstanding is the amount the company is willing to reserve for the staff
         return [salary_payable, deduction, outstanding]
 
 
-class StaffScushView(TemplateView):
-    template_name = 'staff/scush.html'
-
-
 class StaffPoliciesView(TemplateView):
     template_name = 'staff/policies.html'
 
@@ -752,7 +748,7 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                            )
             try:
                 data.full_clean()
-                # data.save()  # Save Save Save
+                data.save()  # Save Save Save
             except ValidationError as err:
                 """send mail to admin"""
                 return HttpResponse(f"""

@@ -15,13 +15,18 @@
                             Product List for {{view.kwargs.source}}
                         </div>
                         <div class="col text-right">
-                <a href="{% url 'product-create' %}"
-                   class="btn btn-dark btn-sm text-right">
-                    <i class="fa fa-plus text-success"></i>
-                    Add New Product
-                </a>
+                            <!-- Pdf format -->
+                            <a href="{% url 'pdf-stock-list' %}"
+                                class="btn btn-dark btn-sm text-right">
+                                <i class="fa fa-file-pdf-o text-white"></i>
+                            </a>
+                            <a href="{% url 'product-create' %}"
+                                class="btn btn-dark btn-sm text-right">
+                                <i class="fa fa-plus text-success"></i>
+                                New Product
+                            </a>
                     
-            </div>
+                        </div>
                     </div>
                 </caption>
                 <thead class="bg-danger text-white">

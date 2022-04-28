@@ -1,4 +1,5 @@
 import json
+from django.http import QueryDict
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -7,7 +8,8 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from .forms import UserRegisterForm
 from .forms import UserUpdateForm, ProfileUpdateForm
-
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import QuerySet
 
 def allow_admin(user):
     if user.groups.filter(name='Administrator').exists():
@@ -93,13 +95,24 @@ def add_choice(request):
     return redirect('home')
 
 
-class UsersListView(ListView):
+class UsersListView(LoginRequiredMixin, ListView):
     model = User
     
     def get_queryset(self):
         # to list all users working at Ozone
         return super().get_queryset().filter(username__contains='-').order_by('-pk')
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_without_dash'] = User.objects.exclude(username__contains='-')
+        return context
     
 
-        
+class UserGroupView(LoginRequiredMixin, ListView):
+    model = User
+    template_name = 'auth/group_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['groups'] = list((user, user.groups.all()) for user in super().get_queryset() if user.groups.exists())
+        return context

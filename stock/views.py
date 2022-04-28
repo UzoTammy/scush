@@ -6,7 +6,7 @@ from django.shortcuts import get_list_or_404, get_object_or_404, redirect, rende
 from django.utils import timezone
 from django.views.generic.base import TemplateView
 from django.contrib import messages
-from numpy import append
+from django.contrib.auth.models import Group
 
 from pdf.utils import render_to_pdf
 from pdf.views import Ozone
@@ -182,7 +182,7 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         for source in context['sources']:
             qs = ProductExtension.objects.filter(date=context['current_date'], product__source=source)
             qs = qs.annotate(value=F('stock_value')*F('cost_price'))
-            source_list.append(qs)
+            source_list.append(qs.order_by('-value'))
             total_list.append(
                 (qs.aggregate(Sum('stock_value'))['stock_value__sum'],
                 qs.aggregate(Sum('value'))['value__sum'])
@@ -193,11 +193,13 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                     'value': qs.aggregate(Sum('value'))['value__sum'],
                     'percent': '%'}
                     ))
-        
-        context['obj'] = [i for i in source_list if i.exists()]
+
+        lis = [i for i in source_list if i.exists()]
+        context['obj'] = lis
         total_list = [i for i in total_list if i[0] is not None]
         context['totals'] = total_list
-        context['source_total'] = [i for i in sources if i['qty'] is not None]
+        lis = [i for i in sources if i['qty'] is not None]
+        context['source_total'] = sorted(lis, key=lambda i: i['value'], reverse=True)
         qty, val = 0, Decimal('0')
         for x, y in total_list:
             qty += x
@@ -217,7 +219,6 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         
                 if pdf:
                     response = HttpResponse(pdf, content_type='application/pdf')
-                    
                     response['Content-Disposition'] = f'filename="dailystock.pdf"'
                     return response
                 return HttpResponse('Error')

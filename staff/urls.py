@@ -5,7 +5,6 @@ from .views import *
 urlpatterns = [
     path('home/', StaffMainPageView.as_view(), name='staff-home'),
     path('all/', StaffListView.as_view(), name='staff-list'),
-    path('scush/', StaffScushView.as_view(), name='staff-scush'),
     path('policies/', StaffPoliciesView.as_view(), name='staff-policies'),
     path('photos/', StaffListPicturesView.as_view(), name='staff-pictures'),
     path('<int:pk>/detail/', StaffDetailView.as_view(), name='employee-detail'),
