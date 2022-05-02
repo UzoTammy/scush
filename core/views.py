@@ -280,3 +280,13 @@ class JsonCategoryKeyValueUpdateView(LoginRequiredMixin, View):
         obj.save()
 
         return redirect('json-cat-key', kwargs['id'], kwargs['key'])
+
+
+# def hello(request):
+#     context = {
+#         'name': 'Uzo'
+#     }
+#     if request.GET != {}:
+#         context['birthday'] = request.GET['birthday']
+        
+#     return render(request, 'core/practice.html', context=context)

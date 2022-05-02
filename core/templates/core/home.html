@@ -380,15 +380,6 @@
 </script>
 
 
-<script type="text/javascript">
-<!--    function fetchToken() {-->
-        fetch("{% static 'customer/secret.json' %}")
-        .then(response => response.json())
-<!--        .then( function (data) {-->
-<!--            return document.getElementById("demo").innerHTML = data[0].token-->
-        });
-    }
-</script>
 
 {% endblock %}
 

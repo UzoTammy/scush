@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.core.mail import EmailMessage
 from django.contrib import messages
+from django.utils import timezone
 from django.views.generic import (View,
                                   TemplateView,
                                   CreateView,
@@ -179,7 +180,7 @@ class ApplyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """This method runs only when all field data is cleaned and is necessary for
     the enhancement of the form"""
     def form_valid(self, form):
-        form.instance.modified_date = datetime.datetime.now()
+        form.instance.modified_date = timezone.now()
         return super().form_valid(form)
 
     def form_invalid(self, form):

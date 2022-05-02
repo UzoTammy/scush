@@ -10,7 +10,7 @@ class Applicant(models.Model):
     second_name = models.CharField(max_length=30,
                                    blank=True, null=True)
     last_name = models.CharField(max_length=30)
-    birth_date = models.DateField(default=datetime.date(2009, 4, 12))
+    birth_date = models.DateField(default=datetime.date.today()-datetime.timedelta(days=365*20))
     gender = models.CharField(max_length=10,
                               choices=[('FEMALE', 'Female'),
                                        ('MALE', 'Male')],
@@ -26,7 +26,7 @@ class Applicant(models.Model):
     ], default='NONE')
 
     course = models.CharField(max_length=50, blank=True, null=True)
-    mobile = models.CharField(max_length=11)
+    mobile = models.CharField(max_length=13)
     email = models.EmailField(blank=True, null=True)
     apply_date = models.DateField(default=timezone.now)
     modified_date = models.DateTimeField(default=timezone.now)

@@ -125,192 +125,195 @@
                     </div>
                     
                 </div>
-                
             </div>
-            <div class="row">
-                <div class="col-sm-3">
-                    <p class="text-success">Full Salary: {{object.salary}}</p>
-                    <p class="text-success">Age: {{object.staff.birth_date|timesince}}</p>
-                    <p class="text-success">Payout <span><small class="text-muted">(since June 2021)</small></span>: {{naira}}{{payout|floatformat:'2g'}}</p>
-                    <hr>
-                    <p>First Name: {{object.staff.first_name}}</p>
-                    <p>Second Name: {{object.staff.second_name}}</p>
-                    <p>Last Name: {{object.staff.last_name}}</p>
-                    <p>Date of Birth: {{object.staff.birth_date}}</p>
-                    <p>Gender: {{object.staff.gender}}</p>
-                    <p>Marital Status: {{object.staff.marital_status}}</p>
-                    <p>Qualification: {{object.staff.qualification}}</p>
-                    <p>Course: {{object.staff.course }}</p>
-                    <p>Personal Mobile:
-                        {% if object.staff.mobile is None %}
-                        {{object.staff.mobile}}
+            <div class="container-grid">
+                <div class="row">
+                    <div class="col-sm-3">
+                        <p class="text-success">Full Salary: {{object.salary}}</p>
+                        <p class="text-success">Age: {{object.staff.birth_date|timesince}}</p>
+                        <p class="text-success">Payout <span><small class="text-muted">(since June 2021)</small></span>: {{naira}}{{payout|floatformat:'2g'}}</p>
+                        <hr>
+                        <p>First Name: {{object.staff.first_name}}</p>
+                        <p>Second Name: {{object.staff.second_name}}</p>
+                        <p>Last Name: {{object.staff.last_name}}</p>
+                        <p>Date of Birth: {{object.staff.birth_date}}</p>
+                        <p>Gender: {{object.staff.gender}}</p>
+                        <p>Marital Status: {{object.staff.marital_status}}</p>
+                        <p>Qualification: {{object.staff.qualification}}</p>
+                        <p>Course: {{object.staff.course }}</p>
+                        <p>Personal Mobile:
+                            {% if object.staff.mobile is None %}
+                            {{object.staff.mobile}}
+                            {% else %}
+                            {{object.staff.mobile|addsep}}
+                            {% endif %}
+                        </p>
+                        <p>Personal Email: {{object.staff.email}}</p>
+                        <p>Application Date: {{object.staff.apply_date}}</p>
+                        <p>Data Modified Time: {{object.staff.modified_date}}</p>
+                        <p>Residential Address: {{object.staff.address}}</p>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <p>Gratuity: <span class="text-success">{{naira}}{{total_balance}}</span></p>
+                        <p>Worked For: <span class="text-success">{{object.date_employed|timesince}}</span></p>
+                        {% if consumed_days|first == 0 and consumed_days|last == 0 %}
+                        <p>Permissions: <span class="text-success">No permission taken or granted</span></p>
                         {% else %}
-                        {{object.staff.mobile|addsep}}
+                        <p>Permissions: <span class="text-danger">{{consumed_days|first}}Day{{consumed_days|first|pluralize}}, {{consumed_days|last}}Hour{{consumed_days|last|pluralize}}</span></p>
                         {% endif %}
-                    </p>
-                    <p>Personal Email: {{object.staff.email}}</p>
-                    <p>Application Date: {{object.staff.apply_date}}</p>
-                    <p>Data Modified Time: {{object.staff.modified_date}}</p>
-                    <p>Residential Address: {{object.staff.address}}</p>
-                </div>
-                <div class="col-sm-3">
-                    <p>Gratuity: <span class="text-success">{{naira}}{{total_balance}}</span></p>
-                    <p>Worked For: <span class="text-success">{{object.date_employed|timesince}}</span></p>
-                    {% if consumed_days|first == 0 and consumed_days|last == 0 %}
-                    <p>Permissions: <span class="text-success">No permission taken or granted</span></p>
-                    {% else %}
-                    <p>Permissions: <span class="text-danger">{{consumed_days|first}}Day{{consumed_days|first|pluralize}}, {{consumed_days|last}}Hour{{consumed_days|last|pluralize}}</span></p>
-                    {% endif %}
-                    <hr>
-                    <p>Date Employed: {{object.date_employed}}</p>
-                    <p>Official Email: {{object.official_email}}</p>
-                    <p>Official Mobile:
-                        {% if object.official_mobile is None %}
-                        {{object.official_mobile}}
-                        {% else %}
-                        {{object.official_mobile|addsep}}
-                        {% endif %}
-                    </p>
-                    <p>Management Staff?:
-                        <span>{{ object.is_management|yesno|upper }}</span>
-                    </p>
-                    <p>Duty Status: {{object.status|yesno:'Active, Terminated, Passive'}}</p>
-                    <p>Status:
-                        {{object.is_confirmed|yesno:'CONFIRMED, PROBATION'}}
-                    </p>
-                    <p>Position: {{object.position}}</p>
-                    <p>Department: {{object.department}}</p>
-                    <p>Outlet: {{object.branch}}</p>
-                    <p>Banker: {{object.banker}}</p>
-                    <p>Account Number: {{object.account_number|addsep}}</p>
-                    <p>Basic Salary: {{object.basic_salary}} | Allowance: {{object.allowance}}</p>
-                    <p>Tax Payable:{{object.tax_amount}}</p>
-                </div>
-
-                <div class="col-sm-6">
-                    {% if reassigned %}
-                    <h3 class="text-info" style="font-family:cursive;">Reassigned</h3>
-                    <div class="row bg-light mb-2">
-                        <div class="col">
-                            <table class="table" data-toggle="table">
-                                <thead>
-                                <tr>
-                                    <th>Type</th>
-                                    <th>Position:From</th>
-                                    <th>Position:To</th>
-                                    <th>Branch:From</th>
-                                    <th>Branch:To</th>
-                                    <th>Date</th>
-                                    <th>Remark</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for reassign in reassigned %}
-                                <tr>
-                                    <td>{{reassign.reassign_type}}</td>
-                                    <th>{{reassign.from_position}}</th>
-                                    <th>{{reassign.to_position}}</th>
-                                    <th>{{reassign.from_branch}}</th>
-                                    <th>{{reassign.to_branch}}</th>
-                                    <th>{{reassign.start_date}}</th>
-                                    <th>{{reassign.remark}}</th>
-                                </tr>
-                                {% endfor %}
-                                </tbody>
-                                <tfoot></tfoot>
-                            </table>
-                        </div>
+                        <hr>
+                        <p>Date Employed: {{object.date_employed}}</p>
+                        <p>Official Email: {{object.official_email}}</p>
+                        <p>Official Mobile:
+                            {% if object.official_mobile is None %}
+                            {{object.official_mobile}}
+                            {% else %}
+                            {{object.official_mobile|addsep}}
+                            {% endif %}
+                        </p>
+                        <p>Management Staff?:
+                            <span>{{ object.is_management|yesno|upper }}</span>
+                        </p>
+                        <p>Duty Status: {{object.status|yesno:'Active, Terminated, Passive'}}</p>
+                        <p>Status:
+                            {{object.is_confirmed|yesno:'CONFIRMED, PROBATION'}}
+                        </p>
+                        <p>Position: {{object.position}}</p>
+                        <p>Department: {{object.department}}</p>
+                        <p>Outlet: {{object.branch}}</p>
+                        <p>Banker: {{object.banker}}</p>
+                        <p>Account Number: {{object.account_number|addsep}}</p>
+                        <p>Basic Salary: {{object.basic_salary}} | Allowance: {{object.allowance}}</p>
+                        <p>Tax Payable:{{object.tax_amount}}</p>
                     </div>
-                    {% endif %}
-
-                    {% if salary_changed %}
-                    <h3 class="text-info" style="font-family:cursive;">Salary Changes</h3>
-                    <div class="row bg-light mb-2">
-                        <div class="col">
-                            <table class="table" data-toggle="table">
-                                <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Previous Salary</th>
-                                    <th>Current Salary</th>
-                                    <th>Remark</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for salary in salary_changed %}
-                                <tr>
-                                    <td>{{salary.date}}</td>
-                                    <th>{{salary.previous_value}}</th>
-                                    <th>{{salary.value}}</th>
-                                    <th>{{salary.remark}}</th>
-                                </tr>
-                                {% endfor %}
-                                </tbody>
-                                <tfoot></tfoot>
-                            </table>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {% if permissions %}
-                    <h3 class="text-info" style="font-family:cursive;">Permissions</h3>
-                    <div class="row bg-light mb-2">
-                        <div class="col">
-                            <table class="table" data-toggle="table">
-                                <thead>
-                                <tr>
-                                    <th>Start Date</th>
-                                    <th>End Date</th>
-                                    <th>Reason</th>
-                                    <th>Duration</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for permission in permissions %}
-                                <tr>
-                                    <td>{{permission.starting_from}}</td>
-                                    <td>{{permission.ending_at}}</td>
-                                    <td>{{permission.reason}}</td>
-                                    <td>{{permission.duration}}</td>
-                                </tr>
-                                {% endfor %}
-                                </tbody>
-                                <tfoot></tfoot>
-                            </table>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    {% if suspensions %}
-                    <h3 class="text-info" style="font-family:cursive;">Suspensions</h3>
-                    <div class="row bg-light mb-2">
-                        <div class="col">
-                            <table class="table" data-toggle="table">
-                                <thead>
-                                <tr>
-                                    <th>Start Date</th>
-                                    <th>Resumption Date</th>
-                                    <th>Reason</th>
-                                    <th>Penalty</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for suspension in suspensions %}
-                                <tr>
-                                    <td>{{suspension.start_date}}</td>
-                                    <th>{{suspension.resumption_date}}</th>
-                                    <th>{{suspension.reason}}</th>
-                                    <th>{{suspension.penalty}}</th>
-                                </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    {% endif %}
                     
+                    <div class="col-sm-6">
+                        {% if reassigned %}
+                        <h3 class="text-info" style="font-family:cursive;">Reassigned</h3>
+                        <div class="row bg-light mb-2">
+                            <div class="col">
+                                <table class="table" data-toggle="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Position:From</th>
+                                        <th>Position:To</th>
+                                        <th>Branch:From</th>
+                                        <th>Branch:To</th>
+                                        <th>Date</th>
+                                        <th>Remark</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for reassign in reassigned %}
+                                    <tr>
+                                        <td>{{reassign.reassign_type}}</td>
+                                        <th>{{reassign.from_position}}</th>
+                                        <th>{{reassign.to_position}}</th>
+                                        <th>{{reassign.from_branch}}</th>
+                                        <th>{{reassign.to_branch}}</th>
+                                        <th>{{reassign.start_date}}</th>
+                                        <th>{{reassign.remark}}</th>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    <tfoot></tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+    
+                        {% if salary_changed %}
+                        <h3 class="text-info" style="font-family:cursive;">Salary Changes</h3>
+                        <div class="row bg-light mb-2">
+                            <div class="col">
+                                <table class="table" data-toggle="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Previous Salary</th>
+                                        <th>Current Salary</th>
+                                        <th>Remark</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for salary in salary_changed %}
+                                    <tr>
+                                        <td>{{salary.date}}</td>
+                                        <th>{{salary.previous_value}}</th>
+                                        <th>{{salary.value}}</th>
+                                        <th>{{salary.remark}}</th>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    <tfoot></tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+    
+                        {% if permissions %}
+                        <h3 class="text-info" style="font-family:cursive;">Permissions</h3>
+                        <div class="row bg-light mb-2">
+                            <div class="col">
+                                <table class="table" data-toggle="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Reason</th>
+                                        <th>Duration</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for permission in permissions %}
+                                    <tr>
+                                        <td>{{permission.starting_from}}</td>
+                                        <td>{{permission.ending_at}}</td>
+                                        <td>{{permission.reason}}</td>
+                                        <td>{{permission.duration}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    <tfoot></tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+    
+                        {% if suspensions %}
+                        <h3 class="text-info" style="font-family:cursive;">Suspensions</h3>
+                        <div class="row bg-light mb-2">
+                            <div class="col">
+                                <table class="table" data-toggle="table">
+                                    <thead>
+                                    <tr>
+                                        <th>Start Date</th>
+                                        <th>Resumption Date</th>
+                                        <th>Reason</th>
+                                        <th>Penalty</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for suspension in suspensions %}
+                                    <tr>
+                                        <td>{{suspension.start_date}}</td>
+                                        <th>{{suspension.resumption_date}}</th>
+                                        <th>{{suspension.reason}}</th>
+                                        <th>{{suspension.penalty}}</th>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                    </div>
                 </div>
             </div>
+            
         </div>
     </div>
 </div>
@@ -429,6 +432,7 @@
                                 <input class="form-control" 
                                 name="title" 
                                 id="title" 
+                                value="{{gratuity_title}}"
                                 type="text" required>
                             </div>
                         </div>

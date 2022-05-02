@@ -449,6 +449,9 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['total_balance'] = total_balance
         context['payout'] = Payroll.objects.filter(staff_id=self.kwargs['pk']).aggregate(total=Sum('net_pay'))['total']
         context['question_obj'] = Question.objects.filter(staff_id=person).first()
+        
+        dic = JsonDataset.objects.get(pk=2).dataset
+        context['gratuity_title'] = dic['gratuity-title'][0]
         return context
 
 
@@ -1380,7 +1383,6 @@ class TaxList(ListView):
 class EmployeeBalanceListView(ListView):
     model = EmployeeBalance
     ordering = ['-date']
-
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1390,26 +1392,43 @@ class EmployeeBalanceListView(ListView):
         dr = dr if dr is not None else Decimal('0')
         context['total_value'] = cr - dr
 
-        query_cr = self.get_queryset().filter(value_type='Cr').values('staff').annotate(total=Sum('value')).order_by()
-        if query_cr.exists():
-            query_cr_object = list()
-            for q in query_cr:
-                name = Employee.objects.filter(id=q['staff'])
-                q['name'] = name.get()
-                query_cr_object.append(q)
-            context['accrued_gratuity_object'] = query_cr_object
-            context['accrued_gratuity_object_sum'] = sum(i['total'] for i in query_cr_object)
         
-        query_dr = self.get_queryset().filter(value_type='Dr').values('staff').annotate(total=Sum('value')).order_by()
-        if query_dr.exists():
-            query_dr_object = list()
-            for q in query_dr:
-                name = Employee.objects.filter(id=q['staff'])
-                q['name'] = name.get()
-                query_dr_object.append(q)
-            context['disbursed_gratuity_object'] = query_dr_object
-            context['disbursed_gratuity_object_sum'] = sum(i['total'] for i in query_dr_object)
+        # list of active staff that has earned gratuity
+        active_staff = self.get_queryset().filter(staff__status=True).values_list('staff', flat=True).distinct().order_by()
+
+        # the active staff queryset
+        qs_active = list((staff, self.get_queryset().filter(staff=staff)) for staff in active_staff)
+
+        active_staff_data = list()
+        for qss in qs_active:
+            
+            active_dic = {
+                'id': qss[0],
+                'staff': Employee.objects.filter(pk=qss[0]).first().fullname,
+                'credit': qss[1].filter(value_type='Cr').aggregate(Sum('value'))['value__sum'],
+                'debit': qss[1].filter(value_type='Dr').aggregate(Sum('value'))['value__sum'],
+                }
+            active_staff_data.append(active_dic)
         
+        context['active_staff'] = active_staff_data
+
+        # list of terminated staff
+        term_staff = self.get_queryset().filter(staff__status=False).values_list('staff', flat=True).distinct().order_by()
+
+        # the terminated staff queryset in gratuity
+        qs_term = list((staff, self.get_queryset().filter(staff=staff)) for staff in term_staff)
+
+        term_staff_data = list()
+        for qss in qs_term:
+            term_dic = {
+                'id': qss[0],
+                'staff': Employee.objects.get(pk=qss[0]).fullname,
+                'credit': qss[1].filter(value_type='Cr').aggregate(Sum('value'))['value__sum'],
+                'debit': qss[1].filter(value_type='Dr').aggregate(Sum('value'))['value__sum'],
+                }
+            term_staff_data.append(term_dic)
+            
+        context['term_staff'] = term_staff_data
         return context
 
 
@@ -1673,6 +1692,7 @@ class UserHandleCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         context['email'] =  staff.staff.email if staff.official_email is None else staff.official_email 
         return context
     
+    
     def form_valid(self, form):
         global password
         staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
@@ -1699,7 +1719,8 @@ class UserHandleCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         email.content_subtype='html'
         email.send(fail_silently=True)
         return super().form_valid(form)
-        
+    
+
     def get_success_url(self):
         user_profile = Profile.objects.last()
         user = User.objects.last()

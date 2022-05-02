@@ -2,82 +2,82 @@
 {% load custom_templates %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container-grid">
+    <h4 class="text-success mt-3"><i>Gratuity Net Value: N{{total_value|floatformat:'2g'}}</i></h4>
+    <!-- The active staff gratuity -->
     <div class="row">
         <div class="col">
             <table 
-            data-toggle="table" 
-            data-pagination="true"
-            data-search="true">
-                <caption class="text-success">Accrued Gratuity
-                    {% if disbursed_gratuity_object_sum %}
-                    <span class="float-right text-success">
-                        <small>N{{accrued_gratuity_object_sum|floatformat:'2g'}}</small> 
-                    </span>
-                    {% endif %}
+                class="table"
+                data-toggle="table" 
+                data-pagination="true"
+                data-search="true">
+                <caption class="text-success">
+                    <small>Staff Gratuity Statement</small>
                 </caption>
                 
                 <thead>
                     <tr class="text-center bg-success text-white">
                         <th>Staff ID</th>
                         <th>Name</th>
-                        <th>Total</th>
+                        <th>Credit</th>
+                        <th>Debit</th>
                     </tr>
                 </thead>
                 
                 <tbody>
-                    {% for obj in accrued_gratuity_object %}
+                    {% for obj in active_staff %}
                     <tr>
                         <td class="text-center">
-                            <a href="{% url 'employee-gratuity-list' obj.staff %}">{{obj.staff|zeropadding:3}}</a>
+                            <a href="{% url 'employee-gratuity-list' obj.id %}">{{obj.id|zeropadding:3}}</a>
                         </td>
-                        <td>{{obj.name}}</td>
-                        <td class="text-right">{{obj.total|floatformat:'2g'}}</td>
+                        <td>{{obj.staff}}</td>
+                        <td class="text-right">{{obj.credit|default_if_none:0|floatformat:'2g'}}</td>
+                        <td class="text-right">{{obj.debit|default_if_none:0|floatformat:'2g'}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
                 
             </table>
         </div>
-    
+    </div>
+    <hr>
+    <!-- Terminated Staff Statement -->
+    <div class="row">
         <div class="col">
             <table 
+            class="table"
             data-toggle="table" 
             data-pagination="true"
             data-search="true">
-                <caption class="text-danger">Disbursed Gratuity
-                    {% if disbursed_gratuity_object_sum %}
-                    <span class="float-right text-danger">
-                        <small>N{{disbursed_gratuity_object_sum|floatformat:'2g'}}</small>   
-                    </span>
-                    {% endif %}
+                <caption class="text-secondary">
+                    <small>Terminated Staff Gratuity Statement</small> 
                 </caption>
                 <thead>
-                    <tr class="text-center bg-danger text-white">
+                    <tr class="text-center bg-secondary text-white">
                         <th>Staff ID</th>
                         <th>Name</th>
-                        <th>Total</th>
+                        <th>Credit</th>
+                        <th>Debit</th>
                     </tr>
                 </thead>
                 
                 <tbody>
-                    {% for obj in disbursed_gratuity_object %}
+                    {% for obj in term_staff %}
                     <tr>
-                        <td class="text-center">{{obj.staff|zeropadding:3}}</td>
-                        <td>{{obj.name}}</td>
-                        <td class="text-right">{{obj.total|floatformat:'2g'}}</td>
+                        <td class="text-center">{{obj.id|zeropadding:3}}</td>
+                        <td>{{obj.staff}}</td>
+                        <td class="text-right">{{obj.credit|default_if_none:0|floatformat:'2g'}}</td>
+                        <td class="text-right">{{obj.debit|default_if_none:0|floatformat:'2g'}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
                 
             </table>
-            <h4 class="text-right text-success m-2"><i>Gratuity Net Value: N{{total_value|floatformat:'2g'}}</i></h4>
         </div>
-        
     </div>
     
-    
-    <div class="row">
+    <div class="row mb-3">
         <div class="col">
             {% if return == 'detail' %}
             <a class=" btn btn-outline-dark float-right" href="{% url 'employee-detail' view.kwargs.pk %}">

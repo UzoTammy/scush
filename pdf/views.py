@@ -200,13 +200,13 @@ class RejectedApplicantList(ListView):
 
 class PoliciesDocView(LoginRequiredMixin, View):
 
-    template_name = 'pdf/procedures.html'
-    # template_name = 'pdf/pdf_policies.html'
+    # template_name = 'pdf/procedures.html'
+    template_name = 'pdf/pdf_policies.html'
 
     def get(self, request, *args, **kwargs):
         context = {
            'logo_image': Ozone.logo(),
-                 
+            'title': 'Policies'     
         }
         return render_to_pdf(self.template_name, context_dict=context)
 

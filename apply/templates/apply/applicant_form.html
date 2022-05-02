@@ -28,12 +28,13 @@
                 </i>
                 <hr>
                 <form method="POST">{% csrf_token %}
+                    {{form.errors}}
                     <fieldset class="form-group bg-light">
                         <legend class="text-info"><i>{{ title }} Application</i>
                             <small class="text-muted float-right">{% now 'd-m-Y@h:mA' %}</small>
                         </legend>
-                        <div class="row">
-                            <div class="col-auto">
+                        <div class="form-row">
+                            <div class="col">
                                 <span class="">First Name </span>
                                 <span class="text-danger">*</span>
                                 {{form.first_name}}
@@ -49,39 +50,41 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="row">
-                                <div class="col-auto">
+                        <div class="form-row">
+                                <div class="col">
                                     <div class="form-label">Gender
                                     <span class="text-danger">*</span>
                                     </div>
                                     <div class="form-check">{{form.gender}}</div>
                                 </div>
-                                <div class="col-auto">
+                                <div class="col">
                                     <div class="form-label">
                                         Marital Status<span class="text-danger">*</span>
                                     </div>
                                     <div class="form-check">{{form.marital_status}}</div>
                                 </div>
-                                <div class="col-auto">
+                                <div class="col-sm-3">
                                     <div class="form-label">
                                         Qualification<span class="text-danger">*</span>
                                     </div>
                                     <div class="mb-2">{{form.qualification}}</div>
                                 </div>
-                                <div class="col text-center">
+                                <div class="col-sm-5">
                                     <div class="form-label">
                                         Date of Birth<span class="text-danger">*</span>
                                     </div>
-                                    <div class="form-select">{{ form.birth_date }}</div>
+                                    <div>{{ form.birth_date }} 
+                                        <small class="text-danger">Applicant must be older than 18 and younger than 50</small>
+                                    </div>
                                 </div>
                             </div>
                         <hr>
-                        <div class="row">
-                            <div class="col-auto">
+                        <div class="form-row">
+                            <div class="col">
                                 <div class="form-label">Course</div>
                                 <div>{{ form.course }}</div>
                             </div>
-                            <div class="col-auto">
+                            <div class="col">
                                 <div class="form-label">
                                     Mobile<span class="text-danger">*</span>
                                 </div>
@@ -89,23 +92,22 @@
                             </div>
                         </div>
                         <hr>
-                        <div class="row">
-                            <div class="col">
+                        <div class="form-row">
+                            <div class="col-sm">
                                 <div class="form-label">Email
 <!--                                <span class="text-danger">*</span>-->
                                 </div>
                                 <div>{{ form.email }}</div>
                             </div>
-
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-auto">
+                            <div class="col-sm">
                                 <div class="form-label">
                                     Address<span class="text-danger">*</span>
                                 </div>
                                 <div class="">{{ form.address }}</div>
                             </div>
+                        </div>
+                        <hr>
+                        <div class="row">
                             {% if title == 'Update' %}
                             <div class="col-auto">
                                 <div class="form-label text-secondary">
@@ -116,9 +118,10 @@
                                     {{ application_date }}
                                 </div>
                             </div>
+                            <hr>
                             {% endif %}
                         </div>
-                        <hr>
+                        
                     </fieldset>
                     <div class="form-group">
                         <div class="row">

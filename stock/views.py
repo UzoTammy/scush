@@ -11,6 +11,7 @@ from django.contrib.auth.models import Group
 from pdf.utils import render_to_pdf
 from pdf.views import Ozone
 from .models import (Product, ProductPerformance, ProductExtension)
+from .forms import ProductExtensionForm
 from core.models import JsonDataset
 from delivery.models import DeliveryNote
 from django.db.models import Sum, F
@@ -423,7 +424,7 @@ class ProductPerformanceDetailView(LoginRequiredMixin, UserPassesTestMixin, Deta
 
 class ProductExtensionUpdateView(LoginRequiredMixin, UpdateView):
     model = ProductExtension
-    fields = ('product', 'date', 'stock_value')
+    form_class = ProductExtensionForm
     template_name = 'stock/report/productextension_form.html'
 
     def get_context_data(self, **kwargs):

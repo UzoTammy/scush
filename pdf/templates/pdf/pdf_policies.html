@@ -1,57 +1,91 @@
 {% extends 'pdf/base.html' %}
 
-<body>
+
 {% block content %}
 <div class='wrapper'>
     <div class='header'>
-        <p class='title'>SALES PROCEDURE</p>
+        <p class='title'>SALES</p>
     </div>
 </div>
 
-<h3>Get Sales Order</h3>
+<div class="flex-container">
+    <div class="flex-child">
+        <p class="subheader">Sales Order and Invoice</p>
+        <ul>
+            <li>Welcome the Customer</li>
+            <li>Go through her list to determine if:</li>
+            <ul style="list-style-type: lower-roman;">
+                <li>All items can be raised</li>
+                <li>Some of the items can be raised</li>
+                <li>All items <span class="red">CANNOT</span> be raised</li>
+            </ul>
+            <li>Is She a repeat customer?</li>
+            <ul>
+                <li>Yes - Identify account</li>
+                <li>No - Request for account to be created</li>
+            </ul>
+            <li>Raise Order to determine total amount</li>
+            <li>Agree with her on total amount</li>
+            <li>Transfer sales order to invoice</li>
+            <li>Confirm payment and sign the invoice</li>
+            <li>Handover Invoice to Store-Keeper</li>
+        </ul>    
+    </div>
+    <div class="flex-child">
+        <p class="subheader">Supply the customer</p>   
+        <ul>
+            <li>Confirm Cashier's signature - This serves as your evidence to supply</li>
+            <li>Supply the item(s) one after the order</li>
+            <li>Handover original invoice to customer</li>
+            <li>Confirm the supply with the customer item by item, quantity by quantity</li>
+            <li>Sign the customer's copy of the invoice - <i class="red">Do not overwrite on the invoice</i></li>
+            <li>The SCM <i class="red">MUST</i> supervise the supply</li>
+        </ul>
+    </div>    
+    
+</div>
 
-<ul style="list-style-type:circle;">Welcome the customer and/or the sales rep.
-Analyze order to determine whether it can
-    <li>Go through completely</li>
-    <li>Go through partially</li>
-    <li>Not go through at all</li>
-</ul>
-If c then REJECT ORDER
-If a/b then
-Confirm if customer is
-Repeat customer then go to No. 7
-New customer
-If customer is b then create account at HQ and continue
-Raise order to determine amount due
-Confirm payment or approve supply
-Supply customer
-Wholly
-Partly
-If a close sales and if b take note of iou.
+<div class="wrapper">
+    <p class="subheader">CREDIT SALES</p>
+    <span>
+        Credit Sales <i class="red">MUST</i> involve the SCM who will request for approval to sell on credit.
+        The SCM will sign on the invoice and the cashier will sign on sighting the SCM's signature. The Store-Keeper 
+        <i class="red">MUST</i> sight the cashier signature to supply. On no reason should a cashier or store-keeper authorize
+        supply of goods without payment of the goods in full.
+    </span>
 
-SELLING WITH CONDITIONS
-There are times when a highly sort after stock is available in limited quantity and the inevitable method of distribution is to allocate or limit the stock.
-The distribution method will be decided by management and communicated by the SS to cashiers and stock keeper. He is also to ensure the guidelines are followed STRICTLY.
+    <p class="subheader">SELLING WITH CONDITIONS</p>
+    <span>
+        There are times when a highly sort after stock is available in limited quantity and the inevitable method of distribution is to allocate or limit the stock.
+        The distribution method will be decided by management and communicated by the SS to cashiers and stock keeper. He is also to ensure the guidelines are followed STRICTLY.
+    </span>
 
-PAYMENT
-When a customer places order and the amount due is ascertained. Payment is to be made either in cash to the cashier or otherwise. When cash is paid in full the cashier makes the approval to supply and when cash is made in part or not made at all then the SS MUST make the approval in accordance to our guideline.
+    <p class="subheader">PAYMENT</p>
+    <span>When a customer places order and the amount due is ascertained. Payment is to be made either in cash to the cashier or otherwise. 
+        When cash is paid in full the cashier makes the approval to supply and when cash is made in part or not made at all then the SS MUST make the approval in accordance to our guideline.
+    </span>
+    
+    <p class="subheader">PROMOTIONAL SALES</p>
+    <ul>
+        Promotional sales are in two broad categories:
+        <ol>
+            <li>In house promotions:
+                This promotion originates from the management and for a defined purpose which should be communicated to all. 
+                The objective for this promotion should be driven by all to quickly achieve our aim. It will be regarded as 
+                insubordination if any staff does to the contrary.
+            </li>
+            <li>Company promotions: 
+                This promotion is delicate and administered by us on behalf of the company. In most cases, 
+                we conduct this promotion with our stock and renders reconciliation report to the issuing company for payment. 
+                We could lose the reimbursement if reconciliation is not made properly or not made at all. All promotions require 
+                proper promo report and it is compulsory for cashiers and stock keepers to facilitate the promo report.
+            </li>
+        </ol>
+        No matter the category of the promotion, each promotion has its unique mechanics and it is important to seek to understand 
+        it.
+    </ul>
+</div>
 
-CREDIT SALES
-It is imperative that you know we shy away from credit sales and discourages it as much as possible. However, a business of this nature cannot compete well without credit sales. At the management level, strict guidelines are set to administer credit sales. It is very important that you do not make credit sales without understanding or undermining the credit sales policy. Sales made on credit must in place of payment, carry with it the responsibility of the one who approved it. Credit sales customers are well known and properly documented and allowed to buy on credit within the SET LIMIT.
-CREDIT SALES PROCEDURE
-Refer the customer or rep to the SS.
-The SS first determine the credit limit of the customer.
-If limit is Zero or do not exist, credit sales cannot take place.
-If limit exist then abide by the limit and proceed with sales.
-SS must get the adequate approval for supply to take place.
-
-PROMOTIONAL SALES
-Promotional sales are in two broad categories:
-In house promotions
-This promotion originates from the management and for a defined purpose which should be communicated to all. The objective for this promotion should be driven by all to quickly achieve our aim. It will be regarded as insubordination if any staff does to the contrary.
-
-Company promotions: This promotion is delicate and administered by us on behalf of the company. In most cases, we conduct this promotion with our stock and renders reconciliation report to the issuing company for payment. We could lose the reimbursement if reconciliation is not made properly or not made at all. All promotions require proper promo report and it is compulsory for cashiers and stock keepers to facilitate the promo report.
-No matter the category of the promotion, each promotion has its unique mechanics and it is important to seek to understand it.
 
 PROMOTIONAL SALES PROCEDURE
 Identify the promotion
@@ -126,4 +160,3 @@ If the order is distorted then we adjust accordingly.
 
 {% endblock %}
 
-</body>

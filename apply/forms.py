@@ -3,7 +3,14 @@ import datetime
 from apply.models import Applicant
 
 
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
 class ApplicantForm(forms.ModelForm):
+
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     return cleaned_data
 
     class Meta:
         model = Applicant
@@ -42,21 +49,32 @@ class ApplicantForm(forms.ModelForm):
                                               ('BACHELOR', 'First Degree'),
                                               ('MASTERS', 'Masters'),
                                           ]),
-            'birth_date': forms.SelectDateWidget(attrs={'class': 'form-control '},
-                                                 years=list(range(1960,
-                                                                  datetime.date.today().year - 16))
-                                                 ),
+            # 'birth_date': forms.SelectDateWidget(attrs={'class': 'form-control '},
+            #                                      years=list(range(1960,
+            #                                                       datetime.date.today().year - 16))
+            #                                      ),
+            'birth_date': DateInput(attrs={
+                'class': 'form-control', 
+                'min': f'{datetime.date.today().year-50}-01-01',
+                'max': f'{datetime.date.today().year-18}-01-01',
+                }),
             'course': forms.TextInput(attrs={'class': 'form-control mb-2',
-                                             'placeholder': 'e.g. Accounting'}),
+                                             'placeholder': 'e.g. Accounting or empty if no course',
+                                             'type': 'search',
+                                             }),
             'email': forms.TextInput(attrs={'class': 'form-control mb-2',
                                             'placeholder': 'e.g. name@gmail.com',
-                                            'required': False}),
+                                            'required': False,
+                                            'error_messages': {'required': 'Enter Valid email'}
+                                            }),
             'mobile': forms.TextInput(attrs={'class': 'form-control mb-2',
+                                              'type': 'tel',  
+                                              'pattern': "[0-9]{3}-[0-9]{4}-[0-9]{4}",
                                              'placeholder': 'e.g. 080-1234-5678', 'cols': 60}),
             'address': forms.Textarea(attrs={'class': 'form-control mb-2',
                                              'placeholder': 'Residential address and not more than 100 characters',
                                              'rows': 4}),
-            'status': forms.Select(attrs={'class': 'form-control'})
+            # 'status': forms.Select(attrs={'class': 'form-control'})
         }
 
 

@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import *
-
+from . import views
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     # Documentation and guide
@@ -20,5 +21,7 @@ urlpatterns = [
     path('json/<int:id>/<str:key>/<str:value>/', JsonCategoryKeyValueUpdateView.as_view(), name='json-cat-key-value'),
     path('reset/help/', TemplateView.as_view(template_name='core/resetting/settings_help.html'), name='reset-help'),
     
+    # path('hello/', views.hello, name='hello'),
+    # path('core/login/', auth_views.LoginView.as_view(template_name='core/hello.html'), name='hello')
 ]
 
