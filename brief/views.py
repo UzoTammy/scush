@@ -1,15 +1,15 @@
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
 from .models import Post
 from staff.models import Employee
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-
-class PostListView(ListView):
+class PostListView(LoginRequiredMixin, ListView):
     model = Post
     ordering = ['-pk']
     paginate_by = 4
 
     
-class PostCreateView(CreateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     fields = ('title', 'content')
 
@@ -22,10 +22,11 @@ class PostCreateView(CreateView):
         return super().form_valid(form)
 
 
-class PostDetailView(DetailView):
+class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
 
-class PostUpdateView(UpdateView):
+
+class PostUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     fields = '__all__'
 

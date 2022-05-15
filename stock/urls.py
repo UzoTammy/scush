@@ -24,6 +24,8 @@ urlpatterns = [
 urlpatterns += [
     path('performance/list/', ProductPerformanceListView.as_view(), name='product-performance-list'),
     path('performance/create/', ProductPerformanceCreateView.as_view(), name='product-performance-create'),
-    path('performance/<int:pk>/detail/', ProductPerformanceDetailView.as_view(), name='product-performance-detail')
-    
+    path('performance/<int:pk>/detail/', ProductPerformanceDetailView.as_view(), name='product-performance-detail'),
+    path('watchlist/home/', WatchlistHomeView.as_view(), name='watchlist-home'),
+    path('watchlist/<str:action>/', WatchlistUpdateView.as_view(), name='watchlist-update'),
+    path('watchlist/sellout', WatchlistSelloutView.as_view(), name='watchlist-sellout'),
 ]

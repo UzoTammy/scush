@@ -31,7 +31,7 @@ class Stores(models.Model):
                              decimal_places=2,
                              default_currency='NGN'
                              )
-    capacity = models.IntegerField(help_text='33cl Can cases store can take')
+    capacity = models.IntegerField(help_text='How many 33cl Cans?')
     expiry_date = models.DateField(default=timezone.now)
     status = models.BooleanField(default=False)  # paid & not paid
     disabled = models.BooleanField(default=False)  # quit & still in use

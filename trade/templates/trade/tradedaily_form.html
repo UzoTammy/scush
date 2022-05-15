@@ -5,7 +5,7 @@
 <div class="container-fluid">
     
     <div class="row d-flex justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-8 shadow-lg">
             <form method="POST">
                 {% csrf_token %}
 
@@ -18,6 +18,9 @@
                                 <small class="text-danger">Suggested date {{next_date|date:'D d/m/Y'}}</small>
                                 {% endif %}
                                 {{ form.date|as_crispy_field }}
+                            </div>
+                            <div class="form-group col-md-6 mb-0">
+                                {{ form.gross_profit|as_crispy_field }}
                             </div>
                         </div>
                         
@@ -52,12 +55,6 @@
                         <div class="form-group col-md-6 mb-0">
                             {{ form.indirect_income|as_crispy_field }}
                         </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6 mb-0">
-                            {{ form.gross_profit|as_crispy_field }}
-                        </div>
-                        
                     </div>
                 </fieldset>
                 <div class="form-row">

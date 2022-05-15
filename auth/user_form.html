@@ -3,27 +3,27 @@
 {% load custom_templates %}
 {% block content %}
 <div class="container mt-5">
-    <div class="row">
-        <div class="col">
-            <div class="container-grid">
-                <form action="" method="POST">
-                    {% csrf_token %}
-                    <h5 class="text-info">Create User Handle for {{staff}}</h5>
-                    <ul class="list-group">
-                        <li class="list-group-item">Username: {{username}}</li>
-                        <li class="list-group-item">First Name: {{first_name}}</li>
-                        <li class="list-group-item">Last Name: {{last_name}}</li>
-                        <li class="list-group-item">Email: {{email}}</li>
-                        <li class="list-group-item text-info">Password will be generated automatically 
-                            and you can see it in your email stated above.</li>
-                    </ul>
-                    <div class="form-group mt-3">
-                        <button class="btn btn-primary" type="submit">Create</button>
-                        <a class="btn btn-outline-dark float-right" href="{% url 'employee-detail' staff.id %}"><i class="fa fa-reply"></i></a>
-                    </div>
-                </form>
-            </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-6">
             
+            <form action="" method="POST">
+                {% csrf_token %}
+                <h5 class="text-info">Create User Handle for {{staff}}</h5>
+                <h6 class="text-secondary">This is an auto generated User with details below</h6>
+                <img class="thumbnail float-right ml-2" width="70px" src="{{staff.image.url}}" alt="#">
+                <ul class="list-group">
+                    <li class="list-group-item">Username: {{username}}</li>
+                    <li class="list-group-item">First Name: {{first_name}}</li>
+                    <li class="list-group-item">Last Name: {{last_name}}</li>
+                    <li class="list-group-item">Email: {{email}}</li>
+                    <li class="list-group-item text-danger">Password will be generated automatically 
+                        and you can see it in your email stated above.</li>
+                </ul>
+                <div class="form-group mt-3">
+                    <button class="btn btn-primary" type="submit">Create</button>
+                    <a class="btn btn-outline-dark float-right" href="{% url 'employee-detail' staff.id %}"><i class="fa fa-reply"></i></a>
+                </div>
+            </form>
         </div>
     </div>
 </div>

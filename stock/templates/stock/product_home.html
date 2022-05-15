@@ -13,10 +13,7 @@
                     <li class="list-group-item">
                         <a href="{% url 'product-performance-list' %}">Product Perf</a>
                     </li>
-                    <li class="list-group-item">
-                        <!-- Button trigger modal -->
-                        <a href="{% url 'stock-report' %}">Stock Report</a>
-                    </li>
+                    
                     <li class="list-group-item">
                         <a href="{% url 'stock-report-source' 'All' %}">All Products</a>
                     </li>
@@ -53,6 +50,16 @@
                     <li class="list-group-item">
                         <a href="{% url 'pdf-price-change' %}">Today's Price Update (PDF)</a>
                     </li>
+
+                    <li class="list-group-item">
+                        <!-- Button trigger modal -->
+                        <a href="{% url 'stock-report' %}">Stock Report</a>
+                    </li>
+
+                    <li class="list-group-item">
+                        <a href="{% url 'watchlist-home' %}">Watchlist</a>
+                    </li>
+                    
                     <li class="list-group-item">
                         <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
                     </li>

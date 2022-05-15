@@ -1,0 +1,31 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container py-3">
+    <h3>List of Products - Action: Sellout for {{date|date}}</h3>
+    <form action="{% url 'watchlist-sellout' %}" method="GET">
+        <table class="table"
+            data-pagination="true"
+            data-toggle="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th class="text-center">Qty sold out</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in object_list %}
+                <tr>
+                    <td>{{product}}</td>
+                    <td class="text-center"><input class="text-right" type="text" name="{{product.id}}" value="{{product.sell_out}}" id=""></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-3">
+            <button class="btn btn-primary ml-2" type="submit">Submit</button>
+            <a class="btn btn-dark  float-right" href="{% url 'stock-report' %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </form>
+</div>
+{% endblock %}

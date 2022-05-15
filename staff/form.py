@@ -7,13 +7,22 @@ from core.models import JsonDataset
 
 
 class CreditForm(forms.ModelForm):
+    credit_date = forms.CharField(widget=forms.DateInput(
+        attrs={
+            'type': 'date'
+        }
+    ))
     class Meta:
         model = CreditNote
         exclude = ('status',)
 
 
 class DebitForm(forms.ModelForm):
-
+    debit_date = forms.CharField(widget=forms.DateInput(
+        attrs={
+            'type': 'date'
+        }
+    ))
     class Meta:
         model = DebitNote
         exclude = ('status',)
@@ -44,6 +53,9 @@ class EmployeeForm(forms.ModelForm):
     POSITIONS.insert(0, (None, '--------'))
     DEPARTMENTS.insert(0, (None, '--------'))
 
+    date_employed = forms.DateField(widget=forms.DateInput(attrs={
+        'type': 'date'
+    }))
     banker = forms.ChoiceField(choices=BANKS, initial='UBA')
     branch = forms.ChoiceField(choices=BRANCHES, required=False)
     position = forms.ChoiceField(choices=POSITIONS, required=False)

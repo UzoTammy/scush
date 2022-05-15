@@ -10,7 +10,7 @@ class Applicant(models.Model):
     second_name = models.CharField(max_length=30,
                                    blank=True, null=True)
     last_name = models.CharField(max_length=30)
-    birth_date = models.DateField(default=datetime.date.today()-datetime.timedelta(days=365*20))
+    birth_date = models.DateField()
     gender = models.CharField(max_length=10,
                               choices=[('FEMALE', 'Female'),
                                        ('MALE', 'Male')],

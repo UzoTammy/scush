@@ -7,9 +7,9 @@ import datetime
 
 class StoreForm(forms.ModelForm):
     expiry_date = forms.DateField(
-        widget=forms.DateInput(format='%d-%m-%Y',
+        widget=forms.DateInput(
                                attrs={'type': 'date',
-                                      'value': datetime.date.today()}
+                                      'value': datetime.date.today}
                                ))
 
     class Meta:

@@ -54,7 +54,7 @@ class Product(models.Model):
                                      ], default='PP')
     date_modified = models.DateTimeField(default=timezone.now)
     is_stock_valued = models.BooleanField(default=False) #
-
+    watchlist = models.BooleanField(default=False, verbose_name='watchlist')
     
     def __str__(self):
         if self.parameter == 'Standard':
@@ -109,7 +109,9 @@ class ProductExtension(models.Model):
         validators=[MinValueValidator(Money(0, 'NGN'), 
         message="Sales amount can't be negative")]
     )
-    status = models.BooleanField(default=False) # can be used to deactivate the product
+    
+    active = models.BooleanField(default=True) # can be used to deactivate the product
+    
 
     def __str__(self) -> str:
         return f'{self.product}-{self.date}'

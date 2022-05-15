@@ -1,11 +1,14 @@
 from django.urls import path
 from .views import *
 from . import views
-from django.contrib.auth import views as auth_views
+# from django.contrib.auth import views as auth_views
+# from django.contrib.auth.forms import PasswordChangeForm
 
 urlpatterns = [
     # Documentation and guide
-    path('', TemplateView.as_view(template_name='core/index.html'), name='index'),
+    path('', views.index, name='index'),
+    path('developer/', views.developer_login, name='developer'),
+
     path('scush/', ScushView.as_view(), name='scush'),
     path('home/', HomeView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
@@ -21,7 +24,8 @@ urlpatterns = [
     path('json/<int:id>/<str:key>/<str:value>/', JsonCategoryKeyValueUpdateView.as_view(), name='json-cat-key-value'),
     path('reset/help/', TemplateView.as_view(template_name='core/resetting/settings_help.html'), name='reset-help'),
     
-    # path('hello/', views.hello, name='hello'),
-    # path('core/login/', auth_views.LoginView.as_view(template_name='core/hello.html'), name='hello')
+    path('practice/', PracticeView.as_view(), name='practice'),
+    # path('password/', PasswordView.as_view(), name='password'),
+    # path('core/login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='log')
 ]
 

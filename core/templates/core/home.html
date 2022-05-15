@@ -22,6 +22,9 @@
 <div class="container-fluid">
     <div class="row mt-4 ml-2">
         <h3>Transaction Processes</h3>
+        {% if user.username == 'Uzo-02' %}
+            <a href="{% url 'practice' %}">My Link</a>
+        {% endif%}
     </div>
     <div class="row">
         <div class="col-md-3 mt-2">
@@ -378,8 +381,6 @@
         };
     };
 </script>
-
-
 
 {% endblock %}
 

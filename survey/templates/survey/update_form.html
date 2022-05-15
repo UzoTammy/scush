@@ -3,10 +3,14 @@
 {% block content %}
 <div class="container mt-5">
    
-    <div class="row">
-        <div class="col-sm-6">
-            <img src="{{ staff.staff.image.url }}" alt="" width="150px">
-            <p>Your Name: {{staff.staff.fullname}}</p>
+    <div class="row d-flex justify-content-center">
+        <div class="col-sm-6 shadow">
+            <div class="row">
+                <div class="col">
+                    <img src="{{ staff.staff.image.url }}" alt="" width="150px" class="float-right">
+                </div>
+            </div>
+            <h5 class="text-info">{{staff.staff.fullname}}</h5>
             <form action="" method="POST">
                 {% csrf_token %}
                 <div class="form-group">
@@ -14,8 +18,11 @@
                     <input class="form-control" type="number" name="number_of_kids">
                     <small class="text-danger">If this is not you, kindly ignore</small>
                 </div>
-                <button class="btn btn-outline-info" type="submit">Submit</button>
-                <a class="btn btn-outline-dark float-right" href="{% url 'index' %}">Close</a>
+                <div class="mb-3">
+                    <button class="btn btn-outline-info" type="submit">Submit</button>
+                    <a class="btn btn-outline-dark float-right" href="{% url 'index' %}">Close</a>
+                </div>
+                
             </form>
         </div>
     </div>  

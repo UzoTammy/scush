@@ -17,11 +17,17 @@ from delivery.models import DeliveryNote
 from django.db.models import Sum, F
 from django.views.generic import (
     View, ListView, DetailView, CreateView, UpdateView, DeleteView)
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from ozone import mytools
 
 
 permitted_group_name = 'Sales'
+
+def get_date():
+    dic = JsonDataset.objects.get(pk=2).dataset
+    date_string = dic['closing-stock-date'][0]
+    return datetime.datetime.strptime(date_string, '%Y-%m-%d')
 
 
 class ProductHomeView(LoginRequiredMixin, View):
@@ -105,7 +111,8 @@ class ProductHomeView(LoginRequiredMixin, View):
 
     def get(self, request):
         json_data = JsonDataset.objects.get(pk=1).dataset
-            
+        
+        
         context = {
             'total_count': Product.objects.all().count(),
             'nb_count': Product.objects.filter(source='NB').count(),
@@ -135,8 +142,7 @@ class ProductHomeView(LoginRequiredMixin, View):
             'gn_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='GN'))[3]:,.2f}",
             'ib_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[0],
             'ib_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[3]:,.2f}",
-            'sources': json_data['product-source']
-            
+            'sources': json_data['product-source']     
         }
         return render(request, 'stock/product_home.html', context=context)
 
@@ -480,8 +486,8 @@ class ProductExtensionListView(LoginRequiredMixin, ListView):
         return context
 
 
-
 class ProductExtensionProduct(LoginRequiredMixin, ListView):
+
     model = ProductExtension
     template_name = 'stock/report/productextension_productlist.html' 
 
@@ -502,3 +508,73 @@ class ProductExtensionProduct(LoginRequiredMixin, ListView):
                 products.append(qs)
         context['products'] = products
         return context
+
+
+class WatchlistHomeView(LoginRequiredMixin, TemplateView):
+    template_name = 'stock/watchlist/home.html'
+
+    def get(self, request, *args, **kwargs):        
+        if request.GET != {}:
+            for key, value in request.GET.items():
+                product = Product.objects.get(pk=key)
+                # if product.watchlist is true make false and vice versa
+                product.watchlist = True if product.watchlist == False else False
+                product.save()
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product_ids = Product.objects.filter(active=True, watchlist=True).values_list('pk', flat=True)
+        products = list()
+        for ids in product_ids:
+            p = ProductExtension.objects.filter(product__pk=ids, date=get_date())
+            if p.exists():
+                products.append(p.first())
+        context['products'] = products
+        return context
+
+
+class WatchlistUpdateView(LoginRequiredMixin, ListView):
+    model = Product
+    template_name = 'stock/watchlist/update.html'
+    ordering = 'name'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(active=True)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.kwargs['action'] == 'add':
+            context['products'] = self.get_queryset().filter(watchlist=False)
+        elif self.kwargs['action'] == 'remove':
+            context['products'] = self.get_queryset().filter(watchlist=True)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        
+        return super().get(request, *args, **kwargs)
+
+
+class WatchlistSelloutView(LoginRequiredMixin, ListView):
+    model = ProductExtension
+    template_name = 'stock/sellout.html'
+    
+    def get_queryset(self):
+        return super().get_queryset().filter(active=True, date=get_date())
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['date'] = get_date()
+        return context
+
+    def get(self, request, *args, **kwargs):
+        if request.GET != {}:
+            messages.info(request, f'{request.GET}')
+            for key, value in request.GET.items():
+                product = ProductExtension.objects.get(pk=key)
+                if value != '0':
+                    product.sell_out = value
+                    product.save()
+        return super().get(request, *args, **kwargs)
+
+    

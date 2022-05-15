@@ -18,7 +18,7 @@
                    class="table table-bordered table-sm">
                 <caption>Credit Note List</caption>
                 <thead class="bg-success text-white">
-                    <tr>
+                    <tr class="text-center">
                         <th scope="col">ID</th>
                         <th scope="col">Date</th>
                         <th scope="col">Staff</th>
@@ -30,11 +30,13 @@
                 <tbody>
                 {% for object in object_list %}
                     <tr>
-                        <td scope="col">{{ object.id|zeropadding:3 }}</td>
+                        <td scope="col" class="text-center">
+                            <a href="#">{{ object.id|zeropadding:3 }}</a>
+                        </td>
                         <td scope="col">{{object.credit_date|date:'d-m-Y'}}</td>
                         <td scope="col">{{object}}</td>
                         <td scope="col">{{object.remark}}</td>
-                        <td scope="col">{{object.value}}</td>
+                        <td scope="col" class="text-right">{{object.value}}</td>
                         <td scope="col">{{object.status|yesno:'Taken, Pending'}}</td>
                     </tr>
                 {% endfor %}

@@ -2,12 +2,12 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container">
-    <div class="row mt-3">
-        <div class="col">
+<div class="container mt-3">
+    <div class="row d-flex justify-content-center">
+        <div class="col-sm-6 shadow">
             <form method="post">
                 {% csrf_token %}
-                <legend>Update form</legend>
+                <legend>Update Form</legend>
                 <div class="form-group">
                     {{form|crispy}}
                 </div>

@@ -140,7 +140,6 @@ class StoresCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return context
 
     
-
 class StoresUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Stores
     template_name = 'warehouse/stores_form.html'
@@ -216,7 +215,7 @@ class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return redirect('warehouse-detail', pk=kwargs['pk'])
 
 
-class BankAccountCreate(CreateView):
+class BankAccountCreate(LoginRequiredMixin, CreateView):
     form_class = BankAccountForm
     template_name = 'warehouse/bankaccount_form.html'
     
@@ -237,7 +236,7 @@ class BankAccountCreate(CreateView):
             return redirect('warehouse-list-all')   
 
 
-class BankAccountUpdate(UpdateView):
+class BankAccountUpdate(LoginRequiredMixin, UpdateView):
     model = BankAccount
     fields = '__all__'
 
@@ -247,11 +246,11 @@ class BankAccountUpdate(UpdateView):
         return context
 
 
-class BankAccountDetail(DetailView):
+class BankAccountDetail(LoginRequiredMixin, DetailView):
     model = BankAccount
     
 
-class DisableStoreAndAccount(View):
+class DisableStoreAndAccount(LoginRequiredMixin, View):
 
     def get(self, request, **kwargs):
         store = Stores.active.get(pk=kwargs['pk'])

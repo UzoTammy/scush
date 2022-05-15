@@ -151,6 +151,7 @@ class CSVPart(TemplateView):
             context['message'] = msg
         return render(request, self.template_name, context)
 
+
 class CSVCustomerDetail(View):
 
     def get(self, request, id):
@@ -177,7 +178,8 @@ class CSVCustomerDetail(View):
         }
         return render(request, 'customer/CSV/customer_csv_detail.html', context)
 
-class CustomerHomeView(TemplateView):
+
+class CustomerHomeView(LoginRequiredMixin, TemplateView):
     template_name = 'customer/customer_home.html'
 
     def get_context_data(self, **kwargs):
@@ -211,6 +213,7 @@ class CustomerHomeView(TemplateView):
             }
         return context
 
+
 class CustomerListView(LoginRequiredMixin, ListView):
     model = CustomerProfile
     template_name = 'customer/customer.html'
@@ -226,8 +229,10 @@ class CustomerListView(LoginRequiredMixin, ListView):
             context['last_time_modified'] = context['last_modified_object'].date_modified.strftime('%a, %d %b %Y %H:%M:%S GMT')
         return context
 
+
 class CustomerDetailView(LoginRequiredMixin, DetailView):
     model = CustomerProfile
+
 
 class CustomerCreateView(LoginRequiredMixin, CreateView):
     # model = CustomerProfile
@@ -245,6 +250,7 @@ class CustomerCreateView(LoginRequiredMixin, CreateView):
         context['title'] = "New"
         context['btn_text'] = 'Create'
         return context
+
 
 class CustomerUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomerProfile
@@ -268,6 +274,7 @@ class CustomerUpdateView(LoginRequiredMixin, UpdateView):
         context['btn_text'] = 'Update'
         return context
 
+
 class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = CustomerProfile
     success_url = reverse_lazy('customer-list-all')  # '/','/index/'
@@ -278,5 +285,6 @@ class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         return False
 
-class RequestHome(TemplateView):
+
+class RequestHome(LoginRequiredMixin, TemplateView):
     template_name = 'customer/requests/request.html'

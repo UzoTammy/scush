@@ -15,9 +15,63 @@ from warehouse.models import Stores, Renewal
 from ozone import mytools
 from .forms import JsonDatasetForm
 from .models import JsonDataset
-from django.contrib.auth.models import Permission, Group, User
+from django.conf import settings
+
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User, Permission, Group
+from django.contrib.contenttypes.models import ContentType 
+
+# from .forms import TestForm, MyAuthenticationForm
+# from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordChangeForm, AuthenticationForm
+
+
+# This is for practical purposes
+# class PracticeView(View):
+#     def get(self, request, **kwargs):
+#         form = UserChangeForm()
+#         context = {
+#                 'form': form
+#             }
+#         if request.GET != {}:
+#             context['content'] = request.GET
+#             context['content_dic'] = eval(str(request.GET).split('<QueryDict:')[1][:-1])
+#         return render(request, 'core/practice.html', context)
+
+# class PasswordView(View):
+#     def get(self, request, **kwargs):
+#         form = MyAuthenticationForm()
+#         return render(request, 'core/password.html', {'form': form})
 
 # The index is at urlpatterns
+
+def index(request):
+    context = {
+        'debug_mode': True if settings.DEBUG else False
+    }
+    return render(request, 'core/index.html', context)
+
+
+def developer_login(request):
+    user = authenticate(username='Uzo-02', password='Zebra.,/Ozone')
+    if user is not None:
+        login(request, user)
+        return redirect('home')
+    return redirect('index')
+
+class PracticeView(View):
+    def get(self, request, **kwargs):
+
+        content_type = ContentType.objects.get_for_model(Employee)
+        permission = Permission.objects.create(
+            codename='can_employ',
+            name='Can Employ',
+            content_type=content_type
+        )
+        context = {
+            # 'usera': user_a,
+            # 'userg': user_g
+        }
+        return render(request, 'core/practice.html', context)
 
 class ScushView(TemplateView):
     template_name = 'core/scush.html'
@@ -119,7 +173,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             context['sales'] = qs_daily_last.sales
             context['day'] = qs_daily_last.date
 
-        context['salaries'] = Payroll.objects.aggregate(Sum('net_pay'))['net_pay__sum']
+        context['salaries'] = Payroll.objects.filter(date_paid__year=datetime.date.today().year).aggregate(Sum('net_pay'))['net_pay__sum']
         
         context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
         
@@ -281,12 +335,3 @@ class JsonCategoryKeyValueUpdateView(LoginRequiredMixin, View):
 
         return redirect('json-cat-key', kwargs['id'], kwargs['key'])
 
-
-# def hello(request):
-#     context = {
-#         'name': 'Uzo'
-#     }
-#     if request.GET != {}:
-#         context['birthday'] = request.GET['birthday']
-        
-#     return render(request, 'core/practice.html', context=context)
