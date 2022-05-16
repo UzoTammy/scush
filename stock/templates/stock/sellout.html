@@ -2,8 +2,12 @@
 
 {% block content %}
 <div class="container py-3">
-    <h3>List of Products - Action: Sellout for {{date|date}}</h3>
-    <form action="{% url 'watchlist-sellout' %}" method="GET">
+    {% if message %}
+    <h3>{{message}}</h3>
+    <a class="btn btn-dark" href="{% url 'stock-report' %}"><i class="fa fa-reply"></i></a>
+    {%else%}
+    <h3>List of Products - {{view.kwargs.source}}: Sellout for {{date|date}}</h3>
+    <form action="{% url 'sellout' view.kwargs.source %}" method="GET">
         <table class="table"
             data-pagination="true"
             data-toggle="table">
@@ -27,5 +31,6 @@
             <a class="btn btn-dark  float-right" href="{% url 'stock-report' %}"><i class="fa fa-reply"></i></a>
         </div>
     </form>
+    {% endif %}
 </div>
 {% endblock %}

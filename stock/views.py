@@ -555,26 +555,32 @@ class WatchlistUpdateView(LoginRequiredMixin, ListView):
         return super().get(request, *args, **kwargs)
 
 
-class WatchlistSelloutView(LoginRequiredMixin, ListView):
+class StockSelloutView(LoginRequiredMixin, ListView):
     model = ProductExtension
     template_name = 'stock/sellout.html'
     
     def get_queryset(self):
-        return super().get_queryset().filter(active=True, date=get_date())
+        return super().get_queryset().filter(active=True, date=get_date()).filter(product__source=self.kwargs['source'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['date'] = get_date()
+
+        if not self.get_queryset().exists():
+            context['message'] = "You Must Create Stock Position Report before Sellout"
+            
         return context
 
     def get(self, request, *args, **kwargs):
+            
         if request.GET != {}:
-            messages.info(request, f'{request.GET}')
+            messages.success(request, f"Sellout for {kwargs['source']} added successfully")
             for key, value in request.GET.items():
                 product = ProductExtension.objects.get(pk=key)
                 if value != '0':
                     product.sell_out = value
                     product.save()
+                    
         return super().get(request, *args, **kwargs)
 
     

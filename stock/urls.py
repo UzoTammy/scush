@@ -27,5 +27,5 @@ urlpatterns += [
     path('performance/<int:pk>/detail/', ProductPerformanceDetailView.as_view(), name='product-performance-detail'),
     path('watchlist/home/', WatchlistHomeView.as_view(), name='watchlist-home'),
     path('watchlist/<str:action>/', WatchlistUpdateView.as_view(), name='watchlist-update'),
-    path('watchlist/sellout', WatchlistSelloutView.as_view(), name='watchlist-sellout'),
+    path('sellout/<str:source>/', StockSelloutView.as_view(), name='sellout'),
 ]
