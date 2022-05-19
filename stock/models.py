@@ -17,6 +17,7 @@ class ChoiceOption:
     STATES = [(i, i) for i in json_dict['product-states']]
     VOLUME_UNITS = [(i, i) for i in json_dict['product-volume-units']]
     
+
 class Product(models.Model):
     name = models.CharField(max_length=20)
     source = models.CharField(max_length=50,
@@ -68,7 +69,6 @@ class Product(models.Model):
         return self.unit_price - self.cost_price
 
     
-    
 class ProductPerformance(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     outlet = models.ForeignKey(SalesCenter, on_delete=models.CASCADE)
@@ -109,7 +109,6 @@ class ProductExtension(models.Model):
         validators=[MinValueValidator(Money(0, 'NGN'), 
         message="Sales amount can't be negative")]
     )
-    
     active = models.BooleanField(default=True) # can be used to deactivate the product
     
 

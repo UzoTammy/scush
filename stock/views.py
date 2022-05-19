@@ -1,6 +1,7 @@
 import calendar
 import datetime
 from decimal import Decimal
+from sre_constants import SUCCESS
 from django.http import HttpResponse
 from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
 from django.utils import timezone
@@ -516,7 +517,7 @@ class WatchlistHomeView(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):        
         if request.GET != {}:
             for key, value in request.GET.items():
-                product = Product.objects.get(pk=key)
+                product = Product.objects.get(pk=key.replace(',', ''))
                 # if product.watchlist is true make false and vice versa
                 product.watchlist = True if product.watchlist == False else False
                 product.save()
@@ -555,9 +556,9 @@ class WatchlistUpdateView(LoginRequiredMixin, ListView):
         return super().get(request, *args, **kwargs)
 
 
-class StockSelloutView(LoginRequiredMixin, ListView):
+class StockReportUpdateView(LoginRequiredMixin, ListView):
     model = ProductExtension
-    template_name = 'stock/sellout.html'
+    template_name = 'stock/report/update.html'
     
     def get_queryset(self):
         return super().get_queryset().filter(active=True, date=get_date()).filter(product__source=self.kwargs['source'])
@@ -568,19 +569,73 @@ class StockSelloutView(LoginRequiredMixin, ListView):
 
         if not self.get_queryset().exists():
             context['message'] = "You Must Create Stock Position Report before Sellout"
-            
+
         return context
 
     def get(self, request, *args, **kwargs):
-            
+        
         if request.GET != {}:
-            messages.success(request, f"Sellout for {kwargs['source']} added successfully")
-            for key, value in request.GET.items():
-                product = ProductExtension.objects.get(pk=key)
-                if value != '0':
-                    product.sell_out = value
+            # convert the request.GET data into a python list of dictionaries
+            content_dic = eval(str(request.GET).split('<QueryDict:')[1][:-1])
+            
+            for key, value in content_dic.items():
+                try:
+                    product = ProductExtension.objects.get(pk=key.replace(',', ''))
+                    product.sell_out = int(value[0].replace(',', ''))
+                    product.stock_value = int(value[1].replace(',', ''))
                     product.save()
-                    
+                    msg = f"Sellout for {kwargs['source']} product(s) added successfully"
+                except Exception as err:
+                    messages.info(request, f"Records not updated due to {err}. Previous records reloaded")
+                    return super().get(request, *args, **kwargs)
+            messages.info(request, msg)
+            return redirect('stock-report')
+
+        return super().get(request, *args, **kwargs)
+
+
+class StockReportAddView(LoginRequiredMixin, ListView):
+
+    model = Product
+    template_name = 'stock/report/add.html'  
+
+    def get_queryset(self):
+        return super().get_queryset().filter(active=True).filter(source=self.kwargs['source'])
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['date'] = get_date()
+
+        if ProductExtension.objects.filter(active=True, date=get_date(), product__source=self.kwargs['source']).exists():
+            context['message'] = "Records for this group already exist"
+        return context
+
+    def get(self, request, *args, **kwargs):
+        
+        if request.GET != {}:
+            # convert the request.GET data into a python list of dictionaries
+            content_dic = eval(str(request.GET).split('<QueryDict:')[1][:-1])
+            i = 0
+            for key, value in content_dic.items():
+                i += 1
+                try:
+                    code = key.replace(',', '')
+                    obj = self.get_queryset().get(pk=code)
+                    product = ProductExtension.objects.create(
+                        product=obj,
+                        cost_price=obj.cost_price,
+                        selling_price=obj.unit_price,
+                        stock_value=value[1].replace(',', ''),
+                        date=get_date(),
+                        sell_out=value[0].replace(',', ''),
+                    )
+                    msg = f'{i} Stock Report Generated SUCCESSFULLY !!!'
+                except Exception as err:
+                    msg = f'Stock Report generation interrupted due to {err}'
+                
+            messages.info(request, msg)
+            return redirect('stock-report')
         return super().get(request, *args, **kwargs)
 
     

@@ -1,0 +1,61 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container py-3">
+    {% if message %}
+    <h3>{{message}}</h3>
+    <a class="btn btn-dark" href="{% url 'stock-report' %}"><i class="fa fa-reply"></i></a>
+    {% else %}
+    <form action="{% url 'stock-report-add' view.kwargs.source %}">
+        <div class="row">
+            <div class="col">
+                <table class="table"
+                data-pagination="true"
+                data-toggle="table">
+                <caption>List of Products - {{view.kwarg.source}}: Stock Report-Add for {{date|date}}</caption>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Product</th>
+                        <th class="text-center">Qty Sold Out</th>
+                        <th class="text-center">Closing Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in object_list %}
+                    <tr>
+                        <td>{{product.id|zeropadding:3}}</td>
+                        <td>{{product}}</td>
+                        <td class="text-center">
+                            <input class="form-control text-right" 
+                            type="text" 
+                            name="{{product.id}}" 
+                            maxlength="7"
+                            required>
+                        </td>
+                        <td>
+                            <input class="form-control text-right" 
+                            type="text" 
+                            name="{{product.id}}"  
+                            maxlength="7"
+                            required>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row mt-3 text-center">
+            <div class="col">
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+            <div class="col">
+                <a class="btn btn-dark" href="{% url 'stock-report' %}"><i class="fa fa-reply"></i></a>
+            </div>
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

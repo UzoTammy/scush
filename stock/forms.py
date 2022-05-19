@@ -10,5 +10,5 @@ class ProductExtensionForm(forms.ModelForm):
 
     class Meta:
         model = ProductExtension
-        fields = ('product', 'date', 'stock_value')
+        fields = ('product', 'date', 'stock_value', 'sell_out')
         

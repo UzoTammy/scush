@@ -10,6 +10,17 @@
   </div>
   <div class="row mt-2">
       <div class="col-3 bg-light">
+        <li class="list-group-item">
+          <!-- Button trigger modal -->
+          <a href="#" data-toggle="modal" data-target="#stockAddModal">
+              Fix Date
+          </a>
+      </li>
+      <li class="list-group-item">
+        <a href="#" 
+        data-toggle="modal" 
+        data-target="#stockReport"><i class="fa fa-vcard text-danger"></i> Daily Report</a>
+      </li>
         {% now 'Y' as current_year %}
         <li class="list-group-item"><a href="{% url 'stock-month' current_year %}">{{current_year}}</a></li>
         <li class="list-group nav-item dropdown">
@@ -22,44 +33,43 @@
             {% endfor %}
           </ul>
         </li>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <a href="#" 
-              data-toggle="modal" 
-              data-target="#stockReport"><i class="fa fa-vcard text-danger"></i> Daily Report</a>
-            </li>
-              
-              <li class="list-group nav-item dropdown">
-                <a class="nav-link dropdown-toggle" 
-                data-toggle="dropdown"
-                href="#">Sources</a> 
-                <ul class="dropdown-menu">
-                  {% for source in sources %}
-                  <li class="dropdown-item"><a href="{% url 'stock-report-source' source %}">{{source}}</a></li>
-                  {% endfor %}
-                </ul>
-              </li>
-              <hr class="dropdown-divider">
-              <li class="list-group-item">
-                  <!-- Button trigger modal -->
-                  <a href="#" data-toggle="modal" data-target="#stockAddModal">
-                      Fix Date
-                  </a>
-              </li>
-              <li class="list-group nav-item dropdown">
-                <a class="nav-link dropdown-toggle" 
-                data-toggle="dropdown"
-                href="#">Sellout</a> 
-                <ul class="dropdown-menu">
-                  {% for source in sources %}
-                  <li class="dropdown-item"><a href="{% url 'sellout' source %}">{{source}}</a></li>
-                  {% endfor %}
-                </ul>
-              </li>
-              <li class="list-group-item">
-                  <a href="{% url 'product-home' %}"><i class="fa fa-reply"></i> Return</a>
-              </li>
-          </ul>
+        <hr>
+        <ul class="list-group list-group-flush">
+          <li class="list-group nav-item dropdown">
+            <a class="nav-link dropdown-toggle" 
+            data-toggle="dropdown"
+            href="#">Sources</a> 
+            <ul class="dropdown-menu">
+              {% for source in sources %}
+              <li class="dropdown-item"><a href="{% url 'stock-report-source' source %}">{{source}}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+          <hr class="dropdown-divider">
+          <li class="list-group nav-item dropdown">
+            <a class="nav-link dropdown-toggle" 
+            data-toggle="dropdown"
+            href="#">Add</a> 
+            <ul class="dropdown-menu">
+              {% for source in sources %}
+              <li class="dropdown-item"><a href="{% url 'stock-report-add' source %}" disabled>{{source}}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+          <li class="list-group nav-item dropdown">
+            <a class="nav-link dropdown-toggle" 
+            data-toggle="dropdown"
+            href="#">Update</a> 
+            <ul class="dropdown-menu">
+              {% for source in sources %}
+              <li class="dropdown-item"><a href="{% url 'stock-report-update' source %}">{{source}}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+          <li class="list-group-item">
+              <a href="{% url 'product-home' %}"><i class="fa fa-reply"></i> Return</a>
+          </li>
+        </ul>
       </div>
       <div class="col-9">
         <h5 class="text-italics text-left">{{msg}}: {{current_date|date:'d-M-Y'}}</h5>

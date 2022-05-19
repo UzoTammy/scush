@@ -58,6 +58,7 @@ def developer_login(request):
         return redirect('home')
     return redirect('index')
 
+
 class PracticeView(View):
     def get(self, request, **kwargs):
 
@@ -72,6 +73,7 @@ class PracticeView(View):
             # 'userg': user_g
         }
         return render(request, 'core/practice.html', context)
+
 
 class ScushView(TemplateView):
     template_name = 'core/scush.html'
