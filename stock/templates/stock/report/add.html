@@ -11,9 +11,9 @@
         <div class="row">
             <div class="col">
                 <table class="table"
-                data-pagination="true"
+                data-search="true"
                 data-toggle="table">
-                <caption>List of Products - {{view.kwarg.source}}: Stock Report-Add for {{date|date}}</caption>
+                <caption>List of Products - {{view.kwargs.source}}: Stock Report-Add for {{date|date}}</caption>
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -25,7 +25,11 @@
                 <tbody>
                     {% for product in object_list %}
                     <tr>
-                        <td>{{product.id|zeropadding:3}}</td>
+                        <td>{{product.id|zeropadding:3}}
+                            <a href="." data-toggle="modal" data-target="#costPriceReview{{product.id}}">
+                                <i class="fa fa-edit">CP</i>
+                            </a>
+                        </td>
                         <td>{{product}}</td>
                         <td class="text-center">
                             <input class="form-control text-right" 
@@ -58,4 +62,75 @@
     </form>
     {% endif %}
 </div>
+
+    <!-- Cost Price Update Modal -->
+{% for product in object_list %}
+    <div class="modal fade" 
+    id="costPriceReview{{product.id}}" 
+    data-backdrop="static"
+    role="dialog" 
+    tabindex="-1">
+        <form action="{% url 'price-update' product.id %}" method="post">
+            {% csrf_token %}
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">{{product}}</h5>
+            <button type="button" 
+            class="close" 
+            data-dismiss="modal" 
+            aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <fieldset>
+                <div class="row">
+                    <div class="col">
+                        <p>Cost Price:  <span class="text-primary">{{product.cost_price}}</span></p>
+                    </div>
+                    
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                    <div class="col">
+                        <input id="inputCost" 
+                        placeholder="Enter New Cost Price" 
+                        type="number"
+                        min="0.1"
+                        max="200000"
+                        step=".01"
+                        onchange="costFunc()" 
+                        class="form-control" 
+                        name="cost" value="">
+                        <span class="help-block text-muted ml-3">Maximum price allowed is NGN200,000.00</span>
+                        <input type="hidden" name="redirect" value="{{view.kwargs.source}}">
+                    </div>
+                    
+                    </div>
+                    
+                </div>
+            </fieldset>
+            </div>
+            <div class="modal-footer">
+
+            <button id="btnCostPrice" type="submit" class="btn btn-primary" disabled>Update</button>  
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+        </div>
+        </form>
+    </div>
+{% endfor %}
+<script>
+    function costFunc() {
+    
+        if (document.getElementById('inputCost').value == '') {
+            document.getElementById('btnCostPrice').disabled = true;
+        } else {
+            document.getElementById('btnCostPrice').disabled = false;
+        }  
+    }
+</script>
+    
 {% endblock %}

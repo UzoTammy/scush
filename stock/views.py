@@ -2,6 +2,7 @@ import calendar
 import datetime
 from decimal import Decimal
 from sre_constants import SUCCESS
+from wsgiref.util import request_uri
 from django.http import HttpResponse
 from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
 from django.utils import timezone
@@ -343,7 +344,6 @@ class PricePageView(LoginRequiredMixin, ListView):
 class PriceUpdate(LoginRequiredMixin, UpdateView):
     model = Product
 
-    
     def post(self, request, *args, **kwargs):
         product = get_object_or_404(Product, pk=kwargs['pk'])
         # selling price gotten from modal form for selling price update only
@@ -359,12 +359,19 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
         date_string = json_data['closing-stock-date'][0]
         date_obj = datetime.datetime.strptime(date_string, "%Y-%m-%d")
         qs = ProductExtension.objects.filter(product=product).filter(date=date_obj)
+        
         if qs.exists():
             stock_obj = qs.first()
             stock_obj.cost_price = product.cost_price
             stock_obj.save()
+        if 'redirect' in request.POST:
+            messages.info(request, 'Price Update Successful')
+            if 'update' in request.path_info.split('/'):
+                return redirect('stock-report-update', source=request.POST['redirect'])
+            else:
+                return redirect('stock-report-add', source=request.POST['redirect'])
         return redirect(product)
-
+       
 
 class ProductPerformanceListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = ProductPerformance
@@ -568,8 +575,8 @@ class StockReportUpdateView(LoginRequiredMixin, ListView):
         context['date'] = get_date()
 
         if not self.get_queryset().exists():
-            context['message'] = "You Must Create Stock Position Report before Sellout"
-
+            context['message'] = f"Report for this date ({get_date().date().strftime('%d-%b-%Y')}) do not exist !!!"
+            context['products'] = Product.objects.filter(active=True, source=self.kwargs['source'])
         return context
 
     def get(self, request, *args, **kwargs):
