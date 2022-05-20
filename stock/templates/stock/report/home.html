@@ -49,7 +49,7 @@
           <li class="list-group nav-item dropdown">
             <a class="nav-link dropdown-toggle" 
             data-toggle="dropdown"
-            href="#">Add</a> 
+            href="#">Bulk Add</a> 
             <ul class="dropdown-menu">
               {% for source in sources %}
               <li class="dropdown-item"><a href="{% url 'stock-report-add' source %}" disabled>{{source}}</a></li>
@@ -59,7 +59,7 @@
           <li class="list-group nav-item dropdown">
             <a class="nav-link dropdown-toggle" 
             data-toggle="dropdown"
-            href="#">Update</a> 
+            href="#">Bulk Edit</a> 
             <ul class="dropdown-menu">
               {% for source in sources %}
               <li class="dropdown-item"><a href="{% url 'stock-report-update' source %}">{{source}}</a></li>
@@ -103,6 +103,7 @@
                           <th>Qty</th>
                           <th>Value</th>
                           <th>%</th>
+                          <th>sellout</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -111,9 +112,10 @@
                           <td class="text-left">{{dict_object.source}}</td>
                           <td>{{dict_object.qty}}</td>
                           <td>{{dict_object.value|floatformat:'2g'}}</td>
-                          {% with grand_total|last as gtl %}
+                          {% with grand_total|array:2 as gtl %}
                           <td>{{dict_object.value|div:gtl|multiply:100|floatformat:'2g'}}</td>
                           {% endwith %}
+                          <td>{{dict_object.sellout}}</td>
                         </tr>
                         {% endfor%}
                       </tbody>
@@ -139,9 +141,10 @@
                 <thead>
                   <tr>
                     <th>Product</th>
-                    <th class="text-right">Cost Price</th>
-                    <th class="text-right">Quantity</th>
+                    <th class="text-right">Cost</th>
+                    <th class="text-right">Qty</th>
                     <th class="text-right">Value</th>
+                    <th class="text-right">Sellout</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -152,14 +155,17 @@
                     <td class="text-right">{{item.cost_price.amount}}</td>
                     <td class="text-right">{{item.stock_value}}</td>
                     <td class="text-right">{{item.value|floatformat:'2g'}}</td>
+                    <td class="text-right">{{item.sell_out}}</td>
                   </tr>
                   {% endfor %}
                 </tbody>
                 <tfoot>
                   <tr class="text-danger text-right">
                     <td colspan="2">Total</td>
-                    <td>{{totals|array:forloop.counter|first}}</td>
-                    <td>{{totals|array:forloop.counter|last|floatformat:'2g'}}</td>
+                    <td>{{totals|array:forloop.counter|array:1}}</td>
+                    <td>{{totals|array:forloop.counter|array:2|floatformat:'2g'}}</td>
+                    <td>{{totals|array:forloop.counter|array:3}}</td>
+                    
                   </tr>
                 </tfoot>
               </table>

@@ -194,26 +194,31 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             source_list.append(qs.order_by('-value'))
             total_list.append(
                 (qs.aggregate(Sum('stock_value'))['stock_value__sum'],
-                qs.aggregate(Sum('value'))['value__sum'])
+                qs.aggregate(Sum('value'))['value__sum'],
+                qs.aggregate(Sum('sell_out'))['sell_out__sum'])
             )
             sources.append((
                     {'source': source,
                     'qty': qs.aggregate(Sum('stock_value'))['stock_value__sum'],
                     'value': qs.aggregate(Sum('value'))['value__sum'],
-                    'percent': '%'}
+                    'percent': '%',
+                    'sellout': qs.aggregate(Sum('sell_out'))['sell_out__sum']
+                    }
                     ))
 
         lis = [i for i in source_list if i.exists()]
         context['obj'] = lis
-        total_list = [i for i in total_list if i[0] is not None]
+        total_list = [i for i in total_list if i[0] is not None and i[2] is not None]
         context['totals'] = total_list
-        lis = [i for i in sources if i['qty'] is not None]
+        lis = [i for i in sources if i['qty'] is not None and i['sellout'] is not None]
         context['source_total'] = sorted(lis, key=lambda i: i['value'], reverse=True)
-        qty, val = 0, Decimal('0')
-        for x, y in total_list:
+        qty, val, sellout = 0, Decimal('0'), 0
+        for x, y, z in total_list:
             qty += x
             val += y
-        context['grand_total'] = (qty, val)
+            sellout += z
+
+        context['grand_total'] = (qty, val, sellout)
         context['months'] = (calendar.month_name[x] for x in range(1, 13))
         return context
     
