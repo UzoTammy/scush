@@ -3,34 +3,39 @@
 {% block content %} 
 <div class="container py-3">
     <h3 class="text-center">Watchlist Home Page</h3>
+    <div class="row">
+        <div class="col">
+            <table 
+                class="table"
+                data-pagination="true" 
+                data-toggle="table">
+                <caption>Current Watchlist</caption>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th class="text-right">Selling</th>
+                        <th class="text-right">Sell Out</th>
+                        <th class="text-right">Cost</th>
+                        <th class="text-right">Qty</th>
+                        <th class="text-right">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{product.product}}</td>
+                        <td class="text-right">{{product.selling_price}}</td>
+                        <td class="text-right">{{product.sell_out}}</td>
+                        <td class="text-right">{{product.cost_price}}</td>
+                        <td class="text-right">{{product.stock_value}}</td>
+                        <td class="text-right">{{product.value_of_stock}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
     
-    <table class="table"
-        data-pagination="true" 
-        data-toogle="table">
-        <caption>Current Watchlist</caption>
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th class="text-right">Cost</th>
-                <th class="text-right">Selling</th>
-                <th class="text-right">Qty</th>
-                <th class="text-right">Value</th>
-                <th class="text-right">Sell Out</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in products %}
-            <tr>
-                <td>{{product.product}}</td>
-                <td class="text-right">{{product.selling_price}}</td>
-                <td class="text-right">{{product.cost_price}}</td>
-                <td class="text-right">{{product.stock_value}}</td>
-                <td class="text-right">{{product.value_of_stock}}</td>
-                <td class="text-right">{{product.sell_out}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
     <div class="container text-center">
         <div class="row">
             <div class="col">

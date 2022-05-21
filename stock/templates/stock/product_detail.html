@@ -110,7 +110,8 @@ data-backdrop="static"
 role="dialog" 
 tabindex="-1">
   
-    <form action="{% url 'price-update' object.pk %}" method="post">{% csrf_token %}
+    <form action="{% url 'price-update' object.pk %}" method="post">
+      {% csrf_token %}
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -135,12 +136,12 @@ tabindex="-1">
                   <div class="col">
                     <input id="inputSelling" placeholder="Enter New Selling Price" 
                     type="number"
-                    min="0"
+                    min="0.1"
                     max="200000"
                     step=".01"
                     onchange="sellingFunc()" 
                     class="form-control" 
-                    name="selling" value="">
+                    name="selling" value="" required>
                   </div>
                   
                 </div>
@@ -150,7 +151,7 @@ tabindex="-1">
         </div>
         <div class="modal-footer">
 
-          <button id="btnSellingPrice" type="submit" class="btn btn-primary" disabled>Update</button>  
+          <button id="btnSellingPrice" type="submit" class="btn btn-primary">Update</button>  
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>
@@ -210,19 +211,21 @@ tabindex="-1">
               
               <div class="form-group">
                 
-                <input id="inputStock" onchange="stockFunc()" type="number" 
+                <input 
+                id="inputStock" 
+                type="number" 
                 max="100000"
                 min="-100000"
                 step="1"
                 placeholder="Enter Closing Stock Quantity Here"
                 class="form-control" 
-                name="quantity" value="">
-                <span class="help-block text-danger">min</span>
+                name="quantity" value="" required>
+                <span class="help-block text-danger ml-3">Quantity between -100,000 and 100,000</span>
               </div>
           </fieldset>
         </div>
         <div class="modal-footer">
-            <button id="btnStock" type="submit" class="btn btn-primary" disabled>Submit</button>  
+            <button id="btnStock" type="submit" class="btn btn-primary">Submit</button>  
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>
@@ -259,22 +262,23 @@ tabindex="-1">
             </div>
               <div class="form-group">
                 
-                <input id="inputEditStock" onchange="editFunc()" type="number"
+                <input id="inputEditStock" min="1" type="number"
                 placeholder="Edit Stock Quantity here"
                 class="form-control" 
-                name="edit_quantity" value="">
+                name="edit_quantity" value="" required>
+
+                <span class="help-block text-danger ml-3">Quantity between -100,000 and 100,000</span>
               </div>
           </fieldset>
         </div>
         <div class="modal-footer">
-            <button id="btnEditStock" type="submit" class="btn btn-primary" disabled>Submit</button>  
+            <button id="btnEditStock" type="submit" class="btn btn-primary">Submit</button>  
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>
     </form>
 </div>
-
 
 <!-- Cost Price Update Modal -->
 <div class="modal fade" 
@@ -311,9 +315,8 @@ tabindex="-1">
                     min="0.1"
                     max="200000"
                     step=".01"
-                    onchange="costFunc()" 
                     class="form-control" 
-                    name="cost" value="">
+                    name="cost" value="" required>
                     <span class="help-block text-muted ml-3">Maximum price allowed is NGN200,000.00</span>
                     
                   </div>
@@ -325,49 +328,12 @@ tabindex="-1">
         </div>
         <div class="modal-footer">
 
-          <button id="btnCostPrice" type="submit" class="btn btn-primary" disabled>Update</button>  
+          <button id="btnCostPrice" type="submit" class="btn btn-primary">Update</button>  
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>
     </form>
 </div>
-
-<script>
-    function sellingFunc() {
-      
-      if (document.getElementById('inputSelling').value == '') {
-          document.getElementById('btnSellingPrice').disabled = true;
-      } else {
-          document.getElementById('btnSellingPrice').disabled = false;
-      }  
-    }
-
-    function costFunc() {
-      
-      if (document.getElementById('inputCost').value == '') {
-          document.getElementById('btnCostPrice').disabled = true;
-      } else {
-          document.getElementById('btnCostPrice').disabled = false;
-      }  
-    }
-  
-    function stockFunc() {
-      if (document.getElementById('inputStock').value == '') {
-          document.getElementById('btnStock').disabled = true;
-      } else {
-          document.getElementById('btnStock').disabled = false;
-      }  
-    }
-
-    function editFunc() {
-      if (document.getElementById('inputEditStock').value == '') {
-          document.getElementById('btnEditStock').disabled = true;
-      } else {
-          document.getElementById('btnEditStock').disabled = false;
-      }  
-    }
-    
-</script>
 
 {% endblock content %}

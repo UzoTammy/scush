@@ -89,7 +89,7 @@
                 <div class="card-header" id="headingOne">
                   <h2 class="mb-0">
                     <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      <h6>Grand Total: Quantity: {{grand_total|first}} and Value: N{{grand_total|last|floatformat:'2g'}}</h6>
+                      <h6>Grand Total: Quantity: {{grand_total|first}} and Value: N{{grand_total|array:2|floatformat:'2g'}}</h6>
                     </button>
                   </h2>
                 </div>
@@ -103,7 +103,7 @@
                           <th>Qty</th>
                           <th>Value</th>
                           <th>%</th>
-                          <th>sellout</th>
+                          <th>Sellout</th>
                         </tr>
                       </thead>
                       <tbody>

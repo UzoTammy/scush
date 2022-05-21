@@ -38,6 +38,7 @@
                                         <th class="text-center">Count</th>
                                         <th class="text-right">Qty</th>
                                         <th class="text-right">Value(N)</th>
+                                        <th class="text-right">Sellout</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -48,6 +49,7 @@
                                         <td class="text-center">{{data.objs.count}}</td>
                                         <td class="text-right">{{data.objs.qty}}</td>
                                         <td class="text-right">{{data.objs.value|floatformat:'2g'}}</td>
+                                        <td class="text-right">{{data.objs.sellout}}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

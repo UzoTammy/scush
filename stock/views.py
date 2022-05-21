@@ -490,7 +490,9 @@ class ProductExtensionListView(LoginRequiredMixin, ListView):
                         'date': date, 'source': source, 'objs': {
                             'count': f'({obj.count()} of {Product.objects.filter(source=source).count()})',
                             'qty': obj.aggregate(Sum('stock_value'))['stock_value__sum'],
-                            'value': obj.aggregate(Sum('value'))['value__sum']}
+                            'value': obj.aggregate(Sum('value'))['value__sum'],
+                            'sellout':obj.aggregate(Sum('sell_out'))['sell_out__sum']
+                            }
                         }
                                 )
             dataset.append(data)        
@@ -538,12 +540,8 @@ class WatchlistHomeView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         product_ids = Product.objects.filter(active=True, watchlist=True).values_list('pk', flat=True)
-        products = list()
-        for ids in product_ids:
-            p = ProductExtension.objects.filter(product__pk=ids, date=get_date())
-            if p.exists():
-                products.append(p.first())
-        context['products'] = products
+        
+        context['products'] = list( ProductExtension.objects.filter(product__pk=ids).latest('date') for ids in product_ids )
         return context
 
 

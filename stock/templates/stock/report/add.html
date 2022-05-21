@@ -100,21 +100,18 @@
                         min="0.1"
                         max="200000"
                         step=".01"
-                        onchange="costFunc()" 
                         class="form-control" 
-                        name="cost" value="">
+                        name="cost" value="" required>
                         <span class="help-block text-muted ml-3">Maximum price allowed is NGN200,000.00</span>
                         <input type="hidden" name="redirect" value="{{view.kwargs.source}}">
                     </div>
-                    
                     </div>
-                    
                 </div>
             </fieldset>
             </div>
             <div class="modal-footer">
 
-            <button id="btnCostPrice" type="submit" class="btn btn-primary" disabled>Update</button>  
+            <button id="btnCostPrice" type="submit" class="btn btn-primary">Update</button>  
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
         </div>
@@ -122,15 +119,5 @@
         </form>
     </div>
 {% endfor %}
-<script>
-    function costFunc() {
-    
-        if (document.getElementById('inputCost').value == '') {
-            document.getElementById('btnCostPrice').disabled = true;
-        } else {
-            document.getElementById('btnCostPrice').disabled = false;
-        }  
-    }
-</script>
     
 {% endblock %}

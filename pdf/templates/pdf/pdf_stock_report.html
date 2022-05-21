@@ -30,6 +30,7 @@
                 <thead>
                   <tr class="text-right">
                     <th class="text-left">Source</th>
+                    <th>Sellout</th>
                     <th>Qty</th>
                     <th>Value</th>
                     <th>%</th>
@@ -39,22 +40,23 @@
                   {% for dict_object in source_total %}
                   <tr style="text-align: right;">
                     <td style="text-align: left;">{{dict_object.source}}</td>
+                    <td>{{dict_object.sellout}}</td>
                     <td>{{dict_object.qty}}</td>
                     <td>{{dict_object.value|floatformat:'2g'}}</td>
-                    {% with grand_total|last as gtl %}
+                    {% with grand_total|array:2 as gtl %}
                     <td>{{dict_object.value|div:gtl|multiply:100|floatformat:'2g'}}</td>
                     {% endwith %}
                   </tr>
                   {% endfor%}
                   <tr style="text-align: right;">
-                      <td>Total</td>
-                      <td>{{grand_total|first}}</td>
-                      <td>{{grand_total|last|floatformat:'2g'}}</td>
-                      <td>{{100|floatformat:'2g'}}</td>
+                      <th>Total</th>
+                      <th class="text-right">{{grand_total|array:3}}</th>
+                      <th class="text-right">{{grand_total|first}}</th>
+                      <th class="text-right">{{grand_total|array:2|floatformat:'2g'}}</th>
+                      <th class="text-right">{{100|floatformat:'2g'}}</th>
                   </tr>
                 </tbody>
               </table>
-              
         </div>
     </div>
     <hr>
@@ -70,6 +72,7 @@
               <thead>
                 <tr>
                   <th>Product</th>
+                  <th class="text-right">Sellout</th>
                   <th class="text-right">Cost Price</th>
                   <th class="text-right">Quantity</th>
                   <th class="text-right">Value</th>
@@ -80,6 +83,7 @@
                 {% for item in source %}
                 <tr>
                   <td>{{item.product}}</td>
+                  <td style="text-align: right;">{{item.sell_out}}</td>
                   <td style="text-align: right;">{{item.cost_price.amount}}</td>
                   <td style="text-align: right;">{{item.stock_value}}</td>
                   <td style="text-align: right;">{{item.value|floatformat:'2g'}}</td>
@@ -88,9 +92,12 @@
               </tbody>
               <tfoot>
                 <tr class="text-danger text-right">
-                  <td style="text-align: center;" colspan="2">Total</td>
+                  <td style="text-align: center;">Total</td>
+                  <td style="text-align: right;">{{totals|array:forloop.counter|array:3}}</td>
+                  <td style="text-align: right;">---</td>
                   <td style="text-align: right;">{{totals|array:forloop.counter|first}}</td>
-                  <td style="text-align: right;">{{totals|array:forloop.counter|last|floatformat:'2g'}}</td>
+                  <td style="text-align: right;">{{totals|array:forloop.counter|array:2|floatformat:'2g'}}</td>
+                  
                 </tr>
               </tfoot>
             </table>
