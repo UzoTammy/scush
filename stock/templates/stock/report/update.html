@@ -14,6 +14,7 @@
             data-toggle="table">
             <thead>
                 <tr>
+                    <th><i class="fa fa-edit"></i> Price</th>
                     <th>ID</th>
                     <th>Product</th>
                     <th class="text-center">Qty Sold Out</th>
@@ -23,11 +24,12 @@
             <tbody>
                 {% for product in object_list %}
                 <tr>
-                    <td>{{product.id|zeropadding:3}}
-                        <a href="." data-toggle="modal" data-target="#costPriceReview{{product.product.id}}">
-                            <i class="fa fa-edit">CP</i>
-                        </a>
+                    <td>
+                        <a href="." data-toggle="modal" data-target="#costPriceReview{{product.product.id}}">Cost</a>
+                        <i class="fa fa-edit"></i>
+                        <a href="." data-toggle="modal" data-target="#sellPriceReview{{product.product.id}}">Sell</a>
                     </td>
+                    <td>{{product.id|zeropadding:3}}</td>
                     <td>{{product.product}}</td>
                     <td class="text-center">
                         <input class="form-control text-right" 
@@ -114,6 +116,65 @@
     </div>
     </form>
     </div>
-{% endfor %}
+    {% endfor %}
 
+    <!-- Sell Price Update Modal -->
+    {% for product in object_list %}
+    <div class="modal fade" 
+    id="sellPriceReview{{product.product.id}}" 
+    data-backdrop="static"
+    role="dialog" 
+    tabindex="-1">
+    <form action="{% url 'price-update' product.product.id %}" method="post">
+        {% csrf_token %}
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title">{{product}}</h5>
+        <button type="button" 
+        class="close" 
+        data-dismiss="modal" 
+        aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="modal-body">
+        <fieldset>
+            <div class="row">
+                <div class="col">
+                    <p>Selling Price:  <span class="text-primary">{{product.selling_price}}</span></p>
+                </div>
+                
+            </div>
+            <div class="form-group">
+                <div class="row">
+                <div class="col">
+                    <input id="inputSell" 
+                    placeholder="Enter New Selling Price" 
+                    type="number"
+                    min="0.1"
+                    max="200000"
+                    step=".01"
+                    class="form-control" 
+                    name="selling" value="" required>
+                    <span class="help-block text-muted ml-3">Maximum price allowed is NGN200,000.00</span>
+                    <input type="hidden" name="redirect" value="{{view.kwargs.source}}">
+                </div>
+                
+                </div>
+                
+            </div>
+        </fieldset>
+        </div>
+        <div class="modal-footer">
+
+        <button id="btnSellPrice" type="submit" class="btn btn-primary">Update</button>  
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+    </div>
+    </div>
+    </form>
+    </div>
+    {% endfor %}
+    
 {% endblock %}

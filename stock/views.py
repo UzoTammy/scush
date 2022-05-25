@@ -284,7 +284,8 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
                 product=obj,
                 stock_value=quantity,
                 date=date_object,
-                cost_price=obj.cost_price
+                cost_price=obj.cost_price,
+                selling_price=obj.unit_price
                 )
         else:
             qs = ProductExtension.objects.filter(product=obj).filter(date=date_object)
@@ -292,6 +293,7 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
                 stock_obj = qs.first()
                 stock_obj.stock_value = request.POST['edit_quantity']
                 stock_obj.cost_price = obj.cost_price
+                stock_obj.selling_price = obj.unit_price
                 stock_obj.save()
             else:
                 messages.info(request, "This product's stock does not exist")
@@ -351,30 +353,37 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         product = get_object_or_404(Product, pk=kwargs['pk'])
-        # selling price gotten from modal form for selling price update only
-        if "selling" in request.POST:
-            product.unit_price = request.POST['selling']
-            product.date_modified = timezone.now()
-        else:
-            # Cost price gotten from modal form for cost price update only
-            product.cost_price = request.POST['cost']
-        product.save()
-
-        json_data = JsonDataset.objects.get(pk=2).dataset
-        date_string = json_data['closing-stock-date'][0]
-        date_obj = datetime.datetime.strptime(date_string, "%Y-%m-%d")
-        qs = ProductExtension.objects.filter(product=product).filter(date=date_obj)
         
-        if qs.exists():
-            stock_obj = qs.first()
-            stock_obj.cost_price = product.cost_price
-            stock_obj.save()
-        if 'redirect' in request.POST:
-            messages.info(request, 'Price Update Successful')
-            if 'update' in request.path_info.split('/'):
-                return redirect('stock-report-update', source=request.POST['redirect'])
-            else:
-                return redirect('stock-report-add', source=request.POST['redirect'])
+        if 'redirect' not in request.POST:
+            # selling price gotten from modal form for selling price update only
+            if "selling" in request.POST:
+                product.unit_price = request.POST['selling']
+                product.date_modified = timezone.now()
+                msg = f'{product} selling price is updated !!!'
+            elif "cost" in request.POST:
+                # Cost price gotten from modal form for cost price update only
+                product.cost_price = request.POST['cost']
+                msg = f'{product} cost price is updated !!!'
+            product.save()
+        else:        
+            json_data = JsonDataset.objects.get(pk=2).dataset
+            date_string = json_data['closing-stock-date'][0]
+            date_obj = datetime.datetime.strptime(date_string, "%Y-%m-%d")
+            qs = ProductExtension.objects.filter(product=product).filter(date=date_obj)
+            
+            if qs.exists():
+                stock_obj = qs.first()
+                if "selling" in request.POST:
+                    stock_obj.selling_price = request.POST['selling']
+                    msg = f'{stock_obj.product} selling price updated !!!'
+                elif 'cost' in request.POST:
+                    stock_obj.cost_price = request.POST['cost']
+                    msg = f'{stock_obj.product} cost price updated !!!'
+                stock_obj.save()
+                messages.info(request, msg)
+            return redirect('stock-report-update', source=request.POST['redirect'])    
+            
+        messages.info(request, msg)
         return redirect(product)
        
 
@@ -432,7 +441,6 @@ class ProductPerformanceDetailView(LoginRequiredMixin, UserPassesTestMixin, Deta
     model = ProductPerformance
     template_name = 'stock/performance/product_detail.html'
 
-    
 
     def test_func(self):
         """if user is a member of the group Sales then grant access to this view"""
@@ -451,12 +459,17 @@ class ProductExtensionUpdateView(LoginRequiredMixin, UpdateView):
         context['title'] = 'Update'
         return context
 
+    def form_valid(self, form):
+        product = ProductExtension.objects.get(pk=self.kwargs['pk'])
+        form.instance.selling_price = product.product.unit_price
+        return super().form_valid(form)
+
 
 class ProductExtensionDetailView(LoginRequiredMixin, DetailView):
     model = ProductExtension
     template_name = 'stock/report/productextension_detail.html'
 
-
+    
 class ProductExtensionListView(LoginRequiredMixin, ListView):
 
     model = ProductExtension
@@ -632,7 +645,7 @@ class StockReportAddView(LoginRequiredMixin, ListView):
                 try:
                     code = key.replace(',', '')
                     obj = self.get_queryset().get(pk=code)
-                    product = ProductExtension.objects.create(
+                    ProductExtension.objects.create(
                         product=obj,
                         cost_price=obj.cost_price,
                         selling_price=obj.unit_price,
@@ -648,4 +661,4 @@ class StockReportAddView(LoginRequiredMixin, ListView):
             return redirect('stock-report')
         return super().get(request, *args, **kwargs)
 
-    
+

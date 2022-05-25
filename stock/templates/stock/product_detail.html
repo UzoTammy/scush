@@ -204,7 +204,10 @@ tabindex="-1">
           <fieldset>
             <div class="row">
               <div class="col ml-2">
-                <p>Cost Price: {{object.cost_price}}</p>
+                <div class="row">
+                  <div class="col"><p>Cost Price: {{object.cost_price}}</p></div>
+                  <div class="col"><p>Selling Price: {{object.unit_price}}</p></div>
+                </div>
                 <p>Date: {{theDate|date:'d-M-Y'}}</p>
               </div>
             </div>
@@ -256,7 +259,10 @@ tabindex="-1">
           <fieldset>
             <div class="row">
               <div class="col ml-2">
-                <p>Cost Price: {{object.cost_price}}</p>
+                <div class="row">
+                  <div class="col"><p>Cost Price: {{object.cost_price}}</p></div>
+                  <div class="col"><p>Selling Price: {{object.unit_price}}</p></div>
+                </div>
                 <p>Date: {{theDate|date:'d-M-Y'}}</p>
               </div>
             </div>
@@ -266,7 +272,6 @@ tabindex="-1">
                 placeholder="Edit Stock Quantity here"
                 class="form-control" 
                 name="edit_quantity" value="" required>
-
                 <span class="help-block text-danger ml-3">Quantity between -100,000 and 100,000</span>
               </div>
           </fieldset>
