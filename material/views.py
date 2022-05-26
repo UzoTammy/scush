@@ -114,23 +114,28 @@ class RequestCreateView(LoginRequiredMixin, CreateView):
     model = RequestArticle
     fields = ('article', 'quantity')
 
+    
     def form_valid(self, form):
+
         article = form.instance.article
         if article.quantity_balance >= form.instance.quantity:
             form.instance.request_by = self.request.user
             form.instance.status = None
-
+            
             #Mailing
             last_num = self.get_queryset().last().id
             send_mail(f'Request for  Article #{str(last_num + 1).zfill(3)}',
-            f"A request has been made for {form.instance.quantity} (out of {article.quantity_balance}) {article.name}. This request is from {Employee.active.get(id=int(self.request.user.username.split('-')[1]))}. An approval is required before issuance.",
+            f"""A request has been made for {form.instance.quantity} (out of {article.quantity_balance}) {article.name}. 
+            This request is from {Employee.active.get(id=int(self.request.user.username.split('-')[1]))}. 
+            An approval is required before issuance. 
+            
+            Click this link: https://www.scush.com.ng/material/article/list/""", 
             '', 
             mail_list + [self.request.user.email], 
             fail_silently=True)
             return super().form_valid(form)
-        else:
-            messages.info(self.request, 'Request not submitted, Request quantity more than what is available.')
-            return redirect('home')
+        messages.info(self.request, 'Request not submitted, Request quantity more than what is available.')
+        return redirect('home')
 
 
 class IssueArticleCreateView(LoginRequiredMixin, CreateView):

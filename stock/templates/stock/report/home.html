@@ -142,9 +142,11 @@
                   <tr>
                     <th>Product</th>
                     <th class="text-right">Cost</th>
-                    <th class="text-right">Qty</th>
+                    <th class="text-right">Closing Stock</th>
                     <th class="text-right">Value</th>
+                    <th class="text-right">Selling</th>
                     <th class="text-right">Sellout</th>
+                    <th class="text-right">Value</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -155,7 +157,9 @@
                     <td class="text-right">{{item.cost_price.amount}}</td>
                     <td class="text-right">{{item.stock_value}}</td>
                     <td class="text-right">{{item.value|floatformat:'2g'}}</td>
+                    <td class="text-right">{{item.selling_price.amount}}</td>
                     <td class="text-right">{{item.sell_out}}</td>
+                    <td class="text-right">{{item.sell_out|multiply:item.selling_price.amount}}</td>
                   </tr>
                   {% endfor %}
                 </tbody>

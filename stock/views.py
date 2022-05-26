@@ -555,6 +555,7 @@ class WatchlistHomeView(LoginRequiredMixin, TemplateView):
         product_ids = Product.objects.filter(active=True, watchlist=True).values_list('pk', flat=True)
         
         context['products'] = list( ProductExtension.objects.filter(product__pk=ids).latest('date') for ids in product_ids )
+        context['date'] = context['products'][0].date
         return context
 
 

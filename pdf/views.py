@@ -265,9 +265,10 @@ class StockViewList(LoginRequiredMixin, ListView):
     model = Product
     template_name = 'pdf/pdf_stock_list.html'
 
+
     def get(self, request, *args, **kwargs):
         context = {
-            'stocks': self.get_queryset().order_by('-pk'),
+            'stocks': self.get_queryset().order_by('source'),
             'logo_image': Ozone.logo(),
         }
         pdf = render_to_pdf(self.template_name, context)

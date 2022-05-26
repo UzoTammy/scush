@@ -45,8 +45,10 @@ from django.contrib.contenttypes.models import ContentType
 # The index is at urlpatterns
 
 def index(request):
+    
     context = {
-        'debug_mode': True if settings.DEBUG else False
+        'debug_mode': True if settings.DEBUG else False,
+        'siter': 'https://www.scush.com.ng/home/'
     }
     return render(request, 'core/index.html', context)
 
