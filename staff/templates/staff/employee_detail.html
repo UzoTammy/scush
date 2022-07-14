@@ -53,6 +53,14 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
+                       data-toggle="modal"
+                       data-target="#staffWelfare">
+                        <i class="fa fa-envelope-open text-warning"></i>
+                        Welfare Support <sup class="badge badge-danger">new</sup>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
                            data-toggle="modal"
                            data-target="#staffTerminate">
                         <i class="fa fa-stop text-warning"></i>
@@ -155,7 +163,8 @@
                     </div>
 
                     <div class="col-sm-3">
-                        <p>Gratuity: <span class="text-success">{{naira}}{{total_balance}}</span></p>
+                        <p>Gratuity: <span class="text-success">{{naira}}{{total_balance|floatformat:'2g'}}</span></p>
+                        <p>Welfare: <span class="text-success">{{naira}}{{total_welfare|floatformat:'2g'}}</span></p>
                         <p>Worked For: <span class="text-success">{{object.date_employed|timesince}}</span></p>
                         {% if consumed_days|first == 0 and consumed_days|last == 0 %}
                         <p>Permissions: <span class="text-success">No permission taken or granted</span></p>
@@ -872,6 +881,87 @@
                 <button type="submit"
                         class="btn btn-outline-info">
                     Apply
+                </button>
+                <button type="button"
+                        data-dismiss="modal"
+                        class="btn btn-outline-dark">
+                    Cancel
+                </button>
+            </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--modal Welfare-->
+<div class="modal"
+     tabindex="-1"
+     data-backdrop="static"
+     role="dialog"
+     id="staffWelfare">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Welfare Support (<span style="font-size: 11pt">
+                    {{view.kwargs.pk|zeropadding:3}} - {{object}}
+                </span>)
+                </h3>
+                <button type="button"
+                        class="close"
+                        aria-label="close"
+                        data-dismiss="modal">
+                    <i class="fa fa-times text-danger"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form action="{% url 'staff-welfare' object.pk %}"
+                          method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="form-label" for="sF">Date</label>
+                                <input id="sF"
+                                       class="form-control"
+                                       name="date"
+                                       value=""
+                                       type="date" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    
+                                    <input name="description" 
+                                    placeholder="Welfare support for?" 
+                                    id="desc" 
+                                    class="form-control" 
+                                    type="text" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label class="form-label" for="amount">Amount</label>
+                                    <input name="amount" 
+                                    id="amount" 
+                                    class="form-control" 
+                                    type="number" required>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="modal-footer">
+                <button type="submit"
+                        class="btn btn-outline-info">
+                    Save
                 </button>
                 <button type="button"
                         data-dismiss="modal"

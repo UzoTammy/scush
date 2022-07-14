@@ -1,0 +1,92 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container-fluid p-3">
+  <div class="row">
+      <div class="col text-center">
+          <h3>Stock Report Page</h3>
+          <ul class="list-group list-group-active">
+            <li class="list-group-item text-left">
+              <span class="text-danger">Username:</span> {{user.username}}({{user.first_name}} {{user.last_name}}), 
+              <span class="text-danger">email:</span> {{user.email}},  
+              <span class="text-danger">Logged-in at:</span> {{user.last_login}}
+              <span class="btn btn-light btn-sm float-right">
+                <!-- Button trigger modal -->
+                <a href="." data-toggle="modal" data-target="#stockReportDateModal">
+                  Set Date
+                </a></span>
+            </li>
+        </ul>
+      </div>
+  </div>
+  <h6 class="m-3">Report Date: {{user.profile.stock_report_date}}</h6>
+  <div class="row ml-3">
+    <div class="col">
+        Number of Product's Report Created: <a href="#">{{product_report.count}}</a>
+    </div>
+    <div class="col">
+      Total Sellout - {{sellout_total}}
+    </div>
+    <div class="col">
+      Total Stock Value - {{stock_value_total}}
+    </div>
+  </div>
+  <hr>
+  <div class="row m-3">
+    {% for qs in querysets %}
+    <div class="col-sm-4 mt-2">
+      <ul class="list-group">
+        <span class="text-danger ml-2">{{qs|first}}</span>
+        {% for product in qs|last %}
+          <li class="list-group-item">{{product}}
+            
+            <a class="float-right ml-1" href="{% url 'stock-report-new' user.profile.stock_report_date product.pk %}"><i class="fa fa-plus"></i></a>
+            
+            <a class="float-right" href="{% url 'stock-report-update' user.profile.stock_report_date product.pk %}"> <i class="fa fa-edit"></i></a>
+          </li>
+        {% endfor %}  
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+    
+  </div>
+
+  <div class="row m-3">
+    <div class="col">
+      <a class="btn btn-primary" href="{% url 'stock-report' %}">View</a>
+      <a class="btn btn-dark float-right" href="{% url 'product-home' %}"><i class="fa fa-reply"></i></a> 
+    </div>
+  </div>
+</div>
+
+<section>
+  
+<!-- Modal -->
+<div class="modal fade" id="stockReportDateModal" tabindex="-1" aria-labelledby="stockReportDateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="stockReportDateModalLabel">Stock Report Date</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="." method="POST">
+        {% csrf_token %}
+        <div class="modal-body">
+            <div class="form-group">
+                <input class="form-control" type="date" name="date" placeholder="Enter Date here">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</section>
+{% endblock %}

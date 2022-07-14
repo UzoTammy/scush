@@ -215,7 +215,7 @@ class Permit(models.Model):
     staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
     starting_from = models.DateTimeField(default=timezone.now)
     ending_at = models.DateTimeField(default=timezone.now)
-    reason = models.CharField(max_length=100)
+    reason = models.CharField(max_length=150)
 
     def __str__(self):
         return f"""{self.staff.fullname()}-{self.id}"""
@@ -294,3 +294,10 @@ class RequestPermission(models.Model):
         else:
             days = len(mytools.DateRange(self.start_date.date(), self.resume_date.date()).exclude_weekday(calendar.SUNDAY))
             return f'{days - 1}D'
+
+
+class Welfare(models.Model):
+    staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    date = models.DateField(default=timezone.now)
+    description = models.CharField(max_length=150)
+    amount = models.FloatField(default=0.0)

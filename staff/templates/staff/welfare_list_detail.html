@@ -1,0 +1,52 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %} 
+<div class="container">
+    <div class="row"> 
+        <div class="col">
+            <table class="table table-bordered table-striped" 
+                data-toggle="table"
+                data-pagination="true">
+                <caption>Welfare Support for 
+                    {% with object_list|first as person %}
+                    {{person.staff}}
+                    {% endwith %}
+                </caption>
+                <thead>
+                    <tr class="bg-secondary text-white text-center">
+                        <th>Staff</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                
+                <tbody>
+                    {% for record in object_list %}
+                    <tr>
+                        <td><a href="#">{{record.staff}}</a></td>
+                        <td>{{record.date}}</td>
+                        <td>{{record.description}}</td>
+                        <td class="text-right">{{record.amount|floatformat:'2g'}}</td>
+                    </tr>
+                    
+                    {% endfor %}
+                </tbody>
+                
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a class=" btn btn-outline-dark float-right" 
+            href="{% url 'welfare-support-list' %}">
+        <i class="fa fa-reply"></i>
+        </a>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

@@ -63,7 +63,7 @@
                   <a class="ml-1" href="{% url 'request-permission-list' %}">
                       <i class="fa fa-thumbs-up text-success"></i> 
                       Permission
-                      <sup class="badge badge-danger">new</sup>
+                      
                   </a>
                   </div>
             </li>
@@ -73,14 +73,20 @@
                     <a class="ml-1" href="{% url 'salary' %}">Payroll</a>
                   </div>
               </li>
-<!--                Profile balance-->
+<!--                gratuity-->
               <li class="list-group-item">
                   <div class="row mb-1">
                     <a class="ml-1" href="{% url 'employee-balance-list' %}">
-                        Gratuity
+                        Gratuity (view)
                     </a>
                     </div>
               </li>
+              <!--Payroll-->
+            <li class="list-group-item">
+                <div class="row mb-1">
+                    <a class="ml-1" href="{% url 'welfare-support-list' %}">Welfare Support (view) <sup class="badge badge-danger">new</sup></a>
+                </div>
+            </li>
                 <!--Policies-->
                     <li class="list-group-item"><div class="row mb-1">
                             <a class="ml-1" href="{% url 'staff-policies' %}">Policies</a>

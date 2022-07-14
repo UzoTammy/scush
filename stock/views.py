@@ -1,22 +1,20 @@
 import calendar
 import datetime
 from decimal import Decimal
-from sre_constants import SUCCESS
-from wsgiref.util import request_uri
 from django.http import HttpResponse
 from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.generic.base import TemplateView
 from django.contrib import messages
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 
 from pdf.utils import render_to_pdf
 from pdf.views import Ozone
 from .models import (Product, ProductPerformance, ProductExtension)
-from .forms import ProductExtensionForm
+from .forms import ProductExtensionUpdateForm
 from core.models import JsonDataset
 from delivery.models import DeliveryNote
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Avg
 from django.views.generic import (
     View, ListView, DetailView, CreateView, UpdateView, DeleteView)
 from django.contrib import messages
@@ -172,6 +170,7 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
         obj = JsonDataset.objects.get(pk=2)
         date_string = obj.dataset['closing-stock-date'][0]
+        
         context['msg'] = 'Report Based On Fixed Date'
         if self.request.GET != {}:
             if 'theDate' in self.request.GET.keys():
@@ -184,9 +183,10 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             if 'reportDate' in self.request.GET.keys():
                 date_string = self.request.GET['reportDate']
                 context['msg'] = 'Report Based On Selected Date'
-        
-        context['current_date'] = datetime.datetime.strptime(date_string, "%Y-%m-%d").date()
 
+        
+        # context['current_date'] = datetime.datetime.strptime(date_string, "%Y-%m-%d").date()
+        context['current_date'] = self.request.user.profile.stock_report_date
         source_list, total_list, sources = list(), list(), list()
         for source in context['sources']:
             qs = ProductExtension.objects.filter(date=context['current_date'], product__source=source)
@@ -451,7 +451,7 @@ class ProductPerformanceDetailView(LoginRequiredMixin, UserPassesTestMixin, Deta
 
 class ProductExtensionUpdateView(LoginRequiredMixin, UpdateView):
     model = ProductExtension
-    form_class = ProductExtensionForm
+    form_class = ProductExtensionUpdateForm
     template_name = 'stock/report/productextension_form.html'
 
     def get_context_data(self, **kwargs):
@@ -469,9 +469,8 @@ class ProductExtensionDetailView(LoginRequiredMixin, DetailView):
     model = ProductExtension
     template_name = 'stock/report/productextension_detail.html'
 
-    
-class ProductExtensionListView(LoginRequiredMixin, ListView):
 
+class ProductExtensionListView(LoginRequiredMixin, ListView):
     model = ProductExtension
     template_name = 'stock/report/productextension_monthly.html'
 
@@ -513,9 +512,8 @@ class ProductExtensionListView(LoginRequiredMixin, ListView):
         
         return context
 
-
+    
 class ProductExtensionProduct(LoginRequiredMixin, ListView):
-
     model = ProductExtension
     template_name = 'stock/report/productextension_productlist.html' 
 
@@ -525,6 +523,7 @@ class ProductExtensionProduct(LoginRequiredMixin, ListView):
             product__source=self.kwargs['source'],
             date__month=mytools.Month.month_int(self.kwargs['month'])
             )     
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -619,7 +618,6 @@ class StockReportUpdateView(LoginRequiredMixin, ListView):
 
 
 class StockReportAddView(LoginRequiredMixin, ListView):
-
     model = Product
     template_name = 'stock/report/add.html'  
 
@@ -663,3 +661,107 @@ class StockReportAddView(LoginRequiredMixin, ListView):
         return super().get(request, *args, **kwargs)
 
 
+class StockReportAllProducts(LoginRequiredMixin, ListView):
+    model = Product
+    template_name = 'stock/report/products.html'
+    ordering = 'name'
+    paginate_by = 9
+
+
+class StockReportOneProducts(LoginRequiredMixin, TemplateView):
+    template_name = 'stock/report/one_product.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        code = Product.objects.get(pk=kwargs['pk'])
+        product = ProductExtension.objects.filter(product=code, date__year=datetime.date.today().year)
+        context['product'] = product
+        context['sellout'] = product.aggregate(Sum('sell_out'))['sell_out__sum']
+        context['daily_average_sellout'] = product.aggregate(Avg('sell_out'))['sell_out__avg']
+        context['dataset'] = list(
+            {
+                'month': datetime.date.strftime(date, '%B'),
+                'sellout': product.filter(date__month=date.month).aggregate(Sum('sell_out'))['sell_out__sum'],
+                'average': product.filter(date__month=date.month).aggregate(Avg('sell_out'))['sell_out__avg'],
+            } for date in product.dates('date', 'month'))
+        
+        return context
+
+
+class StockReportHome(TemplateView):
+    template_name = 'stock/packs/home.html'
+    
+    def get_context_data(self, **kwargs):
+        reports = ProductExtension.objects.filter(date=self.request.user.profile.stock_report_date)
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        context['product_report'] = reports
+        context['sellout_total'] = reports.aggregate(Sum('sell_out'))['sell_out__sum']
+        context['stock_value_total'] = reports.aggregate(Sum('stock_value'))['stock_value__sum']
+        sources = Product.objects.filter(active=True).values_list('source', flat=True).distinct()
+        querysets = list((source, Product.objects.filter(active=True, source=source)) for source in sources)
+        context['querysets'] = querysets
+        return context
+
+    
+    def post(self, request, **kwargs):
+        date = request.POST['date']
+        date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+
+        user = User.objects.get(username=kwargs['user'])
+        user.profile.stock_report_date = date_obj.date()
+        user.save()
+
+        # messages.info(request, f'Date has been set to {date} for {user} !!!')
+        return super().get(request, **kwargs)
+
+
+class StockReportNew(CreateView):
+    model = ProductExtension
+    template_name = 'stock/report/productextension_form.html'
+    fields = ['sell_out', 'stock_value', 'sales_amount']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product = Product.objects.get(pk=self.kwargs['pk'])
+        context['product'] = product
+        context['date'] = datetime.datetime.strptime(self.kwargs['date'], '%Y-%m-%d').date()
+        return context
+
+    def get(self, request, *args, **kwargs):
+        date_obj = datetime.datetime.strptime(kwargs['date'], '%Y-%m-%d').date()
+        product = Product.objects.get(pk=kwargs['pk'])
+        qs = self.get_queryset().filter(product=product, date=date_obj)
+        if qs.exists():
+            messages.info(request, f'{product} already ADDED, you can only UPDATE')
+            return redirect('stock-report-home', user=request.user)
+        return super().get(request, *args, **kwargs)
+
+    
+class StockReportUpdate(View):
+    
+    def get(self, request, *args, **kwargs):
+        product = Product.objects.get(pk=kwargs['code'])
+        date_obj = datetime.datetime.strptime(self.kwargs['date'], '%Y-%m-%d').date()
+        qs = ProductExtension.objects.filter(product=product, date=date_obj)
+        if not qs.exists():
+            messages.info(request, f'{product} not ADDED, Please add before you can UPDATE')
+            return redirect('stock-report-home', user=request.user)
+        bound_form = ProductExtensionUpdateForm(instance=qs.get())
+        
+        context = {
+            'product': product,
+            'date': date_obj,
+            'form': bound_form
+        }
+        return render(request, 'stock/packs/update.html', context)
+
+    def post(self, request, **kwargs):
+        product = Product.objects.get(pk=kwargs['code'])
+        date_obj = datetime.datetime.strptime(self.kwargs['date'], '%Y-%m-%d').date()
+        qs = ProductExtension.objects.filter(product=product, date=date_obj)
+        obj = get_object_or_404(qs)
+        bound_form = ProductExtensionUpdateForm(request.POST, instance=obj)
+        if bound_form.is_valid():
+            bound_form.save()
+        return redirect('stock-report-home', user=request.user)

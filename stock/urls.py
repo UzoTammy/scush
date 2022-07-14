@@ -1,3 +1,4 @@
+from importlib.abc import PathEntryFinder
 from django.urls import path
 from .views import *
 from pdf.views import PriceUpdateFootNote
@@ -18,7 +19,9 @@ urlpatterns = [
     path('stock/<int:pk>/update/', ProductExtensionUpdateView.as_view(), name='product-ext-update'),
     path('stock/<int:pk>/detail/', ProductExtensionDetailView.as_view(), name='product-ext-detail'),
     path('stock/report/<str:month>/', ProductExtensionListView.as_view(), name='stock-month'),
-    path('stock/report/<str:month>/<str:source>/', ProductExtensionProduct.as_view(), name='stock-report-product')
+    path('stock/report/<str:month>/<str:source>/', ProductExtensionProduct.as_view(), name='stock-report-product'),
+    path('report/all-products/', StockReportAllProducts.as_view(), name='stock-report-all-products'),
+    path('report/<int:pk>/a-product/', StockReportOneProducts.as_view(), name='stock-report-one-product')
 ]
 
 urlpatterns += [
@@ -30,4 +33,10 @@ urlpatterns += [
     path('update/<str:source>/', StockReportUpdateView.as_view(), name='stock-report-update'),
     path('add/<str:source>/', StockReportAddView.as_view(), name='stock-report-add'),
     # path('price/<int:pk>/update/', ProductExtensionPriceUpdate.as_view(), name='product-extension-price-update')
+]
+
+urlpatterns += [
+    path('<str:user>/home/', StockReportHome.as_view(), name='stock-report-home'),
+    path('<str:date>/<int:pk>/new/', StockReportNew.as_view(), name='stock-report-new'),
+    path('<str:date>/<int:code>/update/', StockReportUpdate.as_view(), name='stock-report-update')
 ]

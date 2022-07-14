@@ -21,6 +21,9 @@
         data-toggle="modal" 
         data-target="#stockReport"><i class="fa fa-vcard text-danger"></i> Daily Report</a>
       </li>
+      <li class="list-group-item">
+        <a href="{% url 'stock-report-all-products' %}">Products</a>
+      </li>
         {% now 'Y' as current_year %}
         <li class="list-group-item"><a href="{% url 'stock-month' current_year %}">{{current_year}}</a></li>
         <li class="list-group nav-item dropdown">
@@ -142,7 +145,7 @@
                   <tr>
                     <th>Product</th>
                     <th class="text-right">Cost</th>
-                    <th class="text-right">Closing Stock</th>
+                    <th class="text-right">Balance</th>
                     <th class="text-right">Value</th>
                     <th class="text-right">Selling</th>
                     <th class="text-right">Sellout</th>
@@ -168,6 +171,7 @@
                     <td colspan="2">Total</td>
                     <td>{{totals|array:forloop.counter|array:1}}</td>
                     <td>{{totals|array:forloop.counter|array:2|floatformat:'2g'}}</td>
+                    <td>**</td>
                     <td>{{totals|array:forloop.counter|array:3}}</td>
                     
                   </tr>
@@ -182,45 +186,6 @@
   </div>
 </div>  
 
-
-  <!-- Modal footnote-->
-<!-- <div class="modal fade" 
-id="footNotePriceUpdate" 
-data-backdrop="static" 
-data-keyboard="false" 
-tabindex="-1" 
-aria-labelledby="staticBackdropLabel" 
-aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Price Update Footnote</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="{% url 'price-update-footnote' %}">
-      <div class="modal-body">
-          <div class="form-group">
-              <label for="footNote">Note</label>
-              <textarea class="form-control"
-              placeholder="enter your footnotes here to add more infomation to the price review"
-              name="footnote" 
-              id="footNote" 
-              cols="30" 
-              rows="10"></textarea>
-          </div> 
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <button type="button" 
-        class="btn btn-secondary" 
-        data-dismiss="modal">Close</button>
-      </div>
-  </form>
-    </div>
-  </div>
-</div> -->
 
 <!-- Stock report Modal -->
 <div class="modal fade" id="stockReport" tabindex="-1" aria-labelledby="stockReportTitle" aria-hidden="true">
@@ -278,57 +243,6 @@ aria-hidden="true">
   </div>
 </div>
 
-  <!-- modify Stock  Modal -->
-<!-- <div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="stockReportModalLabel">Modify Stock - Pick A Date</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="#" method="GET">
-          <div class="modal-body">
-              <div class="form-group">
-                  <label class="form-label" for="">Date</label>
-                  <input id="stockReportInput" class="form-control" type="date" name="theDate" onchange="reportFunc()">
-              </div>   
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button id="btnReport" type="submit" class="btn btn-primary" disabled>Report</button>           
-          </div>
-      </form>
-    </div>
-  </div>
-</div> -->
-
-  <!-- View Stock  Modal -->
-<!-- <div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="stockReportModalLabel">Modify Stock - Pick A Date</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="#" method="GET">
-          <div class="modal-body">
-              <div class="form-group">
-                  <label class="form-label" for="">Date</label>
-                  <input id="stockReportInput" class="form-control" type="date" name="theDate" onchange="reportFunc()">
-              </div>   
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button id="btnReport" type="submit" class="btn btn-primary" disabled>Report</button>           
-          </div>
-      </form>
-    </div>
-  </div>
-</div> -->
 
 
 <script>

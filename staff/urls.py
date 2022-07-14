@@ -19,6 +19,9 @@ urlpatterns = [
     path('home/<str:staff_category>/', StaffViews.as_view(), name='terminated'),
     path('pk-reset/', PKResetView.as_view(), name='pk-reset'),
     path('pk-reset/payroll/', PKResetPayroll.as_view(), name='pk-reset-payroll'),
+    path('welfare/<int:pk>/', staffWelfare.as_view(), name='staff-welfare'),
+    path('welfare/list/', WelfareSupportList.as_view(), name='welfare-support-list'),
+    path('welfare/list/<str:pk>/detail/', WelfareSupportListDetail.as_view(), name='welfare-list-detail'),
     
     path('employee/<int:pk>/balance/', AddStaffBalance.as_view(), name='employee-balance'),
     path('employee/balance/list/', EmployeeBalanceListView.as_view(), name='employee-balance-list'),

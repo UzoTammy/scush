@@ -1,0 +1,24 @@
+{% extends 'users/base.html' %}
+
+{% block content %} 
+<div class="container py-3">
+    <h3>List Of All Products</h3>
+    <div class="row justify-content-center">
+        {% for product in object_list %}
+        <div class="col p-2 mb-3">
+            <div class="card" style="width: 20rem;">
+                <!-- <img src="..." class="card-img-top" alt="..."> -->
+                <div class="card-body">
+                  <h6 class="card-title">{{product}}</h6>
+                  <p class="card-text">Source: {{product.source}}</p>
+                  <a href="{% url 'stock-report-one-product' product.pk %}" class="btn btn-primary">Detail</a>
+                </div>
+              </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <a class="btn btn-dark float-right" href="{% url 'stock-report' %}"><i class="fa fa-reply"></i></a>
+    
+</div>
+{% endblock %}

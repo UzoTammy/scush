@@ -7,20 +7,8 @@
         <div class="col-sm-8 shadow-lg">
             <form method="POST">
                 {% csrf_token %}
-                <legend class="text-info text-center">Add for {{product}}</legend>
-                <h6>To be Used:</h6>
-                <div class="row m-2">
-                    <div class="col-sm-4">
-                        <p>Date: {{date}}</p>   
-                    </div>
-                    <div class="col-sm-4">
-                        <p>Cost Price: {{product.cost_price}}</p>   
-                    </div>
-                    <div class="col-sm-4">
-                        <p>Selling Price: {{product.unit_price}}</p> 
-                    </div>
-                </div>
-                <hr>
+                <legend class="text-info text-center">Update for {{product}}</legend>
+                
                 <fieldset class="bg-light">
                     <div class="ml-2">{{ form|crispy }}</div>
                 </fieldset>

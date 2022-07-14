@@ -1,6 +1,7 @@
 
 import datetime
 import calendar
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import (View, TemplateView, ListView, CreateView, DetailView, UpdateView)
 from django.db.models import F, Sum 
@@ -16,33 +17,8 @@ from ozone import mytools
 from .forms import JsonDatasetForm
 from .models import JsonDataset
 from django.conf import settings
-
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User, Permission, Group
-from django.contrib.contenttypes.models import ContentType 
 
-# from .forms import TestForm, MyAuthenticationForm
-# from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordChangeForm, AuthenticationForm
-
-
-# This is for practical purposes
-# class PracticeView(View):
-#     def get(self, request, **kwargs):
-#         form = UserChangeForm()
-#         context = {
-#                 'form': form
-#             }
-#         if request.GET != {}:
-#             context['content'] = request.GET
-#             context['content_dic'] = eval(str(request.GET).split('<QueryDict:')[1][:-1])
-#         return render(request, 'core/practice.html', context)
-
-# class PasswordView(View):
-#     def get(self, request, **kwargs):
-#         form = MyAuthenticationForm()
-#         return render(request, 'core/password.html', {'form': form})
-
-# The index is at urlpatterns
 
 def index(request):
     
@@ -62,20 +38,9 @@ def developer_login(request):
 
 
 class PracticeView(View):
-    def get(self, request, **kwargs):
-
-        content_type = ContentType.objects.get_for_model(Employee)
-        permission = Permission.objects.create(
-            codename='can_employ',
-            name='Can Employ',
-            content_type=content_type
-        )
-        context = {
-            # 'usera': user_a,
-            # 'userg': user_g
-        }
-        return render(request, 'core/practice.html', context)
-
+    def get(self, *args, **kwargs):
+        return HttpResponse('number_of_user')
+    
 
 class ScushView(TemplateView):
     template_name = 'core/scush.html'
@@ -338,4 +303,5 @@ class JsonCategoryKeyValueUpdateView(LoginRequiredMixin, View):
         obj.save()
 
         return redirect('json-cat-key', kwargs['id'], kwargs['key'])
+
 

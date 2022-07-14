@@ -9,7 +9,7 @@ from apply.models import Applicant
 from .models import (
     Employee, EmployeeBalance, CreditNote, DebitNote, Payroll, 
     Reassign, Terminate, Suspend, Permit,SalaryChange, 
-    RequestPermission
+    RequestPermission, Welfare
 )
 from .form import (DebitForm, CreditForm, RequestPermissionForm, EmployeeForm)
 from core.models import JsonDataset
@@ -428,6 +428,13 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         else:
             total_balance = Decimal('0.00')
 
+        welfare = Welfare.objects.filter(staff_id=person)
+
+        if welfare.exists():
+            total_welfare = welfare.aggregate(Sum('amount'))['amount__sum']
+        else:
+            total_welfare = Decimal('0.00')
+
         context['naira'] = chr(8358)
         user = User.objects.filter(username=f'{person.staff.first_name}-{str(person.id).zfill(2)}')
         if user.exists():
@@ -447,6 +454,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['suspensions'] = Suspend.objects.filter(staff_id=person)
         context['salary_changed'] = SalaryChange.objects.filter(staff_id=person)
         context['total_balance'] = total_balance
+        context['total_welfare'] = total_welfare
         context['payout'] = Payroll.objects.filter(staff_id=self.kwargs['pk']).aggregate(total=Sum('net_pay'))['total']
         context['question_obj'] = Question.objects.filter(staff_id=person).first()
         
@@ -1145,6 +1153,31 @@ class StaffPermit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return redirect('employee-detail', pk=kwargs['pk'])
 
 
+class staffWelfare(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='Administrator').exists():
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        person = self.get_queryset().get(id=kwargs['pk'])
+        date = datetime.datetime.strptime(request.POST['date'], '%Y-%m-%d').date()
+        
+        welfare = Welfare(
+            staff=person,
+            date=date,
+            description=request.POST['description'],
+            amount=float(request.POST['amount'])
+        )
+        welfare.save()
+        
+        messages.success(request, f'Welfare support saved successfully !!!')
+        return redirect('employee-detail', pk=kwargs['pk'])
+
+
 class StaffSalaryChange(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Employee
 
@@ -1729,3 +1762,33 @@ class UserHandleCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         user.save()
         user_profile.save()
         return reverse("employee-detail", kwargs={'pk': self.kwargs['pk']})
+
+
+class WelfareSupportList(LoginRequiredMixin, TemplateView):
+
+    template_name = 'staff/welfare_list.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        codes = Welfare.objects.values_list('staff__id', flat=True).distinct()
+        welfare_dataset = []
+        for code in codes:
+            qs = Welfare.objects.filter(staff__id=code)
+
+            dic = {
+                'id': code,
+                'staff': qs.first().staff.staff,
+                'amount': qs.aggregate(Sum('amount'))['amount__sum']
+            }
+            welfare_dataset.append(dic)
+        context['welfare_dataset'] = welfare_dataset 
+        return context
+    
+class WelfareSupportListDetail(LoginRequiredMixin, ListView):
+    model = Welfare
+    template_name = 'staff/welfare_list_detail.html'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(staff__id=self.kwargs['pk'])
+
+    

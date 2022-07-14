@@ -1,0 +1,41 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %} 
+<div class="container">
+    <div class="row"> 
+        <div class="col">
+            <table class="table table-bordered table-striped" 
+                data-toggle="table"
+                data-pagination="true">
+                <caption>Welfare Support List</caption>
+                <thead>
+                    <tr class="bg-info text-white text-center">
+                        <th>Staff</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in welfare_dataset %}
+                    <tr>
+                        <td><a href="{% url 'welfare-list-detail' record.id %}">{{record.staff}}</a></td>
+                        <td class="text-right">{{record.amount|floatformat:'2g'}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a class=" btn btn-outline-dark float-right" 
+            href="{% url 'staff-home' %}">
+        <i class="fa fa-reply"></i>
+        </a>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
