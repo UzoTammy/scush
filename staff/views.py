@@ -3,6 +3,7 @@ import calendar
 import datetime
 
 from django.forms import ValidationError
+from matplotlib.style import context
 from survey.models import Question
 from users.models import Profile
 from apply.models import Applicant
@@ -460,6 +461,11 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         
         dic = JsonDataset.objects.get(pk=2).dataset
         context['gratuity_title'] = dic['gratuity-title'][0]
+
+        context['welfare_last_record'] = Welfare.objects.latest('date')
+        qs = Welfare.objects.filter(date=context['welfare_last_record'].date)
+        context['welfare_for_a_date'] = qs
+        context['welfare_for_a_date_total_amount'] = qs.aggregate(Sum('amount'))['amount__sum']
         return context
 
 
@@ -1177,7 +1183,7 @@ class staffWelfare(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         messages.success(request, f'Welfare support saved successfully !!!')
         return redirect('employee-detail', pk=kwargs['pk'])
 
-
+    
 class StaffSalaryChange(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Employee
 
@@ -1782,8 +1788,11 @@ class WelfareSupportList(LoginRequiredMixin, TemplateView):
             }
             welfare_dataset.append(dic)
         context['welfare_dataset'] = welfare_dataset 
+        context['total'] = Welfare.objects.aggregate(Sum('amount'))['amount__sum']
+        
         return context
-    
+
+
 class WelfareSupportListDetail(LoginRequiredMixin, ListView):
     model = Welfare
     template_name = 'staff/welfare_list_detail.html'
@@ -1791,4 +1800,4 @@ class WelfareSupportListDetail(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return super().get_queryset().filter(staff__id=self.kwargs['pk'])
 
-    
+        

@@ -80,10 +80,10 @@
                     </a>
                     </div>
               </li>
-              <!--Payroll-->
-              {% if user == 'Uzo-02' %}
+              <!--welfare-->
+              {% if user.is_superuser %}
             <li class="list-group-item">
-                <div class="1ow mb-1">
+                <div class="row mb-1">
                     <a class="ml-1" href="{% url 'welfare-support-list' %}">Welfare Support (view) <sup class="badge badge-danger">new</sup></a>
                 </div>
             </li>

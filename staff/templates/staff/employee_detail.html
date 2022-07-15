@@ -933,13 +933,11 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                             <div class="col">
                                 <div class="form-group">
-                                    
                                     <input name="description" 
-                                    placeholder="Welfare support for?" 
+                                    placeholder="Enter description/title here" 
                                     id="desc" 
                                     class="form-control" 
                                     type="text" required>
@@ -970,6 +968,77 @@
                 </button>
             </div>
                 </form>
+                <h5 class="text-info">Last Entered Record</h5>
+                <div class="row">
+                    <div class="col">
+                        <ul class="list-group list-group-horizontal">
+                            <li class="list-group-item">{{welfare_last_record.staff}}</li>
+                            <li class="list-group-item">{{welfare_last_record.date}}</li>
+                            <li class="list-group-item">{{welfare_last_record.amount}}</li>
+                            <li class="list-group-item">{{welfare_last_record.description|truncatewords:2}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col">
+                        <button class="float-right btn btn-outline-info btn-sm" 
+                            type="button" 
+                            data-toggle="modal" 
+                            data-target="#welfareDate">
+                            View All Others
+                        </button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal welfare for a date link is in modal welfare-->
+<div class="modal"
+     tabindex="-1"
+     role="dialog"
+     id="welfareDate">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+        <div class="modal-content bg-light">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Welfare Suport for {{welfare_last_record.date}}
+                </h3>
+                <button type="button"
+                        class="close"
+                        aria-label="close"
+                        data-dismiss="modal">
+                    <i class="fa fa-times text-danger"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    
+                    <div class="col">
+                        <table class="table table-bordered table-striped" data-toggle="table">
+                            <thead>
+                                <tr class="bg-info">
+                                    <td>Staff</td>
+                                    <td>Date</td>
+                                    <td>Description</td>
+                                    <td>Amount</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in welfare_for_a_date %}
+                                <tr>
+                                    <td>{{record.staff}}</td>
+                                    <td>{{record.date}}</td>
+                                    <td>{{record.description}}</td>
+                                    <td>{{record.amount}}</td>
+                                </tr>
+                                {% endfor %}
+                                <span class="float-right">{{welfare_for_a_date_total_amount|floatformat:'2g'}}</span>    
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
