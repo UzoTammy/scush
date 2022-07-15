@@ -1158,7 +1158,7 @@ class staffWelfare(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='Administrator').exists():
+        if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
 

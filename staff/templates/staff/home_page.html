@@ -63,7 +63,6 @@
                   <a class="ml-1" href="{% url 'request-permission-list' %}">
                       <i class="fa fa-thumbs-up text-success"></i> 
                       Permission
-                      
                   </a>
                   </div>
             </li>
@@ -82,11 +81,13 @@
                     </div>
               </li>
               <!--Payroll-->
+              {% if user == 'Uzo-02' %}
             <li class="list-group-item">
-                <div class="row mb-1">
+                <div class="1ow mb-1">
                     <a class="ml-1" href="{% url 'welfare-support-list' %}">Welfare Support (view) <sup class="badge badge-danger">new</sup></a>
                 </div>
             </li>
+            {% endif %}
                 <!--Policies-->
                     <li class="list-group-item"><div class="row mb-1">
                             <a class="ml-1" href="{% url 'staff-policies' %}">Policies</a>
