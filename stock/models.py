@@ -100,7 +100,7 @@ class ProductExtension(models.Model):
         validators=[MinValueValidator(Money(1, 'NGN'), 
         message="Selling price can't be NGN0.00")]
     )
-    stock_value = models.IntegerField(default=0)
+    stock_value = models.IntegerField(default=0, verbose_name='quantity')
     date = models.DateField(default=timezone.now)
     sell_out = models.IntegerField(default=0)
     sales_amount = MoneyField(

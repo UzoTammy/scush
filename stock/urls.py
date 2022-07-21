@@ -33,8 +33,8 @@ urlpatterns += [
     path('update/<str:source>/', StockReportUpdateView.as_view(), name='stock-report-update'),
     path('add/<str:source>/', StockReportAddView.as_view(), name='stock-report-add'),
     # path('price/<int:pk>/update/', ProductExtensionPriceUpdate.as_view(), name='product-extension-price-update')
-]
 
+]
 
 urlpatterns += [
     path('<str:user>/home/', StockReportHome.as_view(), name='stock-report-home'),

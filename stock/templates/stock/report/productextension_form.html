@@ -14,10 +14,10 @@
                         <p>Date: {{date}}</p>   
                     </div>
                     <div class="col-sm-4">
-                        <p>Cost Price: {{product.cost_price}}</p>   
+                        <p>Cost Price: {{product.cost_price}} <a href="." data-toggle="modal" data-target="#costPriceReview"><i class="fa fa-edit"></i></a></p>   
                     </div>
                     <div class="col-sm-4">
-                        <p>Selling Price: {{product.unit_price}}</p> 
+                        <p>Selling Price: {{product.unit_price}} <a href="." data-toggle="modal" data-target="#priceReview"><i class="fa fa-edit"></i></a></p> 
                     </div>
                 </div>
                 <hr>
@@ -33,5 +33,120 @@
             </form>
         </div>
     </div>
+</div>
+
+<div class="section">
+    <!-- Cost Price Update Modal -->
+    <div class="modal fade" 
+    id="costPriceReview" 
+    data-backdrop="static"
+    role="dialog" 
+    tabindex="-1">
+    
+        <form action="{% url 'price-update' product.pk %}" method="post">{% csrf_token %}
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title">Edit Cost Price of {{product}}</h5>
+            <button type="button" 
+            class="close" 
+            data-dismiss="modal" 
+            aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <fieldset>
+                <div class="row">
+                    <div class="col">
+                        <p>Current Cost Price:  <span class="text-primary">{{product.cost_price}}</span></p>
+                    </div>
+                    
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                    <div class="col">
+                        <input id="inputCost" placeholder="Enter New Cost Price" 
+                        type="number"
+                        min="0.1"
+                        max="200000"
+                        step=".01"
+                        class="form-control" 
+                        name="cost" value="" required>
+                        <span class="help-block text-muted ml-3">Maximum price allowed is NGN200,000.00</span>
+                        
+                    </div>
+                    
+                    </div>
+                    
+                </div>
+            </fieldset>
+            </div>
+            <div class="modal-footer">
+
+            <button id="btnCostPrice" type="submit" class="btn btn-primary">Update</button>  
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+        </div>
+        </form>
+    </div>
+
+    <!-- Selling Price Update Modal -->
+<div class="modal fade" 
+id="priceReview" 
+data-backdrop="static"
+role="dialog" 
+tabindex="-1">
+  
+    <form action="{% url 'price-update' product.pk %}" method="post">
+      {% csrf_token %}
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{product}}</h5>
+          <button type="button" 
+          class="close" 
+          data-dismiss="modal" 
+          aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <fieldset>
+              <div class="row">
+                <div class="col">
+                    <p>Selling Price:  <span class="text-primary">{{product.unit_price}}</span></p>
+                </div>
+                
+              </div>
+              <div class="form-group">
+                <div class="row">
+                  <div class="col">
+                    <input id="inputSelling" placeholder="Enter New Selling Price" 
+                    type="number"
+                    min="0.1"
+                    max="200000"
+                    step=".01"
+                    onchange="sellingFunc()" 
+                    class="form-control" 
+                    name="selling" value="" required>
+                  </div>
+                  
+                </div>
+                
+              </div>
+          </fieldset>
+        </div>
+        <div class="modal-footer">
+
+          <button id="btnSellingPrice" type="submit" class="btn btn-primary">Update</button>  
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+    </form>
+</div>
+
 </div>
 {% endblock %}

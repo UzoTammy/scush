@@ -19,7 +19,7 @@
       <li class="list-group-item">
         <a href="#" 
         data-toggle="modal" 
-        data-target="#stockReport"><i class="fa fa-vcard text-danger"></i> Daily Report</a>
+        data-target="#stockReport"><i class="fa fa-vcard text-danger"></i> Change Date</a>
       </li>
       <li class="list-group-item">
         <a href="{% url 'stock-report-all-products' %}">Products</a>
@@ -156,7 +156,7 @@
                   
                   {% for item in source %}
                   <tr>
-                    <td><a href="{% url 'product-ext-update' item.pk %}">{{item.product}}</a></td>
+                    <td>{{item.product}}</td>
                     <td class="text-right">{{item.cost_price.amount}}</td>
                     <td class="text-right">{{item.stock_value}}</td>
                     <td class="text-right">{{item.value|floatformat:'2g'}}</td>
@@ -242,8 +242,6 @@
     </div>
   </div>
 </div>
-
-
 
 <script>
 

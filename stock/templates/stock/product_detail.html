@@ -12,10 +12,12 @@
             <div class="row mb-5 mt-3">
                 <div class="col bg-light">
                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="{% url 'stock-report-new' theDate object.pk %}"><i class="fa fa-plus"></i> Sellout & Balance</a> </li>
                         <li class="list-group-item">
                             <a href="#" 
                             data-toggle="modal" 
-                            data-target="#priceReview">Update Selling Price</a></li>
+                            data-target="#priceReview">Update Selling Price</a>
+                        </li>
                         
                         <li class="list-group-item"><a href="{% url 'product-update' object.pk %}">Update</a></li>
                         {% if user.is_superuser %}

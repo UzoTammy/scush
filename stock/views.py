@@ -223,6 +223,11 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return context
     
     def get(self, request, *args, **kwargs):
+        if 'reportDate' in request.GET.keys():
+            report_date = datetime.datetime.strptime(request.GET['reportDate'], "%Y-%m-%d").date()
+            request.user.profile.stock_report_date = report_date
+            request.user.save()
+            
         if 'reportPDF' in request.GET.keys():
             if self.request.GET['reportPDF'] == 'on':
                 context = self.get_context_data(**kwargs)
@@ -381,6 +386,7 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
                     msg = f'{stock_obj.product} cost price updated !!!'
                 stock_obj.save()
                 messages.info(request, msg)
+            
             return redirect('stock-report-update', source=request.POST['redirect'])    
             
         messages.info(request, msg)
@@ -746,6 +752,10 @@ class StockReportNew(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             messages.info(request, f'{product} already ADDED, you can only UPDATE')
             return redirect('stock-report-home', user=request.user)
         return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        print(request.POST)
+        return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
         product = Product.objects.get(id=self.kwargs['pk'])
