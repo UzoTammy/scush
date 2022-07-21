@@ -53,7 +53,7 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path('request/permission/create/', RequestPermissionCreateView.as_view(), name='request-permission-create'),
+    # path('request/permission/create/', RequestPermissionCreateView.as_view(), name='request-permission-create'),
     path('request/permission/<int:pk>/update/', RequestPermissionUpdateView.as_view(), name='request-permission-update'),
     path('request/permission/list/', RequestPermissionListView.as_view(), name='request-permission-list'),
     path('permission/from/<int:pk>/request/', PermissionFromRequest.as_view(), name='permission-from-request'),

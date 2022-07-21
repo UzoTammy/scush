@@ -7,15 +7,22 @@
     <div class="row">
         <div class="col">
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">Product: {{object.product}}</li>
+                <li class="list-group-item">
+                    {% if object.active %}
+                        <i class="fa fa-check-square-o fa-2x text-success"></i>
+                    {% else %}
+                        <i class="fa fa-close fa-2x text-danger"></i>
+                    {% endif %}
+                    <h5 class="">Product: {{object.product}}</h5> 
+                </li>
                 <li class="list-group-item">Cost: {{object.cost_price}}</li>
                 <li class="list-group-item">Selling: {{object.selling_price}}</li>
                 <li class="list-group-item">Quantity: {{object.stock_value}}</li>
                 <li class="list-group-item">Date: {{object.date}}</li>
                 <li class="list-group-item">Sellout: {{object.sell_out}}</li>
-                <li class="list-group-item">Status: {{object.status}}</li>
                 <li class="list-group-item">Value: {{object.value_of_stock}}</li>
               </ul>
+              <p class="text-muted"><i class="fa fa-check-square-o">Active</i> | <i class="fa fa-close">Inactive</i></p>
               <a class="btn btn-dark float-right mt-3" href="{% url 'stock-report' %}"><i class="fa fa-reply text-danger"></i> Return</a>
         </div>
     </div>

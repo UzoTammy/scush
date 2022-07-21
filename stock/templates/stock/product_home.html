@@ -10,20 +10,37 @@
         <div class="row mt-2">
             <div class="col-3 bg-light">
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <a href="{% url 'product-performance-list' %}">Product Perf</a>
+                    <li class="list-group-item text-info">View
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a href="{% url 'product-performance-list' %}">Product Perf</a>
+                            </li>
+                            
+                            <li class="list-group-item">
+                                <a href="{% url 'stock-report-source' 'All' %}">All Products</a>
+                            </li>
+                            <li class="list-group-item">
+                                <!-- Button trigger modal -->
+                                <a href="{% url 'stock-report' %}">Stock Report</a>
+                            </li> 
+                            <li class="list-group-item">
+                                <a href="{% url 'watchlist-home' %}">Watchlist</a>
+                            </li>  
+                            <li class="list-group-item">
+                                <a href="{% url 'delivery-home' %}">Deliveries</a>
+                            </li>
+                             
+                        </ul>
                     </li>
                     
                     <li class="list-group-item">
-                        <a href="{% url 'stock-report-source' 'All' %}">All Products</a>
+                        <a href="{% url 'product-create' %}"><i class="fa fa-plus text-info"></i> Product</a>
                     </li>
                     <li class="list-group-item">
-                        <a href="{% url 'product-create' %}">Add Product</a>
+                        <!-- Button trigger modal -->
+                        <a href="{% url 'stock-report-home' user %}"><i class="fa fa-plus text-info"></i> Sellout & Balance</a>
                     </li>
-                    <li class="list-group-item">
-                        <a href="{% url 'delivery-home' %}">Deliveries</a>
-                    </li>
-                
+                    
                     <li class="list-group nav-item dropdown">
                         <a class="nav-link dropdown-toggle" 
                         href="#" 
@@ -51,17 +68,8 @@
                         <a href="{% url 'pdf-price-change' %}">Today's Price Update (PDF)</a>
                     </li>
 
-                    <li class="list-group-item">
-                        <!-- Button trigger modal -->
-                        <a href="{% url 'stock-report' %}">Stock Report</a>
-                    </li>
-                    <li class="list-group-item">
-                        <!-- Button trigger modal -->
-                        <a href="{% url 'stock-report-home' user %}">Stock Report New</a>
-                    </li>
-                    <li class="list-group-item">
-                        <a href="{% url 'watchlist-home' %}">Watchlist</a>
-                    </li>
+                    
+                    
                     
                     <li class="list-group-item">
                         <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>

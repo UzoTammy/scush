@@ -688,11 +688,14 @@ class StockReportOneProducts(LoginRequiredMixin, TemplateView):
         return context
 
 
-class StockReportHome(TemplateView):
+class StockReportHome(LoginRequiredMixin, TemplateView):
     template_name = 'stock/packs/home.html'
     
     def get_context_data(self, **kwargs):
+        # all_products = Product.objects.filter(active=True).values_list('id', flat=True)
         reports = ProductExtension.objects.filter(date=self.request.user.profile.stock_report_date)
+        created = reports.values_list('product__id', flat=True)
+        
         context = super().get_context_data(**kwargs)
         context['user'] = self.request.user
         context['product_report'] = reports
@@ -701,6 +704,7 @@ class StockReportHome(TemplateView):
         sources = Product.objects.filter(active=True).values_list('source', flat=True).distinct()
         querysets = list((source, Product.objects.filter(active=True, source=source)) for source in sources)
         context['querysets'] = querysets
+        context['existing_id'] = created
         return context
 
     
@@ -712,14 +716,20 @@ class StockReportHome(TemplateView):
         user.profile.stock_report_date = date_obj.date()
         user.save()
 
-        # messages.info(request, f'Date has been set to {date} for {user} !!!')
+        messages.info(request, f'Date has been set to {date_obj.strftime("%d-%b-%Y")} successfully !!!')
         return super().get(request, **kwargs)
 
-
-class StockReportNew(CreateView):
+class StockReportNew(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = ProductExtension
     template_name = 'stock/report/productextension_form.html'
     fields = ['sell_out', 'stock_value', 'sales_amount']
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -737,9 +747,17 @@ class StockReportNew(CreateView):
             return redirect('stock-report-home', user=request.user)
         return super().get(request, *args, **kwargs)
 
-    
-class StockReportUpdate(View):
-    
+    def form_valid(self, form):
+        product = Product.objects.get(id=self.kwargs['pk'])
+        form.instance.product_id = product.pk
+        form.instance.cost_price = product.cost_price
+        form.instance.selling_price = product.unit_price
+        form.instance.date = datetime.datetime.strptime(self.kwargs['date'], '%Y-%m-%d').date()
+
+        return super().form_valid(form)
+
+class StockReportUpdate(LoginRequiredMixin, View):
+
     def get(self, request, *args, **kwargs):
         product = Product.objects.get(pk=kwargs['code'])
         date_obj = datetime.datetime.strptime(self.kwargs['date'], '%Y-%m-%d').date()
@@ -765,3 +783,19 @@ class StockReportUpdate(View):
         if bound_form.is_valid():
             bound_form.save()
         return redirect('stock-report-home', user=request.user)
+
+class StockReportDetail(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'stock/report/productextension_detail.html'
+    
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product = Product.objects.get(pk=self.kwargs['code'])
+        date_obj = datetime.datetime.strptime(self.kwargs['date'], '%Y-%m-%d').date()
+        context['object'] = ProductExtension.objects.filter(product=product, date=date_obj).get()
+        return context

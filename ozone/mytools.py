@@ -79,8 +79,25 @@ class DatePeriod:
             return days_apart
         return -1
 
-    def working_days(self,):
-        return
+    @staticmethod
+    def working_days(date1, date2):
+        """This is a function that gives a tuple of days and hours. 
+        but, when the date1 is greater that date1, it results in -1.
+        if the date1 and date2 are same date, it worked out the hours only
+        if the dates difer, it worked out the days only"""
+        days = (date2 - date1).days
+        if days < 0:
+            return -1
+        elif days == 0:
+            hours = (date2 - date1).total_seconds()/3600
+            return 0, hours
+        else:
+            number_of_days = 0
+            for i in range(days):
+                date = date1 + datetime.timedelta(i)
+                if date.weekday()!= calendar.SUNDAY:
+                    number_of_days += 1
+            return number_of_days, 0
 
 
 class Person:
@@ -400,7 +417,6 @@ class Taxation:
             return first + second + third + forth + fifth
         else:
             return annual_taxable_amount * Decimal(24)/Decimal(100)
-
 
 
 

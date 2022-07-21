@@ -35,8 +35,10 @@ urlpatterns += [
     # path('price/<int:pk>/update/', ProductExtensionPriceUpdate.as_view(), name='product-extension-price-update')
 ]
 
+
 urlpatterns += [
     path('<str:user>/home/', StockReportHome.as_view(), name='stock-report-home'),
     path('<str:date>/<int:pk>/new/', StockReportNew.as_view(), name='stock-report-new'),
-    path('<str:date>/<int:code>/update/', StockReportUpdate.as_view(), name='stock-report-update')
+    path('<str:date>/<int:code>/update/', StockReportUpdate.as_view(), name='stock-report-update'),
+    path('<str:date>/<int:code>/detail/', StockReportDetail.as_view(), name='stock-report-detail')
 ]

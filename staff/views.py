@@ -1153,9 +1153,32 @@ class StaffPermit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             ending_at=ending_at_object,
             reason=request.POST['reason']
         )
-        permit.save()
+        
+        period = mytools.DatePeriod.working_days(start_date_object, ending_at_object)
 
-        messages.success(request, f'Permission Granted for {(ending_at_object-start_date_object).total_seconds()/3600} Man-Hours')
+        if period == -1:
+            messages.info(request, f'Permission cannot be granted on a backward date. Check your date selection')
+        else:
+            if period[0] == 0:
+                messages.success(request, f'Permission Granted for {period[1]} Hour(s)')
+                permit.save()
+                send_mail("Grant Permission",
+                 f'''Permission has been granted to {person} for {period[1]} Hour(s).
+                 Resumption date is {ending_at_object.strftime("%d-%B-%Y")}.''', 
+                from_email='',
+                recipient_list=['ogechukwu.okpala@ozonefl.com', 'uzo.nwokoro@ozonefl.com'],
+                fail_silently=True,
+                )
+            else:
+                messages.success(request, f'Permission Granted for {period[0]} Day(s)')
+                permit.save()
+                send_mail('Grant Permission', 
+                f'''Permission has been granted to {person} for {period[0]} Days(s).
+                Resumption date is {ending_at_object.strftime("%d-%B-%Y")}.''',
+                from_email='',
+                recipient_list=['ogechukwu.okpala@ozonefl.com', 'uzo.nwokoro@ozonefl.com'],
+                fail_silently=True,
+                )
         return redirect('employee-detail', pk=kwargs['pk'])
 
 
@@ -1501,57 +1524,57 @@ class EmployeeBalanceUpdateView(UpdateView):
         return reverse_lazy('employee-balance-detail', kwargs={'pk': self.kwargs['pk']})
 
 
-class RequestPermissionCreateView(LoginRequiredMixin, CreateView):
-    form_class = RequestPermissionForm
-    template_name = 'staff/request_permission_form.html'
+# class RequestPermissionCreateView(LoginRequiredMixin, CreateView):
+#     form_class = RequestPermissionForm
+#     template_name = 'staff/request_permission_form.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['create'] = True
-        return context
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['create'] = True
+#         return context
     
-    def get(self, request, *args, **kwargs):
-        staff_id = int(str(request.user).split('-')[1])
-        staff = Employee.objects.filter(pk=staff_id)
-        if staff.exists():
-            self.initial['staff'] = staff.get()
-        self.initial['start_date'] = timezone.now()
-        self.initial['resume_date'] = timezone.now()
-        return super().get(request, *args, **kwargs)
+#     def get(self, request, *args, **kwargs):
+#         staff_id = int(str(request.user).split('-')[1])
+#         staff = Employee.objects.filter(pk=staff_id)
+#         if staff.exists():
+#             self.initial['staff'] = staff.get()
+#         self.initial['start_date'] = timezone.now()
+#         self.initial['resume_date'] = timezone.now()
+#         return super().get(request, *args, **kwargs)
     
-    # the submit method
-    def form_valid(self, form, **kwargs):
-        context = self.get_context_data(**kwargs)
-        if (form.instance.start_date - form.instance.date).days < 3 and form.instance.start_date != form.instance.resume_date:
-            messages.info(self.request, "This request cannot be submitted because it is contrary to company's policy")
-            return redirect('home')
-        context['heading'] = f'Permission for {form.instance.staff}'
-        durations = duration(form.instance.start_date, form.instance.resume_date)
-        context['object'] = {
-            'request_by': self.request.user,
-            'staff': form.instance.staff,
-            'date': form.instance.date,
-            'reason': form.instance.reason,
-            'start_date': form.instance.start_date,
-            'resume_date':form.instance.resume_date,
-            'status': form.instance.status,
-            'duration': (durations[:-1], durations[-1]) 
-        }
-        mail_message = loader.render_to_string('mail/request/permission.html', context)
+#     # the submit method
+#     def form_valid(self, form, **kwargs):
+#         context = self.get_context_data(**kwargs)
+#         if (form.instance.start_date - form.instance.date).days < 3 and form.instance.start_date != form.instance.resume_date:
+#             messages.info(self.request, "This request cannot be submitted because it is contrary to company's policy")
+#             return redirect('home')
+#         context['heading'] = f'Permission for {form.instance.staff}'
+#         durations = duration(form.instance.start_date, form.instance.resume_date)
+#         context['object'] = {
+#             'request_by': self.request.user,
+#             'staff': form.instance.staff,
+#             'date': form.instance.date,
+#             'reason': form.instance.reason,
+#             'start_date': form.instance.start_date,
+#             'resume_date':form.instance.resume_date,
+#             'status': form.instance.status,
+#             'duration': (durations[:-1], durations[-1]) 
+#         }
+#         mail_message = loader.render_to_string('mail/request/permission.html', context)
 
-        form.instance.request_by = self.request.user
-        qs = RequestPermission.objects.all()
-        num = qs.last().id if qs.exists() else 0
-        user_email = self.request.user.email
-        messages.info(self.request, f'Your request is submitted successfully!!!')
-        send_mail(subject=f'Permission Request #{str(num+1).zfill(3)}',
-        message='', # f'Your request for permission has been received and will be processed adequately.',
-        from_email='',
-        recipient_list=[user_email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
-        fail_silently=True,
-        html_message=mail_message
-        )
-        return super().form_valid(form, **kwargs)
+#         form.instance.request_by = self.request.user
+#         qs = RequestPermission.objects.all()
+#         num = qs.last().id if qs.exists() else 0
+#         user_email = self.request.user.email
+#         messages.info(self.request, f'Your request is submitted successfully!!!')
+#         send_mail(subject=f'Permission Request #{str(num+1).zfill(3)}',
+#         message='', # f'Your request for permission has been received and will be processed adequately.',
+#         from_email='',
+#         recipient_list=[user_email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
+#         fail_silently=True,
+#         html_message=mail_message
+#         )
+#         return super().form_valid(form, **kwargs)
     
 
 class RequestPermissionUpdateView(LoginRequiredMixin, UpdateView):
