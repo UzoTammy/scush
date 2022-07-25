@@ -15,17 +15,34 @@
                 <li class="nav-item">
                     <a class="nav-link"
                        data-toggle="modal"
-                       data-target="#staffReassign">
-                        <i class="fa fa-envelope-open text-warning"></i>
-                        Reassign
+                       data-target="#staffBalance">
+                        <i class="fa fa-book text-warning"></i>
+                        Add Gratuity
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                           data-toggle="modal"
+                           data-target="#staffSalary">
+                        <i class="fa fa-credit-card text-warning"></i>
+                        Change Salary
+                    </a>
+                </li>
+                
                 <li class="nav-item">
                     <a class="nav-link"
                            data-toggle="modal"
                            data-target="#staffPermit">
                         <i class="fa fa-pause text-warning"></i>
                         Grant Permission
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       data-toggle="modal"
+                       data-target="#staffReassign">
+                        <i class="fa fa-envelope-open text-warning"></i>
+                        Reassign Position
                     </a>
                 </li>
                 <li class="nav-item">
@@ -38,17 +55,9 @@
                 <li class="nav-item">
                     <a class="nav-link"
                            data-toggle="modal"
-                           data-target="#staffSalary">
-                        <i class="fa fa-credit-card text-warning"></i>
-                        Change Salary
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                       data-toggle="modal"
-                       data-target="#staffBalance">
-                        <i class="fa fa-book text-warning"></i>
-                        Gratuity
+                           data-target="#staffTerminate">
+                        <i class="fa fa-stop text-warning"></i>
+                        Terminate
                     </a>
                 </li>
                 <li class="nav-item">
@@ -57,14 +66,6 @@
                        data-target="#staffWelfare">
                         <i class="fa fa-envelope-open text-warning"></i>
                         Welfare Support <sup class="badge badge-danger">new</sup>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                           data-toggle="modal"
-                           data-target="#staffTerminate">
-                        <i class="fa fa-stop text-warning"></i>
-                        Terminate
                     </a>
                 </li>
                 <hr class="dropdown-divider">
@@ -95,7 +96,7 @@
             </p>
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link" 
-                    href="{% url 'create-user' object.pk %}">Create User</a>
+                    href="{% url 'create-user' object.pk %}"><i class="fa fa-user text-warning"></i>  Create User</a>
                 </li>
             </ul>
             {% endif %}
@@ -108,7 +109,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'staff-list' %}">
-                        <i class="fa fa-reply text-warning"></i> Staff List</a>
+                        <i class="fa fa-reply text-warning"></i> Return</a>
                 </li>
             </ul>
         </div>

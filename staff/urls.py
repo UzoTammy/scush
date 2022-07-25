@@ -16,18 +16,18 @@ urlpatterns = [
     path('suspend/<int:pk>/', StaffSuspend.as_view(), name='employee-suspend'),
     path('permit/<int:pk>/', StaffPermit.as_view(), name='employee-permit'),
     path('salary-change/<int:pk>/', StaffSalaryChange.as_view(), name='employee-salary-change'),
-    path('home/<str:staff_category>/', StaffViews.as_view(), name='terminated'),
+    path('home/<str:staff_category>/', TerminatedStaffListView.as_view(), name='terminated'),
     path('pk-reset/', PKResetView.as_view(), name='pk-reset'),
     path('pk-reset/payroll/', PKResetPayroll.as_view(), name='pk-reset-payroll'),
     path('welfare/<int:pk>/', staffWelfare.as_view(), name='staff-welfare'),
     path('welfare/list/', WelfareSupportList.as_view(), name='welfare-support-list'),
-    path('welfare/list/<str:pk>/detail/', WelfareSupportListDetail.as_view(), name='welfare-list-detail'),
+    path('welfare/list/<str:pk>/one-staff/', WelfareSupportListViewOneStaff.as_view(), name='welfare-list-detail'),
     
-    path('employee/<int:pk>/balance/', AddStaffBalance.as_view(), name='employee-balance'),
-    path('employee/balance/list/', EmployeeBalanceListView.as_view(), name='employee-balance-list'),
-    path('employee/balance/<int:pk>/detail/', EmployeeBalanceDetailView.as_view(), name='employee-balance-detail'),
-    path('employee/balance/<int:pk>/update/', EmployeeBalanceUpdateView.as_view(), name='employee-balance-update'),
-    path('employee/<int:pk>/gratity/', EmployeeGratuityList.as_view(), name='employee-gratuity-list'),
+    path('employee/<int:pk>/balance/', AddGratuity.as_view(), name='employee-balance'),
+    path('employee/balance/list/', GratuityListView.as_view(), name='employee-balance-list'),
+    path('employee/balance/<int:pk>/detail/', GratuityDetailView.as_view(), name='employee-balance-detail'),
+    path('employee/balance/<int:pk>/update/', GratuityUpdateView.as_view(), name='employee-balance-update'),
+    path('employee/<int:pk>/gratity/', GratuityListViewOneStaff.as_view(), name='employee-gratuity-list'),
     path('user/<int:pk>/create/', UserHandleCreateView.as_view(), name='create-user')
     ]
     
@@ -36,19 +36,19 @@ urlpatterns += [
     path('payroll/credit-note/new/', CreditNoteCreateView.as_view(), name='credit-create'),
     path('payroll/debit/', DebitNoteListView.as_view(), name='debit-list'),
     path('payroll/debit-note/new/', DebitNoteCreateView.as_view(), name='debit-create'),
-    path('payroll/start/generate/salary/', StartGeneratePayroll.as_view(), name='salary'),
+    path('payroll/start/generate/salary/', PayrollHome.as_view(), name='salary'),
     path('payroll/views/<str:period>/', PayrollViews.as_view(), name='payroll-view'),
     path('payroll/generate/<str:period>/', GeneratePayroll.as_view(), name='generate-payroll'),
     path('payroll/regenerate/', RegeneratePayroll.as_view(), name='regenerate-payroll'),
     path('payroll/regenerated/', RegeneratedPayroll.as_view(), name='regenerated-payroll'),
     path('payroll/start-pay/', SalaryPayment.as_view(), name='start-pay'),
     path('payroll/pay-salary/<int:pk>/', Payslip.as_view(), name='pay-salary'),
-    path('payroll/<int:pk>/statement/', PayrollStatement.as_view(), name='payroll-statement'),
+    path('payroll/<int:pk>/statement/', PayslipStatement.as_view(), name='payroll-statement'),
     path('payroll/summary/<str:summary_period>/', PayrollSummaryView.as_view(), name='payroll-summary'),
     path('payroll/modify/', ModifyGeneratedPayroll.as_view(), name='payroll-modify'),
     path('payroll/modify/<int:pk>/outstanding/', MakeOutstandingValueZero.as_view(), name='payroll-modify-outstanding'),
     path('payroll/update/tax/', UpdateTax.as_view(), name='update-tax'),
-    path('payroll/<int:pk>/balance/', BalanceView.as_view(), name='balance-view'),
+    path('payroll/<int:pk>/balance/', GratuityListViewOneStaff.as_view(), name='balance-view'),
     path('payroll/tax/list/', TaxList.as_view(), name='tax-list'),
 ]
 
@@ -58,4 +58,5 @@ urlpatterns += [
     path('request/permission/list/', RequestPermissionListView.as_view(), name='request-permission-list'),
     path('permission/from/<int:pk>/request/', PermissionFromRequest.as_view(), name='permission-from-request'),
     path('request/permission/<int:pk>/disapprove/', RequestPermissionDisapprove.as_view(), name='request-permission-disapprove'),
+    path('<int:pk>/re-engage/', StaffReEngage.as_view(), name='re-engage')
 ]

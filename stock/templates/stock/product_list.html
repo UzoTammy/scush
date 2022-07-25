@@ -54,7 +54,11 @@
                              height="64px"
                              alt="">
                     </th>
-                    <td><a href="{% url 'product-detail' product.pk %}">{{product}}</a></td>
+                    {% if product.active %}
+                    <td><a href="{% url 'product-detail' product.pk %}">{{product}}</a> <sup><i class="fa fa-check-square-o text-success"></i> </sup></td>
+                    {% else %}
+                    <td><a href="{% url 'product-detail' product.pk %}">{{product}}</a> <sup><i class="fa fa-times-circle-o text-danger"></i></sup></td>
+                    {% endif %}
                     {% if view.kwargs.source == 'All' %}
                     <td>{{product.source}}</td>
                     {% endif %}

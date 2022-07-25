@@ -1,0 +1,82 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load custom_templates %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col mt-3">
+            <h2 class="text-secondary text-center bg-light">Re-engage Staff - {{object.staff.id|zeropadding:3}}</h2>
+            <div class="row">
+                <div class="col-sm-9">
+                    <div class="media">
+                        <img src="{{object.staff.image.url}}"
+                             width="150px"
+                             height="150px"
+                             class="rounded mr-3"
+                             alt="...">
+                        <div class="media-body">
+                            <h5 class="text-info mt-0">{{object}}</h5>
+                            <p>Date Terminated: {{object.date}}</p>
+                            <p>Type of Termination: {{object.termination_type}}</p>
+                            <p>Reason for Termination: {{object.remark}}</p>
+                            <p>Was a {% if object.staff.is_management %} management {% else %} Non-management {% endif %} staff</p>
+                            <p>
+                                <a type="button" class="btn btn-outline-info" href="#" data-toggle="modal" data-target="#reEngage">Engage</a>
+                                <a type="button" class="btn btn-dark" href="{% url 'terminated' 'terminate' %}">Return</a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Re-engage -->
+  <div class="modal fade" id="reEngage" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">{{object}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="." method="post">
+            {% csrf_token %}
+        <div class="modal-body">
+          <div class="row">
+            
+            <div class="col">
+                <p>Date Previously Employed: {{object.staff.date_employed}}</p>
+                <div class="form-group">
+                    <label for="" >Update Employment Date<sup class="text-danger">**</sup></label>
+                    <input name="date" class="form-control" type="date" required>
+                </div>
+                <p>Previously Salary: {{object.staff.salary}}</p>
+                <div class="form-group">
+                    <label for="" >Updated Salary<sup class="text-danger">**</sup></label>
+                    <input name="salary" class="form-control" type="number" required>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" name="management" id="defaultCheck1">
+                    <label class="form-check-label" for="defaultCheck1">
+                        Management
+                    </label>
+                </div>
+                <p class="text-info">Engage this staff and update profile accordingly</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Engage</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

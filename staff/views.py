@@ -3,7 +3,6 @@ import calendar
 import datetime
 
 from django.forms import ValidationError
-from matplotlib.style import context
 from survey.models import Question
 from users.models import Profile
 from apply.models import Applicant
@@ -18,7 +17,6 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
-from django.utils import timezone
 from django.views.generic import (View,
                                   TemplateView,
                                   ListView,
@@ -46,7 +44,7 @@ def duration(start_date, resume_date):
         days = len(mytools.DateRange(start_date.date(), resume_date.date()).exclude_weekday(calendar.SUNDAY))
         return f'{days - 1}D'
 
-
+# This is not a view class
 class Salary:
     """
 x = amount to pay
@@ -109,10 +107,7 @@ outstanding is the amount the company is willing to reserve for the staff
         return [salary_payable, deduction, outstanding]
 
 
-class StaffPoliciesView(TemplateView):
-    template_name = 'staff/policies.html'
-
-
+# Views Classes
 class StaffMainPageView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def test_func(self):
@@ -238,78 +233,6 @@ happiness of our staff is important, that is what we expect them to transfer to 
         }
         return render(request, self.template_name, context=context)
 
-
-class StaffViews(LoginRequiredMixin, UserPassesTestMixin, DetailView):
-    model = Terminate
-    template_name = 'staff/staff_views.html'
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def get(self, request, *args, **kwargs):
-
-        context = {
-            'terminated_staff': self.get_queryset().order_by('-pk')
-        }
-        return render(request, self.template_name, context)
-
-
-class PDFProfileView(View):
-
-    def get(self, request):
-        all_periods = list(i.period for i in Payroll.objects.all())
-        all_periods = set(all_periods)
-        choice = request.GET['radioPayroll']
-        if choice == '1':
-            context = {
-                'title': 'first mail'
-            }
-        elif choice == '2':
-            context = {
-                'title': 'second mail'
-            }
-        elif choice == '3':
-            context = {
-                'title': 'second mail'
-            }
-        elif choice == '4':
-            context = {
-                'title': 'second mail'
-            }
-        elif choice == '5':
-            context = {
-                'title': 'second mail'
-            }
-        elif choice == '6':
-            context = {
-                'title': 'second mail'
-            }
-        elif choice == '7':
-            context = {
-                'title': 'second mail'
-            }
-        elif choice == '8':
-            context = {
-                'title': 'second mail'
-            }
-        elif choice == '9':
-            context = {
-                'title': 'second mail'
-            }
-        elif choice == '10':
-            context = {
-                'title': 'second mail'
-            }
-        else:
-            context = {
-                'title': ''
-            }
-        return render(request, 'mails/mailing_form.html', context)
-
-
 class StaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Employee
     queryset = model.active.all()
@@ -333,55 +256,6 @@ class StaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             context['highest_paid'] = employees.latest('basic_salary').basic_salary
             context['lowest_paid'] = employees.earliest('basic_salary').basic_salary
         return context
-
-
-class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    queryset = Employee.active.all()
-    ordering = '-pk'
-    template_name = 'staff/employee_list_private.html'
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        """requires if data exist for query"""
-        if self.queryset:
-            workforce = self.get_queryset().count()
-            basic_salary_payable = self.get_queryset().aggregate(bs=Sum('basic_salary'))
-            allowance_payable = self.get_queryset().aggregate(al=Sum('allowance'))
-            salary_payable = basic_salary_payable['bs'] + allowance_payable['al']
-
-            month_days = mytools.Month.number_of_working_days(
-                datetime.date.today().year,
-                datetime.date.today().month)
-
-            delta = datetime.datetime(2021, 1, 1, 17, 45, 0) - datetime.datetime(2021, 1, 1, 7, 45, 0)
-            hours_spent_per_workday = delta.seconds / 3600
-
-            daily_man_hours = hours_spent_per_workday * workforce
-            monthly_man_hours = daily_man_hours * month_days
-
-            context['monthly_man_hours'] = monthly_man_hours
-            context['wage_rate'] = f'{chr(8358)}{float(salary_payable)/monthly_man_hours:,.2f}/Hr'
-            context['salary'] = self.get_queryset().aggregate(total=Sum(F('basic_salary') + F('allowance')))
-            context['tax'] = self.get_queryset().aggregate(total=Sum('tax_amount'))
-            context['salary_management'] = self.get_queryset().filter(is_management=True).aggregate(total=Sum(F('basic_salary') + F('allowance')))
-            context['salary_non_management'] = self.get_queryset().filter(is_management=False).aggregate(total=Sum(F('basic_salary') + F('allowance')))
-            context['balance'] = self.get_queryset().aggregate(total=Sum('balance'))
-        return context
-
-
-class StaffListPicturesView(LoginRequiredMixin, ListView):
-    model = Employee
-    template_name = 'staff/employee_pictures.html'
-    queryset = model.active.all()
-    ordering = '-pk'
-    paginate_by = 4
-
 
 class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Employee
@@ -468,6 +342,51 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['welfare_for_a_date_total_amount'] = qs.aggregate(Sum('amount'))['amount__sum']
         return context
 
+class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    queryset = Employee.active.all()
+    ordering = '-pk'
+    template_name = 'staff/employee_list_private.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        """requires if data exist for query"""
+        if self.queryset:
+            workforce = self.get_queryset().count()
+            basic_salary_payable = self.get_queryset().aggregate(bs=Sum('basic_salary'))
+            allowance_payable = self.get_queryset().aggregate(al=Sum('allowance'))
+            salary_payable = basic_salary_payable['bs'] + allowance_payable['al']
+
+            month_days = mytools.Month.number_of_working_days(
+                datetime.date.today().year,
+                datetime.date.today().month)
+
+            delta = datetime.datetime(2021, 1, 1, 17, 45, 0) - datetime.datetime(2021, 1, 1, 7, 45, 0)
+            hours_spent_per_workday = delta.seconds / 3600
+
+            daily_man_hours = hours_spent_per_workday * workforce
+            monthly_man_hours = daily_man_hours * month_days
+
+            context['monthly_man_hours'] = monthly_man_hours
+            context['wage_rate'] = f'{chr(8358)}{float(salary_payable)/monthly_man_hours:,.2f}/Hr'
+            context['salary'] = self.get_queryset().aggregate(total=Sum(F('basic_salary') + F('allowance')))
+            context['tax'] = self.get_queryset().aggregate(total=Sum('tax_amount'))
+            context['salary_management'] = self.get_queryset().filter(is_management=True).aggregate(total=Sum(F('basic_salary') + F('allowance')))
+            context['salary_non_management'] = self.get_queryset().filter(is_management=False).aggregate(total=Sum(F('basic_salary') + F('allowance')))
+            context['balance'] = self.get_queryset().aggregate(total=Sum('balance'))
+        return context
+
+class StaffListPicturesView(LoginRequiredMixin, ListView):
+    model = Employee
+    template_name = 'staff/employee_pictures.html'
+    queryset = model.active.all()
+    ordering = '-pk'
+    paginate_by = 4
 
 class StaffCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Employee
@@ -495,7 +414,6 @@ class StaffCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         """Send mail to applicant and admin before overwriting save"""
         return super().form_valid(form)
 
-
 class StaffUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Employee
     fields = ['image']
@@ -517,11 +435,59 @@ class StaffUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             form.save()
         return super().form_valid(form)
 
+class PDFProfileView(View):
 
-class CreditNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = CreditNote
-    template_name = 'staff/payroll/credit_list.html'
-    ordering = '-pk'
+    def get(self, request):
+        all_periods = list(i.period for i in Payroll.objects.all())
+        all_periods = set(all_periods)
+        choice = request.GET['radioPayroll']
+        if choice == '1':
+            context = {
+                'title': 'first mail'
+            }
+        elif choice == '2':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '3':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '4':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '5':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '6':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '7':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '8':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '9':
+            context = {
+                'title': 'second mail'
+            }
+        elif choice == '10':
+            context = {
+                'title': 'second mail'
+            }
+        else:
+            context = {
+                'title': ''
+            }
+        return render(request, 'mails/mailing_form.html', context)
+
+class AddGratuity(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -529,35 +495,22 @@ class CreditNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             return True
         return False
 
+    def post(self, request, *args, **kwargs):
+        staff = get_object_or_404(Employee.active, pk=kwargs['pk'])
+        """Create a record of this balance"""
+        value = float(request.POST.get('balance')) if request.POST.get('balance') != '' else Money(0, 'NGN')
+        balance = EmployeeBalance.objects.create(staff=staff,
+                                                 value=value,
+                                                 value_type=request.POST.get('CrDr'),
+                                                 description=request.POST.get('comment'),
+                                                 title=request.POST.get('title')
+                                                 )
+        balance.save()
+        messages.success(request, 'Profile Balance changed successfully !!!')
+        return redirect(staff)
 
-class CreditNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    form_class = CreditForm
-    template_name = 'staff/payroll/creditnote_form.html'
-    success_url = reverse_lazy('salary')
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-
-class DebitNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = DebitNote
-    template_name = 'staff/payroll/debit_list.html'
-    ordering = '-pk'
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-
-class DebitNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    form_class = DebitForm
-    template_name = 'staff/payroll/debitnote_form.html'
-    success_url = reverse_lazy('salary')
+class StaffSalaryChange(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -565,8 +518,397 @@ class DebitNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             return True
         return False
 
+    def post(self, request, *args, **kwargs):
+        person = self.get_queryset().get(id=kwargs['pk'])
+        salary = float(request.POST['salary'])
 
-class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+        qs = self.get_queryset().get(id=kwargs['pk'])
+        previous_pay = qs.basic_salary + qs.allowance
+        
+        qs.basic_salary = Money(0.4 * salary, 'NGN')
+        qs.allowance = Money(0.6 * salary, 'NGN')
+        qs.save()
+
+        change_salary = SalaryChange(staff=person,
+                                     previous_value=previous_pay,
+                                     value=Money(salary, 'NGN'),
+                                     remark=request.POST['remark']
+                                     )
+        change_salary.save()
+        messages.success(request, f"Salary Change is successful")
+        return redirect('employee-detail', pk=kwargs['pk'])
+
+class StaffPermit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        person = self.get_queryset().get(id=kwargs['pk'])
+
+        start_date_object = datetime.datetime.strptime(request.POST['startFrom'], '%Y-%m-%dT%H:%M')
+        ending_at_object = datetime.datetime.strptime(request.POST['endingAt'], '%Y-%m-%dT%H:%M')
+
+        permit = Permit(
+            staff=person,
+            starting_from=start_date_object,
+            ending_at=ending_at_object,
+            reason=request.POST['reason']
+        )
+        
+        period = mytools.DatePeriod.working_days(start_date_object, ending_at_object)
+
+        if period == -1:
+            messages.info(request, f'Permission cannot be granted on a backward date. Check your date selection')
+        else:
+            if period[0] == 0:
+                messages.success(request, f'Permission Granted for {period[1]} Hour(s)')
+                permit.save()
+                send_mail("Grant Permission",
+                 f'''Permission has been granted to {person} for {period[1]} Hour(s).
+                 Resumption date is {ending_at_object.strftime("%d-%B-%Y")}.''', 
+                from_email='',
+                recipient_list=['ogechukwu.okpala@ozonefl.com', 'uzo.nwokoro@ozonefl.com'],
+                fail_silently=True,
+                )
+            else:
+                messages.success(request, f'Permission Granted for {period[0]} Day(s)')
+                permit.save()
+                send_mail('Grant Permission', 
+                f'''Permission has been granted to {person} for {period[0]} Days(s).
+                Resumption date is {ending_at_object.strftime("%d-%B-%Y")}.''',
+                from_email='',
+                recipient_list=['ogechukwu.okpala@ozonefl.com', 'uzo.nwokoro@ozonefl.com'],
+                fail_silently=True,
+                )
+        return redirect('employee-detail', pk=kwargs['pk'])
+
+class StaffReassign(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        position = None if request.POST['position'] == "None" else request.POST['position']
+        branch = None if request.POST['branch'] == "None" else request.POST['branch']
+        qs = self.get_queryset().get(id=kwargs['pk'])
+
+        pos = {
+            'Sales': ['Driver', 'Cashier', 'Store-Keeper', 'Sales-Clerk',
+                      'Stock-Keeper', 'SCM', 'GSM'],
+            'Marketing': ['Sales Rep', 'Marketing Manager'],
+            'Accounts': ['Account-Clerk', 'Accountant'],
+            'HR': ['HRM'],
+            'Admin': ['Analyst', 'MD']
+        }
+        """Create to reassign database"""
+        date = datetime.date.today() if request.POST['start_date'] == "" else request.POST['start_date']
+        duration = 0 if request.POST['type'] == 'T' or request.POST['type'] == 'C' else int(request.POST['duration'])
+        reassign = Reassign(staff=qs,
+                            reassign_type=request.POST['type'],
+                            from_position=request.POST['current_position'],
+                            from_branch=request.POST['current_branch'],
+                            to_position=request.POST['position'],
+                            to_branch=request.POST['branch'],
+                            duration=duration,
+                            remark=request.POST['remark'],
+                            start_date=date,
+                            )
+        reassign.save()
+
+        department = None
+        for key, value in pos.items():
+            if position in value:
+                department = key
+        qs.position = position
+        qs.branch = branch
+        qs.department = department
+        """data modified time needs to change and mail needs"""
+        qs.save()
+
+        messages.success(request, f'Position and Branch changed to {position} and {branch} respectively')
+        return redirect('employee-detail', pk=kwargs['pk'])
+
+class StaffSuspend(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        if request.POST['startDate'] > request.POST['resumptionDate']:
+            messages.info(request, 'Suspension did not apply. Resumption date must be a later date.')
+        elif request.POST['startDate'] == request.POST['resumptionDate']:
+            messages.info(request, 'Resumption date must defer from start date')
+        else:
+            """calculate the cost"""
+            start_date_object = datetime.datetime.strptime(request.POST['startDate'], '%Y-%m-%d')
+            resumption_date_object = datetime.datetime.strptime(request.POST['resumptionDate'], '%Y-%m-%d')
+
+            days = (resumption_date_object - start_date_object).days
+            month = start_date_object.month
+            days_in_month = calendar.mdays[month-1]
+
+            person = self.get_queryset().get(id=kwargs['pk'])
+            penalty_cost = person.salary() * days/days_in_month
+
+            suspend = Suspend(
+                staff=person,
+                start_date=request.POST['startDate'],
+                resumption_date=request.POST['resumptionDate'],
+                reason=request.POST['reason'],
+                penalty=penalty_cost
+            )
+            suspend.save()
+            debit = DebitNote(
+                name=person,
+                period=f'{start_date_object.year}-{str(start_date_object.month).zfill(2)}',
+                debit_date=start_date_object,
+                remark=f"Suspension: {request.POST['reason']}",
+                value=penalty_cost,
+                status=False
+            )
+            debit.save()
+            messages.success(request, "Suspension applied successfully !!!")
+        return redirect('employee-detail', pk=kwargs['pk'])
+
+class StaffTerminate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        if request.POST['keyWord'] == 'TERMINATE':
+            """Update Employee record"""
+            qs = self.get_queryset().get(id=kwargs['pk'])
+            qs.status = False
+            qs.save()
+
+            """Create a terminate record"""
+            term = Terminate(staff=qs,
+                             termination_type=request.POST['type'],
+                             remark=request.POST['remark'],
+                             date=request.POST['date'])
+            term.save()
+
+            """success message"""
+            messages.success(request, f"{qs} with ID {str(qs.pk).zfill(3)} is terminated successfully")
+            return redirect('staff-list')
+
+        messages.info(request, "Incorrect key word, Staff yet to be terminated")
+        return redirect('employee-detail', pk=kwargs['pk'])
+
+class StaffReEngage(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'staff/re_engage.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object'] = get_object_or_404(Terminate, pk=kwargs['pk'])
+        return context
+    
+
+    def post(self, request, **kwargs):
+        if request.POST['date'] or request.POST['salary'] != '':
+            date_employed = datetime.datetime.strptime(request.POST['date'], '%Y-%m-%d').date()
+            salary = float(request.POST['salary'])
+            terminated_staff = get_object_or_404(Terminate, pk=kwargs['pk']).staff
+            employee = Employee.objects.get(pk=terminated_staff.id)
+            employee.date_employed = date_employed
+            employee.basic_salary = 0.4 * salary
+            employee.allowance = 0.6 * salary
+            if 'management' in request.POST:
+                employee.is_management = True
+            employee.status = True
+            employee.save()
+            terminated_staff.delete()
+            messages.info(request, 'Staff Re-engaged successfully, You can now update profile as employee')
+        else:
+            messages.info(request, 'Date or salary not entered')
+        
+        return redirect('terminated', staff_category='terminate')
+
+class staffWelfare(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def post(self, request, *args, **kwargs):
+        person = self.get_queryset().get(id=kwargs['pk'])
+        date = datetime.datetime.strptime(request.POST['date'], '%Y-%m-%d').date()
+        
+        welfare = Welfare(
+            staff=person,
+            date=date,
+            description=request.POST['description'],
+            amount=float(request.POST['amount'])
+        )
+        welfare.save()
+        
+        messages.success(request, f'Welfare support saved successfully !!!')
+        return redirect('employee-detail', pk=kwargs['pk'])
+
+class Payslip(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Payroll
+    template_name = 'staff/payroll/pay_salary.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        staff = get_object_or_404(Employee, pk=kwargs['object'].staff_id)
+        period = kwargs['object'].period
+        month = int(period.split('-')[1])
+
+        # balance = EmployeeBalance.objects.filter(staff=staff).filter(date__month=month).aggregate(total=Sum('value'))['total']
+        # balance = decimal.Decimal('0') if balance is None else balance
+
+        cr = EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Cr').aggregate(Sum('value'))['value__sum']
+        dr = EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Dr').aggregate(Sum('value'))['value__sum']
+        Cr = decimal.Decimal('0') if cr is None else cr
+        Dr = decimal.Decimal('0') if dr is None else dr
+            
+
+        context['balance'] = Cr - Dr
+        
+        return context
+
+    def post(self, request, pk):
+        """The update of status, date paid and the alert message for successful payment"""
+        staff = self.model.objects.get(pk=request.POST['pk'])
+        staff.status = True
+        staff.date_paid = datetime.date.today()
+        staff.save()
+        messages.success(request, f"{staff} paid successfully !!!")
+        return HttpResponseRedirect(reverse('start-pay'))
+
+class PayslipStatement(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Payroll
+    template_name = 'staff/payroll/statement.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get(self, request, *args, **kwargs):
+        context = dict()
+        staff = Employee.active.get(id=kwargs['pk'])
+        payslip = self.get_queryset().filter(staff=staff.id)
+        
+        context['code'] = kwargs['pk']
+        context['objects'] = payslip
+        context['totals'] = 'list'
+        return render(request, self.template_name, context=context)    
+
+class GratuityListViewOneStaff(ListView):
+    # template_name = 'staff/balance.html'
+
+    def get_queryset(self):
+        return EmployeeBalance.objects.filter(staff_id=self.kwargs['pk']).order_by('-date')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cr = self.get_queryset().filter(value_type='Cr').aggregate(total=Sum('value'))['total']
+        dr = self.get_queryset().filter(value_type='Dr').aggregate(total=Sum('value'))['total']
+        cr = cr if cr is not None  else Decimal('0')
+        dr = dr if dr is not None else Decimal('0')
+        context['total_value'] = cr - dr
+        context['return'] = 'detail'
+        return context
+
+class UserHandleCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = User
+    fields = []
+    
+    
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='Administrator').exists():
+            return True
+        return False
+
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
+        context['staff'] = staff
+        context['username'] = f'{staff.staff.first_name}-{str(staff.id).zfill(2)}'
+        context['first_name'] = staff.staff.first_name
+        context['last_name'] = staff.staff.last_name
+        context['email'] =  staff.staff.email if staff.official_email is None else staff.official_email 
+        return context
+    
+    
+    def form_valid(self, form):
+        global password
+        staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
+        form.instance.username = f'{staff.staff.first_name}-{str(staff.id).zfill(2)}'
+        form.instance.first_name = staff.staff.first_name
+        form.instance.last_name =  staff.staff.last_name
+        form.instance.email = staff.staff.email if staff.official_email is None else staff.official_email
+        password = User.objects.make_random_password()
+        context = {
+            'header': 'SCusH login credential created',
+            'username': form.instance.username,
+            'password': password,
+            'first_name': form.instance.first_name,
+            'last_name': form.instance.last_name,
+            'email': form.instance.email,
+        }
+        email = EmailMessage(
+            subject=f"User handle Created for {staff}",
+            body=loader.render_to_string('mail/user_create.html', context), 
+            from_email='',
+            to=[form.instance.email],
+            cc=['uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
+        )
+        email.content_subtype='html'
+        email.send(fail_silently=True)
+        return super().form_valid(form)
+    
+
+    def get_success_url(self):
+        user_profile = Profile.objects.last()
+        user = User.objects.last()
+        user_profile.staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
+        user.set_password(password)
+        user.save()
+        user_profile.save()
+        return reverse("employee-detail", kwargs={'pk': self.kwargs['pk']})
+
+
+# Payroll Section
+class PayrollHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'staff/payroll/salary.html'
 
     def test_func(self):
@@ -609,6 +951,80 @@ class StartGeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView
             return redirect('generate-payroll', period=period)
         return render(request, self.template_name, context=context)
 
+class CreditNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = CreditNote
+    template_name = 'staff/payroll/credit_list.html'
+    ordering = '-pk'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+class CreditNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    form_class = CreditForm
+    template_name = 'staff/payroll/creditnote_form.html'
+    success_url = reverse_lazy('salary')
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+class DebitNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = DebitNote
+    template_name = 'staff/payroll/debit_list.html'
+    ordering = '-pk'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+class DebitNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    form_class = DebitForm
+    template_name = 'staff/payroll/debitnote_form.html'
+    success_url = reverse_lazy('salary')
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+class TaxList(LoginRequiredMixin, ListView):
+    model = Employee
+    
+    def get_queryset(self):
+        return super().get_queryset().filter(status=True)
+
+    def get_template_names(self):
+        
+        return ['staff/payroll/tax_list.html']
+
+class UpdateTax(LoginRequiredMixin, UpdateView):
+    model = Employee
+
+    def get(self, request, *args, **kwargs):
+
+        return render(request, 'staff/payroll/tax_update.html')
+
+    def post(self, request, *args, **kwargs):
+        employees = self.get_queryset()
+
+        for employee in employees:
+            annual_pay = employee.basic_salary.amount * 12
+            employee.tax_amount = mytools.Taxation.evaluate(annual_pay) / 12
+            employee.save()
+
+        context = {
+            'employees': employees,
+        }
+        messages.success(request, 'Tax updated successfully !!!')
+        return redirect(reverse('update-tax'), context)
 
 class PayrollViews(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Payroll
@@ -670,6 +1086,67 @@ class PayrollViews(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         }
         return render(request, self.template_name, context=context)
 
+class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Payroll
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get_dict(self, queryset):
+        data = dict()
+        data['number'] = queryset.count()
+        data['average'] = queryset.aggregate(net_pay=Avg('net_pay'))
+        data['minimum'] = queryset.aggregate(net_pay=Min('net_pay'))
+        data['maximum'] = queryset.aggregate(net_pay=Max('net_pay'))
+        # data['balance'] = queryset.aggregate(total=Sum('balance'))
+        data['salary'] = queryset.aggregate(total=Sum('salary'))
+        data['tax'] = queryset.aggregate(total=Sum('tax'))
+        data['credit'] = queryset.aggregate(total=Sum('credit_amount'))
+        data['debit'] = queryset.aggregate(total=Sum('debit_amount'))
+        data['net_pay'] = queryset.aggregate(total=Sum('net_pay'))
+        # data['deduction'] = queryset.aggregate(total=Sum('deduction'))
+        # data['outstanding'] = queryset.aggregate(total=Sum('outstanding'))
+        return data
+
+    def get(self, request, *args, **kwargs):
+        """Search the database for all periods
+        and use set to filter out repeated periods"""
+        periods = self.get_queryset().values_list('period', flat=True).distinct()
+        dataset = list()
+        if kwargs.get('summary_period') == 'Month':
+            # periods = tuple(periods_set)
+            for period in sorted(periods):
+                queryset = self.get_queryset().filter(period=period)
+                qs_dict = self.get_dict(queryset)
+                qs_dict['period'] = mytools.Period.full_months.get(period.split('-')[1])
+                dataset.append(qs_dict)
+            
+        else:
+            year_set = set(i.split('-')[0] for i in periods)
+            for year in sorted(year_set):
+                queryset = self.get_queryset().filter(period__startswith=year)
+                qs_dict = self.get_dict(queryset)
+                qs_dict['period'] = year
+                dataset.append(qs_dict)
+                
+        totals = (
+            sum(obj['salary']['total'] for obj in dataset),
+            sum(obj['tax']['total'] for obj in dataset),
+            sum(obj['credit']['total'] for obj in dataset),
+            sum(obj['debit']['total'] for obj in dataset),
+            sum(obj['net_pay']['total'] for obj in dataset)
+        )
+
+        context = {
+            'title': kwargs.get('summary_period'),
+            'current_period': self.get_queryset().last().period,
+            'dataset': tuple(dataset),
+            'totals': totals
+        }
+        return render(request, 'staff/payroll/payroll_summary.html', context)
 
 class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     """Generate payroll and save to Payroll model"""
@@ -790,6 +1267,76 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             )
         return render(request, 'staff/payroll/payroll_reports.html', context)
 
+class ModifyGeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    model = Payroll
+    template_name = 'staff/payroll/payroll_modify.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        """Spool from payroll database all the periods in it. 
+        1. fetch all rows, 2. get period field only 3. Since this
+        field is not unique, period can have same value for different
+        rows. 4. Use set to eliminate repeated values."""
+        periods = set(Payroll.objects.values_list('period', flat=True))
+        context['periods'] = sorted(list(periods), reverse=True)
+
+        qs = str()
+        if request.GET is not {} and 'period' in request.GET:
+            period = request.GET['period']
+            payroll = Payroll.objects.filter(period=period)
+            modify_type = request.GET['modifyType']
+            if modify_type == '1':
+                qs = payroll.filter(outstanding__gt=0)
+        else:
+            period = context['periods'][0]
+        context['the_period'] = period
+        context['dataset'] = Payroll.objects.filter(period=period)
+        context['payroll_with_outstanding_value'] = qs
+        context['the_period_in_word'] = f"{mytools.Period.full_months[period.split('-')[1]]}, {period.split('-')[0]}"
+        return render(request, self.template_name, context)
+
+class RegeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'staff/payroll/regenerate_payroll.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def fetch_period(self, period):
+        month = period.split('-')[1]
+        year = period.split('-')[0]
+        month = datetime.date(int(year), int(month), 1).strftime('%B')
+        return f"{month}, {year}"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = Payroll.objects.all()
+        periods = qs.values_list('period', flat=True).distinct().order_by('-period')
+
+        str_periods = [self.fetch_period(i) for i in periods]
+        context['periods'] = zip(str_periods, periods)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return render(request, self.template_name, context=context)
+
+    def post(self, request, **kwargs):
+        context = self.get_context_data(**kwargs)
+        the_period = self.fetch_period(request.POST['period'])
+        qs = Payroll.objects.filter(period=request.POST['period'])
+        context['period'] = request.POST['period']
+        context['records'] = qs
+        context['the_period'] = the_period
+        return render(request, self.template_name, context)
 
 class RegeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'staff/payroll/regenerated_payroll.html'
@@ -863,45 +1410,6 @@ class RegeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['period'] = period
         return render(request, self.template_name, context)
 
-
-class RegeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    template_name = 'staff/payroll/regenerate_payroll.html'
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def fetch_period(self, period):
-        month = period.split('-')[1]
-        year = period.split('-')[0]
-        month = datetime.date(int(year), int(month), 1).strftime('%B')
-        return f"{month}, {year}"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        qs = Payroll.objects.all()
-        periods = qs.values_list('period', flat=True).distinct().order_by('-period')
-
-        str_periods = [self.fetch_period(i) for i in periods]
-        context['periods'] = zip(str_periods, periods)
-        return context
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        return render(request, self.template_name, context=context)
-
-    def post(self, request, **kwargs):
-        context = self.get_context_data(**kwargs)
-        the_period = self.fetch_period(request.POST['period'])
-        qs = Payroll.objects.filter(period=request.POST['period'])
-        context['period'] = request.POST['period']
-        context['records'] = qs
-        context['the_period'] = the_period
-        return render(request, self.template_name, context)
-
-
 class SalaryPayment(LoginRequiredMixin, UserPassesTestMixin, ListView):
     queryset = Payroll.objects.filter(status=False)
     template_name = 'staff/payroll/start_pay.html'
@@ -942,507 +1450,10 @@ class SalaryPayment(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context['date_period'] = f"{mytools.Period.full_months[str(j[1]).zfill(2)]}, {j[0]}"
         return render(request, self.template_name, context=context)
 
+class StaffPoliciesView(TemplateView):
+    template_name = 'staff/policies.html'
 
-class Payslip(LoginRequiredMixin, UserPassesTestMixin, DetailView):
-    model = Payroll
-    template_name = 'staff/payroll/pay_salary.html'
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        staff = get_object_or_404(Employee, pk=kwargs['object'].staff_id)
-        period = kwargs['object'].period
-        month = int(period.split('-')[1])
-
-        # balance = EmployeeBalance.objects.filter(staff=staff).filter(date__month=month).aggregate(total=Sum('value'))['total']
-        # balance = decimal.Decimal('0') if balance is None else balance
-
-        cr = EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Cr').aggregate(Sum('value'))['value__sum']
-        dr = EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Dr').aggregate(Sum('value'))['value__sum']
-        Cr = decimal.Decimal('0') if cr is None else cr
-        Dr = decimal.Decimal('0') if dr is None else dr
-            
-
-        context['balance'] = Cr - Dr
-        
-        return context
-
-    def post(self, request, pk):
-        """The update of status, date paid and the alert message for successful payment"""
-        staff = self.model.objects.get(pk=request.POST['pk'])
-        staff.status = True
-        staff.date_paid = datetime.date.today()
-        staff.save()
-        messages.success(request, f"{staff} paid successfully !!!")
-        return HttpResponseRedirect(reverse('start-pay'))
-
-
-class PayrollStatement(LoginRequiredMixin, UserPassesTestMixin, DetailView):
-    model = Payroll
-    template_name = 'staff/payroll/statement.html'
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def get(self, request, *args, **kwargs):
-        context = dict()
-        staff = Employee.active.get(id=kwargs['pk'])
-        payslip = self.get_queryset().filter(staff=staff.id)
-        
-        context['code'] = kwargs['pk']
-        context['objects'] = payslip
-        context['totals'] = 'list'
-        return render(request, self.template_name, context=context)
-
-
-class StaffTerminate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Employee
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def post(self, request, *args, **kwargs):
-        if request.POST['keyWord'] == 'TERMINATE':
-            """Update Employee record"""
-            qs = self.get_queryset().get(id=kwargs['pk'])
-            qs.status = False
-            qs.save()
-
-            """Create a terminate record"""
-            term = Terminate(staff=qs,
-                             termination_type=request.POST['type'],
-                             remark=request.POST['remark'],
-                             date=request.POST['date'])
-            term.save()
-
-            """success message"""
-            messages.success(request, f"{qs} with ID {str(qs.pk).zfill(3)} is terminated successfully")
-            return redirect('staff-list')
-
-        messages.info(request, "Incorrect key word, Staff yet to be terminated")
-        return redirect('employee-detail', pk=kwargs['pk'])
-
-
-class StaffReassign(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Employee
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def post(self, request, *args, **kwargs):
-        position = None if request.POST['position'] == "None" else request.POST['position']
-        branch = None if request.POST['branch'] == "None" else request.POST['branch']
-        qs = self.get_queryset().get(id=kwargs['pk'])
-
-        pos = {
-            'Sales': ['Driver', 'Cashier', 'Store-Keeper', 'Sales-Clerk',
-                      'Stock-Keeper', 'SCM', 'GSM'],
-            'Marketing': ['Sales Rep', 'Marketing Manager'],
-            'Accounts': ['Account-Clerk', 'Accountant'],
-            'HR': ['HRM'],
-            'Admin': ['Analyst', 'MD']
-        }
-        """Create to reassign database"""
-        date = datetime.date.today() if request.POST['start_date'] == "" else request.POST['start_date']
-        duration = 0 if request.POST['type'] == 'T' or request.POST['type'] == 'C' else int(request.POST['duration'])
-        reassign = Reassign(staff=qs,
-                            reassign_type=request.POST['type'],
-                            from_position=request.POST['current_position'],
-                            from_branch=request.POST['current_branch'],
-                            to_position=request.POST['position'],
-                            to_branch=request.POST['branch'],
-                            duration=duration,
-                            remark=request.POST['remark'],
-                            start_date=date,
-                            )
-        reassign.save()
-
-        department = None
-        for key, value in pos.items():
-            if position in value:
-                department = key
-        qs.position = position
-        qs.branch = branch
-        qs.department = department
-        """data modified time needs to change and mail needs"""
-        qs.save()
-
-        messages.success(request, f'Position and Branch changed to {position} and {branch} respectively')
-        return redirect('employee-detail', pk=kwargs['pk'])
-
-
-class StaffSuspend(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Employee
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def post(self, request, *args, **kwargs):
-        if request.POST['startDate'] > request.POST['resumptionDate']:
-            messages.info(request, 'Suspension did not apply. Resumption date must be a later date.')
-        elif request.POST['startDate'] == request.POST['resumptionDate']:
-            messages.info(request, 'Resumption date must defer from start date')
-        else:
-            """calculate the cost"""
-            start_date_object = datetime.datetime.strptime(request.POST['startDate'], '%Y-%m-%d')
-            resumption_date_object = datetime.datetime.strptime(request.POST['resumptionDate'], '%Y-%m-%d')
-
-            days = (resumption_date_object - start_date_object).days
-            month = start_date_object.month
-            days_in_month = calendar.mdays[month-1]
-
-            person = self.get_queryset().get(id=kwargs['pk'])
-            penalty_cost = person.salary() * days/days_in_month
-
-            suspend = Suspend(
-                staff=person,
-                start_date=request.POST['startDate'],
-                resumption_date=request.POST['resumptionDate'],
-                reason=request.POST['reason'],
-                penalty=penalty_cost
-            )
-            suspend.save()
-            debit = DebitNote(
-                name=person,
-                period=f'{start_date_object.year}-{str(start_date_object.month).zfill(2)}',
-                debit_date=start_date_object,
-                remark=f"Suspension: {request.POST['reason']}",
-                value=penalty_cost,
-                status=False
-            )
-            debit.save()
-            messages.success(request, "Suspension applied successfully !!!")
-        return redirect('employee-detail', pk=kwargs['pk'])
-
-
-class StaffPermit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Employee
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def post(self, request, *args, **kwargs):
-        person = self.get_queryset().get(id=kwargs['pk'])
-
-        start_date_object = datetime.datetime.strptime(request.POST['startFrom'], '%Y-%m-%dT%H:%M')
-        ending_at_object = datetime.datetime.strptime(request.POST['endingAt'], '%Y-%m-%dT%H:%M')
-
-        permit = Permit(
-            staff=person,
-            starting_from=start_date_object,
-            ending_at=ending_at_object,
-            reason=request.POST['reason']
-        )
-        
-        period = mytools.DatePeriod.working_days(start_date_object, ending_at_object)
-
-        if period == -1:
-            messages.info(request, f'Permission cannot be granted on a backward date. Check your date selection')
-        else:
-            if period[0] == 0:
-                messages.success(request, f'Permission Granted for {period[1]} Hour(s)')
-                permit.save()
-                send_mail("Grant Permission",
-                 f'''Permission has been granted to {person} for {period[1]} Hour(s).
-                 Resumption date is {ending_at_object.strftime("%d-%B-%Y")}.''', 
-                from_email='',
-                recipient_list=['ogechukwu.okpala@ozonefl.com', 'uzo.nwokoro@ozonefl.com'],
-                fail_silently=True,
-                )
-            else:
-                messages.success(request, f'Permission Granted for {period[0]} Day(s)')
-                permit.save()
-                send_mail('Grant Permission', 
-                f'''Permission has been granted to {person} for {period[0]} Days(s).
-                Resumption date is {ending_at_object.strftime("%d-%B-%Y")}.''',
-                from_email='',
-                recipient_list=['ogechukwu.okpala@ozonefl.com', 'uzo.nwokoro@ozonefl.com'],
-                fail_silently=True,
-                )
-        return redirect('employee-detail', pk=kwargs['pk'])
-
-
-class staffWelfare(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Employee
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def post(self, request, *args, **kwargs):
-        person = self.get_queryset().get(id=kwargs['pk'])
-        date = datetime.datetime.strptime(request.POST['date'], '%Y-%m-%d').date()
-        
-        welfare = Welfare(
-            staff=person,
-            date=date,
-            description=request.POST['description'],
-            amount=float(request.POST['amount'])
-        )
-        welfare.save()
-        
-        messages.success(request, f'Welfare support saved successfully !!!')
-        return redirect('employee-detail', pk=kwargs['pk'])
-
-    
-class StaffSalaryChange(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Employee
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def post(self, request, *args, **kwargs):
-        person = self.get_queryset().get(id=kwargs['pk'])
-        salary = float(request.POST['salary'])
-
-        qs = self.get_queryset().get(id=kwargs['pk'])
-        previous_pay = qs.basic_salary + qs.allowance
-        
-        qs.basic_salary = Money(0.4 * salary, 'NGN')
-        qs.allowance = Money(0.6 * salary, 'NGN')
-        qs.save()
-
-        change_salary = SalaryChange(staff=person,
-                                     previous_value=previous_pay,
-                                     value=Money(salary, 'NGN'),
-                                     remark=request.POST['remark']
-                                     )
-        change_salary.save()
-        messages.success(request, f"Salary Change is successful")
-        return redirect('employee-detail', pk=kwargs['pk'])
-
-
-class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
-    model = Payroll
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def get_dict(self, queryset):
-        data = dict()
-        data['number'] = queryset.count()
-        data['average'] = queryset.aggregate(net_pay=Avg('net_pay'))
-        data['minimum'] = queryset.aggregate(net_pay=Min('net_pay'))
-        data['maximum'] = queryset.aggregate(net_pay=Max('net_pay'))
-        # data['balance'] = queryset.aggregate(total=Sum('balance'))
-        data['salary'] = queryset.aggregate(total=Sum('salary'))
-        data['tax'] = queryset.aggregate(total=Sum('tax'))
-        data['credit'] = queryset.aggregate(total=Sum('credit_amount'))
-        data['debit'] = queryset.aggregate(total=Sum('debit_amount'))
-        data['net_pay'] = queryset.aggregate(total=Sum('net_pay'))
-        # data['deduction'] = queryset.aggregate(total=Sum('deduction'))
-        # data['outstanding'] = queryset.aggregate(total=Sum('outstanding'))
-        return data
-
-    def get(self, request, *args, **kwargs):
-        """Search the database for all periods
-        and use set to filter out repeated periods"""
-        periods = self.get_queryset().values_list('period', flat=True).distinct()
-        dataset = list()
-        if kwargs.get('summary_period') == 'Month':
-            # periods = tuple(periods_set)
-            for period in sorted(periods):
-                queryset = self.get_queryset().filter(period=period)
-                qs_dict = self.get_dict(queryset)
-                qs_dict['period'] = mytools.Period.full_months.get(period.split('-')[1])
-                dataset.append(qs_dict)
-            
-        else:
-            year_set = set(i.split('-')[0] for i in periods)
-            for year in sorted(year_set):
-                queryset = self.get_queryset().filter(period__startswith=year)
-                qs_dict = self.get_dict(queryset)
-                qs_dict['period'] = year
-                dataset.append(qs_dict)
-                
-        totals = (
-            sum(obj['salary']['total'] for obj in dataset),
-            sum(obj['tax']['total'] for obj in dataset),
-            sum(obj['credit']['total'] for obj in dataset),
-            sum(obj['debit']['total'] for obj in dataset),
-            sum(obj['net_pay']['total'] for obj in dataset)
-        )
-
-        context = {
-            'title': kwargs.get('summary_period'),
-            'current_period': self.get_queryset().last().period,
-            'dataset': tuple(dataset),
-            'totals': totals
-        }
-        return render(request, 'staff/payroll/payroll_summary.html', context)
-
-
-class ModifyGeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    model = Payroll
-    template_name = 'staff/payroll/payroll_modify.html'
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        """Spool from payroll database all the periods in it. 
-        1. fetch all rows, 2. get period field only 3. Since this
-        field is not unique, period can have same value for different
-        rows. 4. Use set to eliminate repeated values."""
-        periods = set(Payroll.objects.values_list('period', flat=True))
-        context['periods'] = sorted(list(periods), reverse=True)
-
-        qs = str()
-        if request.GET is not {} and 'period' in request.GET:
-            period = request.GET['period']
-            payroll = Payroll.objects.filter(period=period)
-            modify_type = request.GET['modifyType']
-            if modify_type == '1':
-                qs = payroll.filter(outstanding__gt=0)
-        else:
-            period = context['periods'][0]
-        context['the_period'] = period
-        context['dataset'] = Payroll.objects.filter(period=period)
-        context['payroll_with_outstanding_value'] = qs
-        context['the_period_in_word'] = f"{mytools.Period.full_months[period.split('-')[1]]}, {period.split('-')[0]}"
-        return render(request, self.template_name, context)
-
-
-class MakeOutstandingValueZero(View):
-
-    def get(self, request, pk):
-        staff = get_object_or_404(Payroll, pk=pk)
-        new_pay = staff.net_pay + staff.outstanding
-        staff.outstanding = Money(0, 'NGN')
-        staff.net_pay = new_pay
-        staff.save()
-        return redirect(reverse('payroll-modify'))
-
-
-class AddStaffBalance(View):
-
-    def post(self, request, *args, **kwargs):
-        staff = get_object_or_404(Employee.active, pk=kwargs['pk'])
-        """Create a record of this balance"""
-        value = float(request.POST.get('balance')) if request.POST.get('balance') != '' else Money(0, 'NGN')
-        balance = EmployeeBalance.objects.create(staff=staff,
-                                                 value=value,
-                                                 value_type=request.POST.get('CrDr'),
-                                                 description=request.POST.get('comment'),
-                                                 title=request.POST.get('title')
-                                                 )
-        balance.save()
-        messages.success(request, 'Profile Balance changed successfully !!!')
-        return redirect(staff)
-        
-
-class PKResetView(TemplateView):
-    template_name = 'staff/pk_reset.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'PK Reset'
-        context['codes'] = Payroll.objects.values_list('id').order_by('id'),
-        return context
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-
-        if Payroll.objects.exists():
-            payroll = Payroll.objects.all()
-            num = range(1, payroll.count()+1)
-            status = 'OK' if list(num) == list(i.id for i in payroll) else 'NOK'
-
-            context['rows'] = {'table': 'Payroll',
-                               'status': status}
-        return render(request, self.template_name, context=context)
-
-
-class PKResetPayroll(View):
-
-    def get(self, request):
-        messages.success(request, 'Congrats')
-        return HttpResponseRedirect(reverse('pk-reset'))
-
-
-class UpdateTax(UpdateView):
-    model = Employee
-
-    def get(self, request, *args, **kwargs):
-
-        return render(request, 'staff/payroll/tax_update.html')
-
-    def post(self, request, *args, **kwargs):
-        employees = self.get_queryset()
-
-        for employee in employees:
-            annual_pay = employee.basic_salary.amount * 12
-            employee.tax_amount = mytools.Taxation.evaluate(annual_pay) / 12
-            employee.save()
-
-        context = {
-            'employees': employees,
-        }
-        messages.success(request, 'Tax updated successfully !!!')
-        return redirect(reverse('update-tax'), context)
-
-
-class BalanceView(ListView):
-    # template_name = 'staff/balance.html'
-
-    def get_queryset(self):
-        return EmployeeBalance.objects.filter(staff_id=self.kwargs['pk']).order_by('-date')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        cr = self.get_queryset().filter(value_type='Cr').aggregate(total=Sum('value'))['total']
-        dr = self.get_queryset().filter(value_type='Dr').aggregate(total=Sum('value'))['total']
-        cr = cr if cr is not None  else Decimal('0')
-        dr = dr if dr is not None else Decimal('0')
-        context['total_value'] = cr - dr
-        context['return'] = 'detail'
-        return context
-
-
-class TaxList(ListView):
-    model = Employee
-    
-    def get_queryset(self):
-        return super().get_queryset().filter(status=True)
-
-    def get_template_names(self):
-        
-        return ['staff/payroll/tax_list.html']
-
-
-class EmployeeBalanceListView(ListView):
+class GratuityListView(ListView):
     model = EmployeeBalance
     ordering = ['-date']
     
@@ -1493,8 +1504,7 @@ class EmployeeBalanceListView(ListView):
         context['term_staff'] = term_staff_data
         return context
 
-
-class EmployeeGratuityList(TemplateView):
+class GratuityListViewOneStaff(LoginRequiredMixin, TemplateView):
 
     template_name = 'staff/gratuity/employee_gratuity_list.html'
 
@@ -1511,17 +1521,249 @@ class EmployeeGratuityList(TemplateView):
         context['net_value'] = credit_amount - debit_amount
         return context
 
-
-class EmployeeBalanceDetailView(DetailView):
+class GratuityDetailView(DetailView):
     model = EmployeeBalance
 
-
-class EmployeeBalanceUpdateView(UpdateView):
+class GratuityUpdateView(UpdateView):
     model = EmployeeBalance
     fields = '__all__'
     
     def get_success_url(self):
         return reverse_lazy('employee-balance-detail', kwargs={'pk': self.kwargs['pk']})
+
+class RequestPermissionListView(LoginRequiredMixin, ListView):
+    model = RequestPermission
+    ordering = '-pk'   
+    template_name = 'staff/request_permission_list.html' 
+
+    def get_queryset(self):
+        return super().get_queryset().filter(status=None)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # get the list of all the staff that have taken permission this year
+        staff_taken_permission = Permit.objects.values_list('staff__pk', flat=True).distinct()
+        staff_list = list()
+        for staff in staff_taken_permission:
+            staff_list.append(Permit.objects.filter(staff__pk=staff))
+        
+        permit_list = list()
+        for permit in staff_list:
+            hours, days = list(), list()
+            for obj in permit:
+                if obj.duration()[-1] == 'H':
+                    hours.append(int(obj.duration().replace('H', '')))
+                else:
+                    days.append(int(obj.duration().replace('D', '')))
+                
+            h = divmod(sum(hours), 10) if sum(hours) > 0 else (0, 0)
+            result = (sum(days) + h[0], h[1])
+            
+            permit_list.append({
+                'code': obj.staff.pk,
+                'name': obj.staff.fullname(),
+                'duration': result,
+                'count': permit.count()
+                })
+        context['permissions'] = permit_list
+        return context
+
+class RequestPermissionUpdateView(LoginRequiredMixin, UpdateView):
+    model = RequestPermission
+    fields = '__all__'
+    # form_class = RequestPermissionForm
+    template_name = 'staff/request_permission_form.html'
+
+    
+    def get(self, request, *args, **kwargs):
+        request = RequestPermission.objects.get(pk=kwargs['pk'])
+        self.initial['start_date'] = request.start_date
+        self.initial['resume_date'] = request.resume_date
+        return super().get(request, *args, **kwargs)
+    
+    def form_valid(self, form, **kwargs):
+
+        durations = duration(form.instance.start_date, form.instance.resume_date)
+        context = self.get_context_data(**kwargs)
+        context['heading'] = f'Permission for {form.instance.staff} modified'
+        context['object'] = {
+            'request_by': self.request.user,
+            'staff': form.instance.staff,
+            'date': form.instance.date,
+            'reason': form.instance.reason,
+            'start_date': form.instance.start_date,
+            'resume_date':form.instance.resume_date,
+            'status': form.instance.status,
+            'duration': (durations[:-1], durations[-1])
+        }
+        requester_email = form.instance.request_by.email
+        mail_message = loader.render_to_string('mail/request/permission.html', context)
+
+        send_mail(
+            subject=f'Permission Request #{str(self.kwargs["pk"]).zfill(3)}',
+            message=f'Request for permission has been modified from {form.instance.start_date} to {form.instance.resume_date} for {form.instance.staff}.',
+            from_email='',
+            recipient_list=[self.request.user.email, requester_email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
+            fail_silently=True,
+            html_message=mail_message
+        )
+        return super().form_valid(form, **kwargs)
+
+class PermissionFromRequest(LoginRequiredMixin, CreateView):
+    model = Permit
+    fields = []
+
+    
+    def get(self, request, *args, **kwargs):
+        self.object = get_object_or_404(RequestPermission, pk=self.kwargs['pk'])
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['code'] = self.kwargs.get('pk')
+        context['object'] = get_object_or_404(RequestPermission, pk=self.kwargs['pk'])
+        return context
+
+    
+    def form_valid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        
+        """The request to change to approved status"""
+        obj = get_object_or_404(RequestPermission, pk=self.kwargs['pk'])
+        obj.status = True
+        obj.save()
+
+        """Programmatically filling the form"""
+        form.instance.staff = obj.staff
+        form.instance.starting_from = obj.start_date
+        form.instance.ending_at = obj.resume_date
+        form.instance.reason = obj.reason
+
+        messages.info(self.request, f'Permission Granted to {form.instance.staff} on request #{str(obj.id).zfill(3)}')
+        
+        requester_email = obj.request_by.email
+        obj.refresh_from_db()
+        context['object'] = obj 
+        context['heading'] = f'Permission for {obj.staff} Decision'
+        mail_message = loader.render_to_string('mail/request/permission.html', context)
+
+        send_mail(f"Permission Request #{str(obj.pk).zfill(3)}",
+        message=f'Permission Granted to {obj.staff} on request #{str(obj.id).zfill(3)}. {obj.reason} being the reason. Permitted on {obj.start_date} to resume on {obj.resume_date}',
+        from_email='',
+        recipient_list=[requester_email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
+        fail_silently=True,
+        html_message=mail_message
+        )
+        
+        return super().form_valid(form, **kwargs)
+
+class RequestPermissionDisapprove(LoginRequiredMixin, View):
+    
+    def get(self, request, *args, **kwargs):
+        context = {}
+        obj = get_object_or_404(RequestPermission, pk=kwargs['pk'])
+        obj.status = False
+        obj.save()
+
+        messages.info(request, f"Permission Request #{str(kwargs['pk']).zfill(3)} DISAPPROVED")
+        
+        context['heading'] = f'Permission for {obj.staff} Decision'
+        obj.refresh_from_db()
+        context['object'] = obj
+        mail_message = loader.render_to_string('mail/request/permission.html', context)
+
+        send_mail(subject=f"Permission Request #{str(kwargs['pk']).zfill(3)}",
+        message=f"Your request for permission is NOT APPROVED",
+        from_email='',
+        recipient_list=[obj.request_by.email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
+        fail_silently=True,
+        html_message=mail_message
+        )
+        return redirect('request-permission-list')
+
+class WelfareSupportList(LoginRequiredMixin, TemplateView):
+
+    template_name = 'staff/welfare_list.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        codes = Welfare.objects.values_list('staff__id', flat=True).distinct()
+        welfare_dataset = []
+        for code in codes:
+            qs = Welfare.objects.filter(staff__id=code)
+
+            dic = {
+                'id': code,
+                'staff': qs.first().staff.staff,
+                'amount': qs.aggregate(Sum('amount'))['amount__sum']
+            }
+            welfare_dataset.append(dic)
+        context['welfare_dataset'] = welfare_dataset 
+        context['total'] = Welfare.objects.aggregate(Sum('amount'))['amount__sum']
+        
+        return context
+
+class WelfareSupportListViewOneStaff(LoginRequiredMixin, ListView):
+    model = Welfare
+    template_name = 'staff/welfare_list_detail.html'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(staff__id=self.kwargs['pk'])
+
+class TerminatedStaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Terminate
+    template_name = 'staff/staff_views.html'
+    ordering = '-pk'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+
+
+# Not connected
+class MakeOutstandingValueZero(View):
+
+    def get(self, request, pk):
+        staff = get_object_or_404(Payroll, pk=pk)
+        new_pay = staff.net_pay + staff.outstanding
+        staff.outstanding = Money(0, 'NGN')
+        staff.net_pay = new_pay
+        staff.save()
+        return redirect(reverse('payroll-modify'))
+  
+
+class PKResetView(TemplateView):
+    template_name = 'staff/pk_reset.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'PK Reset'
+        context['codes'] = Payroll.objects.values_list('id').order_by('id'),
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+
+        if Payroll.objects.exists():
+            payroll = Payroll.objects.all()
+            num = range(1, payroll.count()+1)
+            status = 'OK' if list(num) == list(i.id for i in payroll) else 'NOK'
+
+            context['rows'] = {'table': 'Payroll',
+                               'status': status}
+        return render(request, self.template_name, context=context)
+
+
+class PKResetPayroll(View):
+
+    def get(self, request):
+        messages.success(request, 'Congrats')
+        return HttpResponseRedirect(reverse('pk-reset'))
+
 
 
 # class RequestPermissionCreateView(LoginRequiredMixin, CreateView):
@@ -1576,251 +1818,3 @@ class EmployeeBalanceUpdateView(UpdateView):
 #         )
 #         return super().form_valid(form, **kwargs)
     
-
-class RequestPermissionUpdateView(LoginRequiredMixin, UpdateView):
-    model = RequestPermission
-    fields = '__all__'
-    # form_class = RequestPermissionForm
-    template_name = 'staff/request_permission_form.html'
-
-    
-    def get(self, request, *args, **kwargs):
-        request = RequestPermission.objects.get(pk=kwargs['pk'])
-        self.initial['start_date'] = request.start_date
-        self.initial['resume_date'] = request.resume_date
-        return super().get(request, *args, **kwargs)
-    
-    def form_valid(self, form, **kwargs):
-
-        durations = duration(form.instance.start_date, form.instance.resume_date)
-        context = self.get_context_data(**kwargs)
-        context['heading'] = f'Permission for {form.instance.staff} modified'
-        context['object'] = {
-            'request_by': self.request.user,
-            'staff': form.instance.staff,
-            'date': form.instance.date,
-            'reason': form.instance.reason,
-            'start_date': form.instance.start_date,
-            'resume_date':form.instance.resume_date,
-            'status': form.instance.status,
-            'duration': (durations[:-1], durations[-1])
-        }
-        requester_email = form.instance.request_by.email
-        mail_message = loader.render_to_string('mail/request/permission.html', context)
-
-        send_mail(
-            subject=f'Permission Request #{str(self.kwargs["pk"]).zfill(3)}',
-            message=f'Request for permission has been modified from {form.instance.start_date} to {form.instance.resume_date} for {form.instance.staff}.',
-            from_email='',
-            recipient_list=[self.request.user.email, requester_email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
-            fail_silently=True,
-            html_message=mail_message
-        )
-        return super().form_valid(form, **kwargs)
-        
-
-class RequestPermissionListView(LoginRequiredMixin, ListView):
-    model = RequestPermission
-    ordering = '-pk'   
-    template_name = 'staff/request_permission_list.html' 
-
-    def get_queryset(self):
-        return super().get_queryset().filter(status=None)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        # get the list of all the staff that have taken permission this year
-        staff_taken_permission = Permit.objects.values_list('staff__pk', flat=True).distinct()
-        staff_list = list()
-        for staff in staff_taken_permission:
-            staff_list.append(Permit.objects.filter(staff__pk=staff))
-        
-        permit_list = list()
-        for permit in staff_list:
-            hours, days = list(), list()
-            for obj in permit:
-                if obj.duration()[-1] == 'H':
-                    hours.append(int(obj.duration().replace('H', '')))
-                else:
-                    days.append(int(obj.duration().replace('D', '')))
-                
-            h = divmod(sum(hours), 10) if sum(hours) > 0 else (0, 0)
-            result = (sum(days) + h[0], h[1])
-            
-            permit_list.append({
-                'code': obj.staff.pk,
-                'name': obj.staff.fullname(),
-                'duration': result,
-                'count': permit.count()
-                })
-        context['permissions'] = permit_list
-        return context
-
-
-class PermissionFromRequest(LoginRequiredMixin, CreateView):
-    model = Permit
-    fields = []
-
-    
-    def get(self, request, *args, **kwargs):
-        self.object = get_object_or_404(RequestPermission, pk=self.kwargs['pk'])
-        return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context['code'] = self.kwargs.get('pk')
-        context['object'] = get_object_or_404(RequestPermission, pk=self.kwargs['pk'])
-        return context
-
-    
-    def form_valid(self, form, **kwargs):
-        context = self.get_context_data(**kwargs)
-        
-        """The request to change to approved status"""
-        obj = get_object_or_404(RequestPermission, pk=self.kwargs['pk'])
-        obj.status = True
-        obj.save()
-
-        """Programmatically filling the form"""
-        form.instance.staff = obj.staff
-        form.instance.starting_from = obj.start_date
-        form.instance.ending_at = obj.resume_date
-        form.instance.reason = obj.reason
-
-        messages.info(self.request, f'Permission Granted to {form.instance.staff} on request #{str(obj.id).zfill(3)}')
-        
-        requester_email = obj.request_by.email
-        obj.refresh_from_db()
-        context['object'] = obj 
-        context['heading'] = f'Permission for {obj.staff} Decision'
-        mail_message = loader.render_to_string('mail/request/permission.html', context)
-
-        send_mail(f"Permission Request #{str(obj.pk).zfill(3)}",
-        message=f'Permission Granted to {obj.staff} on request #{str(obj.id).zfill(3)}. {obj.reason} being the reason. Permitted on {obj.start_date} to resume on {obj.resume_date}',
-        from_email='',
-        recipient_list=[requester_email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
-        fail_silently=True,
-        html_message=mail_message
-        )
-        
-        return super().form_valid(form, **kwargs)
-        
-
-class RequestPermissionDisapprove(LoginRequiredMixin, View):
-    
-    def get(self, request, *args, **kwargs):
-        context = {}
-        obj = get_object_or_404(RequestPermission, pk=kwargs['pk'])
-        obj.status = False
-        obj.save()
-
-        messages.info(request, f"Permission Request #{str(kwargs['pk']).zfill(3)} DISAPPROVED")
-        
-        context['heading'] = f'Permission for {obj.staff} Decision'
-        obj.refresh_from_db()
-        context['object'] = obj
-        mail_message = loader.render_to_string('mail/request/permission.html', context)
-
-        send_mail(subject=f"Permission Request #{str(kwargs['pk']).zfill(3)}",
-        message=f"Your request for permission is NOT APPROVED",
-        from_email='',
-        recipient_list=[obj.request_by.email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
-        fail_silently=True,
-        html_message=mail_message
-        )
-        return redirect('request-permission-list')
-
-
-class UserHandleCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = User
-    fields = []
-    
-    
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='Administrator').exists():
-            return True
-        return False
-
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
-        context['staff'] = staff
-        context['username'] = f'{staff.staff.first_name}-{str(staff.id).zfill(2)}'
-        context['first_name'] = staff.staff.first_name
-        context['last_name'] = staff.staff.last_name
-        context['email'] =  staff.staff.email if staff.official_email is None else staff.official_email 
-        return context
-    
-    
-    def form_valid(self, form):
-        global password
-        staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
-        form.instance.username = f'{staff.staff.first_name}-{str(staff.id).zfill(2)}'
-        form.instance.first_name = staff.staff.first_name
-        form.instance.last_name =  staff.staff.last_name
-        form.instance.email = staff.staff.email if staff.official_email is None else staff.official_email
-        password = User.objects.make_random_password()
-        context = {
-            'header': 'SCusH login credential created',
-            'username': form.instance.username,
-            'password': password,
-            'first_name': form.instance.first_name,
-            'last_name': form.instance.last_name,
-            'email': form.instance.email,
-        }
-        email = EmailMessage(
-            subject=f"User handle Created for {staff}",
-            body=loader.render_to_string('mail/user_create.html', context), 
-            from_email='',
-            to=[form.instance.email],
-            cc=['uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
-        )
-        email.content_subtype='html'
-        email.send(fail_silently=True)
-        return super().form_valid(form)
-    
-
-    def get_success_url(self):
-        user_profile = Profile.objects.last()
-        user = User.objects.last()
-        user_profile.staff = get_object_or_404(Employee, pk=self.kwargs['pk'])
-        user.set_password(password)
-        user.save()
-        user_profile.save()
-        return reverse("employee-detail", kwargs={'pk': self.kwargs['pk']})
-
-
-class WelfareSupportList(LoginRequiredMixin, TemplateView):
-
-    template_name = 'staff/welfare_list.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        codes = Welfare.objects.values_list('staff__id', flat=True).distinct()
-        welfare_dataset = []
-        for code in codes:
-            qs = Welfare.objects.filter(staff__id=code)
-
-            dic = {
-                'id': code,
-                'staff': qs.first().staff.staff,
-                'amount': qs.aggregate(Sum('amount'))['amount__sum']
-            }
-            welfare_dataset.append(dic)
-        context['welfare_dataset'] = welfare_dataset 
-        context['total'] = Welfare.objects.aggregate(Sum('amount'))['amount__sum']
-        
-        return context
-
-
-class WelfareSupportListDetail(LoginRequiredMixin, ListView):
-    model = Welfare
-    template_name = 'staff/welfare_list_detail.html'
-
-    def get_queryset(self):
-        return super().get_queryset().filter(staff__id=self.kwargs['pk'])
-
-        

@@ -12,6 +12,12 @@
             <div class="row mb-5 mt-3">
                 <div class="col bg-light">
                     <ul class="list-group list-group-flush">
+                      {% if not object.active %}
+                      <li class="list-group-item">
+                        <a href="" data-toggle="modal" data-target="#productStatus"><i class="fa fa-check-square-o text-success"></i> Activate</a> </li>
+                      {% else %}
+                      <li class="list-group-item"><a href="" data-toggle="modal" data-target="#productStatus"><i class="fa fa-times text-danger"></i> Disable</a></li>
+                      {% endif %}
                         <li class="list-group-item"><a href="{% url 'stock-report-new' theDate object.pk %}"><i class="fa fa-plus"></i> Sellout & Balance</a> </li>
                         <li class="list-group-item">
                             <a href="#" 
@@ -68,7 +74,12 @@
                    class="rounded mr-3 float-right"
                    alt="...">
               <div class="media-body">
-                <h3 class="text-success">Product Code: {{object.id|zeropadding:4}}</h3>
+                <h3 class="text-info">Product Code: {{object.id|zeropadding:4}}</h3>
+                {% if object.active %}
+                <h5 class="text-success">Active</h5>
+                {% else %}
+                <h5 class="text-danger">Disabled</h5>
+                {% endif %}
               </div>
             </div>
             <div class="row p-2">
@@ -111,7 +122,6 @@ id="priceReview"
 data-backdrop="static"
 role="dialog" 
 tabindex="-1">
-  
     <form action="{% url 'price-update' object.pk %}" method="post">
       {% csrf_token %}
     <div class="modal-dialog">
@@ -337,6 +347,54 @@ tabindex="-1">
 
           <button id="btnCostPrice" type="submit" class="btn btn-primary">Update</button>  
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+    </form>
+</div>
+
+
+<!--Product status Modal -->
+<div class="modal fade" 
+id="productStatus" 
+data-backdrop="static"
+role="dialog" 
+tabindex="-1">
+    <form action="{% url 'product-status' object.pk %}" method="post">
+      {% csrf_token %}
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{object}}</h5>
+          <button type="button" 
+          class="close" 
+          data-dismiss="modal" 
+          aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <fieldset>
+              <div class="row">
+                <div class="col">
+                  {% if object.active %}
+                    <p><i class="fa fa-times-circle-o text-danger"></i> 
+                      Are you sure you want to Disable {{object}}?
+                    </p>
+                  {% else %}
+                    <p><i class="fa fa-times-circle-o text-danger"></i> 
+                      Are you sure you want to Activate {{object}}?
+                    </p>
+                  {% endif %}  
+                </div>
+                
+              </div>
+              
+          </fieldset>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Yes</button>  
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
         </div>
       </div>
     </div>

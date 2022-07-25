@@ -50,6 +50,31 @@
         <div class="row">
         <div class="col-3 bg-light">
             <ul class="list-group list-group-flush">
+                <!--Employee-->
+                <li class="list-group-item">
+                    <div class="row mb-1">
+                    <a class="ml-1" href="{% url 'staff-list' %}">
+                        Employee
+                    </a>
+                    </div>
+                </li>
+                  <!--Payroll-->
+                <li class="list-group-item">
+                    <div class="row mb-1">
+                    <a class="ml-1" href="{% url 'salary' %}">Payroll</a>
+                    </div>
+                </li>
+                <!--Policies-->
+                <li class="list-group-item"><div class="row mb-1">
+                    <a class="ml-1" href="{% url 'staff-policies' %}">Policies</a>
+                </div>
+                </li>
+                <!--Procedures-->
+                <li class="list-group-item">
+                    <div class="row mb-1">
+                        <a class="ml-1" href="">Procedure</a>
+                    </div>
+                </li>
                 <!-- View -->
                 <li class="list-group-item">
                     <div class="row mb-1 text-info">
@@ -82,45 +107,18 @@
                         {% endif %}
                     </ul>
                 </li>
+            
                 
-                
-            <!--Employee-->
-            <li class="list-group-item">
-                <div class="row mb-1">
-                  <a class="ml-1" href="{% url 'staff-list' %}">
-                      Employee
-                  </a>
-                  </div>
-            </li>
-                <!--Payroll-->
-              <li class="list-group-item">
-                  <div class="row mb-1">
-                    <a class="ml-1" href="{% url 'salary' %}">Payroll</a>
-                  </div>
-              </li>
-              
-             
-                <!--Policies-->
-                    <li class="list-group-item"><div class="row mb-1">
-                            <a class="ml-1" href="{% url 'staff-policies' %}">Policies</a>
-                        </div>
-                    </li>
-                <!--Procedures-->
-                    <li class="list-group-item">
-                        <div class="row mb-1">
-                            <a class="ml-1" href="">Procedure</a>
-                        </div>
-                    </li>
-            <!-- Survey -->
-            <li class="list-group-item">
-                <div class="row mb-1">
-                    <a href="{% url 'survey-home' %}">Survey - Number of Children</a>
-                </div>
-            </li>
-                <!--                Return Home-->
-            <li class="list-group-item">
-                <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
-            </li>
+                <!-- Survey -->
+                <li class="list-group-item">
+                    <div class="row mb-1">
+                        <a href="{% url 'survey-home' %}">Survey - Number of Children</a>
+                    </div>
+                </li>
+                    <!--                Return Home-->
+                <li class="list-group-item">
+                    <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
+                </li>
         </ul>
         </div>
     <!--   Body of Page     -->

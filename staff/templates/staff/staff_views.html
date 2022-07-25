@@ -19,7 +19,7 @@
             </caption>
 
             <thead class="bg-dark text-white">
-            <tr>
+            <tr class="text-center">
                 <th scope="col">ID</th>
                 <th width="40px" scope="col">Image</th>
                 <th scope="col">Name</th>
@@ -30,15 +30,19 @@
             </tr>
             </thead>
             <tbody>
-            {% for employee in terminated_staff %}
-            <tr>
-                <th scope="row">{{ employee.staff.pk|zeropadding:3 }}</th>
-                <td><img src="{{ employee.staff.image.url }}"
+                
+            {% for employee in object_list %}
+            <tr class="text-center">
+                <th scope="row">
+                    <a href="{% url 're-engage' employee.pk %}">{{ employee.staff.pk|zeropadding:3 }}</a>
+                </th>
+                <td class="text-center"><img src="{{ employee.staff.image.url }}"
                          class="rounded-circle"
                          width="50px"
                          height="50px"
-                         alt=""></td>
-                <td>{{employee.staff.fullname}}</td>
+                         alt="">
+                </td>
+                <td class="text-left">{{employee.staff.fullname}}</td>
                 <td>{{employee.staff.date_employed}}</td>
                 <td>{{employee.date}}</td>
                 <td>{{employee.staff.mobile|addsep}}</td>
@@ -58,5 +62,7 @@
         </div>
     </div>
 </div>
-
+  
 {% endblock %}
+  
+  

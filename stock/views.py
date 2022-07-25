@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.views.generic.base import TemplateView
 from django.contrib import messages
 from django.contrib.auth.models import Group, User
+from matplotlib.pyplot import cla
 
 from pdf.utils import render_to_pdf
 from pdf.views import Ozone
@@ -250,8 +251,8 @@ class ReportStockCategory(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         if self.kwargs['source'] == 'All':
-            return super().get_queryset().filter(active=True)
-        return super().get_queryset().filter(active=True).filter(source=self.kwargs['source'])
+            return super().get_queryset()
+        return super().get_queryset().filter(source=self.kwargs['source'])
 
 
 class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -753,10 +754,6 @@ class StockReportNew(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             return redirect('stock-report-home', user=request.user)
         return super().get(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        print(request.POST)
-        return super().post(request, *args, **kwargs)
-
     def form_valid(self, form):
         product = Product.objects.get(id=self.kwargs['pk'])
         form.instance.product_id = product.pk
@@ -809,3 +806,17 @@ class StockReportDetail(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         date_obj = datetime.datetime.strptime(self.kwargs['date'], '%Y-%m-%d').date()
         context['object'] = ProductExtension.objects.filter(product=product, date=date_obj).get()
         return context
+
+class ProductStatusUpdate(LoginRequiredMixin, UserPassesTestMixin, View):
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    def post(self, request, **kwargs):
+        product = get_object_or_404(Product, pk=kwargs['pk'])
+        product.active = False if product.active is True else True  
+        product.save() 
+        return redirect(product)
