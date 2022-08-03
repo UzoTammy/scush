@@ -159,7 +159,7 @@ happiness of our staff is important, that is what we expect them to transfer to 
     def get(self, request):
         data, recordset = dict(), list()
         queryset = Employee.active.all()
-        ids = Permit.objects.filter(starting_from__year=datetime.date.today().year).values_list('staff__pk', flat=True).distinct()
+        ids = Permit.objects.filter(staff__status=True).filter(starting_from__year=datetime.date.today().year).values_list('staff__pk', flat=True).distinct()
         permits = list()
         for id in ids:
             permits.append(Permit.objects.filter(starting_from__year=datetime.date.today().year).filter(staff__pk=id))
@@ -732,8 +732,8 @@ class StaffReEngage(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if request.POST['date'] or request.POST['salary'] != '':
             date_employed = datetime.datetime.strptime(request.POST['date'], '%Y-%m-%d').date()
             salary = float(request.POST['salary'])
-            terminated_staff = get_object_or_404(Terminate, pk=kwargs['pk']).staff
-            employee = Employee.objects.get(pk=terminated_staff.id)
+            terminated_staff = get_object_or_404(Terminate, pk=kwargs['pk'])
+            employee = terminated_staff.staff
             employee.date_employed = date_employed
             employee.basic_salary = 0.4 * salary
             employee.allowance = 0.6 * salary
@@ -743,6 +743,15 @@ class StaffReEngage(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             employee.save()
             terminated_staff.delete()
             messages.info(request, 'Staff Re-engaged successfully, You can now update profile as employee')
+
+            mail_message = f'{employee.fullname()} with code number {str(employee.id).zfill(3)} re-employed this day {date_employed.strftime("%d-%m-%Y")}.'
+            send_mail(subject=f'Re-engaged staff - {employee.fullname()}({str(employee.id).zfill(3)})',
+            message='', 
+            from_email=request.user.email,
+            recipient_list=[request.user.email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
+            fail_silently=True,
+            html_message=mail_message
+            )
         else:
             messages.info(request, 'Date or salary not entered')
         

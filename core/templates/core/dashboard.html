@@ -127,7 +127,7 @@
                         <th>Pending</th>
                     </tr>
                 </thead>
-                <thead>
+                <tbody>
                     {% for key, value in application_count.items %}
                     <tr class="text-center">
                         <td>{{key}}</td>
@@ -136,7 +136,7 @@
                         {% endfor %}
                     </tr>
                     {% endfor %}
-                </thead>
+                </tbody>
             </table>
         </div>
     </div>
@@ -154,7 +154,7 @@
                         <!-- <th>Pending</th> -->
                     </tr>
                 </thead>
-                <thead>
+                <tbody>
                     <tr class="bg-success text-white text-center">
                         <td class="text-left">{{current_data|array_index:0}}</td>
                         <td>{{current_data|array_index:1}}</td>
@@ -175,7 +175,7 @@
                         <td class="text-right">{{data|array_index:2}}</td>
                         <td>{{data|array_index:3}}</td>
                     </tr>
-                </thead>
+                </tbody>
             </table>
             <p class="text-danger">{{msg}}</p>
         </div>

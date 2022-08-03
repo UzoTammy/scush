@@ -820,3 +820,31 @@ class ProductStatusUpdate(LoginRequiredMixin, UserPassesTestMixin, View):
         product.active = False if product.active is True else True  
         product.save() 
         return redirect(product)
+
+class PerformanceHome(LoginRequiredMixin, TemplateView):
+    template_name = 'stock/performance/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Most profitable
+        qs_all = ProductExtension.objects.values_list('selling_price', 'cost_price', 'sell_out', 'product')
+        
+        # profitable day
+        the_date = ProductExtension.objects.latest('date').date
+        qs_list = ProductExtension.objects.filter(date=the_date).values_list('selling_price', 'cost_price', 'sell_out', 'product')
+
+        result = list()
+        for qs in (qs_list, qs_all):
+            list_profit = list((x[1] - x[0])*x[2] for x in qs)
+            max_profit = max(list_profit)
+            for x in enumerate(list_profit):
+                if x[1] == max_profit:
+                    y = x[0]
+                    break
+            product = Product.objects.get(pk=qs[y][3])   
+            result.append({'product': product, 'value': max_profit})
+        
+        context['the_date'] = the_date
+        context['profitable_day'] =  result[0] 
+        context['profitable'] = result[1]
+        return context

@@ -75,11 +75,19 @@
                 </p>
                 <li class="nav-item">
                     <a class="nav-link"
+                       href="{% url 'apply-detail' object.staff.pk %}">
+                        <i class="fa fa-book text-warning"></i>
+                        Applicant
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
                        href="{% url 'payroll-statement' object.pk %}">
                         <i class="fa fa-book text-warning"></i>
                         Payslip
                     </a>
                 </li>
+                
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'balance-view' object.pk %}">
                         <i class="fa fa-book text-warning"></i>
@@ -150,13 +158,7 @@
                         <p>Marital Status: {{object.staff.marital_status}}</p>
                         <p>Qualification: {{object.staff.qualification}}</p>
                         <p>Course: {{object.staff.course }}</p>
-                        <p>Personal Mobile:
-                            {% if object.staff.mobile is None %}
-                            {{object.staff.mobile}}
-                            {% else %}
-                            {{object.staff.mobile|addsep}}
-                            {% endif %}
-                        </p>
+                        <p>Personal Mobile: {{object.staff.mobile}}</p>
                         <p>Personal Email: {{object.staff.email}}</p>
                         <p>Application Date: {{object.staff.apply_date}}</p>
                         <p>Data Modified Time: {{object.staff.modified_date}}</p>
@@ -323,7 +325,11 @@
                     </div>
                 </div>
             </div>
-            
+            <div class="row mb-3">
+                <div class="col">
+                    
+                </div>
+            </div>
         </div>
     </div>
 </div>
