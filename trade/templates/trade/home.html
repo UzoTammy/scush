@@ -85,7 +85,7 @@
             <div class="row">
                 <div class="col-sm-6">
                     <ul style="list-style-type: none;">
-                        <h3>Daily</h3> 
+                        <h3 class="text-center">Daily</h3> 
                         <li class="ml-3">Opening Balance: <span class="float-right">{{daily.opening_value}}</span></li>
                         <hr>
                         <li class="ml-3">Purchase: <span class="float-right">{{daily.purchase}}</span></li>
@@ -104,17 +104,17 @@
                         <hr>
                         <li class="ml-3">Gross Profit: <span class="float-right">{{daily.gross_profit}}</span></li>
                         <hr>
-                        <li>Margin Ratio: <span class="float-right">{{margin_ratio}}</span></li>
+                        <li>Margin Ratio: <span class="float-right">{{100|multiply:daily.net_profit|div:daily.sales.amount|floatformat:2}}%</span></li>
                         <hr>
-                        <li>Delivery Expenses Ratio: <span class="float-right">{{delivery_expenses_ratio}}</span></li>
+                        <li>Delivery Expenses Ratio: <span class="float-right">{{100|multiply:daily.direct_expenses.amount|div:daily.purchase.amount|floatformat:2}}%</span></li>
                         <hr>
-                        <li>Admin Expenses Ratio: <span class="float-right">{{admin_expenses_ratio}}</span></li>
+                        <li>Admin Expenses Ratio: <span class="float-right">{{100|multiply:daily.indirect_expenses.amount|div:daily.sales.amount|floatformat:2}}%</span></li>
                         <hr>
                     </ul>
                 </div>
                 <div class="col-sm-6">
                     <ul style="list-style-type: none;">
-                        <h3>Cummulative for this month</h3> 
+                        <h3 class="text-center">Cummulative for {{month_string}}</h3> 
                         <li class="ml-3">Opening Balance: <span class="float-right">{{daily.opening_value}}</span></li>
                         <hr>
                         <li class="ml-3">Purchase: <span class="float-right">{{daily_monthly.purchase|floatformat:2}}</span></li>
@@ -133,11 +133,11 @@
                         <hr>
                         <li class="ml-3">Gross Profit: <span class="float-right">{{daily_monthly.gross_profit|floatformat:2}}</span></li>
                         <hr>
-                        <li>Margin Ratio: <span class="float-right">{{margin_ratio}}</span></li>
+                        <li>Margin Ratio: <span class="float-right">{{100|multiply:daily_monthly.net_profit|div:daily_monthly.sales|floatformat:2}}%</span></li>
                         <hr>
-                        <li>Delivery Expenses Ratio: <span class="float-right">{{delivery_expenses_ratio}}</span></li>
+                        <li>Delivery Expenses Ratio: <span class="float-right">{{100|multiply:daily.direct_expenses|div:daily.purchase|floatformat:2}}%</span></li>
                         <hr>
-                        <li>Admin Expenses Ratio: <span class="float-right">{{admin_expenses_ratio}}</span></li>
+                        <li>Admin Expenses Ratio: <span class="float-right">{{100|multiply:daily.indirect_expenses|div:daily.sales|floatformat:2}}%</span></li>
                         <hr>
                     </ul>
                 </div>

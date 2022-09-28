@@ -71,6 +71,7 @@ class TradeDaily(models.Model):
     def get_absolute_url(self):
         return reverse('trade-daily-detail', kwargs={'pk': self.pk})
 
+
 class BalanceSheet(models.Model):
     date = models.DateField(default=date.today)
     profit = MoneyField(max_digits=12, decimal_places=2)

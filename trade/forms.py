@@ -28,12 +28,15 @@ class TradeDailyForm(forms.ModelForm):
     # help_text='1.00 instead of 0.00')
     # purchase = MoneyField(validators=[MinMoneyValidator(1), MinMoneyValidator(Money(1, 'NGN'))], 
     # help_text='1.00 instead of 0.00')
+    
     class Meta:
         model = TradeDaily
         fields = '__all__'
 
     
 class BSForm(forms.ModelForm):
+
+    date = forms.DateField(widget=DateInput(attrs={'type':'date'}))
 
     class Meta:
         model = BalanceSheet

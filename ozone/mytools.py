@@ -463,5 +463,3 @@ class BalanceSheet:
         """A liquidity ratio and also called quick ratio, defines how fast
         you can repay your debt. x times ready to pay it's debt"""
         return round((self.data[1]['current_asset']-inventory-sundry_debtors)/self.data[0]['liability'], 2)
-
-

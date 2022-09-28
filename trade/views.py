@@ -69,7 +69,8 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             
             year = daily.date.year
             month = daily.date.month
-            
+            context['month_string'] = mytools.Period.full_months[str(month).zfill(2)]
+
             context['daily_monthly'] = {
                 "sales": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('sales'))['sales__sum'],
                 "purchase": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('purchase'))['purchase__sum'],
@@ -85,8 +86,15 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['month'] = month
             context['daily'] = daily
             
-            context['object'] = BalanceSheet.objects.latest('date')
-
+            bs = BalanceSheet.objects.latest('date')
+            context['object'] = bs
+            context['growth_ratio'] = round(100*bs.profit/bs.capital, 2)
+            context['debt_to_equity_ratio'] = round(100*bs.liability/bs.capital, 2)
+            context['current_ratio'] = round(bs.current_asset/bs.liability, 3)
+            stock = TradeDaily.objects.filter(date=bs.date)
+            if stock.exists():
+                context['quick_ratio'] = round((bs.current_asset-bs.sundry_debtor-stock.get().closing_value)/bs.liability, 3)
+            
             # The Sales Drive Ratio: Sales by opening stock
             context['sales_drive'] =  daily_qs.order_by('-pk')   
         return context
@@ -694,6 +702,7 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
 class BSListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = BalanceSheet
+    ordering = ('-date')
 
     def test_func(self):
         """if user is a member of the group Admin then grant access to this view"""
@@ -701,7 +710,7 @@ class BSListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             return True
         return False
 
-
+    
 class BSCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = BalanceSheet
     form_class = BSForm
