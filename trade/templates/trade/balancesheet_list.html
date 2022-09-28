@@ -1,0 +1,56 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <table data-toggle="table"
+                    data-pagination="true"
+                    data-search="true"
+                    class="table table-bordered table-sm bg-light">
+                <caption>Balance Sheet</caption>
+            <thead class="bg-primary text-white">
+                <tr class="text-center">
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Profit</th>
+                    <th>Equity</th>
+                    <th>Liability</th>
+                    <th class="bg-light text-danger">Total</th>
+                    <th>Fixed</th>
+                    <th>Current</th>
+                    <th>Investment</th>
+                    <th>Suspense</th>
+                    <th class="bg-light text-danger">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr class="text-right">
+                    <td><a href="{% url 'trade-bs-detail' object.pk %}">{{object.id|zeropadding:3}}</a></td>
+                    <td style="white-space: nowrap;">{{object.date|date:'d-m-Y'}}</td>
+                    <td>{{object.profit}}</td>
+                    <td>{{object.capital}}</td>
+                    <td>{{object.liability}}</td>
+                    <td>{{object.profit|add:object.capital|add:object.liability|add:object.adjusted_profit}} </td>
+                    <td>{{object.fixed_asset}}</td>
+                    <td>{{object.current_asset}}</td>
+                    <td>{{object.investment}}</td>
+                    <td>{{object.suspense}}</td>
+                    <td>{{object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense|add:object.loan_liability|add:object.difference}}</td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+    
+    <div class="row mt-3">
+        <div class="col text-right">
+            
+        </div>
+    </div>
+</div>
+{% endblock content%}

@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
-from .views import (ApplyListViewPending,
+from .views import (ApplyHomeView,
+                    ApplyListViewPending,
                     ApplyListViewEmployed,
                     ApplyListViewRejected,
                     ApplyListView,
@@ -14,6 +15,7 @@ from pdf.views import ApplicantListView
 
 urlpatterns = [
     # list views
+    path('home/', ApplyHomeView.as_view(), name='apply-home'),
     path('list/pending/', ApplyListViewPending.as_view(), name='apply-pending'),
     path('list/employed/', ApplyListViewEmployed.as_view(), name='apply-employed'),
     path('list/rejected/', ApplyListViewRejected.as_view(), name='apply-rejected'),

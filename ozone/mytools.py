@@ -419,4 +419,49 @@ class Taxation:
             return annual_taxable_amount * Decimal(24)/Decimal(100)
 
 
+class BalanceSheet:
+    def __init__(self, data) -> list:
+        self.data = data
+        
+    @property
+    def source_of_fund(self):
+        source = self.data[0]
+        total = source['profit'] + source['equity'] + source['liability']
+        return list((key, value, round(100*value/total, 2)) for key, value in source.items())
+
+    @property
+    def use_of_fund(self):
+        resources = self.data[1]
+        current_asset = resources['current_asset']
+        fixed_asset = resources['fixed_asset']
+        investment = resources['investment']
+        suspense = resources['suspense']
+        total = current_asset + fixed_asset + investment + suspense
+        return list((key, value, round(100*value/total, 2)) for key, value in resources.items())
+    
+
+    @property   
+    def growth_ratio(self):
+        profit = self.data[0]['profit']
+        equity = self.data[0]['equity']
+        return round(100*profit/equity, 2)
+
+    @property
+    def debt_to_equity_ratio(self):
+        liability = self.data[0]['liability']
+        equity = self.data[0]['equity']
+        return round(100*liability/equity, 2)
+
+    @property
+    def current_ratio(self):
+        """This is a measure of the company's capability to pay it's debt.
+        x times capable of paying it's debt"""
+        return round(self.data[1]['current_asset']/ self.data[0]['liability'], 2)
+
+
+    def acit_test_ratio(self, inventory, sundry_debtors=0.0) -> float:
+        """A liquidity ratio and also called quick ratio, defines how fast
+        you can repay your debt. x times ready to pay it's debt"""
+        return round((self.data[1]['current_asset']-inventory-sundry_debtors)/self.data[0]['liability'], 2)
+
 

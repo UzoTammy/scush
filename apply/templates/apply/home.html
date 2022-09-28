@@ -1,0 +1,46 @@
+{% extends 'users/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col mt-3">
+            <h3 class="text-center">Application Home Page</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4 mt-1">
+            <p><img class="rounded-circle" src="{% static 'customer/logo.png' %}" alt=""></p>
+            <!-- <p class="float-right mr-2"><a href="">Rejected</a></p>
+            <p class="float-right mr-2"><a href="">Pending</a></p>
+            <p class="float-right mr-2"><a href="">Employed</a></p> -->
+
+            <p class=""></p>
+            
+            <ul style="list-style-type: none;">
+                <hr>
+                <li>Total Number of Applicants <span class="float-right"><sup>**</sup>{{total_number_of_applicants}}  </span></li>
+                <hr>
+                <li>Number of Applicants in {{this_year}} <span class="float-right">{{this_year_applicants}}</span></li>
+                <hr>
+                <li>Number of Female Applicants <span class="float-right">{{female_applicants}}</span></li>
+                <hr>
+                <li>Number of Male Applicants <span class="float-right">{{male_applicants}}</span></li>
+                <hr>
+                <li> <a href="{% url 'apply-employed' %}">Employed:</a> {{employed}} | 
+                    <a href="{% url 'apply-pending' %}">Pending:</a>  {{pending}} | 
+                    <a href="{% url 'apply-rejected' %}">Rejected:</a> {{rejected}}
+                    <a class="float-right" href="{% url 'home' %}"><i class="fa fa-home"></i></a>
+                </li>
+                <hr>
+                <sup class="text-muted">**Since June 2021</sup>
+            </ul>
+            
+            
+        </div>
+        <div class="col-8 mt-3">
+            <p>We consider applications for employment....</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

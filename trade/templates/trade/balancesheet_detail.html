@@ -1,0 +1,286 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-3">
+        <div class="col text-center">
+          <img class="rounded-circle" height="70px" src="{% static 'customer/logo.png' %}" alt="">
+            <h3>Balance Sheet as at {{object.date}}</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <!-- Button trigger modal -->
+            <button type="button" 
+                    class="btn btn-light btn-sm float-right" 
+                    data-toggle="modal" 
+                    data-target="#balanceSheet">
+                <i class="fa fa-sticky-note-o"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <ul style="list-style-type: none;">
+                <li class="text-primary">ID: {{object.id|zeropadding:3}}</li>
+                <hr>
+                <li>Profit: <span class="float-right">{{object.profit}}</span></li>
+                <hr>
+                <li>Adjusted Profit: <span class="float-right">{{object.adjusted_profit}}</span></li>
+                <hr>
+                <li>Equity: <span class="float-right">{{object.capital}}</span></li>
+                <hr>
+                <li>Current Liability: <span class="float-right">{{object.liability}}</span></li>
+                <hr>
+                <li class="text-danger">Total: <span class="float-right">{{object.profit|add:object.adjusted_profit|add:object.capital|add:object.liability}}</span></li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <ul style="list-style-type: none;">
+                <li class="text-right text-primary">Date: {{object.date}}</li>
+                <hr>
+                {% with object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense as total %}
+                <li>Fixed Asset: 
+                    <span class="float-right">{{object.fixed_asset}}</span>
+                    <span class="float-right text-muted">({{100|multiply:object.fixed_asset|div:total|floatformat:2}}%)</span> 
+                </li>
+                <hr>
+                <li>Current Asset: 
+                    <span class="float-right">{{object.current_asset}}</span>
+                    <span class="float-right text-muted">({{100|multiply:object.current_asset|div:total|floatformat:2}}%)</span> 
+                </li>
+                <hr>
+                <li>Investment: <span class="float-right">{{object.investment}}</span>
+                    <span class="float-right text-muted">({{100|multiply:object.investment|div:total|floatformat:2}}%)</span> 
+                </li>
+                <hr>
+                <li>Suspense: <span class="float-right">{{object.suspense}}</span>
+                <span class="float-right text-muted">({{100|multiply:object.suspense|div:total|floatformat:2}}%)</span> 
+                </li>
+                <hr>
+                {% endwith %}
+                <li class="text-danger">Total: <span class="float-right">{{object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense}}</span></li>
+            </ul>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col">
+            <ul>
+                <li>Growth Ratio: 
+                    <button type="button" 
+                    class="btn btn-light btn-sm float-right" 
+                    data-toggle="modal" 
+                    data-target="#growthRatio">
+                    <i class="fa fa-sticky-note-o"></i>
+                    </button>
+                    <span class="float-right">{{growth_ratio}}%</span>
+                </li>
+                <hr>
+                <li>Debt to Equity Ratio: 
+                    <button type="button" 
+                    class="btn btn-light btn-sm float-right" 
+                    data-toggle="modal" 
+                    data-target="#debtToEquityRatio">
+                    <i class="fa fa-sticky-note-o"></i>
+                    </button>
+                    <span class="float-right">{{debt_to_equity_ratio}}%</span>
+                </li>
+                <hr>
+                <li>Current Ratio:
+                    <button type="button" 
+                    class="btn btn-light btn-sm float-right" 
+                    data-toggle="modal" 
+                    data-target="#currentRatio">
+                    <i class="fa fa-sticky-note-o"></i>
+                    </button>
+                    <span class="float-right">{{current_ratio}}%</span>
+                  </li>
+                <hr>
+                <li>Quick Ratio: 
+                    <button type="button" 
+                    class="btn btn-light btn-sm float-right" 
+                    data-toggle="modal" 
+                    data-target="#quickRatio">
+                    <i class="fa fa-sticky-note-o"></i>
+                    </button>
+                    <span class="float-right">{{quick_ratio}}%</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <a class="btn btn-outline-dark" href="{% url 'trade-bs-update' object.pk %}">Update</a>
+        </div>
+        <div class="col text-right">
+            <a class="btn btn-outline-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i> Trade Home</a>
+        </div>
+    </div>
+</div>
+
+  <!-- Modal Balance Sheet-->
+  <div class="modal fade" 
+        id="balanceSheet" 
+        tabindex="-1" 
+        role="dialog" 
+        data-backdrop="static" 
+        data-keyboard="false"
+        aria-labelledby="notesLabel" 
+        aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="notesLabel">Balance Sheet</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Balance sheet can give you a snapshot of your finances 
+            and indicate if you are on track for success. Without it, you might 
+            struggle to detect spikes in spending or see if your pricing strategy is effective.
+            If you want to take things one step further with your balance sheet and see how your 
+            company’s finances are holding up, calculate your balance sheet ratios.
+          </p>
+          <p>
+            Your balance sheet’s total assets must always equal your total equity and liabilities. 
+            If they don’t balance, track down what is causing the discrepancy. 
+            When it comes to your balance sheet, you should follow the accounting equation:
+            <br>
+            <code class="ml-5">Assets = Liabilities + Equity</code><br>
+            where asset can be Fixed, Current, Investment and reservation for purge (in our case Suspense)
+          </p>   
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Growth Ratio-->
+  <div class="modal fade" 
+        id="growthRatio" 
+        tabindex="-1" 
+        data-backdrop="static" 
+        data-keyboard="false"
+        aria-labelledby="growthRatioLabel" 
+        aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="growthRatioLabel">Growth Ratio</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>
+            This is a measure of how well a company is doing in terms of profitability.
+            <br>
+            <code class="ml-5">Growth Ratio = 100 * Current Liabilities / Equity %</code>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal debt-to-equity Ratio-->
+  <div class="modal fade" 
+        id="debtToEquityRatio" 
+        tabindex="-1" 
+        data-backdrop="static" 
+        data-keyboard="false"
+        aria-labelledby="debtToEquityRatioLabel" 
+        aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="debtToEquityRatioLabel">Debt to Equity Ratio</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>
+            This ratio indicates the level of leverage the business holds. It should be as much
+            as the business can hold without being unable to pay back.
+            <br>
+            <code class="ml-5">Debt-to-Equity ratio = Current Liability / Equity</code>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Quick Ratio-->
+  <div class="modal fade" 
+        id="currentRatio" 
+        tabindex="-1" 
+        data-backdrop="static" 
+        data-keyboard="false"
+        aria-labelledby="exampleModalLabel" 
+        aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Curent Ratio</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>
+            The current ratio indicates how well you can liquidate your current assets to pay off your current liabilities. 
+            Basically, this ratio measures the liquidity of your company. 
+            Current assets are items of value your business plans to use or convert to cash within one year. 
+            Your current ratio should ideally be above 1:1.
+            <br>
+            <code class="ml-5">Current Ratio = Current Assets / Current Liabilities</code>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Quick Ratio-->
+  <div class="modal fade" 
+        id="quickRatio" 
+        tabindex="-1" 
+        data-backdrop="static" 
+        data-keyboard="false"
+        aria-labelledby="quickRatioLabel" 
+        aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="quickRatioLabel">Quick or Acid-test ratio</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <p>
+              The quick ratio is similar to the current ratio. 
+              The only difference between quick and current ratios is 
+              that with quick ratios, you must exclude from the non-cash assets from the current asset.  
+              Like the current ratio, the quick ratio also analyzes your business’s liquidity.
+              The quick ratio is more conservative than the current ratio because it removes 
+              inventory from the formula. Some businesses prefer to remove inventory from the 
+              ratio because carried over inventory cannot necessarily be converted into cash at its book value.
+              A healthy quick ratio is greater than one. Take a look at the quick ratio formula below:
+              <br>
+              <code>Non-cash asset = inventory + sundry debtors</code><br>
+              <code>Quick Ratio = (Current Assets – Non-cash asset) / Current Liabilities</code>    
+            </p>
+            
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content%}
+

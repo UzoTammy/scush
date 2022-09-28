@@ -100,7 +100,7 @@
                     <i class="fa fa-home text-white fa-2x"></i><span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link text-light" href="{% url 'apply-pending' %}">
+                <a class="nav-link text-light" href="{% url 'apply-home' %}">
                     <i class="fa fa-pencil-square text-white"></i> Applicants</a>
             </li>
             <li class="nav-item">
@@ -129,8 +129,10 @@
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="{% url 'warehouse-home' %}">Stores</a>
                     <hr class="dropdown-divider">
+                    
                     <a class="dropdown-item" href="{% url 'trade-home' %}">Trade</a>
                     <hr class="dropdown-divider">
+                    
                     <a class="dropdown-item" href="{% url 'sales-list' %}">Target & Budget</a>
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'sales-center-list' %}">Outlets</a>

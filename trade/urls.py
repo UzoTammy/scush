@@ -19,3 +19,11 @@ urlpatterns += [
         path('daily/PL/report/', PLDailyReportView.as_view(), name='daily-pl-report'),
         
 ]
+
+urlpatterns += [
+        path('bs/create/', BSCreateView.as_view(), name='bs-create'),
+        path('bs/<int:pk>/detail/', BSDetailView.as_view(), name='trade-bs-detail'),
+        path('bs/list/', BSListView.as_view(), name='trade-bs-list'),
+        path('bs/<int:pk>/update/', BSUpdateView.as_view(), name='trade-bs-update'),
+        # path('daily/PL/report/', PLDailyReportView.as_view(), name='daily-pl-report'),    
+]

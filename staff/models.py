@@ -240,7 +240,6 @@ class DebitNote(models.Model):
     def __str__(self):
         return f"{self.name}-{self.period}"
 
-
 class StaffStatement(models.Model):
     staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
     date_posted = models.DateField(default=timezone.now)

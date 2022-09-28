@@ -1552,7 +1552,7 @@ class RequestPermissionListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
 
         # get the list of all the staff that have taken permission this year
-        staff_taken_permission = Permit.objects.values_list('staff__pk', flat=True).distinct()
+        staff_taken_permission = Permit.objects.filter(staff__status=True).values_list('staff__pk', flat=True).distinct()
         staff_list = list()
         for staff in staff_taken_permission:
             staff_list.append(Permit.objects.filter(staff__pk=staff))

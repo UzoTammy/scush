@@ -6,7 +6,7 @@ import datetime
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
-from .forms import (TradeMonthlyForm, TradeDailyForm)
+from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm)
 from django.shortcuts import render
 from .models import *
 from warehouse.models import (Stores, Renewal)
@@ -30,6 +30,7 @@ GROUP_NAME = 'Administrator'
 
 class EmailSample(TemplateView):
     template_name = 'mail/sample.html'
+
 
 
 class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView): 
@@ -58,83 +59,36 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return sales, purchase, direct, indirect, gp, qs_union.count()
 
     def get_context_data(self, **kwargs):
-        
         context = super().get_context_data(**kwargs)
+        
         daily_qs = TradeDaily.objects.all()  #.annotate(gp_ratio=ExpressionWrapper(F('gross_profit'), output_field=DecimalField()))
-        daily_qs = daily_qs.annotate(expenses=F('direct_expenses')+F('indirect_expenses'))
-        
-        daily = daily_qs.latest('date')
-        year = daily.date.year
-        month = daily.date.month
-        
-        context['year'] = f'{year}'
-        context['daily'] = daily
-        context['daily_monthly_sales'] = daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('sales'))['sales__sum']
-        context['daily_yearly_sales'] = daily_qs.filter(date__year=year).aggregate(Sum('sales'))['sales__sum']
-        
-        context['daily_monthly_purchase'] = daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('purchase'))['purchase__sum']
-        context['daily_yearly_purchase'] = daily_qs.filter(date__year=year).aggregate(Sum('purchase'))['purchase__sum']
-        
-        context['daily_monthly_expenses'] = daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('expenses'))['expenses__sum']
-        context['daily_yearly_expenses'] = daily_qs.filter(date__year=year).aggregate(Sum('expenses'))['expenses__sum']
-        
-        context['daily_monthly_gross'] = daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('gross_profit'))['gross_profit__sum']
-        context['daily_yearly_gross'] = daily_qs.filter(date__year=year).aggregate(Sum('gross_profit'))['gross_profit__sum']
-        
-        monthly_qs = TradeMonthly.objects.filter(year=year).annotate(gp_ratio=ExpressionWrapper(100*1000*F('gross_profit')/F('sales'), output_field=DecimalField()))
-        monthly = monthly_qs.last()
-        
-        if monthly_qs.exists():
-            if monthly_qs.filter(month='October').exists():
-                quarter = self.quarter_group(monthly_qs, year, ['October', 'November', 'December'])
-                context['quarter'] = 'Q4'
-            elif monthly_qs.filter(month='July').exists():
-                quarter = self.quarter_group(monthly_qs, year, ['July', 'August', 'September'])
-                context['quarter'] = 'Q3'
-            elif monthly_qs.filter(month='April').exists():
-                quarter = self.quarter_group(monthly_qs, year, ['April', 'May', 'June'])
-                context['quarter'] = 'Q2'
-            else:
-                quarter = self.quarter_group(monthly_qs, year, ['January', 'February', 'March'])
-                context['quarter'] = 'Q1'
-
-            context['sales'] = monthly_qs.aggregate(total=Sum('sales'))['total']
-            context['purchase'] = monthly_qs.aggregate(total=Sum('purchase'))['total']
-            context['direct_expenses'] = monthly_qs.aggregate(total=Sum('direct_expenses'))['total']
-            context['indirect_expenses'] = monthly_qs.aggregate(total=Sum('indirect_expenses'))['total']
-            # context['gp_ratio'] = monthly_qs.aggregate(total=Avg('gp_ratio'))['total']
-
-            # context['sales'] = sales
-            context['monthly'] = monthly
+        if daily_qs.exists():
+            daily_qs = daily_qs.annotate(expenses=F('direct_expenses')+F('indirect_expenses'))
+            daily_qs = daily_qs.annotate(net_profit=F('gross_profit')-F('indirect_expenses'))
+            daily = daily_qs.latest('date')
             
-            context['quarter_one'] = {
-                'sales': quarter[0], 
-                'purchase': quarter[1], 
-                'direct_expenses': quarter[2],
-                'indirect_expenses': quarter[3], 
-                'gp_ratio': quarter[4]/quarter[5]
+            year = daily.date.year
+            month = daily.date.month
+            
+            context['daily_monthly'] = {
+                "sales": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('sales'))['sales__sum'],
+                "purchase": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('purchase'))['purchase__sum'],
+                "direct_expenses": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('direct_expenses'))['direct_expenses__sum'],
+                "indirect_expenses": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'],
+                "direct_income": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('indirect_income'))['indirect_income__sum'],
+                "indirect_income": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('direct_income'))['direct_income__sum'],
+                "gross_profit": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('gross_profit'))['gross_profit__sum'],
+                "net_profit": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('net_profit'))['net_profit__sum'],
+                "expenses": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('expenses'))['expenses__sum'],
             }
-
-            # # The Sales Table
-            sales_list = list()
-            for key, value in mytools.Period.full_months.items():
-                result = dict()
-                sum_day = daily_qs.filter(date__month=int(key)).aggregate(Sum('sales'))['sales__sum']
-                q_month = monthly_qs.filter(year=monthly.year, month=value) 
-                result['period'] = value
-                result['daily'] = sum_day if sum_day is not None else decimal.Decimal('0')
-                result['monthly'] = q_month.get().sales.amount if q_month.exists() else decimal.Decimal('0')
-                result['delta'] = result['monthly'] - result['daily']
-                sales_list.append(result)
-            context['sales_table'] = sales_list
+            context['year'] = f'{year}'
+            context['month'] = month
+            context['daily'] = daily
             
-        if TradeDaily:
-            context['trade_daily'] = TradeDaily.objects.latest('date').date
-        else:
-            context['trade_daily'] = {'year': 0, 'month': 0}
-        
-        # The Sales Drive Ratio: Sales by opening stock
-        context['sales_drive'] =  daily_qs.order_by('-pk')   
+            context['object'] = BalanceSheet.objects.latest('date')
+
+            # The Sales Drive Ratio: Sales by opening stock
+            context['sales_drive'] =  daily_qs.order_by('-pk')   
         return context
   
 
@@ -195,6 +149,16 @@ class TradeMonthlyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
             return True
         return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = kwargs['object']
+        
+        context['net_profit'] = obj.gross_profit-obj.indirect_expenses
+        context['margin_ratio'] = round(100*(obj.gross_profit-obj.indirect_expenses)/obj.sales, 2)
+        context['delivery_ratio'] = round(100*obj.direct_expenses/obj.sales, 2)
+        context['admin_ratio'] = round(100*obj.indirect_expenses/obj.sales, 2)
+        return context
 
 
 class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -480,7 +444,7 @@ class TradeDailyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = TradeDailyForm
     
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
+        """if user is a member of the group Admin then grant access to this view"""
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
             return True
         return False
@@ -503,6 +467,15 @@ class TradeDailyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
             return True
         return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = kwargs['object']
+        context['net_profit'] = obj.gross_profit-obj.indirect_expenses
+        context['margin_ratio'] = round(100*(obj.gross_profit-obj.indirect_expenses)/obj.sales, 2)
+        context['delivery_ratio'] = round(100*obj.direct_expenses/obj.sales, 2)
+        context['admin_ratio'] = round(100*obj.indirect_expenses/obj.sales, 2)
+        return context
 
 
 class TradeDailyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -719,10 +692,91 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return render(request, 'trade/no_record.html', {'message': f'No Daily Record to Report from {from_date} to {to_date}'})
 
 
+class BSListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = BalanceSheet
+
+    def test_func(self):
+        """if user is a member of the group Admin then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
 
 
+class BSCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = BalanceSheet
+    form_class = BSForm
+
+    def test_func(self):
+        """if user is a member of the group Admin then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Create'
+        return context
 
 
+class BSDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = BalanceSheet
+
+    def test_func(self):
+        """if user is a member of the group Admin then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        #pick the date from P&L account
+        
+        pk = kwargs['object'].pk
+        qs = self.get_queryset().filter(pk=pk).values()[0]
+        
+        pl = TradeDaily.objects.filter(date=qs['date']) 
+        if pl.exists():
+            inventory = float(pl[0].closing_value.amount)
+
+        obj = [
+            {
+                'profit': float(qs['profit']),
+                'adjusted_profit': float(qs['adjusted_profit']),
+                'equity': float(qs['capital']),
+                'liability': float(qs['liability']),
+                'loan_liability': float(qs['loan_liability'])
+            },
+            {
+                'fixed_asset': float(qs['fixed_asset']),
+                'current_asset': float(qs['current_asset']),
+                'investment': float(qs['investment']),
+                'suspense': float(qs['suspense']),
+                'difference': float(qs['difference']),
+                'sundry_debtor': float(qs['sundry_debtor'])
+            }
+        ]
+        
+        bs = mytools.BalanceSheet(obj)
+        context['growth_ratio'] = bs.growth_ratio
+        context['current_ratio'] = bs.current_ratio
+        context['debt_to_equity_ratio'] = bs.debt_to_equity_ratio
+        context['data'] = bs.source_of_fund
+        context['quick_ratio'] = bs.acit_test_ratio(inventory, obj[1]['sundry_debtor'])
+        return context
 
 
+class BSUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = BalanceSheet
+    form_class = BSForm
 
+    def test_func(self):
+        """if user is a member of the group Admin then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
+
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "Update"
+        return context

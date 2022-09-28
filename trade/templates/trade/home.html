@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <!--        side menu-->
+        <!--        The menu-->
         <div class="col-3 bg-dark">
             <ul class="nav flex-column mt-3">
                 <li class="text-white">Trading, P & L</li>
@@ -26,7 +26,7 @@
                 <li class="text-success ml-2">Daily</li>
                 <li class="nav-item">
                     <a class="nav-link"
-                        href="{% url 'trade-daily-list' trade_daily.year trade_daily.month %}">
+                        href="{% url 'trade-daily-list' year month %}">
                         <i class="fa fa-eye-slash text-warning"></i> View
                     </a>
                 </li>
@@ -48,13 +48,13 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link"
-                        href="#">
+                        href="{% url 'trade-bs-list' %}">
                         <i class="fa fa-eye-slash text-warning"></i> View
                     </a>
                 </li>
                 
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="{% url 'bs-create' %}">
                         <i class="fa fa-plus text-warning"></i> Add
                     </a>
                 </li>
@@ -76,134 +76,152 @@
             </ul>
         </div>
         
+        <!-- The Body -->
+        {% if month %}
         <div class="col-9 mt-3 bg-white">
-            <h3>{{year}} Trade Values </h3>
+            <h3>Latest Balance Sheet and Profit & Loss Statements</h3>
             
-            <h5 class="text-primary"><i>Derived from Profit & Loss Account - {{daily.date}}</i></h5>
+            <h5 class="text-primary"><i>Profit & Loss Account - {{daily.date}}</i></h5>
             <div class="row">
-                <!-- sales -->
                 <div class="col-sm-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="card text-white bg-info" 
-                            style="max-width: 32rem; border-radius: 50px;">
-                                <div class="card-body">
-                                    <h5 class="card-title text-danger">Sales</h5>
-                                    <p class="card-text">
-                                        Latest Daily Post - {{daily.sales}}
-                                    </p>
-                                    
-                                    <p class="card-text">
-                                        Current Month - NGN{{daily_monthly_sales|default_if_none:0.00|floatformat:'2g'}}
-                                    </p>
-                                    <p class="card-text">
-                                        YTD(current year) - NGN{{daily_yearly_sales|default_if_none:0.00|floatformat:'2g'}}
-                                    </p>
-                                    <!-- <p>---</p> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <ul style="list-style-type: none;">
+                        <h3>Daily</h3> 
+                        <li class="ml-3">Opening Balance: <span class="float-right">{{daily.opening_value}}</span></li>
+                        <hr>
+                        <li class="ml-3">Purchase: <span class="float-right">{{daily.purchase}}</span></li>
+                        <hr>
+                        <li class="ml-3">Direct Expenses: <span class="float-right">{{daily.direct_expenses}}</span></li>
+                        <hr>
+                        <li class="ml-3">Sales: <span class="float-right">{{daily.sales}}</span></li>
+                        <hr>
+                        <li class="ml-3">Indirect Expenses: <span class="float-right">{{daily.indirect_expenses}}</span></li>
+                        <hr>
+                        <li class="ml-3">Direct Income: <span class="float-right">{{daily.direct_income}}</span></li>
+                        <hr>
+                        <li class="ml-3">Closing Stock: <span class="float-right">{{daily.closing_value}}</span></li>
+                        <hr>
+                        <li class="ml-3">Indirect Income: <span class="float-right">{{daily.indirect_income}}</span></li>
+                        <hr>
+                        <li class="ml-3">Gross Profit: <span class="float-right">{{daily.gross_profit}}</span></li>
+                        <hr>
+                        <li>Margin Ratio: <span class="float-right">{{margin_ratio}}</span></li>
+                        <hr>
+                        <li>Delivery Expenses Ratio: <span class="float-right">{{delivery_expenses_ratio}}</span></li>
+                        <hr>
+                        <li>Admin Expenses Ratio: <span class="float-right">{{admin_expenses_ratio}}</span></li>
+                        <hr>
+                    </ul>
                 </div>
-                <!-- purchase -->
                 <div class="col-sm-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="card text-white bg-warning" 
-                            style="max-width: 32rem; border-radius: 50px;">
-                                <div class="card-body">
-                                    <h5 class="card-title text-danger">Purchase</h5>
-                                    <p class="card-text">
-                                        Latest Daily Post - {{daily.purchase}}
-                                    </p>
-                                    
-                                    <p class="card-text">
-                                        Current Month - NGN{{daily_monthly_purchase|default_if_none:0.00|floatformat:'2g'}}
-                                    </p>
-                                    <p class="card-text">
-                                        YTD(current year) - NGN{{daily_yearly_purchase|default_if_none:0.00|floatformat:'2g'}}
-                                    </p>
-                                    
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <ul style="list-style-type: none;">
+                        <h3>Cummulative for this month</h3> 
+                        <li class="ml-3">Opening Balance: <span class="float-right">{{daily.opening_value}}</span></li>
+                        <hr>
+                        <li class="ml-3">Purchase: <span class="float-right">{{daily_monthly.purchase|floatformat:2}}</span></li>
+                        <hr>
+                        <li class="ml-3">Direct Expenses: <span class="float-right">{{daily_monthly.direct_expenses|floatformat:2}}</span></li>
+                        <hr>
+                        <li class="ml-3">Sales: <span class="float-right">{{daily_monthly.sales|floatformat:2}}</span></li>
+                        <hr>
+                        <li class="ml-3">Indirect Expenses: <span class="float-right">{{daily_monthly.indirect_expenses|floatformat:2}}</span></li>
+                        <hr>
+                        <li class="ml-3">Direct Income: <span class="float-right">{{daily_monthly.direct_income|floatformat:2}}</span></li>
+                        <hr>
+                        <li class="ml-3">Closing Stock: <span class="float-right">{{daily.closing_value}}</span></li>
+                        <hr>
+                        <li class="ml-3">Indirect Income: <span class="float-right">{{daily_monthly.indirect_income|floatformat:2}}</span></li>
+                        <hr>
+                        <li class="ml-3">Gross Profit: <span class="float-right">{{daily_monthly.gross_profit|floatformat:2}}</span></li>
+                        <hr>
+                        <li>Margin Ratio: <span class="float-right">{{margin_ratio}}</span></li>
+                        <hr>
+                        <li>Delivery Expenses Ratio: <span class="float-right">{{delivery_expenses_ratio}}</span></li>
+                        <hr>
+                        <li>Admin Expenses Ratio: <span class="float-right">{{admin_expenses_ratio}}</span></li>
+                        <hr>
+                    </ul>
                 </div>
-                <!-- expenses -->
-                <div class="col-sm-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="card text-white bg-secondary" 
-                            style="max-width: 32rem; border-radius: 50px;">
-                                <div class="card-body">
-                                    <h5 class="card-title text-danger">Expenses</h5>
-                                    <p class="card-text">
-                                        Latest Daily Post - NGN{{daily.expenses|default_if_none:0|floatformat:'2g'}}
-                                    </p>
-                                    
-                                    <p class="card-text">
-                                        Current Month - NGN{{daily_monthly_expenses|default_if_none:0|floatformat:'2g'}}
-                                    </p>
-                                    <p class="card-text">
-                                        YTD(current year) - NGN{{daily_yearly_expenses|default_if_none:0|floatformat:'2g'}}
-                                    </p>
-                                    <!-- <p>---</p> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- gross profit -->
-                <div class="col-sm-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="card text-white bg-primary" 
-                            style="max-width: 32rem; border-radius: 50px;">
-                                <div class="card-body">
-                                    <h5 class="card-title text-danger">Gross Profit</h5>
-                                    <p class="card-text">
-                                        Latest Daily Post - {{daily.gross_profit}}
-                                    </p>
-                                    
-                                    <p class="card-text">
-                                        Current Month - NGN{{daily_monthly_gross|default_if_none:0.00|floatformat:'2g'}}
-                                    </p>
-                                    <p class="card-text">
-                                        YTD(current year) - NGN{{daily_yearly_gross|default_if_none:0.00|floatformat:'2g'}}
-                                    </p>
-                                    <!-- <p>---</p> -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> 
+            </div>
+
+            <h5 class="text-primary"> <i>Balance Sheet</i> </h5>
             <div class="row mt-3">
-                <div class="col-sm-4"> 
-                    <table class="table">
-                        <caption>Ratios </caption>
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>SDR(%)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for ratio in sales_drive|slice:":5" %}
-                            <tr>
-                                <td>{{ratio.date}}</td>
-                                <td>{{ratio.sales.amount|div:ratio.opening_value.amount|multiply:100|floatformat:'2'}}</td>
-                            </tr>   
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    
+                <div class="col-md-6">
+                    <ul style="list-style-type: none;">
+                        <li class="text-primary">ID: {{object.id|zeropadding:3}}</li>
+                        <hr>
+                        <li>Profit: <span class="float-right">{{object.profit}}</span></li>
+                        <hr>
+                        <li>Adjusted Profit: <span class="float-right">{{object.adjusted_profit}}</span></li>
+                        <hr>
+                        <li>Equity: <span class="float-right">{{object.capital}}</span></li>
+                        <hr>
+                        <li>Current Liability: <span class="float-right">{{object.liability}}</span></li>
+                        <hr>
+                        <li class="text-danger">Total: <span class="float-right">{{object.profit|add:object.adjusted_profit|add:object.capital|add:object.liability}}</span></li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul style="list-style-type: none;">
+                        <li class="text-right text-primary">Date: {{object.date}}</li>
+                        <hr>
+                        {% with object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense as total %}
+                        <li>Fixed Asset: 
+                            <span class="float-right">{{object.fixed_asset}}</span>
+                            <span class="float-right text-muted">({{100|multiply:object.fixed_asset|div:total|floatformat:2}}%)</span> 
+                        </li>
+                        <hr>
+                        <li>Current Asset: 
+                            <span class="float-right">{{object.current_asset}}</span>
+                            <span class="float-right text-muted">({{100|multiply:object.current_asset|div:total|floatformat:2}}%)</span> 
+                        </li>
+                        <hr>
+                        <li>Investment: <span class="float-right">{{object.investment}}</span>
+                            <span class="float-right text-muted">({{100|multiply:object.investment|div:total|floatformat:2}}%)</span> 
+                        </li>
+                        <hr>
+                        <li>Suspense: <span class="float-right">{{object.suspense}}</span>
+                        <span class="float-right text-muted">({{100|multiply:object.suspense|div:total|floatformat:2}}%)</span> 
+                        </li>
+                        <hr>
+                        {% endwith %}
+                        <li class="text-danger">Total: <span class="float-right">{{object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense}}</span></li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-sm-6">
+                    <ul>
+                        <li>Growth Ratio: <span class="float-right">{{growth_ratio}}%</span> </li>
+                        <hr>
+                        <li>Debt to Equity Ratio: <span class="float-right">{{debt_to_equity_ratio}}%</span></li>
+                        <hr>
+                        <li>Current Ratio: <span class="float-right">{{current_ratio}}</span></li>
+                        <hr>
+                        <li>Quick Ratio: <span class="float-right">{{quick_ratio}}</span></li>
+                    </ul>
+                </div>
+                <div class="col-sm-6"> 
+                    <ul style="list-style-type: none;">
+                        <li>Date <span class="float-right">SDR(%)</span></li>
+                        <hr>
+                        {% for ratio in sales_drive|slice:":5" %}
+                        <li>{{ratio.date}} <span class="float-right">{{ratio.sales.amount|div:ratio.opening_value.amount|multiply:100|floatformat:'2'}}</span></li>
+                        <hr>
+                        {% endfor %}
+                    </ul>
                     <p><i class="fa fa-braille text-warning"></i> SDR - Sales Drive Ratio(last five sales day)</p>
                     
                 </div>
             </div>
+
         </div>
-        
+        {% else %}
+        <div class="col-9">
+            <h3 class="p-3"><i>No Record in Trade Database yet</i></h3>
+            <p class="ml-5">Add Profit & Loss and Balance Sheet data from the side menu</p>
+        </div>
+        {% endif %}
     </div>
     
 </div>

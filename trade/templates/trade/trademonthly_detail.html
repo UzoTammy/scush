@@ -9,20 +9,48 @@
         </div>
     </div>
     <div class="row mt-3">
+        <div class="col-sm-6">
+            <ul style="list-style-type: none;">
+                <li class="text-primary">ID: {{object.id|zeropadding:3}}</li>
+                <hr>
+                <li>Sales: <span class="float-right">{{object.sales}}</span></li>
+                <hr>
+                <li>Indirect Expenses: <span class="float-right">{{object.indirect_expenses}}</span></li>
+                <hr>
+                <li>Indirect Income: <span class="float-right">{{object.indirect_income}}</span></li>
+                <hr>
+                <li>Opening Stock Value: <span class="float-right">{{object.opening_value}}</span></li>  
+                <hr>
+                <li>Gross Profit: <span class="float-right">{{object.gross_profit}}</span></li>
+                <hr>
+            </ul>
+        </div>
+        <div class="col-sm-6">
+            <ul style="list-style-type: none;">
+                <li class="text-primary">Period: {{object.month}}, {{object.year|stringformat:'d'}}</li>
+                <hr>
+                <li>Purchase: <span class="float-right">{{object.purchase}}</span></li>
+                <hr>
+                <li>Direct Expenses: <span class="float-right">{{object.direct_expenses}}</span></li>
+                <hr>
+                <li>Direct Income: <span class="float-right">{{object.direct_income}}</span></li>
+                <hr>
+                <li>Closing Stock Value: <span class="float-right">{{object.closing_value}}</span></li>
+                <hr>
+                <li>Net Profit: <span class="float-right">{{net_profit}}</span></li>
+                <hr>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
         <div class="col">
-            <ul class="list-group">
-                <li class="list-group-item">ID: {{object.id|zeropadding:3}}</li>
-                <li class="list-group-item">Year: {{object.year|stringformat:'d'}}</li>
-                <li class="list-group-item">Month: {{object.month}}</li>
-                <li class="list-group-item">Sales: {{object.sales}}</li>
-                <li class="list-group-item">Purchase: {{object.purchase}}</li>
-                <li class="list-group-item">Indirect Expenses: {{object.indirect_expenses}}</li>
-                <li class="list-group-item">Direct Expenses: {{object.direct_expenses}}</li>
-                <li class="list-group-item">Indirect Income: {{object.indirect_income}}</li>
-                <li class="list-group-item">Direct Income: {{object.direct_income}}</li>
-                <li class="list-group-item">Opening Stock Value: {{object.opening_value}}</li>
-                <li class="list-group-item">Closing Stock Value: {{object.closing_value}}</li>
-                <li class="list-group-item">Gross Profit: {{object.gross_profit}}</li>
+            <ul>
+                <li>Margin Ratio: <span class="float-right">{{margin_ratio}}%</span></li>
+                <hr>
+                <li>Delivery Expenses Ratio: <span class="float-right">{{delivery_ratio}}%</span></li>
+                <hr>
+                <li>Admin Expenses Ratio: <span class="float-right">{{admin_ratio}}%</span></li>
+                <hr>
             </ul>
         </div>
     </div>

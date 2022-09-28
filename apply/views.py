@@ -19,26 +19,25 @@ from django.views.generic import (View,
                                   )
 from .forms import ApplicantForm, MyForm
 from django.urls import reverse_lazy, reverse
-# from django.conf import settings
-
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
-# formatter = logging.Formatter('%(name)s:%(levelname)s %(asctime)s %(message)s', datefmt='%d-%b-%Y %I:%M %p')
-
-# root_dir = settings.BASE_DIR #Path(__file__).resolve().parent.parent
-# file_handler = logging.FileHandler(root_dir / 'logs' / 'views.log')
-
-# file_handler.setFormatter(formatter)
-# logger.addHandler(file_handler)
 
 
-"""This view is completely class based views. It starts with listing all pending
-applicants. From here, employed and rejected applicants can be listed with 
-ApplyListViewEmployed and ApplyListViewRejected classes respectively.
-Also, all applicants are listed with ApplyListView class.
-Since CBVs allow for list, detail, update and create and even delete,
-they are all utilized in this model to manage the data. However, more functiona
-are applied."""
+
+class ApplyHomeView(LoginRequiredMixin, TemplateView):
+    template_name = 'apply/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_number_of_applicants'] = Applicant.objects.count()
+        this_year = datetime.date.today().year
+        context['this_year'] = str(this_year)
+        context['this_year_applicants'] = Applicant.objects.filter(apply_date__year=this_year).count()
+        context['female_applicants'] = Applicant.objects.filter(gender='FEMALE').count()
+        context['male_applicants'] = Applicant.objects.filter(gender='MALE').count()
+        context['employed'] = Applicant.objects.filter(status=True).count()
+        context['pending'] = Applicant.objects.filter(status=None).count()
+        context['rejected'] = Applicant.objects.filter(status=False).count()
+        return context
+
 
 class ApplyListViewPending(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Applicant

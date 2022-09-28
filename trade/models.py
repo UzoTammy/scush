@@ -60,12 +60,35 @@ class TradeDaily(models.Model):
     direct_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
     indirect_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
 
+
     class Meta:
         verbose_name_plural = 'Daily'
         
 
     def __str__(self):
-        return f'{self.date}'
+        return f'P&L-{self.date}'
 
     def get_absolute_url(self):
         return reverse('trade-daily-detail', kwargs={'pk': self.pk})
+
+class BalanceSheet(models.Model):
+    date = models.DateField(default=date.today)
+    profit = MoneyField(max_digits=12, decimal_places=2)
+    adjusted_profit = MoneyField(max_digits=12, decimal_places=2)
+    capital = MoneyField(max_digits=12, decimal_places=2)
+    liability = MoneyField(max_digits=12, decimal_places=2)
+    loan_liability = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
+    fixed_asset = MoneyField(max_digits=12, decimal_places=2)
+    current_asset = MoneyField(max_digits=12, decimal_places=2)
+    investment = MoneyField(max_digits=12, decimal_places=2)
+    suspense = MoneyField(max_digits=12, decimal_places=2)
+    difference = MoneyField(max_digits=12, decimal_places=2)
+    sundry_debtor = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
+
+    def __str__(self) -> str:
+        return f'BS-{self.date}'
+
+    def get_absolute_url(self):
+        return reverse('trade-bs-detail', kwargs={'pk': self.pk})
+
+    
