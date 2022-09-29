@@ -17,6 +17,7 @@ customer/static/json/
 mail/sample
 mail/sample.html
 extrafiles/
+xx/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
