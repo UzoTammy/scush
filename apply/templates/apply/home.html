@@ -27,19 +27,29 @@
                 <hr>
                 <li>Number of Male Applicants <span class="float-right">{{male_applicants}}</span></li>
                 <hr>
-                <li> <a href="{% url 'apply-employed' %}">Employed:</a> {{employed}} | 
-                    <a href="{% url 'apply-pending' %}">Pending:</a>  {{pending}} | 
-                    <a href="{% url 'apply-rejected' %}">Rejected:</a> {{rejected}}
-                    <a class="float-right" href="{% url 'home' %}"><i class="fa fa-home"></i></a>
-                </li>
+                <li> <a href="{% url 'apply-employed' %}">Employed:</a> <span class="float-right">{{employment_status.employed}}</span> </li>
                 <hr>
-                <sup class="text-muted">**Since June 2021</sup>
+                <li> <a href="{% url 'apply-pending' %}">Pending:</a>  <span class="float-right">{{employment_status.pending}}</span></li>   
+                <hr> 
+                <li>    <a href="{% url 'apply-rejected' %}">Rejected:</a> <span class="float-right">{{employment_status.rejected}}</span></li>
+                <hr>
             </ul>
-            
-            
+            <a class="float-right" href="{% url 'home' %}"><i class="fa fa-home"></i></a>
+            <sup class="text-muted">**Since June 2021</sup>
         </div>
-        <div class="col-8 mt-3">
-            <p>We consider applications for employment....</p>
+        <div class="col-4 mt-3">
+            <ul style="list-style-type: none;">
+                <li>Married <span class="float-right">{{marital_status|first}}</span></li>
+                <hr>
+                <li>Single <span class="float-right">{{marital_status|last}}</span></li>
+                <hr>
+                <li>Minor <sup class="text-muted">less 18yrs</sup> <span class="float-right">{{stature.less_than_18}}</span></li>
+                <hr>
+                <li>Youth <sup class="text-muted">btw 18 & 25yrs</sup> <span class="float-right">{{stature.between_18_and_25}}</span></li>
+                <hr>
+                <li>Adult <sup class="text-muted">above 25yrs</sup> <span class="float-right">{{stature.above_25}}</span></li>
+                <hr>
+            </ul>
         </div>
     </div>
 </div>
