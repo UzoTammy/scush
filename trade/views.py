@@ -171,13 +171,17 @@ class TradeMonthlyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView
 
 class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = TradeMonthly
-    ordering = '-id'
     
     def test_func(self):
         """if user is a member of the group HRD then grant access to this view"""
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
             return True
         return False
+
+    def get_queryset(self):
+        pl = TradeMonthly.objects.last()
+        year = pl.year 
+        return super().get_queryset().filter(year=year).order_by('-id')
 
 
 class TradeMonthlyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -488,8 +492,7 @@ class TradeDailyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
 class TradeDailyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = TradeDaily
-    ordering = '-pk'
-
+    
     def test_func(self):
         """if user is a member of the group HRD then grant access to this view"""
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
@@ -497,27 +500,10 @@ class TradeDailyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return False
     
     def get_queryset(self):
-        if self.kwargs['year'] == 0 and self.kwargs['month'] == 0:
-            return super().get_queryset()
-        year = int(self.kwargs['year'])
-        month = int(self.kwargs['month'])
-        return super().get_queryset().filter(date__year=year, date__month=month)
+        pl = TradeDaily.objects.last()
+        year = pl.date.year
+        return super().get_queryset().filter(date__year=year).order_by('-pk')
 
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['sales'] = Money(self.get_queryset().aggregate(Sum('sales'))['sales__sum'], 'NGN')
-        context['purchase'] = Money(self.get_queryset().aggregate(Sum('purchase'))['purchase__sum'], 'NGN')
-        context['direct_expenses'] = Money(self.get_queryset().aggregate(Sum('direct_expenses'))['direct_expenses__sum'], 'NGN')
-        context['indirect_expenses'] = Money(self.get_queryset().aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'], 'NGN')
-        context['gross_profit'] = Money(self.get_queryset().aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN')
-        context['direct_income'] = Money(self.get_queryset().aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN')
-        context['indirect_income'] = Money(self.get_queryset().aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN')
-        period = mytools.Period(int(self.kwargs['year']), int(self.kwargs['month'])).previous()
-        year = period.split('-')[0]
-        month = period.split('-')[1]
-        context['previous_period'] = {'year': year, 'month': month}
-        return context
 
 
 class TradeDailyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -709,6 +695,12 @@ class BSListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
             return True
         return False
+
+    def get_queryset(self):
+        bs = BalanceSheet.objects.last()
+        
+        year = bs.date.year
+        return super().get_queryset().filter(date__year=year)
 
     
 class BSCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):

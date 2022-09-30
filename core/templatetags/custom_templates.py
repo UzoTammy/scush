@@ -97,3 +97,4 @@ def array_index(value, index):
 @register.filter
 def make_list(value, separator):
     return value.split(separator)
+

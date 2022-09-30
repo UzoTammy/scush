@@ -9,7 +9,7 @@
                     data-pagination="true"
                     data-search="true"
                     class="table table-bordered table-sm bg-light">
-                <caption>Daily Trading, Profit & Loss Account - {{object_list.first.date|date:'F, Y'}}</caption>
+                <caption>Daily Trading, Profit & Loss Account - {{object_list.last.date|date:'Y'}}</caption>
             <thead class="bg-primary text-white">
                 <tr class="text-center">
                     <th>ID</th>
@@ -45,36 +45,9 @@
         </table>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-6">
-            <ul class="list-group">
-                <li class="list-group-item">Total Sales: {{sales}}</li>
-                <li class="list-group-item">Total Purchase: {{purchase}}</li>
-                <li class="list-group-item">
-                    <p>Expenses: {{direct_expenses|add:indirect_expenses}}</p>  
-                    <p class="ml-3">Direct: {{direct_expenses}}</p>
-                    <p class="ml-3">Indirect: {{indirect_expenses}}</p>
-                </li>
-              </ul>
-        </div>
-        <div class="col-sm-6">
-            <ul class="list-group">
-                <li class="list-group-item">Gross Profit: {{gross_profit}}</li>
-                <li class="list-group-item">Net profit: {{gross_profit|minus:indirect_expenses}}</li>
-                <li class="list-group-item">
-                    <p>Income: {{direct_income|add:indirect_income}}</p>
-                    <p  class="ml-3">Direct: {{direct_income}}</p>
-                    <p class="ml-3">Indirect: {{indirect_income}}</p>
-                </li>
-              </ul>
-        </div>
-        
-    </div>
+    
     <div class="row mt-3">
         <div class="col text-right">
-            {% if view.kwargs.year != 0 %}
-            <button class="btn btn-dark"><a href="{% url 'trade-daily-list' previous_period.year previous_period.month %}"><i class="fa fa-backward"></i> Previous</a></button>
-            {% endif %}
             <a class="btn btn-outline-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i> Trade Home</a>
         </div>
     </div>
