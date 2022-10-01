@@ -92,17 +92,19 @@
                         <hr>
                         <li class="ml-3">Direct Expenses: <span class="float-right">{{daily.direct_expenses}}</span></li>
                         <hr>
+                        <li class="ml-3">Direct Income: <span class="float-right">{{daily.direct_income}}</span></li>
+                        <hr>
                         <li class="ml-3">Sales: <span class="float-right">{{daily.sales}}</span></li>
                         <hr>
                         <li class="ml-3">Indirect Expenses: <span class="float-right">{{daily.indirect_expenses}}</span></li>
                         <hr>
-                        <li class="ml-3">Direct Income: <span class="float-right">{{daily.direct_income}}</span></li>
+                        <li class="ml-3">Indirect Income: <span class="float-right">{{daily.indirect_income}}</span></li>
                         <hr>
                         <li class="ml-3">Closing Stock: <span class="float-right">{{daily.closing_value}}</span></li>
                         <hr>
-                        <li class="ml-3">Indirect Income: <span class="float-right">{{daily.indirect_income}}</span></li>
-                        <hr>
                         <li class="ml-3">Gross Profit: <span class="float-right">{{daily.gross_profit}}</span></li>
+                        <hr>
+                        <li class="ml-3">Net Profit: <span class="float-right">{{daily.net_profit}}</span></li>
                         <hr>
                         <li>Margin Ratio: <span class="float-right">{{100|multiply:daily.net_profit|div:daily.sales.amount|floatformat:2}}%</span></li>
                         <hr>
@@ -121,17 +123,19 @@
                         <hr>
                         <li class="ml-3">Direct Expenses: <span class="float-right">{{daily_monthly.direct_expenses|floatformat:2}}</span></li>
                         <hr>
+                        <li class="ml-3">Direct Income: <span class="float-right">{{daily_monthly.direct_income|floatformat:2}}</span></li>
+                        <hr>
                         <li class="ml-3">Sales: <span class="float-right">{{daily_monthly.sales|floatformat:2}}</span></li>
                         <hr>
                         <li class="ml-3">Indirect Expenses: <span class="float-right">{{daily_monthly.indirect_expenses|floatformat:2}}</span></li>
                         <hr>
-                        <li class="ml-3">Direct Income: <span class="float-right">{{daily_monthly.direct_income|floatformat:2}}</span></li>
+                        <li class="ml-3">Indirect Income: <span class="float-right">{{daily_monthly.indirect_income|floatformat:2}}</span></li>
                         <hr>
                         <li class="ml-3">Closing Stock: <span class="float-right">{{daily.closing_value}}</span></li>
                         <hr>
-                        <li class="ml-3">Indirect Income: <span class="float-right">{{daily_monthly.indirect_income|floatformat:2}}</span></li>
-                        <hr>
                         <li class="ml-3">Gross Profit: <span class="float-right">{{daily_monthly.gross_profit|floatformat:2}}</span></li>
+                        <hr>
+                        <li class="ml-3">Net Profit: <span class="float-right">{{daily_monthly.net_profit}}</span></li>
                         <hr>
                         <li>Margin Ratio: <span class="float-right">{{100|multiply:daily_monthly.net_profit|div:daily_monthly.sales|floatformat:2}}%</span></li>
                         <hr>
@@ -143,12 +147,10 @@
                 </div>
             </div>
 
-            <h5 class="text-primary"> <i>Balance Sheet</i> </h5>
+            <h5 class="text-primary"> <i>Balance Sheet as at {{object.date}}</i> </h5>
             <div class="row mt-3">
                 <div class="col-md-6">
                     <ul style="list-style-type: none;">
-                        <li class="text-primary">ID: {{object.id|zeropadding:3}}</li>
-                        <hr>
                         <li>Profit: <span class="float-right">{{object.profit}}</span></li>
                         <hr>
                         <li>Adjusted Profit: <span class="float-right">{{object.adjusted_profit}}</span></li>
@@ -162,8 +164,6 @@
                 </div>
                 <div class="col-md-6">
                     <ul style="list-style-type: none;">
-                        <li class="text-right text-primary">Date: {{object.date}}</li>
-                        <hr>
                         {% with object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense as total %}
                         <li>Fixed Asset: 
                             <span class="float-right">{{object.fixed_asset}}</span>
@@ -192,25 +192,24 @@
             <div class="row">
                 <div class="col-sm-6">
                     <ul>
-                        <li>Growth Ratio: <span class="float-right">{{growth_ratio}}%</span> </li>
-                        <hr>
-                        <li>Debt to Equity Ratio: <span class="float-right">{{debt_to_equity_ratio}}%</span></li>
-                        <hr>
-                        <li>Current Ratio: <span class="float-right">{{current_ratio}}</span></li>
-                        <hr>
-                        <li>Quick Ratio: <span class="float-right">{{quick_ratio}}</span></li>
+                        <li><img src="data:image/png;base64, {{chart|safe}}" alt=""></li>
                     </ul>
+                    <p><i class="fa fa-braille text-warning"></i>Sales to Stock Ratio - last five days</p>
                 </div>
                 <div class="col-sm-6"> 
                     <ul style="list-style-type: none;">
-                        <li>Date <span class="float-right">SDR(%)</span></li>
+                        <li>Growth Ratio: <span class="float-right">{{object.growth_ratio}}%</span> </li>
                         <hr>
-                        {% for ratio in sales_drive|slice:":5" %}
-                        <li>{{ratio.date}} <span class="float-right">{{ratio.sales.amount|div:ratio.opening_value.amount|multiply:100|floatformat:'2'}}</span></li>
+                        <li>Debt to Equity Ratio: <span class="float-right">{{object.debt_to_equity_ratio}}%</span></li>
                         <hr>
-                        {% endfor %}
+                        <li>Current Ratio: <span class="float-right">{{object.current_ratio}}</span></li>
+                        <hr>
+                        <li>Quick Ratio: <span class="float-right">{{object.quick_ratio}}</span></li>
+                        <hr>
+                        <li>Working Capital: <span class="float-right">{{object.current_asset|minus:object.sundry_debtor|add:object.liability}}</span></li>
+                        
                     </ul>
-                    <p><i class="fa fa-braille text-warning"></i> SDR - Sales Drive Ratio(last five sales day)</p>
+                    
                     
                 </div>
             </div>

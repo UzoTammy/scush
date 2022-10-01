@@ -1,7 +1,4 @@
-import decimal
 import calendar
-import io, base64
-import matplotlib
 import datetime
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
@@ -9,21 +6,14 @@ from django.db.models.fields import FloatField
 from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm)
 from django.shortcuts import render
 from .models import *
-from warehouse.models import (Stores, Renewal)
-from staff.models import (Employee, EmployeeBalance, Payroll)
-from survey.models import Question
-from stock.models import Product
-from apply.models import Applicant
-from customer.models import CustomerProfile
 from django.urls.base import reverse_lazy
 from django.db.models import (Sum, F, Avg, ExpressionWrapper, DecimalField)
 from matplotlib import pyplot as plt
 from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView)                            
 from datetime import timedelta
 from ozone import mytools
+from core import utils as plot
 
-
-matplotlib.use('Agg')
 
 GROUP_NAME = 'Administrator'
 
@@ -63,38 +53,38 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if daily_qs.exists():
             daily_qs = daily_qs.annotate(expenses=F('direct_expenses')+F('indirect_expenses'))
             daily_qs = daily_qs.annotate(net_profit=F('gross_profit')-F('indirect_expenses'))
+            
             daily = daily_qs.latest('date')
             
             year = daily.date.year
             month = daily.date.month
             context['month_string'] = mytools.Period.full_months[str(month).zfill(2)]
+            # The Sales Drive Ratio: Sales by opening stock
+            context['sales_drive'] =  daily_qs.order_by('-pk')[:5]
+            
+            daily_qs = daily_qs.filter(date__year=year, date__month=month)
 
             context['daily_monthly'] = {
-                "sales": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('sales'))['sales__sum'],
-                "purchase": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('purchase'))['purchase__sum'],
-                "direct_expenses": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('direct_expenses'))['direct_expenses__sum'],
-                "indirect_expenses": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'],
-                "direct_income": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('indirect_income'))['indirect_income__sum'],
-                "indirect_income": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('direct_income'))['direct_income__sum'],
-                "gross_profit": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('gross_profit'))['gross_profit__sum'],
-                "net_profit": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('net_profit'))['net_profit__sum'],
-                "expenses": daily_qs.filter(date__year=year, date__month=month).aggregate(Sum('expenses'))['expenses__sum'],
+                "sales": daily_qs.aggregate(Sum('sales'))['sales__sum'],
+                "indirect_expenses": daily_qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'],
+                "direct_income": daily_qs.aggregate(Sum('indirect_income'))['indirect_income__sum'],
+                "indirect_income": daily_qs.aggregate(Sum('direct_income'))['direct_income__sum'],
+                "direct_expenses": daily_qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'],
+                "gross_profit": daily_qs.aggregate(Sum('gross_profit'))['gross_profit__sum'],
+                "net_profit": daily_qs.aggregate(Sum('net_profit'))['net_profit__sum'],
+                "expenses": daily_qs.aggregate(Sum('expenses'))['expenses__sum'],
+                "purchase": daily_qs.aggregate(Sum('purchase'))['purchase__sum'],
+                
             }
             context['year'] = f'{year}'
             context['month'] = month
             context['daily'] = daily
             
-            bs = BalanceSheet.objects.latest('date')
-            context['object'] = bs
-            context['growth_ratio'] = round(100*bs.profit/bs.capital, 2)
-            context['debt_to_equity_ratio'] = round(100*bs.liability/bs.capital, 2)
-            context['current_ratio'] = round(bs.current_asset/bs.liability, 3)
-            stock = TradeDaily.objects.filter(date=bs.date)
-            if stock.exists():
-                context['quick_ratio'] = round((bs.current_asset-bs.sundry_debtor-stock.get().closing_value)/bs.liability, 3)
+            context['object'] = BalanceSheet.objects.latest('date') 
+            days = [str(x.date.day) for i, x in enumerate(context['sales_drive'])]
+            sales = [round(100*y.sales/y.opening_value, 2) for i, y in enumerate(context['sales_drive'])]
+            context['chart'] = plot.line_graph(days, sales)
             
-            # The Sales Drive Ratio: Sales by opening stock
-            context['sales_drive'] =  daily_qs.order_by('-pk')   
         return context
   
 

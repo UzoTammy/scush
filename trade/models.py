@@ -71,6 +71,24 @@ class TradeDaily(models.Model):
     def get_absolute_url(self):
         return reverse('trade-daily-detail', kwargs={'pk': self.pk})
 
+    # def net_profit(self):
+    #     return self.gross_profit - self.indirect_expenses
+
+    def margin_ratio(self):
+        if self.sales > Money(0, 'NGN'):
+            return 100*self.net_profit()/self.sales
+        return None
+
+    def delivery_expense_ratio(self):
+        if self.purchase > Money(0, 'NGN'):
+            return 100*self.direct_expenses/self.purchase
+        return None
+
+    def admin_expense_ratio(self):
+        if self.sales > Money(0, 'NGN'):
+            return 100*self.indirect_expenses/self.sales
+        return None
+
 
 class BalanceSheet(models.Model):
     date = models.DateField(default=date.today)
@@ -92,4 +110,20 @@ class BalanceSheet(models.Model):
     def get_absolute_url(self):
         return reverse('trade-bs-detail', kwargs={'pk': self.pk})
 
+    def growth_ratio(self):
+        return round(100*self.profit/self.capital, 2)
+
+    def debt_to_equity_ratio(self):
+        return round(100*self.liability/self.capital, 2)
+
+    def current_ratio(self):
+        if self.liability > Money(0, 'NGN'):
+            return round(self.current_asset/self.liability, 3)
+        return None
     
+    def quick_ratio(self):
+        if self.liability > Money(0, 'NGN'):
+            obj = TradeDaily.objects.filter(date=self.date)
+            inventory = obj.get().closing_value if obj.exists() else Money(0, 'NGN')
+            return round((self.current_asset - self.sundry_debtor - inventory)/self.liability, 3)
+        return None

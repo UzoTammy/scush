@@ -3,8 +3,7 @@ from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.core.mail import EmailMessage
 from django.template import loader
-from .models import Money, TradeDaily
-from pdf.views import Ozone
+from .models import BalanceSheet, Money, TradeDaily
 import datetime
 
 @receiver(post_save, sender=TradeDaily)
@@ -59,7 +58,7 @@ def trade_daily_create(sender, instance, created, **kwargs):
     }
 
     email = EmailMessage(
-        subject=f'P & L Report as at {instance.date} - {head_title}',
+        subject=f'P & L Report for {instance.date} - {head_title}',
         body=loader.render_to_string('trade/mail_daily_PL.html', context={'object': dataset, 'ratio': total_ratio}),
         from_email='',
         to=['uzo.nwokoro@ozonefl.com'],
@@ -70,6 +69,22 @@ def trade_daily_create(sender, instance, created, **kwargs):
     email.send(fail_silently=False)
 
 
+@receiver(post_save, sender=BalanceSheet)
+def bs_mail_sender(sender, instance, created, **kwargs):
+    if created:
+        head_title = 'Created'
+    else:
+        head_title = 'Updated'
 
+    email = EmailMessage(
+        subject=f'Balance Sheet at at {instance.date} - {head_title}',
+        body = loader.render_to_string('trade/mail_bs.html', context={'object': instance}),
+        from_email='',
+        to=['uzo.nwokoro@ozonefl.com'],
+        cc=['dickson.abanum@ozonefl.com'],
+        headers={'message-id': 'tiger'}
+    )
+    email.content_subtype='html'
+    email.send(fail_silently=False)
 
 

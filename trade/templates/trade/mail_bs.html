@@ -1,0 +1,86 @@
+{% load djmoney %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container">
+    
+    <h5>Balance Sheet as at {{object.date}} and it's month cumulative</h5>
+    <table>
+        <tr>
+            <th style="text-align: center;">Items</th>
+            <th style="text-align: center;">Day</th>
+            <th style="text-align: center;">Month</th>
+        </tr>
+    
+        <tr>
+            <td>Profit</td>
+            <td style="text-align: right;">{{object.profit}}</td>
+            <td style="text-align: right;">{{month_obj.profit}}</td>
+        </tr>
+        <tr>
+            <td>Adjusted Profit</td>
+            <td style="text-align: right;">{{object.adjusted_profit}}</td>
+            <td style="text-align: right;">{{month_obj.profit}}</td>
+        </tr> 
+        <tr>
+            <td>Equity</td>
+            <td style="text-align: right;">{{object.capital}}</td>
+            <td style="text-align: right;">{{month_obj.capital}}</td>
+        </tr>
+        <tr>
+            <td>Current Liabilty</td>
+            <td style="text-align: right;">{{object.liability}}</td>
+            <td style="text-align: right;">{{month_obj.liability}}</td>
+        </tr>
+        
+        <tr style="color: red;">
+            <td>Total</td>
+            <td style="text-align: right;">{{object.profit|add:object.adjusted_profit:object.capital|object.liability}}</td>
+            <td style="text-align: right;">{{month_obj.profit|add:month_obj.adjusted_profit:month_obj.capital|month_obj.liability}}</td>
+        </tr>
+        <tr>
+            <td>Fixed Asset</td>
+            <td style="text-align: right;">{{object.fixed_asset}}</td>
+            <td style="text-align: right;">{{month_obj.fixed_asset}}</td>
+        </tr>
+        <tr>
+            <td>Current Asset</td>
+            <td style="text-align: right;">{{object.cuurent_asset}}</td>
+            <td style="text-align: right;">{{month_obj.current_asset}}</td>
+        </tr>
+        <tr>
+            <td>Investment</td>
+            <td style="text-align: right;">{{object.investment}}</td>
+            <td style="text-align: right;">{{month_obj.investment}}</td>
+        </tr>
+        <tr>
+            <td>Suspense</td>
+            <td style="text-align: right;">{{object.suspense}}</td>
+            <td style="text-align: right;">{{month_obj.suspense}}</td>
+        </tr>
+        
+        <tr style="color: red;">
+            <td>Total</td>
+            <td style="text-align: right;">{{object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense}}</td>
+            <td style="text-align: right;">{{month_obj.fixed_asset|add:month_obj.current_asset|add:month_obj.investment|add:month_obj.suspense}}</td>
+        </tr>
+        <tr>
+            <td>Growth Ratio</td>
+            <td style="text-align: right;">{{100|multiply:object.profit|div:object.capital}}%</td>
+            <td style="text-align: right;">{{ratio.delivery_expenses_ratio}}</td>
+        </tr>
+        <tr>
+            <td>Current Ratio</td>
+            <td style="text-align: right;">{{100|multiply:object.current_asset|div:object.liabilty}}</td>
+            <td style="text-align: right;">{{ratio.admin_expenses_ratio}}</td>
+        </tr>
+        <tr>
+            <td>Quick Ratio</td>
+            <td style="text-align: right;">{{object.admin_expenses_ratio}}</td>
+            <td style="text-align: right;">{{ratio.admin_expenses_ratio}}</td>
+        </tr>
+    </table>
+    
+    
+</div>
+{% endblock content %}
