@@ -5,11 +5,15 @@
 <div class="container-fluid">
     <div class="row d-flex justify-content-center">
         <div class="col-md-8 shadow-lg">
-            <form method="POST">
+            <form class="mt-3" method="POST">
                 {% csrf_token %}
                 <fieldset>
                     <legend>{{title}} Balance Sheet Form</legend>
                     <hr>
+                    {% if title == 'Create' %}
+                    <h6 class="text-danger"><i>Suggested Date: {{date|date:'d/m/Y'}}</i></h6>
+                    <hr>
+                    {% endif %}
                     {{form|crispy}}
                 </fieldset>
                 <div class="form-row">

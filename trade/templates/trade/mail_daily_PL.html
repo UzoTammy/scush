@@ -9,8 +9,8 @@
     <table>
         <tr>
             <th style="text-align: center;">Items</th>
-            <th style="text-align: center;">This Day</th>
-            <th style="text-align: center;">This Month</th>
+            <th style="text-align: center;">Day</th>
+            <th style="text-align: center;">Month</th>
         </tr>
     
         <tr>
@@ -68,10 +68,23 @@
                 {% endif %}
             </td>
             <td style="text-align: right;">
-                {% with object.total_gross_profit|minus:object.total_indirect_expenses as profit %}
-                    <span style="color:green">{{profit}}</span>
-                {% endwith %}
+                <span style="color:green">{{ratio.net_profit}}</span>
             </td>
+        </tr>
+        <tr>
+            <td>Margin Ratio</td>
+            <td style="text-align: right;">{{object.margin_ratio}}</td>
+            <td style="text-align: right;">{{ratio.margin_ratio}}</td>
+        </tr>
+        <tr>
+            <td>Delivery Expenses Ratio</td>
+            <td style="text-align: right;">{{object.delivery_expenses_ratio}}</td>
+            <td style="text-align: right;">{{ratio.delivery_expenses_ratio}}</td>
+        </tr>
+        <tr>
+            <td>Admin Expenses Ratio</td>
+            <td style="text-align: right;">{{object.admin_expenses_ratio}}</td>
+            <td style="text-align: right;">{{ratio.admin_expenses_ratio}}</td>
         </tr>
     </table>
     <p>Check: {{object.opening_value|minus:object.sales|add:object.purchase|add:object.gross_profit|add:object.direct_expenses|minus:object.closing_value}}

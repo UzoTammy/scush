@@ -23,14 +23,12 @@ from datetime import timedelta
 from ozone import mytools
 
 
-
 matplotlib.use('Agg')
 
 GROUP_NAME = 'Administrator'
 
 class EmailSample(TemplateView):
     template_name = 'mail/sample.html'
-
 
 
 class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView): 
@@ -505,7 +503,6 @@ class TradeDailyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return super().get_queryset().filter(date__year=year).order_by('-pk')
 
 
-
 class TradeDailyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = TradeDaily
     form_class = TradeDailyForm
@@ -716,6 +713,18 @@ class BSCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Create'
+
+        if BalanceSheet.objects.exists():
+            bs = BalanceSheet.objects.last()
+        
+            date = bs.date + datetime.timedelta(days=1)
+            while date not in TradeDaily.objects.values_list('date', flat=True):
+                date += datetime.timedelta(days=1)
+                if date >= TradeDaily.objects.last().date:
+                    if calendar.weekday(date.year, date.month, date.day) == 6:
+                        date += datetime.timedelta(days=1)
+                    break
+            context['date'] = date
         return context
 
 
@@ -738,6 +747,8 @@ class BSDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         pl = TradeDaily.objects.filter(date=qs['date']) 
         if pl.exists():
             inventory = float(pl[0].closing_value.amount)
+        else:
+            inventory = 0.0
 
         obj = [
             {

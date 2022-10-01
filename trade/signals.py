@@ -18,6 +18,7 @@ def trade_daily_create(sender, instance, created, **kwargs):
 
     qs_all = TradeDaily.objects.all()
 
+    net_profit = instance.gross_profit - instance.indirect_expenses
     dataset = {
             'date': instance.date,
             'title': 'P & L',
@@ -30,7 +31,11 @@ def trade_daily_create(sender, instance, created, **kwargs):
             'gross_profit': instance.gross_profit,
             'direct_income': instance.direct_income,
             'indirect_income': instance.indirect_income,
-            'net_profit': instance.gross_profit - instance.indirect_expenses,
+            'net_profit': net_profit,
+
+            'margin_ratio': round(100*net_profit/instance.sales, 2),
+            'delivery_expenses_ratio': round(100*instance.direct_expenses/instance.purchase, 2),
+            'admin_expenses_ratio': round(100*instance.indirect_expenses/instance.sales, 2),
 
             'total_sales': Money(qs.aggregate(Sum('sales'))['sales__sum'], 'NGN'),
             'total_purchase': Money(qs.aggregate(Sum('purchase'))['purchase__sum'], 'NGN'),
@@ -40,11 +45,22 @@ def trade_daily_create(sender, instance, created, **kwargs):
             'total_gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN'),
             'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN'),
             'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN'),
+            
             'sales_drive': qs_all.order_by('-pk')[:5],
         } 
+    
+    total_net_profit = dataset['total_gross_profit'] - dataset['total_indirect_expenses']
+    
+    total_ratio = {
+        'net_profit': total_net_profit,
+        'margin_ratio': round(100*total_net_profit/dataset['total_sales'], 2),
+        'delivery_expenses_ratio': round(100*dataset['total_indirect_expenses']/dataset['total_purchase'], 2),
+        'admin_expenses_ratio': round(100*dataset['direct_expenses']/dataset['total_sales'], 2),
+    }
+
     email = EmailMessage(
         subject=f'P & L Report as at {instance.date} - {head_title}',
-        body=loader.render_to_string('trade/mail_daily_PL.html', context={'object': dataset}),
+        body=loader.render_to_string('trade/mail_daily_PL.html', context={'object': dataset, 'ratio': total_ratio}),
         from_email='',
         to=['uzo.nwokoro@ozonefl.com'],
         cc=['dickson.abanum@ozonefl.com'],
