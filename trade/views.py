@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView)                            
 from datetime import timedelta
 from ozone import mytools
-from core import utils as plot
+from core import utils as plotter
 
 
 GROUP_NAME = 'Administrator'
@@ -73,8 +73,7 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 "gross_profit": daily_qs.aggregate(Sum('gross_profit'))['gross_profit__sum'],
                 "net_profit": daily_qs.aggregate(Sum('net_profit'))['net_profit__sum'],
                 "expenses": daily_qs.aggregate(Sum('expenses'))['expenses__sum'],
-                "purchase": daily_qs.aggregate(Sum('purchase'))['purchase__sum'],
-                
+                "purchase": daily_qs.aggregate(Sum('purchase'))['purchase__sum'],  
             }
             context['year'] = f'{year}'
             context['month'] = month
@@ -83,7 +82,7 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['object'] = BalanceSheet.objects.latest('date') 
             days = [str(x.date.day) for i, x in enumerate(context['sales_drive'])]
             sales = [round(100*y.sales/y.opening_value, 2) for i, y in enumerate(context['sales_drive'])]
-            context['chart'] = plot.line_graph(days, sales)
+            context['chart'] = plotter.line_graph(days, sales)
             
         return context
   
@@ -171,6 +170,12 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         year = pl.year 
         return super().get_queryset().filter(year=year).order_by('-id')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        month = [obj.month for obj in self.get_queryset().order_by('pk')]
+        sales = [obj.sales.amount for obj in self.get_queryset().order_by('pk')]
+        context['chart'] = plotter.line_graph(month, sales)
+        return context
 
 class TradeMonthlyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = TradeMonthly

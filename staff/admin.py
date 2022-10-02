@@ -10,7 +10,7 @@ from .models import (Employee,
                      Permit,
                      SalaryChange, 
                      EmployeeBalance,
-                     RequestPermission
+                     RequestPermission, Welfare
                      )
 
 # Register your models here.
@@ -31,6 +31,6 @@ admin.site.register(Permit)
 admin.site.register(SalaryChange)
 admin.site.register(EmployeeBalance)
 admin.site.register(RequestPermission)
-
+admin.site.register(Welfare)
 
 

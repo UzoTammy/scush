@@ -915,6 +915,17 @@ class UserHandleCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         user_profile.save()
         return reverse("employee-detail", kwargs={'pk': self.kwargs['pk']})
 
+class TerminatedStaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Terminate
+    template_name = 'staff/staff_views.html'
+    ordering = '-pk'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
 
 # Payroll Section
 class PayrollHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -1691,48 +1702,6 @@ class RequestPermissionDisapprove(LoginRequiredMixin, View):
         )
         return redirect('request-permission-list')
 
-class WelfareSupportList(LoginRequiredMixin, TemplateView):
-
-    template_name = 'staff/welfare_list.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        codes = Welfare.objects.values_list('staff__id', flat=True).distinct()
-        welfare_dataset = []
-        for code in codes:
-            qs = Welfare.objects.filter(staff__id=code)
-
-            dic = {
-                'id': code,
-                'staff': qs.first().staff.staff,
-                'amount': qs.aggregate(Sum('amount'))['amount__sum']
-            }
-            welfare_dataset.append(dic)
-        context['welfare_dataset'] = welfare_dataset 
-        context['total'] = Welfare.objects.aggregate(Sum('amount'))['amount__sum']
-        
-        return context
-
-class WelfareSupportListViewOneStaff(LoginRequiredMixin, ListView):
-    model = Welfare
-    template_name = 'staff/welfare_list_detail.html'
-
-    def get_queryset(self):
-        return super().get_queryset().filter(staff__id=self.kwargs['pk'])
-
-class TerminatedStaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = Terminate
-    template_name = 'staff/staff_views.html'
-    ordering = '-pk'
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-
-
 # Not connected
 class MakeOutstandingValueZero(View):
 
@@ -1772,6 +1741,38 @@ class PKResetPayroll(View):
     def get(self, request):
         messages.success(request, 'Congrats')
         return HttpResponseRedirect(reverse('pk-reset'))
+
+
+class WelfareSupportList(LoginRequiredMixin, TemplateView):
+
+    template_name = 'staff/welfare_list.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        codes = Welfare.objects.values_list('staff__id', flat=True).distinct()
+        welfare_dataset = []
+        for code in codes:
+            qs = Welfare.objects.filter(staff__id=code)
+
+            dic = {
+                'id': code,
+                'staff': qs.first().staff.staff,
+                'amount': qs.aggregate(Sum('amount'))['amount__sum'],
+                'count': qs.count()
+            }
+            welfare_dataset.append(dic)
+        context['welfare_dataset'] = welfare_dataset 
+        context['total'] = Welfare.objects.aggregate(Sum('amount'))['amount__sum']
+        
+        return context
+
+
+class WelfareSupportListViewOneStaff(LoginRequiredMixin, ListView):
+    model = Welfare
+    template_name = 'staff/welfare_list_detail.html'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(staff__id=self.kwargs['pk'])
 
 
 

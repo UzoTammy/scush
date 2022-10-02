@@ -9,47 +9,73 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-4 mt-1">
-            <p><img class="rounded-circle" src="{% static 'customer/logo.png' %}" alt=""></p>
-            <!-- <p class="float-right mr-2"><a href="">Rejected</a></p>
-            <p class="float-right mr-2"><a href="">Pending</a></p>
-            <p class="float-right mr-2"><a href="">Employed</a></p> -->
-
-            <p class=""></p>
-            
+        <div class="col-sm-6 mt-1">
+            <p><img class="rounded-circle shadow-lg" height="90px" src="{% static 'customer/logo.png' %}" alt=""></p>
             <ul style="list-style-type: none;">
                 <hr>
-                <li>Total Number of Applicants <span class="float-right"><sup>**</sup>{{total_number_of_applicants}}  </span></li>
+                <li>Total Number of Applicants <span class="float-right"><sup>**</sup>{{applicants.count}}  </span></li>
                 <hr>
-                <li>Number of Applicants in {{this_year}} <span class="float-right">{{this_year_applicants}}</span></li>
+                <li>Gender <span class="float-right ml-5">Male: {{applicants.gender.male}}</span> 
+                    <span class="float-right">Female: {{applicants.gender.female}}</span></li>
                 <hr>
-                <li>Number of Female Applicants <span class="float-right">{{female_applicants}}</span></li>
+                <li>Status <span class="float-right ml-3">Employed: 
+                    <a href="{% url 'apply-employed' %}">{{applicants.status.employed}}</a></span> 
+                    <span class="float-right ml-3">Pending: 
+                        <a href="{% url 'apply-pending' %}">{{applicants.status.pending}}</a></span>
+                    <span class="float-right ml-3">Rejected: 
+                        <a href="{% url 'apply-rejected' %}">{{applicants.status.rejected}}</a> </span>
+                </li>
                 <hr>
-                <li>Number of Male Applicants <span class="float-right">{{male_applicants}}</span></li>
+                <li>Marital Status <span class="float-right ml-5">Married: {{applicants.marital_status.married}}</span> 
+                    <span class="float-right">Single: {{applicants.marital_status.single}}</span></li>
                 <hr>
-                <li> <a href="{% url 'apply-employed' %}">Employed:</a> <span class="float-right">{{employment_status.employed}}</span> </li>
-                <hr>
-                <li> <a href="{% url 'apply-pending' %}">Pending:</a>  <span class="float-right">{{employment_status.pending}}</span></li>   
-                <hr> 
-                <li>    <a href="{% url 'apply-rejected' %}">Rejected:</a> <span class="float-right">{{employment_status.rejected}}</span></li>
+                
+                <li>Stature
+                    <span class="float-right ml-3"> Minor <sup class="text-muted">less 18yrs</sup>: 
+                        {{applicants.stature.less_than_18}}</span> 
+                    <span class="float-right ml-3">Youth <sup class="text-muted">btw 18 & 25yrs</sup>: 
+                        {{applicants.stature.between_18_and_25}}</span>
+                    <span class="float-right ml-3">Adult <sup class="text-muted">above 25yrs</sup>: 
+                        {{applicants.stature.above_25}}</span>
+                </li>
                 <hr>
             </ul>
-            <a class="float-right" href="{% url 'home' %}"><i class="fa fa-home"></i></a>
+            
             <sup class="text-muted">**Since June 2021</sup>
         </div>
-        <div class="col-4 mt-3">
+        <div class="col-sm-6 mt-3">
+            <h5 style="color: rgb(255, 0, 81);">Year: {{this_year}}</h5>
             <ul style="list-style-type: none;">
-                <li>Married <span class="float-right">{{marital_status|first}}</span></li>
                 <hr>
-                <li>Single <span class="float-right">{{marital_status|last}}</span></li>
+                <li>Total Number of Applicants <span class="float-right">{{this_year_applicants.count}}  </span></li>
                 <hr>
-                <li>Minor <sup class="text-muted">less 18yrs</sup> <span class="float-right">{{stature.less_than_18}}</span></li>
+                <li>Gender <span class="float-right ml-5">Male: {{this_year_applicants.gender.male}}</span> 
+                    <span class="float-right">Female: {{this_year_applicants.gender.female}}</span></li>
                 <hr>
-                <li>Youth <sup class="text-muted">btw 18 & 25yrs</sup> <span class="float-right">{{stature.between_18_and_25}}</span></li>
+                <li>Status <span class="float-right ml-3">Employed: 
+                    {{this_year_applicants.status.employed}}</span> 
+                    <span class="float-right ml-3">Pending: 
+                        {{this_year_applicants.status.pending}}</span>
+                    <span class="float-right ml-3">Rejected: 
+                        {{this_year_applicants.status.rejected}} </span>
+                </li>
                 <hr>
-                <li>Adult <sup class="text-muted">above 25yrs</sup> <span class="float-right">{{stature.above_25}}</span></li>
+                <li>Marital Status <span class="float-right ml-5">Married: {{this_year_applicants.marital_status.married}}</span> 
+                    <span class="float-right">Single: {{this_year_applicants.marital_status.single}}</span></li>
+                <hr>
+                
+                <li>Stature
+                    <span class="float-right ml-3"> Minor <sup class="text-muted">less 18yrs</sup>: {{this_year_applicants.stature.less_than_18}}</span> 
+                    <span class="float-right ml-3">Youth <sup class="text-muted">btw 18 & 25yrs</sup>: {{this_year_applicants.stature.between_18_and_25}}</span>
+                    <span class="float-right ml-3">Adult <sup class="text-muted">above 25yrs</sup>: {{this_year_applicants.stature.above_25}}</span>
+                </li>
                 <hr>
             </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a class="float-right" href="{% url 'home' %}"><i class="fa fa-2x fa-reply"></i></a>
         </div>
     </div>
 </div>

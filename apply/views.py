@@ -28,24 +28,54 @@ class ApplyHomeView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         applicant = Applicant.objects.all()
-        context['total_number_of_applicants'] = applicant.count()
-        this_year = datetime.date.today().year
-        context['this_year'] = str(this_year)
-        context['this_year_applicants'] = applicant.filter(apply_date__year=this_year).count()
-        context['female_applicants'] = applicant.filter(gender='FEMALE').count()
-        context['male_applicants'] = applicant.filter(gender='MALE').count()
-        context['employment_status'] = {
-            "employed": applicant.filter(status=True).count(), 
-            "pending": applicant.filter(status=None).count(), 
-            "rejected": applicant.filter(status=False).count()
-            }
-        context['marital_status'] = (applicant.filter(marital_status='MARRIED').count(), applicant.filter(marital_status='SINGLE').count())
         ages = list((datetime.date.today() - date).days//365 for date in applicant.values_list('birth_date', flat=True) )
         
-        context['stature'] = {
-            'less_than_18': len(tuple(age for age in ages if age < 18)),
-            'between_18_and_25': len(tuple(age for age in ages if 18 < age <= 25)),
-            'above_25': len(tuple(age for age in ages if age > 25))
+        context['applicants'] = {
+            'count': applicant.count(),
+            'gender': {
+                'female': applicant.filter(gender='FEMALE').count(),
+                'male': applicant.filter(gender='MALE').count(),
+            },
+            'status': {
+                "employed": applicant.filter(status=True).count(), 
+                "pending": applicant.filter(status=None).count(), 
+                "rejected": applicant.filter(status=False).count()
+            },
+            'marital_status': {
+                'married': applicant.filter(marital_status='MARRIED').count(),
+                'single': applicant.filter(marital_status='SINGLE').count()
+            },
+            'stature': {
+                'less_than_18': len(tuple(age for age in ages if age < 18)),
+                'between_18_and_25': len(tuple(age for age in ages if 18 < age <= 25)),
+                'above_25': len(tuple(age for age in ages if age > 25))
+            },
+        }
+        
+        context['this_year'] = str(datetime.date.today().year)
+        applicant = applicant.filter(apply_date__year=datetime.date.today().year)
+        ages = list((datetime.date.today() - date).days//365 for date in applicant.values_list('birth_date', flat=True) )
+        
+        context['this_year_applicants'] = {
+            'count': applicant.count(),
+            'gender': {
+                'female': applicant.filter(gender='FEMALE').count(),
+                'male': applicant.filter(gender='MALE').count(),
+            },
+            'status': {
+                "employed": applicant.filter(status=True).count(), 
+                "pending": applicant.filter(status=None).count(), 
+                "rejected": applicant.filter(status=False).count()
+            },
+            'marital_status': {
+                'married': applicant.filter(marital_status='MARRIED').count(),
+                'single': applicant.filter(marital_status='SINGLE').count()
+            },
+            'stature': {
+                'less_than_18': len(tuple(age for age in ages if age < 18)),
+                'between_18_and_25': len(tuple(age for age in ages if 18 < age <= 25)),
+                'above_25': len(tuple(age for age in ages if age > 25))
+            }
         }
         return context
 

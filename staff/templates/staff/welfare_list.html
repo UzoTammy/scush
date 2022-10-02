@@ -15,6 +15,7 @@
                     <tr class="bg-info text-white text-center">
                         <th>Staff</th>
                         <th>Amount</th>
+                        <th>Count</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -22,6 +23,7 @@
                     <tr>
                         <td><a href="{% url 'welfare-list-detail' record.id %}">{{record.staff}}</a></td>
                         <td class="text-right">{{record.amount|floatformat:'2g'}}</td>
+                        <td class="text-right">{{record.count}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

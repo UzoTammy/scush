@@ -19,9 +19,6 @@ urlpatterns = [
     path('home/<str:staff_category>/', TerminatedStaffListView.as_view(), name='terminated'),
     path('pk-reset/', PKResetView.as_view(), name='pk-reset'),
     path('pk-reset/payroll/', PKResetPayroll.as_view(), name='pk-reset-payroll'),
-    path('welfare/<int:pk>/', staffWelfare.as_view(), name='staff-welfare'),
-    path('welfare/list/', WelfareSupportList.as_view(), name='welfare-support-list'),
-    path('welfare/list/<str:pk>/one-staff/', WelfareSupportListViewOneStaff.as_view(), name='welfare-list-detail'),
     
     path('employee/<int:pk>/balance/', AddGratuity.as_view(), name='employee-balance'),
     path('employee/balance/list/', GratuityListView.as_view(), name='employee-balance-list'),
@@ -59,4 +56,10 @@ urlpatterns += [
     path('permission/from/<int:pk>/request/', PermissionFromRequest.as_view(), name='permission-from-request'),
     path('request/permission/<int:pk>/disapprove/', RequestPermissionDisapprove.as_view(), name='request-permission-disapprove'),
     path('<int:pk>/re-engage/', StaffReEngage.as_view(), name='re-engage')
+]
+
+urlpatterns += [
+    path('welfare/<int:pk>/', staffWelfare.as_view(), name='staff-welfare'),
+    path('welfare/list/', WelfareSupportList.as_view(), name='welfare-support-list'),
+    path('welfare/list/<str:pk>/one-staff/', WelfareSupportListViewOneStaff.as_view(), name='welfare-list-detail'),
 ]
