@@ -54,7 +54,7 @@ def trade_daily_create(sender, instance, created, **kwargs):
         'net_profit': total_net_profit,
         'margin_ratio': round(100*total_net_profit/dataset['total_sales'], 2),
         'delivery_expenses_ratio': round(100*dataset['total_indirect_expenses']/dataset['total_purchase'], 2),
-        'admin_expenses_ratio': round(100*dataset['direct_expenses']/dataset['total_sales'], 2),
+        'admin_expenses_ratio': round(100*dataset['total_direct_expenses']/dataset['total_sales'], 2),
     }
 
     email = EmailMessage(

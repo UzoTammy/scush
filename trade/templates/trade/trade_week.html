@@ -1,0 +1,47 @@
+{% extends 'users/base.html'%}
+{% load custom_templates %}
+{% block content %}
+<div class="container mt-3">
+    <h3 class="text-center" style="color: #001effc1;">Sales, Margin and Expenses</h3>
+    {% if qs.sales != 0 %}
+    <div class="row">
+        <div class="col-sm-6">
+            <ul class="list-group list-group-flush shadow">
+                <h5 class="mt-3" style="color: crimson;">Weekly 
+                    <small class="float-right text-muted mr-2">From {{dates|last|date:'d-m-y'}} to {{dates|first|date:'d-m-y'}}</small>
+                </h5>
+                <li class="list-group-item">Number of Sales <span class="float-right">{{qs.count}} of 6</span></li>
+                <li class="list-group-item">Sales <span class="float-right">{{qs.sales|floatformat:2}}</span></li>
+                <li class="list-group-item">Net Profit <span class="float-right">{{qs.net_profit|floatformat:2}}</span></li>
+                <li class="list-group-item">Expenses <span class="float-right">{{qs.direct_expenses|add:qs.indirect_expenses|floatformat:2}}</span></span></li>
+                <li class="list-group-item">Margin Ratio <span class="float-right">{{100|multiply:qs.net_profit|div:qs.sales|floatformat:2}}%</span></li>
+                
+                {% if qs.purchase != 0 %}
+                <li class="list-group-item">Delivery Expense Ratio <span class="float-right">{{100|multiply:qs.direct_expenses|div:qs.purchase|floatformat:2}}%</span></li>
+                {% endif %}
+                <li class="list-group-item">Admin Expense Ratio <span class="float-right">{{100|multiply:qs.indirect_expenses|div:qs.sales|floatformat:2}}%</span></li>
+                <li class="list-group-item">Growth Ratio<span class="float-right">{{qs.growth_ratio}}%</span> </li>
+                <li class="list-group-item">Debt to Equity Ratio<span class="float-right">{{qs.debt_to_equity_ratio}}%</span> </li>
+                <li class="list-group-item">Current Ratio<span class="float-right">{{qs.current_ratio}}</span> </li>
+                <li class="list-group-item">Quick Ratio<span class="float-right">{{qs.quick_ratio}}</span> </li>
+                <li class="list-group-item">
+                    <a href="#"><i class="fa fa-file-pdf-o fa-2x"></i></a>
+                    <a href="#" class="float-right"><i class="fa fa-envelope-o fa-2x"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col">
+            <p>No sales yet</p>
+        </div>
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col">
+            <a class="float-right" href="{% url 'trade-home' %}"><i class="fa fa-reply fa-2x"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock content%}

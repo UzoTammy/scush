@@ -83,33 +83,37 @@
               </div>
             </div>
             <div class="row p-2">
-                    <div class="col">
-                        <button type="button"
-                          class="list-group-item list-group-item-action bg-light"
-                          aria-current="true">
-                          <b class="text-center">{{object.name}} {{object.unit_type}} {{object.parameter}}</b>
-                        </button>
-                        <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Name: {{object.name}} </li>
-                        <li class="list-group-item">Date & Time Last Modified: {{object.date_modified}} </li>
-                        <li class="list-group-item">Source: {{object.source}}</li>
-                        <li class="list-group-item">Category: {{object.category}}</li>
-                        <li class="list-group-item">Unit Selling Price: {{object.unit_price}}</li>
-                        <li class="list-group-item">Cost Price: {{object.cost_price}}</li>
-                        <li class="list-group-item">Pack Type: {{object.pack_type}}</li>
-                        <li class="list-group-item">Quantity Per Pack: {{object.quantity_per_pack}}</li>
-                        <li class="list-group-item">Unit Type: {{object.unit_type}}</li>
-                        <li class="list-group-item">Product State: {{object.product_state }}</li>
-                        <li class="list-group-item">Size Value: {{object.size_value}}{{object.size_value_unit}}</li>
-                        <li class="list-group-item">Alcoholic Content: {{object.alcohol_content}}</li>
-                        <li class="list-group-item">VAT (in %): {{object.vat}}</li>
-                        <li class="list-group-item">Parameter: {{object.parameter }}</li>
-                        <li class="list-group-item">Active: {{object.active|yesno:'Yes, No'}}</li>
-                        <li class="list-group-item">Discount: {{object.discount}}</li>
-                        <li class="list-group-item">Discount Type: {{object.discount_type}}</li>
-                        <li class="list-group-item">Product Description: {{object}}</li>
+                  <button type="button"
+                    class="list-group-item list-group-item-action bg-light"
+                    aria-current="true">
+                    <b class="text-center">{{object.name}} {{object.unit_type}} {{object.parameter}}</b>
+                  </button>
+                <div class="col-sm-6">
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item">Name: <span class="float-right">{{object.name}}</span> </li>
+                      <li class="list-group-item">Date & Time Last Modified: <span class="float-right"> {{object.date_modified}} </span></li>
+                      <li class="list-group-item">Source: <span class="float-right">{{object.source}}</span> </li>
+                      <li class="list-group-item">Category: <span class="float-right">{{object.category}}</span></li>
+                      <li class="list-group-item">Unit Selling Price: <span class="float-right">{{object.unit_price}}</span> </li>
+                      <li class="list-group-item">Cost Price: <span class="float-right">{{object.cost_price}}</span></li>
+                      <li class="list-group-item">Pack Type: <span class="float-right">{{object.pack_type}}</span> </li>
+                      <li class="list-group-item">Quantity Per Pack: <span class="float-right">{{object.quantity_per_pack}}</span></li>
+                      <li class="list-group-item">Unit Type: <span class="float-right">{{object.unit_type}}</span> </li>
                     </ul>
-                    </div>
+                </div>
+                <div class="col-sm-6"> 
+                      <ul class="list-group list-group-flush">     
+                        <li class="list-group-item">Product State: <span class="float-right">{{object.product_state }}</span> </li>
+                        <li class="list-group-item">Size Value: <span class="float-right">{{object.size_value}}{{object.size_value_unit}}</span></li>
+                        <li class="list-group-item">Alcoholic Content: <span class="float-right">{{object.alcohol_content}}</span></li>
+                        <li class="list-group-item">VAT (in %): <span class="float-right">{{object.vat}}</span></li>
+                        <li class="list-group-item">Parameter: <span class="float-right">{{object.parameter }}</span></li>
+                        <li class="list-group-item">Active: <span class="float-right">{{object.active|yesno:'Yes, No'}}</span> </li>
+                        <li class="list-group-item">Discount: <span class="float-right">{{object.discount}}</span></li>
+                        <li class="list-group-item">Discount Type: <span class="float-right">{{object.discount_type}}</span> </li>
+                        <li class="list-group-item">Product Description: <span class="float-right">{{object}}</span> </li>
+                    </ul>
+            </div>
             </div>
         </div>
         

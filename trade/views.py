@@ -1,5 +1,6 @@
 import calendar
 import datetime
+import itertools as it
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
@@ -176,6 +177,7 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         sales = [obj.sales.amount for obj in self.get_queryset().order_by('pk')]
         context['chart'] = plotter.line_graph(month, sales)
         return context
+
 
 class TradeMonthlyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = TradeMonthly
@@ -786,4 +788,53 @@ class BSUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "Update"
+        return context
+
+
+class TradeWeekly(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'trade/trade_week.html'
+    
+    def test_func(self):
+        """if user is a member of the group Admin then grant access to this view"""
+        if self.request.user.groups.filter(name=GROUP_NAME).exists():
+            return True
+        return False
+
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        year = datetime.date.today().year
+
+        # fetch from DB monday dates for the year 
+        weeks = TradeDaily.objects.filter(date__year=year).dates('date', 'week')
+        new_week = (weeks.last(), weeks.last() + datetime.timedelta(days=6))
+
+        qs = TradeDaily.objects.filter(date__range=new_week)
+        qs = qs.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
+
+        context['qs'] = {
+            'count': qs.count(),
+            'sales': qs.aggregate(Sum('sales'))['sales__sum'],
+            'purchase': qs.aggregate(Sum('purchase'))['purchase__sum'],
+            'net_profit': qs.aggregate(Sum('net_profit'))['net_profit__sum'],
+            'direct_expenses': qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'],
+            'indirect_expenses': qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'],
+        }
+        # From BS
+        dates = sorted([weeks.last() + datetime.timedelta(days=n) for n in range(7)], reverse=True)
+        for date in dates:
+            qs = BalanceSheet.objects.filter(date=date)   
+            if qs.exists():
+                context['qs'].update(
+                    {
+                        'growth_ratio': qs.get().growth_ratio(),
+                        'debt_to_equity_ratio': qs.get().debt_to_equity_ratio(),
+                        'current_ratio': qs.get().current_ratio(),
+                        'quick_ratio': qs.get().quick_ratio()
+                    }
+                )
+                break
+        context['dates'] = dates
+        
+        
         return context

@@ -27,3 +27,7 @@ urlpatterns += [
         path('bs/<int:pk>/update/', BSUpdateView.as_view(), name='trade-bs-update'),
         # path('daily/PL/report/', PLDailyReportView.as_view(), name='daily-pl-report'),    
 ]
+
+urlpatterns += [
+        path('weekly/report', TradeWeekly.as_view(), name='trade-weeekly')
+]
