@@ -61,7 +61,7 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             month = daily.date.month
             context['month_string'] = mytools.Period.full_months[str(month).zfill(2)]
             # The Sales Drive Ratio: Sales by opening stock
-            context['sales_drive'] =  daily_qs.order_by('-pk')[:5]
+            context['sales_drive'] =  daily_qs.order_by('-pk').reverse()[:5]
             
             daily_qs = daily_qs.filter(date__year=year, date__month=month)
 
@@ -81,7 +81,7 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['daily'] = daily
             
             context['object'] = BalanceSheet.objects.latest('date') 
-            days = [str(x.date.day) for i, x in enumerate(context['sales_drive'])]
+            days = [x.date for i, x in enumerate(context['sales_drive'])]
             sales = [round(100*y.sales/y.opening_value, 2) for i, y in enumerate(context['sales_drive'])]
             context['chart'] = plotter.line_graph(days, sales)
             
@@ -822,6 +822,7 @@ class TradeWeekly(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         }
         # From BS
         dates = sorted([weeks.last() + datetime.timedelta(days=n) for n in range(7)], reverse=True)
+        
         for date in dates:
             qs = BalanceSheet.objects.filter(date=date)   
             if qs.exists():
@@ -834,7 +835,30 @@ class TradeWeekly(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                     }
                 )
                 break
+        
         context['dates'] = dates
         
+        date = TradeDaily.objects.filter(date__year=year).dates('date', 'month').reverse()[0]
+        recent_month = date.month
+        qs = TradeDaily.objects.filter(date__month=recent_month)
+        qs = qs.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
+
+        context['qsm'] = {
+            'count': qs.count(),
+            'sales': qs.aggregate(Sum('sales'))['sales__sum'],
+            'purchase': qs.aggregate(Sum('purchase'))['purchase__sum'],
+            'net_profit': qs.aggregate(Sum('net_profit'))['net_profit__sum'],
+            'direct_expenses': qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'],
+            'indirect_expenses': qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'],
+        }
         
+        qs = BalanceSheet.objects.latest('date')
+        
+        context['qsm'].update({
+            'date': qs.date,
+            'growth_ratio': qs.growth_ratio(),
+            'debt_to_equity_ratio': qs.debt_to_equity_ratio(),
+            'current_ratio': qs.current_ratio(),
+            'quick_ratio': qs.quick_ratio()
+        })
         return context

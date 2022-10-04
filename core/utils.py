@@ -18,7 +18,7 @@ def line_graph(x, y):
     plt.title('Sales Trend')
     plt.plot(x, y)
     plt.xticks(rotation=45)
-    plt.xlabel('Day of the month')
+    plt.xlabel('Date')
     plt.ylabel('Sales vs Stock(%)')
     plt.tight_layout()
     graph = get_graph()

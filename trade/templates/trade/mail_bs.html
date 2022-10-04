@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container">
     
-    <h5>Balance Sheet as at {{object.date}} and it's month cumulative</h5>
+    <h5>Balance Sheet as at {{object.date}} - {{head_title}}</h5>
     <table>
         <tr>
             <th style="text-align: center;">Items</th>
@@ -57,6 +57,10 @@
         <tr>
             <td>Growth Ratio</td>
             <td style="text-align: right;">{{object.growth_ratio}}%</td>
+        </tr>
+        <tr>
+            <td>Debt to Equity Ratio</td>
+            <td style="text-align: right;">{{object.debt_to_equity_ratio}}%</td>
         </tr>
         <tr>
             <td>Current Ratio</td>
