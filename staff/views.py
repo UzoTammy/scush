@@ -587,6 +587,46 @@ class StaffPermit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 )
         return redirect('employee-detail', pk=kwargs['pk'])
 
+
+class RequestPermissionView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def post(self, request, **kwargs):
+        staff = get_object_or_404(Employee, pk=kwargs['pk'])
+        start_date = datetime.datetime.strptime(request.POST['startFrom'], '%Y-%m-%dT%H:%M')
+        resume_date = datetime.datetime.strptime(request.POST['endingAt'], '%Y-%m-%dT%H:%M')
+        if resume_date > start_date:
+            permission = RequestPermission(
+                request_by=request.user,
+                staff=staff,
+                reason=request.POST['reason'],
+                start_date=start_date,
+                resume_date=resume_date
+            )
+            permission.save()
+            messages.success(request, f"permission has been requested. Approval will be required to GRANT IT")
+            email = EmailMessage(
+                subject=f'Permission Request for {staff}',
+                body=f"""<p>Request has been made for {staff}</p>
+                <p>Start Date: {start_date.strftime('%d-%m-%Y at %H:%M')}</p>
+                <p>End Date: {resume_date.strftime('%d-%m-%Y at %H:%M')}</p>
+                <p>Reason: {permission.reason}</p>
+                <p>This request is made by {permission.request_by}</p>
+                <a href="https://www.scush.com.ng/staff/request/permission/list/">Click to approve or disapprove</a>
+
+                """,
+                from_email='',
+                to=['uzo.nwokoro@ozonefl.com', f'{permission.request_by.email}'],  
+            )
+            email.send(fail_silently=False)
+        else:
+            messages.warning(request, f"Start date cannot be greater than end date. PERMISSION NOT REQUESTED")
+        return redirect(staff)
+
 class StaffReassign(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Employee
 
@@ -1634,7 +1674,6 @@ class PermissionFromRequest(LoginRequiredMixin, CreateView):
     model = Permit
     fields = []
 
-    
     def get(self, request, *args, **kwargs):
         self.object = get_object_or_404(RequestPermission, pk=self.kwargs['pk'])
         return super().get(request, *args, **kwargs)

@@ -34,7 +34,7 @@
                            data-toggle="modal"
                            data-target="#staffPermit">
                         <i class="fa fa-pause text-warning"></i>
-                        Create Permission
+                        Request Permission
                     </a>
                 </li>
                 <li class="nav-item">
@@ -846,7 +846,8 @@
                     {% if permissible_days > consumed_days %}
                     <p class="text-success">Permission beyond {{balance_days}} day{{balance_days|pluralize}} should not be granted</p>
                     {% endif %}
-                    <form action="{% url 'employee-permit' object.pk %}"
+                    <!--request-permission-update  -->
+                    <form action="{% url 'request-permission' object.pk %}" 
                           method="post">
                     {% csrf_token %}
                     <div class="row">

@@ -81,9 +81,10 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['daily'] = daily
             
             context['object'] = BalanceSheet.objects.latest('date') 
-            days = [x.date for i, x in enumerate(context['sales_drive'])]
+            dates = [x.date for i, x in enumerate(context['sales_drive'])]
             sales = [round(100*y.sales/y.opening_value, 2) for i, y in enumerate(context['sales_drive'])]
-            context['chart'] = plotter.line_graph(days, sales)
+            
+            context['chart'] = plotter.line_graph(dates, sales)
             
         return context
   
