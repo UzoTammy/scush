@@ -4,83 +4,95 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <!--        The menu-->
-        <div class="col-3 bg-dark">
-            <ul class="nav flex-column mt-3">
-                <li class="text-white">Trading, P & L</li>
-                
-                <li class="text-success ml-2">Monthly</li>
-                
-                <li class="nav-item">
-                    <a class="nav-link"
-                        href="{% url 'trade-list' %}">
-                        <i class="fa fa-eye-slash text-warning"></i> View
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'trade-create' %}">
-                        <i class="fa fa-plus text-warning"></i> Add
-                    </a>
-                </li>
-                <li class="text-success ml-2">Daily</li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                        href="{% url 'trade-daily-list' %}">
-                        <i class="fa fa-eye-slash text-warning"></i> View
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'trade-daily-create' %}">
-                        <i class="fa fa-plus text-warning"></i> Add
-                    </a>
-                </li>
-            </ul>
-            
-            <ul class="nav flex-column">
-                <li class="text-white">Balance Sheet</li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                        href="{% url 'trade-weeekly' %}">
-                        <i class="fa fa-book text-warning"></i> Report
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                        href="{% url 'trade-bs-list' %}">
-                        <i class="fa fa-eye-slash text-warning"></i> View
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'bs-create' %}">
-                        <i class="fa fa-plus text-warning"></i> Add
-                    </a>
-                </li>
-            </ul>
-            
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="fa fa-question text-warning"></i> Help
-                    </a>
-                </li>
-            </ul>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}">
-                        <i class="fa fa-reply text-warning"></i> Home
-                    </a>
-                </li>
-            </ul>
-        </div>
-        
+        <!-- The menu-->
+        <!-- <div class=""> -->
+            <nav class="col-sm-2 bg-dark">
+                <button
+                    class="navbar-toggler bg-light mt-1 mb-1 float-right"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#Dropdown2"
+                    aria-controls="Dropdown2"
+                    aria-expanded="false"
+                    aria-label="toggle navigation">
+                    <i class="fa fa-navicon fa-1x text-primary"></i>
+                </button>
+                <div class="collapse" id="Dropdown2">
+                    <ul class="nav flex-column mt-3">
+                        <li class="text-white">Trading, P & L</li>
+                        
+                        <li class="text-success ml-2">Monthly</li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="{% url 'trade-list' %}">
+                                <i class="fa fa-eye-slash text-warning"></i> View
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'trade-create' %}">
+                                <i class="fa fa-plus text-warning"></i> Add
+                            </a>
+                        </li>
+                        <li class="text-success ml-2">Daily</li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="{% url 'trade-daily-list' %}">
+                                <i class="fa fa-eye-slash text-warning"></i> View
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'trade-daily-create' %}">
+                                <i class="fa fa-plus text-warning"></i> Add
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <ul class="nav flex-column">
+                        <li class="text-white">Balance Sheet</li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="{% url 'trade-weeekly' %}">
+                                <i class="fa fa-book text-warning"></i> Report
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link"
+                                href="{% url 'trade-bs-list' %}">
+                                <i class="fa fa-eye-slash text-warning"></i> View
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'bs-create' %}">
+                                <i class="fa fa-plus text-warning"></i> Add
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="fa fa-question text-warning"></i> Help
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">
+                                <i class="fa fa-reply text-warning"></i> Home
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        <!-- </div> -->
         <!-- The Body -->
         {% if month %}
-        <div class="col-9 mt-3 bg-white">
-            <h3>Latest Balance Sheet and Profit & Loss Statements</h3>
-            
+        <div class="col-sm-10 mt-2 bg-white">
+            <h3 class="text-center">Latest Balance Sheet and Profit & Loss Statements</h3>
             <h5 class="text-primary"><i>Profit & Loss Account - {{daily.date}}</i></h5>
             <div class="row">
                 <div class="col-sm-6">
@@ -191,7 +203,7 @@
             <hr>
             <div class="row">
                 <div class="col-sm-6">
-                    <ul>
+                    <ul class="p-0" style="list-style-type: none;">
                         <li><img src="data:image/png;base64, {{chart|safe}}" alt=""></li>
                     </ul>
                     <p><i class="fa fa-braille text-warning"></i>Sales to Stock Ratio - last five days</p>

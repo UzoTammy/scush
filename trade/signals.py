@@ -1,10 +1,13 @@
+import datetime
 from django.dispatch import receiver
 from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.core.mail import EmailMessage
 from django.template import loader
 from .models import BalanceSheet, Money, TradeDaily
-import datetime
+from djmoney.models.fields import Money
+
+
 
 @receiver(post_save, sender=TradeDaily)
 def trade_daily_create(sender, instance, created, **kwargs):
@@ -33,8 +36,12 @@ def trade_daily_create(sender, instance, created, **kwargs):
             'net_profit': net_profit,
 
             'margin_ratio': round(100*net_profit/instance.sales, 2),
-            'delivery_expenses_ratio': round(100*instance.direct_expenses/instance.purchase, 2),
-            'admin_expenses_ratio': round(100*instance.indirect_expenses/instance.sales, 2),
+            'delivery_expenses_ratio': 
+            round(100*instance.direct_expenses/instance.purchase, 2) 
+            if instance.purchase > Money(0, 'NGN') else "Nil",
+            'admin_expenses_ratio': 
+            round(100*instance.indirect_expenses/instance.sales, 2) 
+            if instance.sales > Money(0, 'NGN') else "Nil",
 
             'total_sales': Money(qs.aggregate(Sum('sales'))['sales__sum'], 'NGN'),
             'total_purchase': Money(qs.aggregate(Sum('purchase'))['purchase__sum'], 'NGN'),
@@ -53,8 +60,12 @@ def trade_daily_create(sender, instance, created, **kwargs):
     total_ratio = {
         'net_profit': total_net_profit,
         'margin_ratio': round(100*total_net_profit/dataset['total_sales'], 2),
-        'delivery_expenses_ratio': round(100*dataset['total_indirect_expenses']/dataset['total_purchase'], 2),
-        'admin_expenses_ratio': round(100*dataset['total_direct_expenses']/dataset['total_sales'], 2),
+        'delivery_expenses_ratio': 
+        round(100*dataset['total_indirect_expenses']/dataset['total_purchase'], 2) 
+        if dataset['total_purchase'] > Money(0, 'NGN') else "Nil",
+        'admin_expenses_ratio': 
+        round(100*dataset['total_direct_expenses']/dataset['total_sales'], 2) 
+        if dataset['total_sales']>Money(0, 'NGN') else "Nil",
     }
 
     email = EmailMessage(

@@ -3,13 +3,12 @@
 {% load custom_templates %}
 
 {% block content %}
+
 <div class="container">
-    <h4>{{heading}}</h4>
+    <h4>Permission request for {{object.staff}}</h4>
     <hr>
     <div>
         <div style="text-align: center; background-color: #f7fbff;">
-            <p><span style="text-align: left;">Requested By: </span>{{object.request_by}}</p>
-            <hr>
             <p><span style="text-align: left;">Staff: </span>{{object.staff}}</p>
             <hr>
             <p><span style="text-align: left;">Date of Request: </span>{{object.date}}</p>
@@ -20,22 +19,15 @@
             <hr>
             <p><span style="text-align: left;">Resume Date: </span>{{object.resume_date}}</p>
             <hr>
+            <p><span style="text-align: left;">Requested By: </span>{{object.request_by.profile.staff}}</p>
+            <hr>
             {% if object.duration|last == 'D' %}
             <p><span style="text-align: left;">Duration: </span>{{object.duration|first|first}} Day(s)</p>
             {% else %}
             <p><span style="text-align: left;">Duration: </span>{{object.duration|first|first}} Hour(s)</p>
             {% endif %}
             <hr>
-            {% if object.status == True %}
-            <p style="color:green; font-size:16px;"><span style="text-align: right">Status: </span>{{object.status|yesno:'APPROVED, DISAPPROVED, PENDING'}}</p>
-            <hr>
-            {% elif object.status == False %}
-            <p style="color:red; font-size:16px;"><span style="text-align: right">Status: </span>{{object.status|yesno:'APPROVED, DISAPPROVED, PENDING'}}</p>
-            <hr>
-            {% else %}
-            <p style="color:rgb(240, 159, 10); font-size:14px;">Request is received and being processed. Kindly expect a decision soon</p>
-            <hr>
-            {% endif %}
+            <p><a href="https://www.scush.com.ng/staff/request/permission/list/">Click to approve or disapprove</a></p>
         </div>
     </div>
 </div>

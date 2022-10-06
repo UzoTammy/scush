@@ -587,7 +587,6 @@ class StaffPermit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 )
         return redirect('employee-detail', pk=kwargs['pk'])
 
-
 class RequestPermissionView(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -610,15 +609,8 @@ class RequestPermissionView(LoginRequiredMixin, UserPassesTestMixin, View):
             permission.save()
             messages.success(request, f"permission has been requested. Approval will be required to GRANT IT")
             email = EmailMessage(
-                subject=f'Permission Request for {staff}',
-                body=f"""<p>Request has been made for {staff}</p>
-                <p>Start Date: {start_date.strftime('%d-%m-%Y at %H:%M')}</p>
-                <p>End Date: {resume_date.strftime('%d-%m-%Y at %H:%M')}</p>
-                <p>Reason: {permission.reason}</p>
-                <p>This request is made by {permission.request_by}</p>
-                <a href="https://www.scush.com.ng/staff/request/permission/list/">Click to approve or disapprove</a>
-
-                """,
+                subject=f'Permission Request ID - {str(permission.pk).zfill(3)}',
+                body=loader.render_to_string('mail/request_permission.html', context={'object': permission}),
                 from_email='',
                 to=['uzo.nwokoro@ozonefl.com', f'{permission.request_by.email}'],  
             )
@@ -1705,9 +1697,9 @@ class PermissionFromRequest(LoginRequiredMixin, CreateView):
         obj.refresh_from_db()
         context['object'] = obj 
         context['heading'] = f'Permission for {obj.staff} Decision'
-        mail_message = loader.render_to_string('mail/request/permission.html', context)
+        mail_message = loader.render_to_string('mail/permission.html', context)
 
-        send_mail(f"Permission Request #{str(obj.pk).zfill(3)}",
+        send_mail(f"Permission Request ID - {str(obj.pk).zfill(3)}",
         message=f'Permission Granted to {obj.staff} on request #{str(obj.id).zfill(3)}. {obj.reason} being the reason. Permitted on {obj.start_date} to resume on {obj.resume_date}',
         from_email='',
         recipient_list=[requester_email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
@@ -1730,9 +1722,9 @@ class RequestPermissionDisapprove(LoginRequiredMixin, View):
         context['heading'] = f'Permission for {obj.staff} Decision'
         obj.refresh_from_db()
         context['object'] = obj
-        mail_message = loader.render_to_string('mail/request/permission.html', context)
+        mail_message = loader.render_to_string('mail/permission.html', context)
 
-        send_mail(subject=f"Permission Request #{str(kwargs['pk']).zfill(3)}",
+        send_mail(subject=f"Permission Request ID - {str(obj.pk).zfill(3)}",
         message=f"Your request for permission is NOT APPROVED",
         from_email='',
         recipient_list=[obj.request_by.email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],

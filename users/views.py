@@ -9,7 +9,6 @@ from django.conf import settings
 from .forms import UserRegisterForm
 from .forms import UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import QuerySet
 
 def allow_admin(user):
     if user.groups.filter(name='Administrator').exists():

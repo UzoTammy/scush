@@ -1,9 +1,7 @@
 from django.db import models
 from djmoney.models.fields import MoneyField, Money
-from datetime import date, timezone
 from django.urls.base import reverse
-from djmoney.models.validators import MinMoneyValidator
-
+from datetime import date
 
 
 class TradeMonthly(models.Model):
@@ -46,7 +44,6 @@ class TradeMonthly(models.Model):
     def get_absolute_url(self):
         return reverse('trade-detail', kwargs={'pk': self.pk})
 
-    
 
 class TradeDaily(models.Model):
     date = models.DateField(default=date.today)

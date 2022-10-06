@@ -40,244 +40,230 @@
     </div>
     {% endif %}
 </div>
-<div class="section mr-2">
-    <div class="p-3">
-        <div class="row">
-            <div class="col text-center">
-                <h3>Staff Home Page</h3>
+<div class="section mr-1">
+    <div class="row">
+        <div class="col-sm-2 bg-dark">
+            <nav>
+                <button
+                    class="navbar-toggler bg-light float-right mt-1" 
+                    type="button" 
+                    data-toggle="collapse" 
+                    data-target="#dropdown"
+                    aria-controls="dropdown"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <i class="fa fa-navicon text-primary"></i>
+                </button>
+            </nav>
+            <div class="collapse navbar-collapse" id="dropdown">
+                <ul class="nav flex-column">
+                    <!--Employee-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'staff-list' %}">
+                            Employee
+                        </a>
+                    </li>
+                    <!--Payroll-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'salary' %}">Payroll</a>
+                    </li>
+                    <!--Policies-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'staff-policies' %}">Policies</a>
+                    </li>
+                    <!--Procedures-->
+                    <li class="nav-item"><a class="nav-link" href="">Procedure</a></li>
+                    <li class="text-white ml-1">View</li>    
+                    <!--gratuity-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'employee-balance-list' %}">
+                            Gratuity
+                        </a>
+                    </li>
+                    <!-- Permission -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'request-permission-list' %}">
+                            Permission
+                        </a>
+                    </li>
+                    <!--Welfare-->
+                    {% if user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'welfare-support-list' %}">Welfare Support
+                             <!-- <sup class="badge badge-danger">new</sup> -->
+                        </a>
+                    </li>
+                    {% endif %}
+                
+                    <!-- Survey -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'survey-home' %}">Survey - Number of Children</a>
+                    </li>
+                        <!--                Return Home-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
+                    </li>
+                </ul>
             </div>
-        </div>
-        <div class="row">
-        <div class="col-3 bg-light">
-            <ul class="list-group list-group-flush">
-                <!--Employee-->
-                <li class="list-group-item">
-                    <div class="row mb-1">
-                    <a class="ml-1" href="{% url 'staff-list' %}">
-                        Employee
-                    </a>
-                    </div>
-                </li>
-                  <!--Payroll-->
-                <li class="list-group-item">
-                    <div class="row mb-1">
-                    <a class="ml-1" href="{% url 'salary' %}">Payroll</a>
-                    </div>
-                </li>
-                <!--Policies-->
-                <li class="list-group-item"><div class="row mb-1">
-                    <a class="ml-1" href="{% url 'staff-policies' %}">Policies</a>
-                </div>
-                </li>
-                <!--Procedures-->
-                <li class="list-group-item">
-                    <div class="row mb-1">
-                        <a class="ml-1" href="">Procedure</a>
-                    </div>
-                </li>
-                <!-- View -->
-                <li class="list-group-item">
-                    <div class="row mb-1 text-info">
-                        View
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        <!--gratuity-->
-                        <li class="list-group-item">
-                            <div class="row mb-1">  
-                                <a class="ml-1" href="{% url 'employee-balance-list' %}">
-                                    Gratuity
-                                </a>
-                            </div>
-                        </li>
-                        <!-- Permission -->
-                        <li class="list-group-item">
-                            <div class="row mb-1">  
-                                <a class="ml-1" href="{% url 'request-permission-list' %}">
-                                    Permission
-                                </a>
-                            </div>
-                        </li>
-                         <!--Welfare-->
-                        {% if user.is_superuser %}
-                        <li class="list-group-item">
-                            <div class="row mb-1">
-                                <a class="ml-1" href="{% url 'welfare-support-list' %}">Welfare Support <sup class="badge badge-danger">new</sup></a>
-                            </div>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </li>
             
-                
-                <!-- Survey -->
-                <li class="list-group-item">
-                    <div class="row mb-1">
-                        <a href="{% url 'survey-home' %}">Survey - Number of Children</a>
-                    </div>
-                </li>
-                    <!--                Return Home-->
-                <li class="list-group-item">
-                    <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
-                </li>
-        </ul>
-        </div>
+    </div>
     <!--   Body of Page     -->
-        <div class="col-9" style="font-family: Times New Roman; font-size: 12pt">
-            {{payroll_list}}
-            <p>{{message_one}}</p>
-        <!--Workforce basic characteristics -->
-            <div class="container mb-3">
-                <div class="row text-info">
-                <div class="col">
-                    Workforce: {{workforce}}
-                </div>
-                <div class="col">
-                    Male: {{male}}
-                </div>
-                <div class="col">
-                    Female: {{female}}
-                </div>
-                <div class="col">
-                    Married: {{married}}
-                </div>
-                <div class="col">
-                    Single: {{single}}
-                </div>
+    <div class="col-sm-10" style="font-family: Times New Roman; font-size: 12pt">
+        
+        {{payroll_list}}
+        <p>{{message_one}}</p>
+    <!--Workforce basic characteristics -->
+        <div class="container mb-3">
+            <div class="row text-info">
+            <div class="col">
+                Workforce: {{workforce}}
             </div>
+            <div class="col">
+                Male: {{male}}
             </div>
-            <p>{{ message_two }}</p>
-            <div class="container mb-3">
-                <div class="row text-info">
-                    <div class="col">
-                        Management: {{management}}
-                    </div>
-                    <div class="col">
-                        Non-Management: {{non_management}}
-                    </div>
-                    <div class="col">
-                        <a href="{% url 'terminated' staff_category %}">Terminated: {{terminated}}</a>
-                    </div>
-                    <div class="col">
-                        Probation: {{probation}}
-                    </div>
-                </div>
+            <div class="col">
+                Female: {{female}}
             </div>
-<!--            Probation Tables-->
-            <div class="row">
-                <div class="col-sm-6 text-center">
-                    <table class="table table-sm" 
-                    data-toggle="table" 
-                    data-pagination="true"
-                    data-page-list="[5, 10, All]"
-                    data-page-size="5">
-                        <caption>Primary Probation</caption>
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Employee</th>
-                            <th>Time Left</th>
-                            <th>Due Date</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for staff in staff_on_probation %}
-                        <tr>
-                            <td>{{staff.code|zeropadding:3}}</td>
-                            <td>{{staff.name}}</td>
-                            <td>{{staff.date|timeuntil:today }}</td>
-                            <td>{{staff.date|date:'jS M, Y'}}</td>
-                        </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="col-sm-6 text-center">
-                    <table 
-                    class="table table-sm" 
-                    data-toggle="table" 
-                    data-pagination="true"
-                    data-page-list="[5, 10, All]"
-                    data-page-size="5">
-                        <caption>Secondary Probation</caption>
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Employee</th>
-                            <th>Start Date</th>
-                            <th>Due Date</th>
-                            <th>Days Left</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for data in reassign_data %}
-                        <tr>
-                            <td>{{data.code|zeropadding:3}}</td>
-                            <td>{{data.staff}}</td>
-                            <td>{{data.start_date|date:'jS M, Y'}}</td>
-                            <td>{{data.due_date|date:'jS M, Y'}}</td>
-                            {% if data.days_left > 0 %}
-                            <td>{{data.days_left}}</td>
-                            {% else %}
-                            <td>Complete</td>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
-                </div>
-                
+            <div class="col">
+                Married: {{married}}
             </div>
-            <div class="row mt-2">
-                <div class="col-sm-6 text-center">
-                    <table 
-                    class="table table-sm" 
-                    data-toggle="table" 
-                    data-click-to-select="true"
-                    data-pagination="true"
-                    data-page-list="[5, 10, All]"
-                    data-page-size="5">
-                        <caption>Permission This Year</caption>
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Employee</th>
-                            <th>Duration</th>
-                            <th>Count</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for permit in permissions %}
-                        <tr>
-                            <td>{{permit.code|zeropadding:3}}</td>
-                            <td>{{permit.name}}</td>
-                            <td>
-                                {% if permit.duration|first != 0 %}
-                                {{permit.duration|first }}Day{{permit.duration|first|pluralize}}
-                                {% endif %}
-
-                                {% if permit.duration|last != 0 %}
-                                {{permit.duration|last}}Hr{{permit.duration|last|pluralize}}
-                                {% endif %}
-                            </td>
-                            <td>{{permit.count}}</td>
-                        </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="col-sm-6 text-center">
-                    
-                </div>
-                
+            <div class="col">
+                Single: {{single}}
             </div>
         </div>
-    </div>
+        </div>
+        <p>{{ message_two }}</p>
+        <div class="container mb-3">
+            <div class="row text-info">
+                <div class="col">
+                    Management: {{management}}
+                </div>
+                <div class="col">
+                    Non-Management: {{non_management}}
+                </div>
+                <div class="col">
+                    <a href="{% url 'terminated' staff_category %}">Terminated: {{terminated}}</a>
+                </div>
+                <div class="col">
+                    Probation: {{probation}}
+                </div>
+            </div>
+        </div>
+<!--            Probation Tables-->
+        <div class="row">
+            <div class="col-sm-6 text-center">
+                <table class="table table-sm" 
+                data-toggle="table" 
+                data-pagination="true"
+                data-page-list="[5, 10, All]"
+                data-page-size="5">
+                    <caption>Primary Probation</caption>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Employee</th>
+                        <th>Time Left</th>
+                        <th>Due Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for staff in staff_on_probation %}
+                    <tr>
+                        <td>{{staff.code|zeropadding:3}}</td>
+                        <td>{{staff.name}}</td>
+                        <td>{{staff.date|timeuntil:today }}</td>
+                        <td>{{staff.date|date:'jS M, Y'}}</td>
+                    </tr>
+                    {% endfor %}
 
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="col-sm-6 text-center">
+                <table 
+                class="table table-sm" 
+                data-toggle="table" 
+                data-pagination="true"
+                data-page-list="[5, 10, All]"
+                data-page-size="5">
+                    <caption>Secondary Probation</caption>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Employee</th>
+                        <th>Start Date</th>
+                        <th>Due Date</th>
+                        <th>Days Left</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for data in reassign_data %}
+                    <tr>
+                        <td>{{data.code|zeropadding:3}}</td>
+                        <td>{{data.staff}}</td>
+                        <td>{{data.start_date|date:'jS M, Y'}}</td>
+                        <td>{{data.due_date|date:'jS M, Y'}}</td>
+                        {% if data.days_left > 0 %}
+                        <td>{{data.days_left}}</td>
+                        {% else %}
+                        <td>Complete</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+        <div class="row mt-2">
+            <div class="col-sm-6 text-center">
+                <table 
+                class="table table-sm" 
+                data-toggle="table" 
+                data-click-to-select="true"
+                data-pagination="true"
+                data-page-list="[5, 10, All]"
+                data-page-size="5">
+                    <caption>Permission This Year</caption>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Employee</th>
+                        <th>Duration</th>
+                        <th>Count</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for permit in permissions %}
+                    <tr>
+                        <td>{{permit.code|zeropadding:3}}</td>
+                        <td>{{permit.name}}</td>
+                        <td>
+                            {% if permit.duration|first != 0 %}
+                            {{permit.duration|first }}Day{{permit.duration|first|pluralize}}
+                            {% endif %}
+
+                            {% if permit.duration|last != 0 %}
+                            {{permit.duration|last}}Hr{{permit.duration|last|pluralize}}
+                            {% endif %}
+                        </td>
+                        <td>{{permit.count}}</td>
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="col-sm-6 text-center">
+                
+            </div>
+            
+        </div>
     </div>
+</div>
+
 </div>
 {% endblock %}

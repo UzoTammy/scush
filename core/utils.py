@@ -14,7 +14,7 @@ def get_graph():
 
 def line_graph(x, y):
     plt.switch_backend('AGG')
-    plt.figure(figsize=(4, 3))
+    plt.figure(figsize=(4, 4))
     plt.title('Sales Trend')
     plt.plot(x, y)
     plt.xticks(rotation=45)
