@@ -85,6 +85,8 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             # The Sales Drive Ratio: Sales by opening stock
             dates = [x.date.strftime('%d-%m-%Y') for x in qs_for_chart]
             sales = [round(100*y.sales/y.opening_value, 2) for y in qs_for_chart]
+            dates.reverse()
+            sales.reverse()
             context['chart'] = plotter.h_bar_chart(dates, sales)
         return context
   
