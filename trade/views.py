@@ -61,6 +61,9 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             month = daily.date.month
             context['month_string'] = mytools.Period.full_months[str(month).zfill(2)]
             
+            # get the queryset before you go for the month
+            qs_for_chart =  daily_qs.order_by('-date')[:5]
+            
             daily_qs = daily_qs.filter(date__year=year, date__month=month)
 
             context['daily_monthly'] = {
@@ -80,9 +83,8 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['object'] = BalanceSheet.objects.latest('date') 
 
             # The Sales Drive Ratio: Sales by opening stock
-            qs =  daily_qs.order_by('-pk').reverse()[:5]
-            dates = [x.date.strftime('%d-%m-%Y') for x in qs]
-            sales = [round(100*y.sales/y.opening_value, 2) for y in qs]
+            dates = [x.date.strftime('%d-%m-%Y') for x in qs_for_chart]
+            sales = [round(100*y.sales/y.opening_value, 2) for y in qs_for_chart]
             context['chart'] = plotter.h_bar_chart(dates, sales)
         return context
   

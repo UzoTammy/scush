@@ -614,9 +614,10 @@ class RequestPermissionView(LoginRequiredMixin, UserPassesTestMixin, View):
                 from_email='',
                 to=['uzo.nwokoro@ozonefl.com', f'{permission.request_by.email}'],  
             )
+            email.content_subtype="html"
             email.send(fail_silently=False)
         else:
-            messages.warning(request, f"Start date cannot be greater than end date. PERMISSION NOT REQUESTED")
+            messages.warning(request, f"Start date cannot be greater than end date. REQUESTED UNSUCCESSFUL")
         return redirect(staff)
 
 class StaffReassign(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
