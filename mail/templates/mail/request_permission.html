@@ -1,34 +1,31 @@
-{% extends 'customer/base.html' %}
+{% extends 'mail/base.html' %}
 {% load djmoney %}
 {% load custom_templates %}
 
 {% block content %}
-
 <div class="container">
     <h4>Permission request for {{object.staff}}</h4>
     <hr>
-    <div>
-        <div style="text-align: center; background-color: #f7fbff;">
-            <p><span style="text-align: left;">Staff: </span>{{object.staff}}</p>
-            <hr>
-            <p><span style="text-align: left;">Date of Request: </span>{{object.date}}</p>
-            <hr>
-            <p><span style="text-align: left;">Reason: </span>{{object.reason}}</p>
-            <hr>
-            <p><span style="text-align: left;">Start Date: </span>{{object.start_date}}</p>
-            <hr>
-            <p><span style="text-align: left;">Resume Date: </span>{{object.resume_date}}</p>
-            <hr>
-            <p><span style="text-align: left;">Requested By: </span>{{object.request_by.profile.staff}}</p>
-            <hr>
-            {% if object.duration|last == 'D' %}
-            <p><span style="text-align: left;">Duration: </span>{{object.duration|first|first}} Day(s)</p>
-            {% else %}
-            <p><span style="text-align: left;">Duration: </span>{{object.duration|first|first}} Hour(s)</p>
-            {% endif %}
-            <hr>
-            <p><a href="https://www.scush.com.ng/staff/request/permission/list/">Click to approve or disapprove</a></p>
-        </div>
+    <div style="text-align: center; background-color: #f7fbff;">
+        <p><span style="text-align: left;">Staff: </span>{{object.staff}}</p>
+        <hr>
+        <p><span style="text-align: left;">Date of Request: </span>{{object.date}}</p>
+        <hr>
+        <p><span style="text-align: left;">Reason: </span>{{object.reason}}</p>
+        <hr>
+        <p><span style="text-align: left;">Start Date: </span>{{object.start_date}}</p>
+        <hr>
+        <p><span style="text-align: left;">Resume Date: </span>{{object.resume_date}}</p>
+        <hr>
+        <p><span style="text-align: left;">Requested By: </span>{{object.request_by.profile.staff}}</p>
+        <hr>
+        {% if object.duration|last == 'D' %}
+        <p><span style="text-align: left;">Duration: </span>{{object.duration|first|first}} Day(s)</p>
+        {% else %}
+        <p><span style="text-align: left;">Duration: </span>{{object.duration|first|first}} Hour(s)</p>
+        {% endif %}
+        <hr>
+        <p><a href="https://www.scush.com.ng/staff/request/permission/list/">Click to approve or disapprove</a></p>
     </div>
 </div>
 {% endblock content %}

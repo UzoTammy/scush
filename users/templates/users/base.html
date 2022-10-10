@@ -61,6 +61,26 @@
             place-content: center;
             display: grid;
         }
+
+        
+        @media (min-width: 996px) {
+            .collapse.collapse-sm {
+                display: block;
+                height: auto !important;
+                visibility: visible;
+            }
+            .myBtn {
+                visibility:visible;
+            } 
+        }
+        
+        @media (min-width: 1200px) {
+        
+            .myBtn {
+                visibility: hidden;
+            }
+        }
+
     </style>
 
     {% block head %} {% endblock %}

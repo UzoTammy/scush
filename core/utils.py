@@ -12,14 +12,14 @@ def get_graph():
     return graph
 
 
-def line_graph(x, y):
+def h_bar_chart(x, y):
     plt.switch_backend('AGG')
     plt.figure(figsize=(4, 4))
     plt.title('Sales Trend')
-    plt.plot(x, y)
-    plt.xticks(rotation=45)
-    plt.xlabel('Date')
-    plt.ylabel('Sales vs Stock(%)')
+    plt.barh(x, y)
+    plt.ylabel('Date')
+    plt.xlabel('Sales vs Stock(%)')
     plt.tight_layout()
     graph = get_graph()
     return graph
+    
