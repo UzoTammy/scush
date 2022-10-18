@@ -1,12 +1,13 @@
 
 import datetime
 import calendar
+import itertools as it
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import (View, TemplateView, ListView, CreateView, DetailView, UpdateView)
 from django.db.models import F, Sum 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from staff.models import Employee, Payroll, EmployeeBalance
+from staff.models import Employee, Payroll, EmployeeBalance, Permit, RequestPermission
 from stock.models import Product, ProductExtension
 from customer.models import CustomerProfile
 from survey.models import Question
@@ -120,6 +121,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         context['workforce'] = Employee.active.count()
         context['products'] = Product.objects.count()
         context['customers'] = CustomerProfile.objects.count()
@@ -154,7 +156,18 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
         if qs.exists():
             obj = qs.latest('date')
             context['pl_ratios'] = {"margin_ratio": f"{obj.margin_ratio()}%", "expense_ratio": obj.delivery_expense_ratio() + obj.admin_expense_ratio()} 
-        
+
+            #this is for HR KPI
+            date = qs.last().date
+            days = mytools.Month.number_of_working_days(date.year, date.month)
+            worforce = Employee.active.count()
+            man_hours = days * 10 * worforce
+            qs = RequestPermission.objects.filter(status=True).filter(date__year=date.year).filter(date__month=date.month)
+            durations = list(obj.duration() for obj in qs)
+            days = list(int(duration[:-1]) for duration in durations if duration[-1] == 'D')
+            hours = list(int(duration[:-1]) for duration in durations if duration[-1] == 'H')
+            hours = 10*sum(days) + sum(hours)
+            context['man_hour_ratio'] = f"{round(100*(1-hours/man_hours), 2)}%"
         context['salaries'] = Payroll.objects.filter(date_paid__year=datetime.date.today().year).aggregate(Sum('net_pay'))['net_pay__sum']
         
         context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']

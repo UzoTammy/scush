@@ -72,17 +72,17 @@ class TradeDaily(models.Model):
     
     def margin_ratio(self):
         if self.sales > Money(0, 'NGN'):
-            return 100*self.gross_profit/self.sales
-        return None
+            return round(100*(self.gross_profit - self.indirect_expenses)/self.sales, 2)
+        return Decimal('0')
 
     def delivery_expense_ratio(self):
         if self.purchase > Money(0, 'NGN'):
-            return 100*self.direct_expenses/self.purchase
+            return round(100*self.direct_expenses/self.purchase, 3)    
         return Decimal('0')
 
     def admin_expense_ratio(self):
         if self.sales > Money(0, 'NGN'):
-            return 100*self.indirect_expenses/self.sales
+            return round(100*self.indirect_expenses/self.sales, 3)
         return Decimal('0')
 
 

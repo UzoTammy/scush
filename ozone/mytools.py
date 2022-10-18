@@ -277,9 +277,7 @@ class Month:
         days_in_month = calendar.monthrange(year, month)
         month_range = range(1, days_in_month[1]+1)
         first_day = days_in_month[0]
-
         if first_day == 0:
-
             return len(list(i for i in zip(it.cycle(range(7)), month_range) if i[0] != calendar.SUNDAY))
         else:
             week_one = list(range(first_day, 6))
@@ -287,13 +285,25 @@ class Month:
             result = list(i for i in zip(it.cycle(range(7)), range(len(week_one)+1, days_in_month[1])) if i[0] != calendar.SUNDAY)
             return len(week_one + result)
 
-
+    @classmethod
+    def working_days(cls, year, month):
+        month = calendar.monthrange(year, month)
+        cycle = list()
+        for j in enumerate(it.cycle(range(7))):
+            if j[0] <= month[1] + month[0] - 1:
+                if j[0]-month[0] + 1 > 0:
+                    cycle.append((j[0]-month[0] + 1, j[1]))
+            else:
+                break 
+        return len(list(i for i in cycle if i[1] != calendar.SUNDAY))
+            
     @staticmethod
     def month_int(month):
         for i in range(1, 13):
             if month == calendar.month_name[i]:
                 break
         return i    
+
 
 
 class DateRange:

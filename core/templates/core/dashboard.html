@@ -5,25 +5,29 @@
 <div class="container  px-lg-5">
     
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
-        <div class="col mt-2">
-            {% if net_pay == None or net_profit == None %}
-                <p>None value involved</p>
-            {%else%}
-                <div data-toggle="tooltip"
-                data-placement="top" 
-                title='"Workforce Productivity is the net profit made per unit of salary paid over a payment period (monthly)"'
-                class="card text-primary" 
-                style="max-width: 18rem; border-radius: 50px 50px 50px 50px;">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fa fa-calendar"></i> WFP</h5>
-                        <p class="card-text float-right">{{net_profit|dividedby:net_pay|floatformat:'2g'}}</p>
-                    </div>
-              </div>
-            {%endif%}
+        <div class="col mt-2"> 
+            <div data-toggle="tooltip"
+            data-placement="top" 
+            title='"Workforce Productivity is the net profit made per unit of salary paid over a payment period (monthly)"'
+            class="card text-primary" 
+            style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fa fa-calendar"></i> HR KPI</h5>
+                    {% if net_pay == None or net_profit == None %}
+                        <p class="text-danger">Not Ready</p>
+                    {% else %}
+                        <p class="card-text float-right">
+                            WFP: {{net_profit|dividedby:net_pay|floatformat:'2g'}} <span class="text-danger">||</span>
+                            MHR: {{man_hour_ratio}}
+                        </p>
+                    {%endif%}
+                </div>
+            </div>
+            <small class="text-muted">WFP - Workforce Productivity MHR: Man-Hour Ratio</small>
         </div>
         <div class="col mt-2">
             <div class="card text-warning" 
-                style="max-width: 18rem; border-radius: 50px 50px 50px 50px;">
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
                 <div class="card-body">
                     <h5 class="card-title">GMR <small>(as at {{day|date:'d-m-Y'}})</small></h5>
                     <p class="card-text text-right">{{gp_ratio|floatformat:'3'}}% </p>
@@ -32,7 +36,7 @@
         </div>
         <div class="col mt-2">
             <div class="card text-danger" 
-                style="max-width: 18rem; border-radius: 50px 50px 50px 50px;">
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
                     <div class="card-body">
                         <p class="card-title">Workforce</p>
                         <p class="card-text float-right">{{workforce}}</p>
@@ -41,7 +45,7 @@
         </div>
         <div class="col mt-2">
             <div class="card text-info" 
-                style="max-width: 18rem; border-radius: 50px 50px 50px 50px;">
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
                     <div class="card-body">
                         <h5 class="card-title">Rent</h5>
                         <p class="card-text text-right">Payable: {{rent|floatformat:'2g'}}</p>
@@ -51,7 +55,7 @@
         </div>
         <div class="col mt-2">
             <div class="card text-secondary" 
-                style="max-width: 18rem; border-radius: 50px 50px 50px 50px;">
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
                     <div class="card-body">
                         <h5 class="card-title">Gratuity</h5>
                         <p class="card-text text-right">Cummulative Value: {{gratuity_value|floatformat:'2g'}}</p>
@@ -61,7 +65,7 @@
         </div> 
         <div class="col mt-2">
             <div class="card text-success" 
-                style="max-width: 18rem; border-radius: 50px 50px 50px 50px;">
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
                     <div class="card-body">
                         <h5 class="card-title">Number of Children</h5>
                         <p class="card-text text-right">Total: {{number_of_kids}}</p>
