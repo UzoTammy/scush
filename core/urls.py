@@ -14,6 +14,7 @@ urlpatterns = [
     path('about/', AboutView.as_view(), name='about'),
     path('company/', CompanyPageView.as_view(), name='company'),
     path('dashboard/', DashBoardView.as_view(), name='dashboard'),
+    path('policies/', PoliciesView.as_view(), name='policies'),
     # Json model
     path('json/list/', JsonListView.as_view(), name='json-list'),
     path('json/<int:pk>/detail/', JsonDetailView.as_view(), name='json-detail'),
@@ -25,7 +26,6 @@ urlpatterns = [
     path('reset/help/', TemplateView.as_view(template_name='core/resetting/settings_help.html'), name='reset-help'),
     
     path('practice/', PracticeView.as_view(), name='practice'),
-    # path('password/', PasswordView.as_view(), name='password'),
-    # path('core/login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='log')
+    path('audit/', AuditorView.as_view(), name='audit'),
 ]
 

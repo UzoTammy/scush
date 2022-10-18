@@ -3,6 +3,7 @@
 
 {% block content %}
 <div class="container  px-lg-5">
+    
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
         <div class="col mt-2">
             {% if net_pay == None or net_profit == None %}
@@ -11,50 +12,46 @@
                 <div data-toggle="tooltip"
                 data-placement="top" 
                 title='"Workforce Productivity is the net profit made per unit of salary paid over a payment period (monthly)"'
-                class="card text-white bg-primary" 
-                style="max-width: 18rem; border-radius: 50px 100px 50px 100px;">
+                class="card text-primary" 
+                style="max-width: 18rem; border-radius: 50px 50px 50px 50px;">
                     <div class="card-body">
-                        <h5 class="card-title">Workforce Productivity</h5>
-                        <p class="card-text text-right">{{net_profit|dividedby:net_pay|floatformat:'2g'}}</p>
-            
+                        <h5 class="card-title"><i class="fa fa-calendar"></i> WFP</h5>
+                        <p class="card-text float-right">{{net_profit|dividedby:net_pay|floatformat:'2g'}}</p>
                     </div>
               </div>
             {%endif%}
         </div>
         <div class="col mt-2">
-            <div class="card text-white bg-warning" 
-                style="max-width: 18rem; border-radius: 50px 100px 50px 100px;">
+            <div class="card text-warning" 
+                style="max-width: 18rem; border-radius: 50px 50px 50px 50px;">
                 <div class="card-body">
-                    <h5 class="card-title">Gross Margin Ratio <small>(as at {{day|date:'d-m-Y'}})</small></h5>
-                    <p class="card-text text-right">{{gp_ratio|floatformat:'3'}}% 
-                        <small class="text-muted text-right">(Sales:{{sales.amount}})</small></p>
+                    <h5 class="card-title">GMR <small>(as at {{day|date:'d-m-Y'}})</small></h5>
+                    <p class="card-text text-right">{{gp_ratio|floatformat:'3'}}% </p>
                 </div>
             </div>
         </div>
         <div class="col mt-2">
-            <div class="card text-white bg-danger" 
-                style="max-width: 18rem; border-radius: 50px 100px 50px 100px;">
+            <div class="card text-danger" 
+                style="max-width: 18rem; border-radius: 50px 50px 50px 50px;">
                     <div class="card-body">
-                        <!-- <h5 class="card-title">Workforce|Products</h5> -->
-                        <p class="card-title">Workforce:{{workforce}}</p>
-                        <p class="cart-text text-right">Customers:{{customers}} <br> Products:{{products}}</p>
-                        <!-- <p class="cart-text text-right"></p> -->
+                        <p class="card-title">Workforce</p>
+                        <p class="card-text float-right">{{workforce}}</p>
                     </div>
             </div>
         </div>
         <div class="col mt-2">
-            <div class="card text-white bg-info" 
-                style="max-width: 18rem; border-radius: 50px 100px 50px 100px;">
+            <div class="card text-info" 
+                style="max-width: 18rem; border-radius: 50px 50px 50px 50px;">
                     <div class="card-body">
-                        <h5 class="card-title">Salaries and Rent</h5>
-                        <p class="card-text text-right">Salary Paid: {{salaries|floatformat:'2g'}} <br> Rent Payable: {{rent|floatformat:'2g'}}</p>
+                        <h5 class="card-title">Rent</h5>
+                        <p class="card-text text-right">Payable: {{rent|floatformat:'2g'}}</p>
                     </div>
               </div>
         
         </div>
         <div class="col mt-2">
-            <div class="card text-white bg-secondary" 
-                style="max-width: 18rem; border-radius: 50px 100px 50px 100px;">
+            <div class="card text-secondary" 
+                style="max-width: 18rem; border-radius: 50px 50px 50px 50px;">
                     <div class="card-body">
                         <h5 class="card-title">Gratuity</h5>
                         <p class="card-text text-right">Cummulative Value: {{gratuity_value|floatformat:'2g'}}</p>
@@ -63,8 +60,8 @@
         
         </div> 
         <div class="col mt-2">
-            <div class="card text-white bg-success" 
-                style="max-width: 18rem; border-radius: 50px 100px 50px 100px;">
+            <div class="card text-success" 
+                style="max-width: 18rem; border-radius: 50px 50px 50px 50px;">
                     <div class="card-body">
                         <h5 class="card-title">Number of Children</h5>
                         <p class="card-text text-right">Total: {{number_of_kids}}</p>
@@ -182,7 +179,7 @@
     </div>
     <div class="row mb-3">
         <div class="col">
-            <a class="btn btn-outline-dark float-right" href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
+            <a class="float-right" href="{% url 'home' %}"><i class="fa fa-reply fa-2x"></i> Home</a>
         </div>
     </div>
 </div>

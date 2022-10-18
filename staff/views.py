@@ -1653,10 +1653,10 @@ class RequestPermissionUpdateView(LoginRequiredMixin, UpdateView):
             'duration': (durations[:-1], durations[-1])
         }
         requester_email = form.instance.request_by.email
-        mail_message = loader.render_to_string('mail/request/permission.html', context)
+        mail_message = loader.render_to_string('mail/permission.html', context)
 
         send_mail(
-            subject=f'Permission Request #{str(self.kwargs["pk"]).zfill(3)}',
+            subject=f'Permission Request ID - #{str(self.kwargs["pk"]).zfill(3)}',
             message=f'Request for permission has been modified from {form.instance.start_date} to {form.instance.resume_date} for {form.instance.staff}.',
             from_email='',
             recipient_list=[self.request.user.email, requester_email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],

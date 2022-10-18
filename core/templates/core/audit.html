@@ -1,0 +1,32 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row">
+        <div class="col-sm-3">
+            <ul style="list-style-type: none;">
+                <li>Date <span class="float-right">{{date}}</span></li>
+                <hr>
+                <li>Cost of Goods <span class="float-right">{{sales_value}}</span></li>
+                <hr>
+                <li>Sales <span class="float-right">{{sales}}</span></li>
+                <hr>
+                <li>Expenses <span class="float-right">{{expenses}}</span></li>
+                <hr>
+                {% with sales|minus:sales_value|minus:expenses as net %}
+                <li>Net Profit <span class="float-right">{{net}}</span></li>
+                <hr>
+                <li>Net Profit <sup class="text-muted">**</sup> <span class="float-right">{{net_profit}}</span></li>
+                <hr>
+                <li>Difference <span class="float-right">{{net|minus:net_profit}}</span></li>
+                <hr>
+                <li><sup>**</sup>Net profit from Profit & Loss</li>
+                {% endwith %}
+                <hr>
+                <li>Stock Out: {{stock_out}}</li>
+            </ul>        
+        </div>
+    </div>
+</div>
+{% endblock content %}

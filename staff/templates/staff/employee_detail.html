@@ -3,153 +3,166 @@
 {% load custom_templates %}
 {% load crispy_forms_tags %}
 
+
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <div class="col-3 bg-dark">
-            <p class="text-white mt-1">
-                <i class="fa fa-minus text-warning"></i>
-                    HR Actions
+        <nav class="col-sm-2 bg-dark">
+            <button
+                class="navbar-toggler bg-light mt-1 mb-1 float-right myBtn"
+                type="button"
+                data-toggle="collapse"
+                data-target="#Dropdown2"
+                aria-controls="Dropdown2"
+                aria-expanded="true"
+                aria-label="toggle navigation">
+                <i class="fa fa-navicon fa-1x text-primary"></i>
+            </button>
+            <div class="collapse collapse-sm" id="Dropdown2">
+                <ul class="nav flex-column mt-3">
+                    <li class="text-white"><i class="fa fa-minus text-warning"></i>HR Actions</li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           data-toggle="modal"
+                           data-target="#staffBalance">
+                            <i class="fa fa-book text-warning"></i>
+                            Add Gratuity
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                               data-toggle="modal"
+                               data-target="#staffSalary">
+                            <i class="fa fa-credit-card text-warning"></i>
+                            Change Salary
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                               data-toggle="modal"
+                               data-target="#staffPermit">
+                            <i class="fa fa-pause text-warning"></i>
+                            Request Permission
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           data-toggle="modal"
+                           data-target="#staffReassign">
+                            <i class="fa fa-envelope-open text-warning"></i>
+                            Reassign Position
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                               data-toggle="modal"
+                               data-target="#staffSuspend">
+                            <i class="fa fa-stop-circle text-warning"></i>
+                            Suspend</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                               data-toggle="modal"
+                               data-target="#staffTerminate">
+                            <i class="fa fa-stop text-warning"></i>
+                            Terminate
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           data-toggle="modal"
+                           data-target="#staffWelfare">
+                            <i class="fa fa-envelope-open text-warning"></i>
+                            Welfare Support <sup class="badge badge-danger">new</sup>
+                        </a>
+                    </li>
+                    <hr class="dropdown-divider">
+                    <li class="text-white"><i class="fa fa-minus text-warning"></i>Views</li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           href="{% url 'apply-detail' object.staff.pk %}">
+                            <i class="fa fa-book text-warning"></i>
+                            Applicant
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           href="{% url 'payroll-statement' object.pk %}">
+                            <i class="fa fa-book text-warning"></i>
+                            Payslip
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'balance-view' object.pk %}">
+                            <i class="fa fa-book text-warning"></i>
+                            Gratuity
+                        </a>
+                    </li>
+                    {% if not username %}
+                    <hr class="dropdown-divider">
+                    <li class="text-white mt-1">
+                        <i class="fa fa-minus text-warning"></i>
+                            Admin
+                    </li>
+                    
+                    <li class="nav-item"><a class="nav-link" 
+                        href="{% url 'create-user' object.pk %}"><i class="fa fa-user text-warning"></i>  Create User</a>
+                    </li>
+                    
+                    {% endif %}
+                    <hr class="dropdown-divider">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fa fa-question text-warning"></i> Help
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'staff-list' %}">
+                            <i class="fa fa-reply text-warning"></i> Return</a>
+                    </li>
+            </div>
+        </nav>
+        <div class="col-10 mt-4">
+            <h2 class="text-secondary text-center bg-light">Profile of {{object}}</h2>
+            <p class="text-success text-center">Employee ID: {{object.id|zeropadding:3}}
+                <span class="text-danger">(Username: {{username|default:'Not Created'}})</span>
             </p>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link"
-                       data-toggle="modal"
-                       data-target="#staffBalance">
-                        <i class="fa fa-book text-warning"></i>
-                        Add Gratuity
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                           data-toggle="modal"
-                           data-target="#staffSalary">
-                        <i class="fa fa-credit-card text-warning"></i>
-                        Change Salary
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a class="nav-link"
-                           data-toggle="modal"
-                           data-target="#staffPermit">
-                        <i class="fa fa-pause text-warning"></i>
-                        Request Permission
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                       data-toggle="modal"
-                       data-target="#staffReassign">
-                        <i class="fa fa-envelope-open text-warning"></i>
-                        Reassign Position
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                           data-toggle="modal"
-                           data-target="#staffSuspend">
-                        <i class="fa fa-stop-circle text-warning"></i>
-                        Suspend</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                           data-toggle="modal"
-                           data-target="#staffTerminate">
-                        <i class="fa fa-stop text-warning"></i>
-                        Terminate
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                       data-toggle="modal"
-                       data-target="#staffWelfare">
-                        <i class="fa fa-envelope-open text-warning"></i>
-                        Welfare Support <sup class="badge badge-danger">new</sup>
-                    </a>
-                </li>
-                <hr class="dropdown-divider">
-                <p class="text-white mt-1">
-                <i class="fa fa-minus text-warning"></i>
-                    Views
-                </p>
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="{% url 'apply-detail' object.staff.pk %}">
-                        <i class="fa fa-book text-warning"></i>
-                        Applicant
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="{% url 'payroll-statement' object.pk %}">
-                        <i class="fa fa-book text-warning"></i>
-                        Payslip
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'balance-view' object.pk %}">
-                        <i class="fa fa-book text-warning"></i>
-                        Gratuity
-                    </a>
-                </li>
-            </ul>
-            
-            {% if not username %}
-            <hr class="dropdown-divider">
-            <p class="text-white mt-1">
-                <i class="fa fa-minus text-warning"></i>
-                    Admin
-            </p>
-            <ul class="nav flex-column">
-                <li class="nav-item"><a class="nav-link" 
-                    href="{% url 'create-user' object.pk %}"><i class="fa fa-user text-warning"></i>  Create User</a>
-                </li>
-            </ul>
-            {% endif %}
-            <hr class="dropdown-divider">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="fa fa-question text-warning"></i> Help
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'staff-list' %}">
-                        <i class="fa fa-reply text-warning"></i> Return</a>
-                </li>
-            </ul>
-        </div>
-        <div class="col-9 mt-4">
-            <h2 class="text-secondary text-center bg-light">Individual Data Page</h2>
             <div class="row">
-                <div class="col-sm-9">
+                <div class="col-sm-4">
                     <div class="media">
                         <img src="{{object.image.url}}"
-                             width="150px"
-                             height="150px"
-                             class="rounded mr-3"
-                             alt="...">
+                                width="150px"
+                                height="150px"
+                                class="rounded mr-3"
+                                alt="...">
                         <div class="media-body">
-                            <h5 class="text-info mt-0">{{object}}</h5>
-                            <p class="text-success">Employee ID: {{object.id|zeropadding:3}}
-                                <span class="text-danger">(Username: {{username|default:'Not Created'}})</span>
-                            </p>
+                            <p>Survey Code: <span class="badge badge-info">{{question_obj.code|slugify}}</span></p>
                             <a class="btn btn-outline-dark btn-sm" href="{% url 'employee-update' object.pk %}"><small>Update Image</small></a>
-                            <h5 class="float-right">Survey Code: <span class="badge badge-info">{{question_obj.code|slugify}}</span></h5>
                         </div>
                     </div>
                     
                 </div>
+                <div class="col-sm-4">
+                    <p>Full Salary: <span class="text-success float-right">{{object.salary}}</span></p>
+                    <p>Age: <span class="text-success float-right">{{object.staff.birth_date|timesince}}</span></p>
+                    <p>Payout<small class="text-muted">(since June 2021)</small></span>: <span class="text-success float-right">{{naira}}{{payout|floatformat:'2g'}}</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <p>Gratuity: <span class="text-success float-right">{{naira}}{{total_balance|floatformat:'2g'}}</span></p>
+                    <p>Welfare: <span class="text-success float-right">{{naira}}{{total_welfare|floatformat:'2g'}}</span></p>
+                    <p>Worked For: <span class="text-success float-right">{{object.date_employed|timesince}}</span></p>
+                    {% if consumed_days|first == 0 and consumed_days|last == 0 %}
+                    <p>Permissions: <span class="text-success float-right">No permission taken or granted</span></p>
+                    {% else %}
+                    <p>Permissions Taken: <span class="text-danger float-right">{{consumed_days|first}}Day{{consumed_days|first|pluralize}}, {{consumed_days|last}}Hour{{consumed_days|last|pluralize}}</span></p>
+                    {% endif %}
+                </div>
             </div>
+                
             <div class="container">
                 <div class="row">
                     <div class="col-sm-4">
-                        <p class="text-success">Full Salary: {{object.salary}}</p>
-                        <p class="text-success">Age: {{object.staff.birth_date|timesince}}</p>
-                        <p class="text-success">Payout <span><small class="text-muted">(since June 2021)</small></span>: {{naira}}{{payout|floatformat:'2g'}}</p>
-                        <hr>
                         <ul class="p-1" style="list-style-type: none;">
                             <li>First Name: <span class="float-right">{{object.staff.first_name}}</span></li>
                             <hr>
@@ -178,19 +191,10 @@
                             <li>Residential Address: <span class="float-right">{{object.staff.address}}</span></li>
                         
                         </ul>
-                        
                     </div>
 
                     <div class="col-sm-4">
-                        <p>Gratuity: <span class="text-success">{{naira}}{{total_balance|floatformat:'2g'}}</span></p>
-                        <p>Welfare: <span class="text-success">{{naira}}{{total_welfare|floatformat:'2g'}}</span></p>
-                        <p>Worked For: <span class="text-success">{{object.date_employed|timesince}}</span></p>
-                        {% if consumed_days|first == 0 and consumed_days|last == 0 %}
-                        <p>Permissions: <span class="text-success">No permission taken or granted</span></p>
-                        {% else %}
-                        <p>Permissions: <span class="text-danger">{{consumed_days|first}}Day{{consumed_days|first|pluralize}}, {{consumed_days|last}}Hour{{consumed_days|last|pluralize}}</span></p>
-                        {% endif %}
-                        <hr>
+                        
                         <ul class="p-1" style="list-style-type: none;">
                             <li>Date Employed: <span class="float-right">{{object.date_employed}}</span></li>
                             <hr>
@@ -224,7 +228,7 @@
                             <hr>
                             <li>Account Number: <span class="float-right">{{object.account_number|addsep}}</span></li>
                             <hr>
-                            <li>Basic Salary: <span class="float-right">{{object.basic_salary}} | Allowance: {{objeclit.allowance}}</span></li>
+                            <li>Basic Salary: <span class="float-right">S: {{object.basic_salary}} | A: {{object.allowance}}</span></li>
                             <hr>
                             <li>Tax Payable:<span class="float-right">{{object.tax_amount}}</span></p>
                         </ul>

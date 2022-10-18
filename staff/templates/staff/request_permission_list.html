@@ -18,8 +18,8 @@
                         <th>Start Date</th>
                         <th>Resume Date</th>
                         <th>Duration</th>
-                        <th></th>
-                        <th></th>
+                        <th>Decision</th>
+                        <th>Edit</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,7 +34,7 @@
                         <td>{{object.resume_date}}</td>
                         <td>{{object.duration}}</td> 
                         <td><a href="{% url 'permission-from-request' object.pk %}">Approve or Disapprove</a></td>   
-                        <td><a href="{% url 'request-permission-update' object.pk %}" class="fa fa-edit ml-2">Edit</a></td>
+                        <td><a href="{% url 'request-permission-update' object.pk %}" class="fa fa-edit ml-2"></a></td>
 
                     </tr>
                     {% endfor %}

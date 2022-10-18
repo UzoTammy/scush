@@ -4,111 +4,107 @@
 
 
 {% block content %}
-<div class="container">
-    <div class="row p-2">
-        <div class="col">
-            {% for key, value in countdown %}
-            {% if value == 0 %}
-               <h5 style="font-family: cursive; color: #21ae10"
-                   class="text-center">
-                   Happy Birthday {{key}}. Our management and staff hereby wishes
-        you a lovely years ahead</h5>
-            {% endif %}
-        {% endfor %}
-        </div>
-    </div>
-<!--    upcoming birthdays-->
-    {% if countdown %}
+<div class="container-fluid">
     <div class="row">
-        <div class="col">
-            <h5>Upcoming Birthday</h5>
-        </div>
-    </div>
-    <div class="row">
-        <!--        {{countdown}}-->
-        <div class="col-sm-6">
-            <ul>
-        {% for key, value in countdown %}
-            {% if value != 0 %}
-                    <li style="font-family: cursive; font-size:13pt" class="text-info">{{key}}, your birthday comes up in {{value}}
-                        day{{value|pluralize}}
-                    </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-        </div>
-    </div>
-    {% endif %}
-</div>
-<div class="section mr-1">
-    <div class="row">
-        <div class="col-sm-2">
-            <nav>
-                <button
-                    class="navbar-toggler bg-light float-right mt-1 mb-1 myBtn" 
-                    type="button" 
-                    data-toggle="collapse" 
-                    data-target="#dropdown"
-                    aria-controls="dropdown"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <i class="fa fa-navicon text-primary"></i>
-                </button>
+        <nav class="col-sm-2 bg-dark">
+            <button
+                class="navbar-toggler bg-light float-right mt-1 mb-1 myBtn" 
+                type="button" 
+                data-toggle="collapse" 
+                data-target="#dropdown"
+                aria-controls="dropdown"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+                <i class="fa fa-navicon text-primary"></i>
+            </button>
+        
+        <div class="collapse collapse-sm" id="dropdown">
+            <ul class="nav flex-column mr-auto">
+                <!--Employee-->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'staff-list' %}">
+                        Employee
+                    </a>
+                </li>
+                <!--Payroll-->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'salary' %}">Payroll</a>
+                </li>
+                <!--Policies-->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'staff-policies' %}">Policies</a>
+                </li>
+                <!--Procedures-->
+                <li class="nav-item"><a class="nav-link" href="">Procedure</a></li>
+                <li class="text-muted ml-1">-----Views-----</li>    
+                <!--gratuity-->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'employee-balance-list' %}">
+                        Gratuity
+                    </a>
+                </li>
+                <!-- Permission -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'request-permission-list' %}">
+                        Permission
+                    </a>
+                </li>
+                <!--Welfare-->
+                {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'welfare-support-list' %}">Welfare Support
+                            <!-- <sup class="badge badge-danger">new</sup> -->
+                    </a>
+                </li>
+                {% endif %}
             
-            <div class="collapse collapse-sm" id="dropdown">
-                <ul class="nav flex-column mr-auto">
-                    <!--Employee-->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'staff-list' %}">
-                            Employee
-                        </a>
-                    </li>
-                    <!--Payroll-->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'salary' %}">Payroll</a>
-                    </li>
-                    <!--Policies-->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'staff-policies' %}">Policies</a>
-                    </li>
-                    <!--Procedures-->
-                    <li class="nav-item"><a class="nav-link" href="">Procedure</a></li>
-                    <li class="text-white ml-1">View</li>    
-                    <!--gratuity-->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'employee-balance-list' %}">
-                            Gratuity
-                        </a>
-                    </li>
-                    <!-- Permission -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'request-permission-list' %}">
-                            Permission
-                        </a>
-                    </li>
-                    <!--Welfare-->
-                    {% if user.is_superuser %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'welfare-support-list' %}">Welfare Support
-                             <!-- <sup class="badge badge-danger">new</sup> -->
-                        </a>
-                    </li>
-                    {% endif %}
-                
-                    <!-- Survey -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'survey-home' %}">Survey - Number of Children</a>
-                    </li>
-                        <!--                Return Home-->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
-                    </li>
-                </ul>
-            </div>
-            </nav>
+                <!-- Survey -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'survey-home' %}">Survey - Number of Children</a>
+                </li>
+                    <!--                Return Home-->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
+                </li>
+            </ul>
         </div>
+        </nav>
         <!--   Body of Page     -->
         <div class="col-sm-9" style="font-family: Times New Roman; font-size: 12pt">
+            <div class="row p-2">
+                <div class="col">
+                    {% for key, value in countdown %}
+                    {% if value == 0 %}
+                       <h5 style="font-family: cursive; color: #21ae10"
+                           class="text-center">
+                           Happy Birthday {{key}}. Our management and staff hereby wishes
+                you a lovely years ahead</h5>
+                    {% endif %}
+                {% endfor %}
+                </div>
+            </div>
+        <!--    upcoming birthdays-->
+            {% if countdown %}
+            <div class="row">
+                <div class="col">
+                    <h5>Upcoming Birthday</h5>
+                </div>
+            </div>
+            <div class="row">
+                <!--        {{countdown}}-->
+                <div class="col-sm-6">
+                    <ul>
+                {% for key, value in countdown %}
+                    {% if value != 0 %}
+                            <li style="font-family: cursive; font-size:13pt" class="text-info">{{key}}, your birthday comes up in {{value}}
+                                day{{value|pluralize}}
+                            </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+                </div>
+            </div>
+            {% endif %}
             <div class="container">
                 {{payroll_list}}
             <p>{{message_one}}</p>

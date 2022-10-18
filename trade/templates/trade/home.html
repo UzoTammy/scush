@@ -1,93 +1,100 @@
 {% extends 'users/base.html' %}
 {% load custom_templates %}
 
+
 {% block content %}
 <div class="container-fluid">
     <div class="row">
         <!-- The menu-->
         <!-- <div class=""> -->
-            <nav class="col-sm-2 bg-dark">
-                <button
-                    class="navbar-toggler bg-light mt-1 mb-1 float-right myBtn"
-                    type="button"
-                    data-toggle="collapse"
-                    data-target="#Dropdown2"
-                    aria-controls="Dropdown2"
-                    aria-expanded="false"
-                    aria-label="toggle navigation">
-                    <i class="fa fa-navicon fa-1x text-primary"></i>
-                </button>
-                <div class="collapse collapse-sm" id="Dropdown2">
-                    <ul class="nav flex-column mt-3">
-                        <li class="text-white">Trading, P & L</li>
-                        
-                        <li class="text-success ml-2">Monthly</li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link"
-                                href="{% url 'trade-list' %}">
-                                <i class="fa fa-eye-slash text-warning"></i> View
-                            </a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'trade-create' %}">
-                                <i class="fa fa-plus text-warning"></i> Add
-                            </a>
-                        </li>
-                        <li class="text-success ml-2">Daily</li>
-                        <li class="nav-item">
-                            <a class="nav-link"
-                                href="{% url 'trade-daily-list' %}">
-                                <i class="fa fa-eye-slash text-warning"></i> View
-                            </a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'trade-daily-create' %}">
-                                <i class="fa fa-plus text-warning"></i> Add
-                            </a>
-                        </li>
-                    </ul>
+        <nav class="col-sm-2 bg-dark">
+            <button
+                class="navbar-toggler bg-light mt-1 mb-1 float-right myBtn"
+                type="button"
+                data-toggle="collapse"
+                data-target="#Dropdown2"
+                aria-controls="Dropdown2"
+                aria-expanded="false"
+                aria-label="toggle navigation">
+                <i class="fa fa-navicon fa-1x text-primary"></i>
+            </button>
+            <div class="collapse collapse-sm" id="Dropdown2">
+                <ul class="nav flex-column mt-3">
+                    <li class="text-white">Trading, P & L</li>
                     
-                    <ul class="nav flex-column">
-                        <li class="text-white">Balance Sheet</li>
-                        <li class="nav-item">
-                            <a class="nav-link"
-                                href="{% url 'trade-weeekly' %}">
-                                <i class="fa fa-book text-warning"></i> Report
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link"
-                                href="{% url 'trade-bs-list' %}">
-                                <i class="fa fa-eye-slash text-warning"></i> View
-                            </a>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'bs-create' %}">
-                                <i class="fa fa-plus text-warning"></i> Add
-                            </a>
-                        </li>
-                    </ul>
+                    <li class="text-success ml-2">Monthly</li>
                     
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fa fa-question text-warning"></i> Help
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">
-                                <i class="fa fa-reply text-warning"></i> Home
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="{% url 'trade-list' %}">
+                            <i class="fa fa-eye-slash text-warning"></i> View
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'trade-create' %}">
+                            <i class="fa fa-plus text-warning"></i> Add
+                        </a>
+                    </li>
+                    <li class="text-success ml-2">Daily</li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="{% url 'trade-daily-list' %}">
+                            <i class="fa fa-eye-slash text-warning"></i> View
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'trade-daily-create' %}">
+                            <i class="fa fa-plus text-warning"></i> Add
+                        </a>
+                    </li>
+                </ul>
+                <hr class="dropdown-divider">
+                <ul class="nav flex-column">
+                    <li class="text-white">Balance Sheet</li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="{% url 'trade-weeekly' %}">
+                            <i class="fa fa-book text-warning"></i> Report
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                            href="{% url 'trade-bs-list' %}">
+                            <i class="fa fa-eye-slash text-warning"></i> View
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'bs-create' %}">
+                            <i class="fa fa-plus text-warning"></i> Add
+                        </a>
+                    </li>
+                </ul>
+                <hr class="dropdown-divider">
+
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'audit' %}">
+                            <i class="fa fa-sticky-note text-warning"></i> General Report
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fa fa-question text-warning"></i> Help
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="fa fa-reply text-warning"></i> Home
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
         <!-- </div> -->
         <!-- The Body -->
         {% if month %}
