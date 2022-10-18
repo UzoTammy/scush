@@ -1,12 +1,12 @@
 import calendar
 import datetime
-import itertools as it
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
 from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm)
 from django.shortcuts import render
 from .models import *
+from stock.models import ProductExtension
 from django.urls.base import reverse_lazy
 from django.db.models import (Sum, F, Avg, ExpressionWrapper, DecimalField)
 from matplotlib import pyplot as plt
@@ -795,6 +795,7 @@ class BSUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 class TradeWeekly(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+
     template_name = 'trade/trade_week.html'
     
     def test_func(self):
@@ -864,4 +865,33 @@ class TradeWeekly(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             'current_ratio': qs.current_ratio(),
             'quick_ratio': qs.quick_ratio()
         })
+        return context
+
+
+class AuditorView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/audit.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = "Welcome to Auditor's page"
+
+        if ProductExtension.objects.exists():
+            product_date = ProductExtension.objects.latest('date').date
+            product_qs = ProductExtension.objects.filter(date=product_date)
+            product_qs = product_qs.annotate(cost_of_goods_sold=F('cost_price')*F('sell_out'))
+            # product_qs = product_qs.filter(date=product_date)
+        if TradeDaily.objects.exists():
+            trade_date = TradeDaily.objects.latest('date').date
+            trade_obj = TradeDaily.objects.get(date=trade_date)
+        
+            
+        if product_date == trade_date:
+            context['sales_value'] = Money(product_qs.aggregate(sales_value=Sum('cost_of_goods_sold'))['sales_value'], 'NGN')
+            context['sales'] = trade_obj.sales
+            context['expenses'] = trade_obj.direct_expenses + trade_obj.indirect_expenses
+            context['net_profit'] = trade_obj.gross_profit - trade_obj.indirect_expenses
+            context['stock_out'] = trade_obj.opening_value + trade_obj.purchase - trade_obj.closing_value
+        context['product_date'] = product_date
+        context['trade_date'] = trade_date
+        
         return context

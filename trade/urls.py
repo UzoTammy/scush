@@ -29,5 +29,8 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-        path('weekly/report', TradeWeekly.as_view(), name='trade-weeekly')
+        path('weekly/report', TradeWeekly.as_view(), name='trade-weeekly'),
+        path('audit/', AuditorView.as_view(), name='audit'),
+        
+
 ]

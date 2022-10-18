@@ -335,26 +335,4 @@ class JsonCategoryKeyValueUpdateView(LoginRequiredMixin, View):
         return redirect('json-cat-key', kwargs['id'], kwargs['key'])
 
 
-class AuditorView(LoginRequiredMixin, TemplateView):
-    template_name = 'core/audit.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = "Welcome to Auditor's page"
-
-        qs = ProductExtension.objects.all()
-        #pick the last date
-        date = qs.last().date
-        context['date'] = date
-        if qs.exists():
-            qs = qs.filter(date=date).annotate(cost_of_goods_sold=F('cost_price')*F('sell_out'))
-            context['sales_value'] = Money(qs.aggregate(sales_value=Sum('cost_of_goods_sold'))['sales_value'], 'NGN')
-        qs = TradeDaily.objects.filter(date=date)
-        if qs.exists():
-            obj = qs.get()
-            context['sales'] = obj.sales
-            context['expenses'] = obj.direct_expenses + obj.indirect_expenses
-            context['net_profit'] = obj.gross_profit - obj.indirect_expenses
-            context['stock_out'] = obj.opening_value + obj.purchase - obj.closing_value
-        return context
     

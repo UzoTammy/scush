@@ -26,6 +26,6 @@ urlpatterns = [
     path('reset/help/', TemplateView.as_view(template_name='core/resetting/settings_help.html'), name='reset-help'),
     
     path('practice/', PracticeView.as_view(), name='practice'),
-    path('audit/', AuditorView.as_view(), name='audit'),
+    
 ]
 

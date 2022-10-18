@@ -4,9 +4,11 @@
 {% block content %}
 <div class="container mt-3">
     <div class="row">
+        
         <div class="col-sm-3">
+            {% if trade_date == product_date %}
             <ul style="list-style-type: none;">
-                <li>Date <span class="float-right">{{date}}</span></li>
+                <li>Date <span class="float-right">{{trade_date}}</span></li>
                 <hr>
                 <li>Cost of Goods <span class="float-right">{{sales_value}}</span></li>
                 <hr>
@@ -25,9 +27,16 @@
                 {% endwith %}
                 <hr>
                 <li>Stock Out: {{stock_out}}</li>
-            </ul>        
+            </ul>   
+            {%else%}
+            <h6> Record not ready </h6>   
+            <p>The Trade date ({{trade_date}}) and the Stock date ({{product_date}}) must be the same</p>
+            {% endif %}  
         </div>
+        
+
     </div>
+    
     <div class="row mb-3">
         <div class="col">
             <a class="float-right" href="{% url 'trade-home' %}"><i class="fa fa-reply fa-2x"></i></a>
