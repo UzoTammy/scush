@@ -2,74 +2,72 @@
 {% load custom_templates %}
 
 {% block content %}
-<div class="container-fluid p-3">
+<div class="container-fluid">
   <div class="row">
-      <div class="col text-center">
-          <h3>Stock Report Page</h3>
-      </div>
-  </div>
-  <div class="row mt-2">
-      <div class="col-3 bg-light">
-    
-      <li class="list-group-item">
-        <a href="#" 
-        data-toggle="modal" 
-        data-target="#stockReport"><i class="fa fa-vcard text-danger"></i> Change Date</a>
-      </li>
-      <li class="list-group-item">
-        <a href="{% url 'stock-report-all-products' %}">Products</a>
-      </li>
-        {% now 'Y' as current_year %}
-        <li class="list-group-item"><a href="{% url 'stock-month' current_year %}">{{current_year}}</a></li>
-        <li class="list-group nav-item dropdown">
-          <a class="nav-link dropdown-toggle" 
-          data-toggle="dropdown"
-          href="#">Monthly</a> 
-          <ul class="dropdown-menu">
-            {% for month in months %}
-            <li class="dropdown-item"><a href="{% url 'stock-month' month %}">{{month}}</a></li>
-            {% endfor %}
-          </ul>
-        </li>
-        <hr>
-        <ul class="list-group list-group-flush">
-          <li class="list-group nav-item dropdown">
-            <a class="nav-link dropdown-toggle" 
-            data-toggle="dropdown"
-            href="#">Sources</a> 
-            <ul class="dropdown-menu">
-              {% for source in sources %}
-              <li class="dropdown-item"><a href="{% url 'stock-report-source' source %}">{{source}}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
-          <hr class="dropdown-divider">
-          <!-- <li class="list-group nav-item dropdown">
-            <a class="nav-link dropdown-toggle" 
-            data-toggle="dropdown"
-            href="#">Bulk Add</a> 
-            <ul class="dropdown-menu">
-              {% for source in sources %}
-              <li class="dropdown-item"><a href="{% url 'stock-report-add' source %}" disabled>{{source}}</a></li>
-              {% endfor %}
-            </ul>
-          </li>
-          <li class="list-group nav-item dropdown">
-            <a class="nav-link dropdown-toggle" 
-            data-toggle="dropdown"
-            href="#">Bulk Edit</a> 
-            <ul class="dropdown-menu">
-              {% for source in sources %}
-              <li class="dropdown-item"><a href="{% url 'stock-report-update' source %}">{{source}}</a></li>
-              {% endfor %}
-            </ul> -->
-          <!-- </li> -->
-          <li class="list-group-item">
-              <a href="{% url 'product-home' %}"><i class="fa fa-reply"></i> Return</a>
-          </li>
-        </ul>
-      </div>
-      <div class="col-9">
+      
+        <nav class="col-sm-2 bg-dark">
+          <button
+              class="navbar-toggler bg-light float-right mt-1 mb-1 myBtn" 
+              type="button" 
+              data-toggle="collapse" 
+              data-target="#dropdown"
+              aria-controls="dropdown"
+              aria-expanded="false"
+              aria-label="Toggle navigation">
+              <i class="fa fa-navicon text-primary"></i>
+          </button>
+      
+          <div class="collapse collapse-sm" id="dropdown">
+              <ul class="nav flex-column">
+                  <li class="nav-item">
+                      <a class="nav-link" href="#" 
+                      data-toggle="modal" 
+                      data-target="#stockReport"><i class="fa fa-vcard text-danger"></i> Change Date</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'stock-report-all-products' %}">Products</a>
+                </li>
+                {% now 'Y' as current_year %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'stock-month' current_year %}">{{current_year}}</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" 
+                    data-toggle="dropdown"
+                    href="#">Monthly
+                  </a> 
+                  <ul class="dropdown-menu">
+                    {% for month in months %}
+                    <li class="nav-item dropdown">
+                      <a class="nav-link" href="{% url 'stock-month' month %}">{{month}}</a></li>
+                    {% endfor %}
+                  </ul>
+                </li>
+                
+                <li class=" nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" 
+                      data-toggle="dropdown"
+                      href="#">Sources
+                  </a> 
+                  <ul class="dropdown-menu">
+                    {% for source in sources %}
+                    <li class="dropdown-item">
+                      <a href="{% url 'stock-report-source' source %}">{{source}}</a>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </li>
+                  
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'product-home' %}"><i class="fa fa-reply"></i> Return</a>
+                </li>
+              </ul>
+          </div>
+        </nav>
+        
+      
+      <div class="col-sm-10">
+        <h3 class="text-center">Stock Report Page</h3>
         <h5 class="text-italics text-left">{{msg}}: {{current_date|date:'d-M-Y'}}</h5>
         {% if not obj %}
         <h6 class="ml-5">No Record Found 
