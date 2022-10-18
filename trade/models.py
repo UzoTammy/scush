@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 from djmoney.models.fields import MoneyField, Money
 from django.urls.base import reverse
@@ -68,23 +69,21 @@ class TradeDaily(models.Model):
     def get_absolute_url(self):
         return reverse('trade-daily-detail', kwargs={'pk': self.pk})
 
-    # def net_profit(self):
-    #     return self.gross_profit - self.indirect_expenses
-
+    
     def margin_ratio(self):
         if self.sales > Money(0, 'NGN'):
-            return 100*self.net_profit()/self.sales
+            return 100*self.gross_profit/self.sales
         return None
 
     def delivery_expense_ratio(self):
         if self.purchase > Money(0, 'NGN'):
             return 100*self.direct_expenses/self.purchase
-        return None
+        return Decimal('0')
 
     def admin_expense_ratio(self):
         if self.sales > Money(0, 'NGN'):
             return 100*self.indirect_expenses/self.sales
-        return None
+        return Decimal('0')
 
 
 class BalanceSheet(models.Model):

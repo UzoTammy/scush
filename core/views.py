@@ -11,7 +11,7 @@ from stock.models import Product, ProductExtension
 from customer.models import CustomerProfile
 from survey.models import Question
 from apply.models import Applicant
-from trade.models import TradeDaily, TradeMonthly
+from trade.models import TradeDaily, TradeMonthly, BalanceSheet
 from warehouse.models import Stores, Renewal
 from ozone import mytools
 from .forms import JsonDatasetForm
@@ -145,6 +145,16 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             context['sales'] = qs_daily_last.sales
             context['day'] = qs_daily_last.date
 
+        qs = BalanceSheet.objects.all()
+        if qs.exists():
+            obj = qs.latest('date')
+            context['bs_ratios'] = {"growth_ratio": f"{obj.growth_ratio()}%", "quick_ratio": obj.quick_ratio()} 
+        
+        qs = TradeDaily.objects.all()
+        if qs.exists():
+            obj = qs.latest('date')
+            context['pl_ratios'] = {"margin_ratio": f"{obj.margin_ratio()}%", "expense_ratio": obj.delivery_expense_ratio() + obj.admin_expense_ratio()} 
+        
         context['salaries'] = Payroll.objects.filter(date_paid__year=datetime.date.today().year).aggregate(Sum('net_pay'))['net_pay__sum']
         
         context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
