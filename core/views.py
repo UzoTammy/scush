@@ -155,9 +155,22 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             month = obj.date.month
             base_value = Decimal('0') if month == 1 else qs.filter(
                 date__month=month-1).latest('date').growth_ratio()
+        
+        target = {
+                'growth': 150,
+                'margin': 300,
+                'sales': 410,
+                'delivery': 30,
+                'admin': 30,
+                'wf_productivity':100,
+                'man_hour':97
+            }
         context['KPI'] = {
                 'growth': int(100 * (obj.growth_ratio() - base_value)),
             }
+        
+        context['color'] = {'growth': 'success' if context['KPI']['growth'] >= target['growth'] else 'dark'}
+        
         qs = TradeDaily.objects.all()
         if qs.exists():
             obj = qs.latest('date')
@@ -173,18 +186,30 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             
             context['KPI'].update({
                 'margin': int(100*100*(profit-indirect_expenses)/sales),
-                'sales': sales/Decimal('1000000'),
+                'sales': int(sales/Decimal('1000000')),
                 'delivery': int(100*100*direct_expenses/purchase) if purchase > Decimal('0') else 0,
                 'admin': int(100*100*indirect_expenses/sales) if sales > Decimal('0') else 0
-            })  
+            }); 
+            context['color'].update({
+                'margin': 'success' if context['KPI']['margin'] >= target['margin'] else 'dark',
+                'sales': 'success' if context['KPI']['sales'] >= target['sales'] else 'dark',
+                'delivery': 'success' if context['KPI']['delivery'] <= target['delivery'] else 'dark',
+                'admin': 'success' if context['KPI']['admin'] <= target['admin'] else 'dark',
+                'total': 'success' if context['KPI']['delivery'] + context['KPI']['admin'] <= target['margin'] + target['admin'] else 'dark',
+            }) 
+            
+            
             # get salary and step it up by 20% 
             employee =  Employee.objects.all()
             salary = employee.aggregate(Sum('basic_salary')).get('basic_salary__sum') + employee.aggregate(
                 Sum('allowance')).get('allowance__sum')
             # step up by 20% to allow for incentive
             context['KPI'].update({
-                'wf_productivity': int(100*(profit-indirect_expenses)/(Decimal('1.2')*salary)),
+                'wf_productivity': int(10*(profit-indirect_expenses)/(Decimal('1.2')*salary)),
                 })
+            context['color'].update({
+                'wf_productivity': 'success' if context['KPI']['wf_productivity'] >= target['wf_productivity'] else 'dark',
+            }) 
             
             date = qs.last().date
             days = mytools.Month.number_of_working_days(date.year, date.month)
@@ -196,6 +221,8 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             hours = list(int(duration[:-1]) for duration in durations if duration[-1] == 'H')
             hours = 10*sum(days) + sum(hours)
             context['KPI'].update({'man_hour': int(100*(1-hours/man_hours))})
+            context['color'].update({'man_hour': 'success' if context['KPI']['man_hour'] >= target['man_hour'] else 'dark'})
+            context['target'] = target
         context['salaries'] = Payroll.objects.filter(date_paid__year=datetime.date.today().year).aggregate(Sum('net_pay'))['net_pay__sum']
         
         context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
