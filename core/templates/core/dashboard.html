@@ -5,34 +5,53 @@
 <div class="container  px-lg-5">
     
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
-        <div class="col mt-2"> 
-            <div data-toggle="tooltip"
-            data-placement="top" 
-            title='"Workforce Productivity is the net profit made per unit of salary paid over a payment period (monthly)"'
-            class="card text-primary" 
-            style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
-                <div class="card-body">
-                    <h5 class="card-title"><i class="fa fa-calendar"></i> HR KPI</h5>
-                    {% if net_pay == None or net_profit == None %}
-                        <p class="text-danger">Not Ready</p>
-                    {% else %}
-                        <p class="card-text float-right">
-                            WFP: {{net_profit|dividedby:net_pay|floatformat:'2g'}} <span class="text-danger">||</span>
-                            MHR: {{man_hour_ratio}}
-                        </p>
-                    {%endif%}
-                </div>
-            </div>
-            <small class="text-muted">WFP - Workforce Productivity MHR: Man-Hour Ratio</small>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><span class="text-danger">KPI</span>  <span class="float-right">Pts</span></li>
+                <li class="list-group-item">Growth Rate <span class="float-right">{{KPI.growth}}</span></li>
+            </ul>
         </div>
         <div class="col mt-2">
-            <div class="card text-warning" 
-                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
-                <div class="card-body">
-                    <h5 class="card-title">GMR <small>(as at {{day|date:'d-m-Y'}})</small></h5>
-                    <p class="card-text text-right">{{gp_ratio|floatformat:'3'}}% </p>
-                </div>
-            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><span class="text-danger">KPI</span>  <span class="float-right">Pts</span></li>
+                <li class="list-group-item">Margin Ratio <span class="float-right">{{KPI.margin}}</span></li>
+            </ul>
+        </div>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><span class="text-danger">KPI</span>  <span class="float-right">Pts</span></li>
+                <li class="list-group-item">Sales <span class="float-right">{{KPI.sales}}</span></li>
+            </ul>
+        </div>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><span class="text-danger">KPI</span>  <span class="float-right">Pts</span></li>
+                <li class="list-group-item">Delivery Expenses <span class="float-right">{{KPI.delivery}}</span></li>
+            </ul>
+        </div>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><span class="text-danger">KPI</span>  <span class="float-right">Pts</span></li>
+                <li class="list-group-item">Admin Expenses <span class="float-right">{{KPI.admin}}</span></li>
+            </ul>
+        </div>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><span class="text-danger">KPI</span>  <span class="float-right">Pts</span></li>
+                <li class="list-group-item">Total Expenses <span class="float-right">{{KPI.delivery|add:KPI.admin}}</span></li>
+            </ul>
+        </div>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><span class="text-danger">KPI</span>  <span class="float-right">Pts</span></li>
+                <li class="list-group-item">Wf Productivity <span class="float-right">{{KPI.wf_productivity}}</span></li>
+            </ul>
+        </div>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><span class="text-danger">KPI</span>  <span class="float-right">Pts</span></li>
+                <li class="list-group-item">Man-Hour <span class="float-right">{{KPI.man_hour}}</span></li>
+            </ul>
         </div>
         <div class="col mt-2">
             <div class="card text-danger" 
@@ -51,7 +70,6 @@
                         <p class="card-text text-right">Payable: {{rent|floatformat:'2g'}}</p>
                     </div>
               </div>
-        
         </div>
         <div class="col mt-2">
             <div class="card text-secondary" 
@@ -63,16 +81,7 @@
               </div>
         
         </div> 
-        <div class="col mt-2">
-            <div class="card text-success" 
-                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
-                    <div class="card-body">
-                        <h5 class="card-title">Number of Children</h5>
-                        <p class="card-text text-right">Total: {{number_of_kids}}</p>
-                    </div>
-              </div>
         
-        </div>
     </div>
     <div class="d-flex row justify-content-center mt-5">
         <div class="col">

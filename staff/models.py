@@ -271,8 +271,6 @@ class RequestPermission(models.Model):
     resume_date = models.DateTimeField()
     status = models.BooleanField(default=None, null=True, blank=True) #true: approved, #false: disapproved, #none: pending
 
-    # available = AvailableRequestArticleManager()
-    # objects = models.Manager()
     
     def __str__(self):
         return f'{self.staff} permission request'

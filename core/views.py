@@ -2,10 +2,11 @@
 import datetime
 import calendar
 import itertools as it
+from decimal import Decimal
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import (View, TemplateView, ListView, CreateView, DetailView, UpdateView)
-from django.db.models import F, Sum 
+from django.db.models import F, Sum, Avg 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from staff.models import Employee, Payroll, EmployeeBalance, Permit, RequestPermission
 from stock.models import Product, ProductExtension
@@ -20,7 +21,6 @@ from .models import JsonDataset
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from djmoney.models.fields import Money
-
 
 def index(request):
     
@@ -151,23 +151,51 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
         if qs.exists():
             obj = qs.latest('date')
             context['bs_ratios'] = {"growth_ratio": f"{obj.growth_ratio()}%", "quick_ratio": obj.quick_ratio()} 
-        
+
+            month = obj.date.month
+            base_value = Decimal('0') if month == 1 else qs.filter(
+                date__month=month-1).latest('date').growth_ratio()
+        context['KPI'] = {
+                'growth': int(100 * (obj.growth_ratio() - base_value)),
+            }
         qs = TradeDaily.objects.all()
         if qs.exists():
             obj = qs.latest('date')
-            context['pl_ratios'] = {"margin_ratio": f"{obj.margin_ratio()}%", "expense_ratio": obj.delivery_expense_ratio() + obj.admin_expense_ratio()} 
-
-            #this is for HR KPI
+            context['pl_ratios'] = {"margin_ratio": f"{obj.margin_ratio()}%",
+             "expense_ratio": obj.delivery_expense_ratio() + obj.admin_expense_ratio(),} 
+            qs = qs.filter(date__month=month)
+            sales = qs.aggregate(Sum('sales')).get('sales__sum')
+            profit = qs.aggregate(Sum('gross_profit')).get('gross_profit__sum')
+            direct_expenses = qs.aggregate(Sum('direct_expenses')).get('direct_expenses__sum')
+            indirect_expenses = qs.aggregate(Sum('indirect_expenses')).get('indirect_expenses__sum')
+            purchase = qs.aggregate(Sum('purchase')).get('purchase__sum')
+            # purchase = qs.aggregate(Sum('purchase')).get('purchase__sum')
+            
+            context['KPI'].update({
+                'margin': int(100*100*(profit-indirect_expenses)/sales),
+                'sales': sales/Decimal('1000000'),
+                'delivery': int(100*100*direct_expenses/purchase) if purchase > Decimal('0') else 0,
+                'admin': int(100*100*indirect_expenses/sales) if sales > Decimal('0') else 0
+            })  
+            # get salary and step it up by 20% 
+            employee =  Employee.objects.all()
+            salary = employee.aggregate(Sum('basic_salary')).get('basic_salary__sum') + employee.aggregate(
+                Sum('allowance')).get('allowance__sum')
+            # step up by 20% to allow for incentive
+            context['KPI'].update({
+                'wf_productivity': int(100*(profit-indirect_expenses)/(Decimal('1.2')*salary)),
+                })
+            
             date = qs.last().date
             days = mytools.Month.number_of_working_days(date.year, date.month)
-            worforce = Employee.active.count()
-            man_hours = days * 10 * worforce
+            # workforce = 
+            man_hours = days * 10 * Employee.active.count()
             qs = RequestPermission.objects.filter(status=True).filter(date__year=date.year).filter(date__month=date.month)
             durations = list(obj.duration() for obj in qs)
             days = list(int(duration[:-1]) for duration in durations if duration[-1] == 'D')
             hours = list(int(duration[:-1]) for duration in durations if duration[-1] == 'H')
             hours = 10*sum(days) + sum(hours)
-            context['man_hour_ratio'] = f"{round(100*(1-hours/man_hours), 2)}%"
+            context['KPI'].update({'man_hour': int(100*(1-hours/man_hours))})
         context['salaries'] = Payroll.objects.filter(date_paid__year=datetime.date.today().year).aggregate(Sum('net_pay'))['net_pay__sum']
         
         context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
@@ -223,7 +251,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
         if Payroll.objects.exists():
             all_periods = set(Payroll.objects.values_list('period', flat=True))
             lastest_10_periods = sorted(list(all_periods)[:10], reverse=True)
-            periods = (f"{mytools.Period.full_months[i.split('-')[1]]}, {i.split('-')[0]}"  for i in lastest_10_periods)
+            periods = (f"{mytools.Period.full_months[i.split('-')[1]]}, {i.split('-')[0]}" for i in lastest_10_periods)
             workforce = tuple(Payroll.objects.filter(period=period).count() for period in lastest_10_periods)
             total_payout = tuple(Payroll.objects.filter(period=period).aggregate(Sum('net_pay'))['net_pay__sum'] for period in lastest_10_periods)
             
