@@ -12,7 +12,7 @@ def get_graph():
     return graph
 
 
-def h_bar_chart(x, y):
+def sales_stock_figure(x, y):
     plt.switch_backend('AGG')
     plt.figure(figsize=(4, 4))
     plt.title('Sales Trend')
@@ -22,4 +22,15 @@ def h_bar_chart(x, y):
     plt.tight_layout()
     graph = get_graph()
     return graph
-    
+
+
+def monthly_sales_revenue(x, y):
+    plt.switch_backend('AGG')
+    plt.figure(figsize=(4, 4))
+    plt.title('Monthly Sales Revenue')
+    plt.barh(x, y)
+    plt.ylabel('month')
+    plt.xlabel('Sales (N)')
+    plt.tight_layout()
+    graph = get_graph()
+    return graph

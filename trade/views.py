@@ -87,7 +87,7 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             sales = [round(100*y.sales/y.opening_value, 2) for y in qs_for_chart]
             dates.reverse()
             sales.reverse()
-            context['chart'] = plotter.h_bar_chart(dates, sales)
+            context['chart'] = plotter.sales_stock_figure(dates, sales)
         return context
   
 
@@ -178,7 +178,7 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context = super().get_context_data(**kwargs)
         month = [obj.month for obj in self.get_queryset().order_by('pk')]
         sales = [obj.sales.amount for obj in self.get_queryset().order_by('pk')]
-        context['chart'] = plotter.h_bar_chart(month, sales)
+        context['chart'] = plotter.monthly_sales_revenue(month, sales)
         
         return context
 

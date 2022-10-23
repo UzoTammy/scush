@@ -162,7 +162,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
                 'sales': 410,
                 'delivery': 30,
                 'admin': 30,
-                'wf_productivity':100,
+                'wf_productivity':100, 
                 'man_hour':97
             }
         context['KPI'] = {
@@ -198,9 +198,8 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
                 'total': 'success' if context['KPI']['delivery'] + context['KPI']['admin'] <= target['margin'] + target['admin'] else 'dark',
             }) 
             
-            
             # get salary and step it up by 20% 
-            employee =  Employee.objects.all()
+            employee =  Employee.active.all()
             salary = employee.aggregate(Sum('basic_salary')).get('basic_salary__sum') + employee.aggregate(
                 Sum('allowance')).get('allowance__sum')
             # step up by 20% to allow for incentive

@@ -105,7 +105,6 @@ class BalanceSheet(models.Model):
 
     def get_absolute_url(self):
         return reverse('trade-bs-detail', kwargs={'pk': self.pk})
-        
     def growth_ratio(self):
         return round(100*self.profit/self.capital, 2)
 
