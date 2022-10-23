@@ -178,7 +178,8 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context = super().get_context_data(**kwargs)
         month = [obj.month for obj in self.get_queryset().order_by('pk')]
         sales = [obj.sales.amount for obj in self.get_queryset().order_by('pk')]
-        context['chart'] = plotter.line_graph(month, sales)
+        context['chart'] = plotter.h_bar_chart(month, sales)
+        
         return context
 
 
@@ -818,6 +819,7 @@ class TradeWeekly(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
         context['qs'] = {
             'count': qs.count(),
+            'date': qs.last().date,
             'sales': qs.aggregate(Sum('sales'))['sales__sum'],
             'purchase': qs.aggregate(Sum('purchase'))['purchase__sum'],
             'net_profit': qs.aggregate(Sum('net_profit'))['net_profit__sum'],
@@ -835,7 +837,7 @@ class TradeWeekly(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                         'growth_ratio': qs.get().growth_ratio(),
                         'debt_to_equity_ratio': qs.get().debt_to_equity_ratio(),
                         'current_ratio': qs.get().current_ratio(),
-                        'quick_ratio': qs.get().quick_ratio()
+                        'quick_ratio': qs.get().quick_ratio(),
                     }
                 )
                 break
@@ -844,7 +846,7 @@ class TradeWeekly(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         
         date = TradeDaily.objects.filter(date__year=year).dates('date', 'month').reverse()[0]
         recent_month = date.month
-        qs = TradeDaily.objects.filter(date__month=recent_month)
+        qs = TradeDaily.objects.filter(date__year=year).filter(date__month=recent_month)
         qs = qs.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
 
         context['qsm'] = {

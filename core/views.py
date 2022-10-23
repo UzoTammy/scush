@@ -147,7 +147,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             context['sales'] = qs_daily_last.sales
             context['day'] = qs_daily_last.date
 
-        qs = BalanceSheet.objects.all()
+        qs = BalanceSheet.objects.filter(date__year=datetime.date.today().year)
         if qs.exists():
             obj = qs.latest('date')
             context['bs_ratios'] = {"growth_ratio": f"{obj.growth_ratio()}%", "quick_ratio": obj.quick_ratio()} 
@@ -171,7 +171,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
         
         context['color'] = {'growth': 'success' if context['KPI']['growth'] >= target['growth'] else 'dark'}
         
-        qs = TradeDaily.objects.all()
+        qs = TradeDaily.objects.filter(date__year=datetime.date.today().year)
         if qs.exists():
             obj = qs.latest('date')
             context['pl_ratios'] = {"margin_ratio": f"{obj.margin_ratio()}%",
