@@ -8,7 +8,6 @@ from .models import BalanceSheet, Money, TradeDaily
 from djmoney.models.fields import Money
 
 
-
 @receiver(post_save, sender=TradeDaily)
 def trade_daily_create(sender, instance, created, **kwargs):
     if created:
@@ -96,6 +95,7 @@ def bs_mail_sender(sender, instance, created, **kwargs):
         headers={'message-id': 'tiger'}
     )
     email.content_subtype='html'
-    email.send(fail_silently=False)
+    email.send(fail_silently=True)
 
 
+    

@@ -1,7 +1,7 @@
 
 import datetime
 import calendar
-import itertools as it
+from django.core.mail import EmailMessage
 from decimal import Decimal
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -20,7 +20,10 @@ from .forms import JsonDatasetForm
 from .models import JsonDataset
 from django.conf import settings
 from django.contrib.auth import authenticate, login
-from djmoney.models.fields import Money
+from mail import mailbox
+from django.template import loader
+
+
 
 def index(request):
     
@@ -37,7 +40,6 @@ def developer_login(request):
         login(request, user)
         return redirect('home')
     return redirect('index')
-
 
 class PracticeView(View):
     def get(self, *args, **kwargs):
@@ -166,6 +168,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
                 'man_hour':97
             }
         context['KPI'] = {
+                'date': obj.date,
                 'growth': int(100 * (obj.growth_ratio() - base_value)),
             }
         
@@ -222,6 +225,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             context['KPI'].update({'man_hour': int(100*(1-hours/man_hours))})
             context['color'].update({'man_hour': 'success' if context['KPI']['man_hour'] >= target['man_hour'] else 'dark'})
             context['target'] = target
+
         context['salaries'] = Payroll.objects.filter(date_paid__year=datetime.date.today().year).aggregate(Sum('net_pay'))['net_pay__sum']
         
         context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
@@ -308,6 +312,23 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
                 
         return context
     
+class KPIMailSend(View):
+    def get(self, request, **kwargs):
+        # reminder: kwargs is a dictionary of strings
+        target = eval(kwargs['target'])
+        kpi = eval(kwargs['kpi'])
+        
+        # create and send mail
+        email = EmailMessage(
+            subject=f"KPI for {kpi['date'].strftime('%d-%b-%Y')}",
+            body=loader.render_to_string('mail/business_KPI.html', context={'KPI': kpi, 'target': target, 'title':'KPI'}),
+            from_email='',
+            to=[mailbox.get_email_group('All Management')],
+        )
+        email.content_subtype='html'
+        email.send(fail_silently=True)
+
+        return redirect('dashboard')
 
 class PoliciesView(TemplateView):
     template_name = 'core/policies.html'
