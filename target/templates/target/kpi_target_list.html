@@ -1,0 +1,48 @@
+{% extends 'users/base.html' %}
+{% load custom_templates %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-3">
+        <div class="col">
+            <table data-toggle="table" class="table">
+                <thead>
+                    <tr class="text-center">
+                        <th>Period</th>
+                        <th>Growth</th>
+                        <th>Margin</th>
+                        <th>Sales</th>
+                        <th>Delivery</th>
+                        <th>Admin</th>
+                        <th>Expenses</th>
+                        <th>Man hour</th>
+                        <th>WFP</th>
+                        <th>Quick</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in object_list%}
+                    <tr class="text-right">
+                        <td>{{obj.month}}-{{obj.year|str}}</td>
+                        <td>{{obj.growth}}</td>
+                        <td>{{obj.margin}}</td>
+                        <td>{{obj.sales}}</td>
+                        <td>{{obj.delivery}}</td>
+                        <td>{{obj.admin}}</td>
+                        <td>{{obj.delivery|add:obj.admin}}</td>
+                        <td>{{obj.man_hour}}</td>
+                        <td>{{obj.wf_productivity}}</td>
+                        <td>{{obj.quick}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
+        <div class="col">
+            <a class="btn btn-primary" href="{% url 'target-create' %}">Create Target</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

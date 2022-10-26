@@ -118,7 +118,7 @@
         <div class="col">
             <!-- Button trigger modal -->
                 <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#KPIModal">
-                    Mail KPIs
+                    Mail KPI
                 </button>
         </div>
     </div>
@@ -326,16 +326,17 @@
                                 <th class="text-right">{{target.wf_productivity}}</th>
                                 <th class="text-right">{{KPI.wf_productivity}}</th>
                             </tr>
+                            <tr>
+                                <td class="text-danger">{{target_message}}</td>
+                            </tr>
                         </tbody>
-                        <tfoot></tfoot>
                     </table>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <a type="button" class="btn btn-primary" href="{% url 'kpi_mail' target KPI %}">Send Mail</a>
-          
         </div>
       </div>
     </div>

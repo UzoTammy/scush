@@ -1,0 +1,22 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-3">
+        <div class="col">
+            <form action="" method="post">
+                {% csrf_token %}
+                <legend>Create KPI Target</legend>
+                <div class="">
+                    {{form|crispy}}
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary" type="submit">Save</button>
+                    <a class="btn btn-secondary float-right" href="{% url 'target-home' %}">Home</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content%}

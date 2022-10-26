@@ -30,6 +30,12 @@ def absolute(value):
     return abs(value)
 
 
+@register.filter(name='str')
+@stringfilter
+def convert_to_string(value):
+    return str(value)
+    
+
 @register.filter()
 def replace(value):
     arg = '*'

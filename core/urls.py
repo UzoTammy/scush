@@ -24,9 +24,9 @@ urlpatterns = [
     path('json/<int:id>/<str:key>/new/', JsonCategoryKeyValueCreateView.as_view(), name='json-cat-key-new'),
     path('json/<int:id>/<str:key>/<str:value>/', JsonCategoryKeyValueUpdateView.as_view(), name='json-cat-key-value'),
     path('reset/help/', TemplateView.as_view(template_name='core/resetting/settings_help.html'), name='reset-help'),
+    path('mail/<str:target>/<str:kpi>/', KPIMailSend.as_view(), name='kpi_mail'),
     
     path('practice/', PracticeView.as_view(), name='practice'),
-    path('mail/<str:target>/<str:kpi>/', KPIMailSend.as_view(), name='kpi_mail')
     
 ]
 

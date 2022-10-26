@@ -30,7 +30,9 @@ class PositionKPIMonthly(models.Model):
     ])
     month = models.PositiveSmallIntegerField(default=datetime.date.today().month, validators=[
         MinValueValidator(1), MaxValueValidator(12),
-    ])
+    ], choices=[(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'), (5, 'May'),
+     (6, 'June'), (7, 'July'), (8, 'August'), (9, 'September'), (10, 'October'), 
+     (11, 'November'), (12, 'December')])
     growth = models.PositiveSmallIntegerField()
     margin = models.PositiveSmallIntegerField()
     sales = models.PositiveSmallIntegerField()
@@ -38,12 +40,13 @@ class PositionKPIMonthly(models.Model):
     admin = models.PositiveSmallIntegerField()
     man_hour = models.PositiveSmallIntegerField()
     wf_productivity = models.PositiveSmallIntegerField()
-    mail_sent_count = models.PositiveSmallIntegerField(default=0)
+    quick = models.PositiveSmallIntegerField(default=500) 
 
     def __str__(self) -> str:
         return f"{datetime.date(self.year, self.month, 1).strftime('%B, %Y')} KPI Target" 
     
-
+    def expenses(self):
+        return self.delivery + self.admin
 
 
 

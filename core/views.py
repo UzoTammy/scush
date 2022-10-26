@@ -22,6 +22,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login
 from mail import mailbox
 from django.template import loader
+from target.models import PositionKPIMonthly
 
 
 
@@ -157,16 +158,17 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             month = obj.date.month
             base_value = Decimal('0') if month == 1 else qs.filter(
                 date__month=month-1).latest('date').growth_ratio()
-        
-        target = {
-                'growth': 150,
-                'margin': 300,
-                'sales': 410,
-                'delivery': 30,
-                'admin': 30,
-                'wf_productivity':100, 
-                'man_hour':97
-            }
+
+        # picking target from database, first to pick from the month of balance sheet above
+        # and if no record matching the month, the last record will be picked
+        target_qs = PositionKPIMonthly.objects.filter(year=obj.date.year).filter(month=month)
+        if target_qs.exists():
+            target = target_qs.values()[0]
+        else:
+            target = PositionKPIMonthly.objects.values().last()
+            month_name = datetime.date(2022, target['month'], 1).strftime('%B')
+            context['target_message'] = f"Target in use is for {month_name}, {target['year']}"
+
         context['KPI'] = {
                 'date': obj.date,
                 'growth': int(100 * (obj.growth_ratio() - base_value)),
