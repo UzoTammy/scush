@@ -2,9 +2,15 @@
 
 {% block content %}
 <div class="container">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
+    <div class="row mt-3">
         <div class="col">
-            <a href="{% url 'target-list' %}"   class="btn btn-primary btn-bg">KPI Target</a>
+            <h3>Targets and Achievements</h3>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <a href="{% url 'kpi-list' %}"   class="btn btn-primary btn-bg">KPI Target</a>
+            <a class="float-right" href="{% url 'home' %}"><i class="fa fa-reply fa-2x"></i><i class="fa fa-home"></i></a>
         </div>
     </div>
 </div>

@@ -8,7 +8,8 @@ urlpatterns = [
     path('sales-center/create/', SalesCreateView.as_view(), name='sales-create'),
     path('sales-center/<int:pk>/update/', SalesUpdateView.as_view(), name='sales-update'),
     
-    path('kpi/home/', TargetHomeView.as_view(), name='target-home'),
-    path('kpi/list/', KPITargetListView.as_view(), name='target-list'),
-    path('kpi/create/', KPITargetCreateView.as_view(), name='target-create'),
+    path('home/', TargetHomeView.as_view(), name='target-home'),
+    path('kpi/list/', KPIListView.as_view(), name='kpi-list'),
+    path('kpi/create/', KPICreateView.as_view(), name='kpi-create'),
+    path('kpi/<int:pk>/', KPIUpdateView.as_view(), name='kpi-update')
 ]

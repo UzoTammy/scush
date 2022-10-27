@@ -2,39 +2,40 @@
 
 {% block content%} 
 <div>
+    <h4>KPIs as at {{KPI.date}}</h4>
+    <hr>
     <div style="text-align: center; background-color: #f7fbff;">
         <table>
-            <legend>KPIs as at {{KPI.date}}</legend>
             <thead>
                 <tr style="text-align: center;">
                     <th>Parameters</th>
                     <th>Target</th>
-                    <th>Performance</th>
+                    <th>Perf.</th>
                     <th>Remark</th>
                 </tr>
             </thead>
             <tbody>
-                {%if KPI.growth > target.growth %}
+                {%if KPI.growth >= target.growth %}
                 <tr style="color: green;">
                 {% else %}
                 <tr>
                 {% endif %}
-                    <td>Growth Ratio <sup style="color:red">+</sup> </td>
+                    <td>Growth <sup style="color:red">+</sup> </td>
                     <td style="text-align: right;">{{target.growth}}</td>
                     <td style="text-align: right;">{{KPI.growth}}</td>
                     <td>Be able to reach target</td>
                 </tr>
-                {%if KPI.margin > target.margin %}
+                {%if KPI.margin >= target.margin %}
                 <tr style="color: green;">
                 {% else %}
                 <tr>
                 {% endif %}
-                    <td>Margin Ratio <sup style="color:red">+</sup></td>
+                    <td>Margin <sup style="color:red">+</sup></td>
                     <td style="text-align: right;">{{target.margin}}</td>
                     <td style="text-align: right;">{{KPI.margin}}</td>
                     <td>Be able to reach target</td>
                 </tr>
-                {%if KPI.sales > target.sales %}
+                {%if KPI.sales >= target.sales %}
                 <tr style="color: green;">
                 {% else %}
                 <tr>
@@ -44,58 +45,62 @@
                     <td style="text-align: right;">{{KPI.sales}}</td>
                     <td>Be able to reach target</td>
                 </tr>
-                {% if target.delivery|add:target.admin > KPI.delivery|add:KPI.admin %}
+                {% if target.delivery|add:target.admin >= KPI.delivery|add:KPI.admin %}
                 <tr style="color: green;">
                 {% else %}
                 <tr>
                 {% endif %}
-                    <td>Expenses Ratio <sup style="color:red">-</sup></td>
+                    <td>Expenses <sup style="color:red">-</sup></td>
                     <td style="text-align: right;">{{target.delivery|add:target.admin}}</td>
                     <td style="text-align: right;">{{KPI.delivery|add:KPI.admin}}</td>
                     <td>To keep below target</td>
                 </tr>
-                {% if target.delivery > KPI.delivery %}
+                {% if target.delivery >= KPI.delivery %}
                 <tr style="color: green;">
                 {% else %}
                 <tr>
                 {% endif %}
-                    <td>Delivery Ratio <sup style="color:red">-</sup></td>
+                    <td>Delivery <sup style="color:red">-</sup></td>
                     <td style="text-align: right;">{{target.delivery}}</td>
                     <td style="text-align: right;">{{KPI.delivery}}</td>
                     <td>To keep below target</td>
                 </tr>
-                {% if target.admin > KPI.admin %}
+                {% if target.admin >= KPI.admin %}
                 <tr style="color: green;">
                 {% else %}
                 <tr>
                 {% endif %}
-                    <td>Admin Ratio <sup style="color:red">-</sup></td>
+                    <td>Admin <sup style="color:red">-</sup></td>
                     <td style="text-align: right;">{{target.admin}}</td>
                     <td style="text-align: right;">{{KPI.admin}}</td>
                     <td>To keep below target</td>
                 </tr>
-                {% if KPI.man_hour > target.man_hour %}
+                {% if KPI.man_hour >= target.man_hour %}
                 <tr style="color: green;">
                 {% else %}
                 <tr>
                 {% endif %}
-                    <td>Man-Hour Ratio <sup style="color:red">+</sup></td>
+                    <td>Man-Hour <sup style="color:red">+</sup></td>
                     <td style="text-align: right;">{{target.man_hour}}</td>
                     <td style="text-align: right;">{{KPI.man_hour}}</td>
                     <td>To keep above target</td>
                 </tr>
-                {% if KPI.wf_productivity > target.wf_productivity %}
+                {% if KPI.wf_productivity >= target.wf_productivity %}
                 <tr style="color: green;">
                 {% else %}
                 <tr>
                 {% endif %}
-                    <td>Workforce Productivity <sup style="color:red">+</sup></td>
+                    <td>WFP <sup style="color:red">+</sup></td>
                     <td style="text-align: right;">{{target.wf_productivity}}</td>
                     <td style="text-align: right;">{{KPI.wf_productivity}}</td>
                     <td>Be able to reach target</td>
                 </tr>
             </tbody>
-            <tfoot>+ means need to be greater than target and - means need to be lower than target</tfoot>
+            <tfoot>
+                <tr>
+                    <td colspan="4">+ = perf. need to be greater than target and - = perf. need to be lesser than target</td>
+                </tr>
+            </tfoot>
         </table>
     </div>
 </div>

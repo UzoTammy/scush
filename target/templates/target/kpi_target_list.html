@@ -1,13 +1,18 @@
 {% extends 'users/base.html' %}
 {% load custom_templates %}
 
+{% block head %} {% endblock head %}
+
 {% block content %}
 <div class="container">
     <div class="row mt-3">
         <div class="col">
-            <table data-toggle="table" class="table">
+            <table data-toggle="table" class="table table-striped" 
+            data-pagination="true" data-show-footer="true">
+                <caption>Target Database</caption>
                 <thead>
-                    <tr class="text-center">
+                    <tr class="text-center text-white bg-secondary">
+                        <th>ID</th>
                         <th>Period</th>
                         <th>Growth</th>
                         <th>Margin</th>
@@ -23,6 +28,7 @@
                 <tbody>
                     {% for obj in object_list%}
                     <tr class="text-right">
+                        <td><a href="{% url 'kpi-update' obj.pk %}"><i class="fa fa-edit"></i></a> {{obj.id}}</td>
                         <td>{{obj.month}}-{{obj.year|str}}</td>
                         <td>{{obj.growth}}</td>
                         <td>{{obj.margin}}</td>
@@ -36,13 +42,26 @@
                     </tr>
                     {% endfor %}
                 </tbody>
+        <!-- tfoot not showing, research why -->
+                <tfoot>
+                    <tr>
+                        <td data-footer-formatter="total" colspan="11">WFP is Workforce Productivity</td>
+                    </tr>
+                </tfoot>
             </table>
+            <small class="text-muted">WFP - Workforce Productivity</small>
         </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
+    <div class="row mt-2">
         <div class="col">
-            <a class="btn btn-primary" href="{% url 'target-create' %}">Create Target</a>
+            <a class="btn btn-primary" href="{% url 'kpi-create' %}">Create Target</a>
+            <a class="float-right" href="{% url 'target-home' %}"><i class="fa fa-reply fa-2x"></i></a>
         </div>
     </div>
 </div>
+<script>
+    function total() {
+        return 'Total'
+    }
+</script>
 {% endblock %}

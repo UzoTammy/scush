@@ -2,7 +2,13 @@
 {% load static %}
 {% load custom_templates %}
 
-
+{% block head %}
+    <style>
+        .newspaper {
+            column-count: 3;
+        }
+    </style>
+{% endblock head %}
 {% block content %}
 <div class="container-fluid">
     <div class="row">
@@ -107,7 +113,7 @@
             {% endif %}
             <div class="container">
                 {{payroll_list}}
-            <p>{{message_one}}</p>
+            <p class="newspaper">{{message_one}}</p>
         <!--Workforce basic characteristics -->
             <div class="container mb-3">
                 <div class="row text-info">
@@ -133,7 +139,7 @@
                 </div>
             </div>
             </div>
-            <p>{{ message_two }}</p>
+            <p class="newspaper">{{ message_two }}</p>
             <div class="container mb-3">
                 <div class="row text-info">
                     <div class="col">

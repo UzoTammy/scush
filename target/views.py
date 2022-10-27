@@ -7,16 +7,21 @@ from django.urls import reverse_lazy
 class TargetHomeView(TemplateView):
     template_name = 'target/home.html'
 
-class KPITargetListView(ListView):
+class KPIListView(ListView):
     model = PositionKPIMonthly
     template_name = 'target/kpi_target_list.html'
 
 
-class KPITargetCreateView(CreateView):
+class KPICreateView(CreateView):
     model = PositionKPIMonthly
     fields = '__all__'
-    success_url = reverse_lazy('target-list')
+    success_url = reverse_lazy('kpi-list')
 
+class KPIUpdateView(UpdateView):
+    model = PositionKPIMonthly
+    fields = "__all__"
+    success_url = reverse_lazy('kpi-list')
+    
 
 class SalesListView(LoginRequiredMixin, ListView):
     model = Sales
