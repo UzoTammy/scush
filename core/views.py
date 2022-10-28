@@ -178,7 +178,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
         qs_1 = qs.filter(date=obj.date - datetime.timedelta(days=1))       
         if qs_1.exists():
             obj_1 = qs_1.get()
-            context['KPI'].update({'growth_1': int(100 * obj_1.growth.ratio() - base_value)}) 
+            context['KPI'].update({'growth_1': int(100 * obj_1.growth_ratio() - base_value)}) 
         else:
             context['KPI'].update({'growth_1': 0})
 
