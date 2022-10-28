@@ -3,14 +3,27 @@
 
 {% block content %}
 <div class="container  px-lg-5">
-    
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
+
+    <div class="row">
         <div class="col mt-2">
+            <h3>As at {{KPI.date}}</h3>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
+        <div class="col">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"><span class="text-info">Target </span>  
                     <span class="float-right"> {{target.growth}}
                         <sup style="font-size: 16px;" class="text-warning">+</sup> Pts</span></li>
                 <li class="list-group-item">Growth Rate 
+                    {% if KPI.date|date:'d' != '1' %}
+                    {% if KPI.growth_1 > KPI.growth %}
+                    <sup class="float-right"><i class="fa fa-arrow-up"></i>{{KPI.growth_1|minus:KPI.growth}}</sup>
+                    {% elif KPI.growth_1 == 0 %}
+                    {% else %}
+                    <sub class="float-right"><i class="fa fa-arrow-down"></i>{{KPI.growth|minus:KPI.growth_1}}</sub>
+                    {% endif %}
+                    {% endif %}
                     <span class="float-right text-{{color.growth}}">{{KPI.growth}}</span>
                 </li>
             </ul>

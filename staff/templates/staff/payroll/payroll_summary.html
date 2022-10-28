@@ -6,13 +6,14 @@
 <div class="container-fluid mt-3">
   <div class="row">
     <div class="col">
-      <h3>{{title}}ly Payroll Summary</h3>
+      <h3>{{title}}ly Payroll Summary - {% now 'Y' %}</h3>
     </div>
   </div>
+
   <div class="row">
     <div class="col" style="font-family: Times New Roman; font-size: 12pt">
       <table data-toggle="table"
-             data-pagination="true"
+             data-pagination="false"
              tabindex="-1"
              class="table table-bordered">
         <thead class="bg-dark text-white">
@@ -54,7 +55,7 @@
       </table>
       </div>
   </div>
-  <div class="row float-right">
+  <div class="row float-right mt-3 mb-2">
     <div class="col">
       <a type="button" class="btn btn-outline-dark" href="{% url 'payroll-view' current_period %}">
         <i class="fa fa-reply"></i>

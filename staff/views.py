@@ -1170,13 +1170,12 @@ class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         periods = self.get_queryset().values_list('period', flat=True).distinct()
         dataset = list()
         if kwargs.get('summary_period') == 'Month':
-            # periods = tuple(periods_set)
+            periods = periods.filter(period__contains=datetime.date.today().year)
             for period in sorted(periods):
                 queryset = self.get_queryset().filter(period=period)
                 qs_dict = self.get_dict(queryset)
                 qs_dict['period'] = mytools.Period.full_months.get(period.split('-')[1])
-                dataset.append(qs_dict)
-            
+                dataset.append(qs_dict) 
         else:
             year_set = set(i.split('-')[0] for i in periods)
             for year in sorted(year_set):

@@ -34,3 +34,15 @@ def monthly_sales_revenue(x, y):
     plt.tight_layout()
     graph = get_graph()
     return graph
+
+def margin_graph(x, y):
+    plt.switch_backend('AGG')
+    plt.figure(figsize=(4, 3))
+    plt.title('Margin Ratio')
+    plt.plot(x, y)
+    plt.ylabel('Ratio')
+    plt.xlabel('Date')
+    plt.tight_layout()
+    graph = get_graph()
+    return graph
+

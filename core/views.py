@@ -168,12 +168,20 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             target = PositionKPIMonthly.objects.values().last()
             month_name = datetime.date(2022, target['month'], 1).strftime('%B')
             context['target_message'] = f"Target in use is for {month_name}, {target['year']}"
-
+    
         context['KPI'] = {
                 'date': obj.date,
                 'growth': int(100 * (obj.growth_ratio() - base_value)),
             }
-        
+
+        # get previous growth
+        qs_1 = qs.filter(date=obj.date - datetime.timedelta(days=1))       
+        if qs_1.exists():
+            obj_1 = qs_1.get()
+            context['KPI'].update({'growth_1': int(100 * obj_1.growth.ratio() - base_value)}) 
+        else:
+            context['KPI'].update({'growth_1': 0})
+
         context['color'] = {'growth': 'success' if context['KPI']['growth'] >= target['growth'] else 'dark'}
         
         qs = TradeDaily.objects.filter(date__year=datetime.date.today().year)
