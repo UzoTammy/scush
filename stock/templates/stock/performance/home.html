@@ -2,32 +2,51 @@
 
 {% block content %}
 <div class="container">
-    <h3 class="text-center mt-4">Performance Parameter</h3>
-    <div class="row">
-        <div class="col">
-            <table class="table">
-                <h5>Most Profitable - {{the_date}}</h5>
-                <tbody>
-                    <tr>
-                        {% for key, value in profitable_day.items %}
-                        <td>{{value}}</td>
-                        {% endfor %}
-                    </tr>
-                </tbody>
-            </table>
+    <h3 class="text-center mt-4">Products Performance</h3>
+    <h5>YTD - {% now 'Y' %}</h5>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
+        
+        <div class="col mt-2">
+            <div class="card text-white bg-dark" 
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
+                    <div class="card-body">
+                        <p class="card-title">Most Sold</p>
+                        <p class="card-text">{{most_sellout|first}}</p>
+                        <p class="card-text float-right">{{most_sellout|last}}</p>
+                    </div>
+            </div>
         </div>
-        <div class="col">
-            <table class="table">
-                <h5>Most Profitable - This Year</h5>
-                <tbody>
-                    <tr>
-                        {% for key, value in profitable.items %}
-                        <td>{{value}}</td>
-                        {% endfor %}
-                    </tr>
-                </tbody>
-            </table>
+        <div class="col mt-2">
+            <div class="card text-white bg-dark" 
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
+                    <div class="card-body">
+                        <p class="card-title">Most Profitable</p>
+                        <p class="card-text">{{most_profitable|first}}</p>
+                        <p class="card-text float-right">N{{most_profitable|last|floatformat:2}}</p>
+                    </div>
+            </div>
         </div>
+        <div class="col mt-2">
+            <div class="card text-white bg-dark" 
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
+                    <div class="card-body">
+                        <p class="card-title">Most Average Margin</p>
+                        <p class="card-text">{{most_margin|first}}</p>
+                        <p class="card-text float-right">N{{most_margin|last|floatformat:2}}</p>
+                    </div>
+            </div>
+        </div>
+        <div class="col mt-2">
+            <div class="card text-white bg-dark" 
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
+                    <div class="card-body">
+                        <p class="card-title">Most Gross Sales</p>
+                        <p class="card-text">{{most_gross_sales|first}}</p>
+                        <p class="card-text float-right">N{{most_gross_sales|last|floatformat:2}}</p>
+                    </div>
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock%}

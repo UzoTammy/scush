@@ -826,25 +826,59 @@ class PerformanceHome(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Most profitable
-        qs_all = ProductExtension.objects.values_list('selling_price', 'cost_price', 'sell_out', 'product')
-        
-        # profitable day
-        the_date = ProductExtension.objects.latest('date').date
-        qs_list = ProductExtension.objects.filter(date=the_date).values_list('selling_price', 'cost_price', 'sell_out', 'product')
+        #Most Sellout
+        products = Product.objects.all()
+        qs = ProductExtension.objects.filter(date__year=datetime.date.today().year)
+        sell_out_list = [(
+            product, 
+            qs.filter(product=product).aggregate(Sum('sell_out'))['sell_out__sum']) 
+            for product in products]
+        value, most_sellout = 0, tuple()
+        for product in sell_out_list:
+            if product[1] > value:
+                value = product[1]
+                most_sellout = product
+        context['most_sellout'] = most_sellout
 
-        result = list()
-        for qs in (qs_list, qs_all):
-            list_profit = list((x[1] - x[0])*x[2] for x in qs)
-            max_profit = max(list_profit)
-            for x in enumerate(list_profit):
-                if x[1] == max_profit:
-                    y = x[0]
-                    break
-            product = Product.objects.get(pk=qs[y][3])   
-            result.append({'product': product, 'value': max_profit})
+        # Most profitable
+        qs = qs.annotate(profit=F('sell_out')*(F('selling_price')-F('cost_price')))
+        profit_list = [
+            (product,
+            qs.filter(product=product).aggregate(Sum('profit'))['profit__sum'])
+            for product in products
+        ]
+        value, most_profitable = Decimal('0'), tuple()
+        for product in profit_list:
+            if product[1] > value:
+                value = product[1]
+                most_profitable = product
+        context['most_profitable'] = most_profitable
         
-        context['the_date'] = the_date
-        context['profitable_day'] =  result[0] 
-        context['profitable'] = result[1]
+        #Most Margin
+        qs = qs.annotate(margin=F('selling_price')-F('cost_price'))
+        margin_list = [
+            (product,
+            qs.filter(product=product).aggregate(Avg('margin'))['margin__avg'])
+            for product in products
+        ]
+        value, most_margin = Decimal('0'), tuple()
+        for product in margin_list:
+            if product[1] > value:
+                value = product[1]
+                most_margin = product
+        context['most_margin'] = most_margin
+
+        #Most Gross Sales
+        gross_value_list = [
+            (product,
+            qs.filter(product=product).aggregate(Sum('sales_amount'))['sales_amount__sum']
+            ) for product in products
+        ]
+        value, most_gross_sales = Decimal('0'), tuple()
+        for product in gross_value_list:
+            if product[1] > value:
+                value = product[1]
+                most_gross_sales = product
+            context['most_gross_sales'] = most_gross_sales
         return context
+

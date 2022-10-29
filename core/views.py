@@ -150,7 +150,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             context['sales'] = qs_daily_last.sales
             context['day'] = qs_daily_last.date
 
-        qs = BalanceSheet.objects.filter(date__year=datetime.date.today().year)
+        qs = BalanceSheet.objects.filter(date__year=datetime.date.today().year).order_by('date')
         if qs.exists():
             obj = qs.latest('date')
             context['bs_ratios'] = {"growth_ratio": f"{obj.growth_ratio()}%", "quick_ratio": obj.quick_ratio()} 
@@ -170,21 +170,20 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             context['target_message'] = f"Target in use is for {month_name}, {target['year']}"
     
         context['KPI'] = {
-                'date': obj.date,
+                'date_bs': obj.date,
                 'growth': int(100 * (obj.growth_ratio() - base_value)),
             }
-
         # get previous growth
-        qs_1 = qs.filter(date=obj.date - datetime.timedelta(days=1))       
-        if qs_1.exists():
-            obj_1 = qs_1.get()
-            context['KPI'].update({'growth_1': int(100 * obj_1.growth_ratio() - base_value)}) 
-        else:
-            context['KPI'].update({'growth_1': 0})
+        for index,record in enumerate(qs):
+            if record == obj:
+                if record == qs[0]:
+                    context['KPI'].update({'growth_1': 0})
+                else:
+                    context['KPI'].update({'growth_1': int(100 * qs[index-1].growth_ratio() - base_value)}) 
 
         context['color'] = {'growth': 'success' if context['KPI']['growth'] >= target['growth'] else 'dark'}
         
-        qs = TradeDaily.objects.filter(date__year=datetime.date.today().year)
+        qs = TradeDaily.objects.filter(date__year=datetime.date.today().year).order_by('date')
         if qs.exists():
             obj = qs.latest('date')
             context['pl_ratios'] = {"margin_ratio": f"{obj.margin_ratio()}%",
@@ -196,13 +195,14 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
             indirect_expenses = qs.aggregate(Sum('indirect_expenses')).get('indirect_expenses__sum')
             purchase = qs.aggregate(Sum('purchase')).get('purchase__sum')
             # purchase = qs.aggregate(Sum('purchase')).get('purchase__sum')
-            
+
             context['KPI'].update({
+                'date_pl': obj.date,
                 'margin': int(100*100*(profit-indirect_expenses)/sales),
                 'sales': int(sales/Decimal('1000000')),
                 'delivery': int(100*100*direct_expenses/purchase) if purchase > Decimal('0') else 0,
                 'admin': int(100*100*indirect_expenses/sales) if sales > Decimal('0') else 0
-            }); 
+            }) 
             context['color'].update({
                 'margin': 'success' if context['KPI']['margin'] >= target['margin'] else 'dark',
                 'sales': 'success' if context['KPI']['sales'] >= target['sales'] else 'dark',
