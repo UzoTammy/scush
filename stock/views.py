@@ -7,8 +7,6 @@ from django.utils import timezone
 from django.views.generic.base import TemplateView
 from django.contrib import messages
 from django.contrib.auth.models import Group, User
-from matplotlib.pyplot import cla
-
 from pdf.utils import render_to_pdf
 from pdf.views import Ozone
 from .models import (Product, ProductPerformance, ProductExtension)
@@ -821,8 +819,14 @@ class ProductStatusUpdate(LoginRequiredMixin, UserPassesTestMixin, View):
         product.save() 
         return redirect(product)
 
-class PerformanceHome(LoginRequiredMixin, TemplateView):
+class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'stock/performance/home.html'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -835,6 +839,8 @@ class PerformanceHome(LoginRequiredMixin, TemplateView):
             for product in products]
         value, most_sellout = 0, tuple()
         for product in sell_out_list:
+            if product[1] == None:
+                continue
             if product[1] > value:
                 value = product[1]
                 most_sellout = product
@@ -847,8 +853,10 @@ class PerformanceHome(LoginRequiredMixin, TemplateView):
             qs.filter(product=product).aggregate(Sum('profit'))['profit__sum'])
             for product in products
         ]
-        value, most_profitable = Decimal('0'), tuple()
+        value, most_profitable = Decimal(0), tuple()
         for product in profit_list:
+            if not isinstance(product[1], Decimal):
+                continue
             if product[1] > value:
                 value = product[1]
                 most_profitable = product
@@ -861,8 +869,10 @@ class PerformanceHome(LoginRequiredMixin, TemplateView):
             qs.filter(product=product).aggregate(Avg('margin'))['margin__avg'])
             for product in products
         ]
-        value, most_margin = Decimal('0'), tuple()
+        value, most_margin = Decimal(0), tuple()
         for product in margin_list:
+            if not isinstance(product[1], Decimal):
+                continue
             if product[1] > value:
                 value = product[1]
                 most_margin = product
@@ -874,8 +884,10 @@ class PerformanceHome(LoginRequiredMixin, TemplateView):
             qs.filter(product=product).aggregate(Sum('sales_amount'))['sales_amount__sum']
             ) for product in products
         ]
-        value, most_gross_sales = Decimal('0'), tuple()
+        value, most_gross_sales = Decimal(0), tuple()
         for product in gross_value_list:
+            if not isinstance(product[1], Decimal):
+                continue
             if product[1] > value:
                 value = product[1]
                 most_gross_sales = product
