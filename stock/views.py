@@ -29,6 +29,8 @@ def get_date():
     return datetime.datetime.strptime(date_string, '%Y-%m-%d')
 
 
+    
+
 class ProductHomeView(LoginRequiredMixin, View):
 
     @staticmethod
@@ -819,8 +821,26 @@ class ProductStatusUpdate(LoginRequiredMixin, UserPassesTestMixin, View):
         product.save() 
         return redirect(product)
 
+
 class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'stock/performance/home.html'
+
+    def product_analyzer(self, ops, field, field_type, qs):
+        products = Product.objects.all()
+        str_ops = 'sum' if ops == Sum else 'avg'
+        sell_out_list = [(
+            product, 
+            qs.filter(product=product).aggregate(ops(field))[f'{field}__{str_ops}']) 
+            for product in products]
+        value, product_data = field_type(), tuple()
+        for product in sell_out_list:
+            if not isinstance(product[1], field_type):
+                continue
+            if product[1] > value:
+                value = product[1]
+                product_data = product
+        return product_data
+                
 
     def test_func(self):
         """if user is a member of the group Sales then grant access to this view"""
@@ -830,67 +850,65 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        #Most Sellout
-        products = Product.objects.all()
-        qs = ProductExtension.objects.filter(date__year=datetime.date.today().year)
-        sell_out_list = [(
-            product, 
-            qs.filter(product=product).aggregate(Sum('sell_out'))['sell_out__sum']) 
-            for product in products]
-        value, most_sellout = 0, tuple()
-        for product in sell_out_list:
-            if product[1] == None:
-                continue
-            if product[1] > value:
-                value = product[1]
-                most_sellout = product
-        context['most_sellout'] = most_sellout
-
-        # Most profitable
-        qs = qs.annotate(profit=F('sell_out')*(F('selling_price')-F('cost_price')))
-        profit_list = [
-            (product,
-            qs.filter(product=product).aggregate(Sum('profit'))['profit__sum'])
-            for product in products
-        ]
-        value, most_profitable = Decimal(0), tuple()
-        for product in profit_list:
-            if not isinstance(product[1], Decimal):
-                continue
-            if product[1] > value:
-                value = product[1]
-                most_profitable = product
-        context['most_profitable'] = most_profitable
         
+        #Most Sellout - YTD
+        qs = ProductExtension.objects.filter(date__year=datetime.date.today().year)
+        most_sellout = self.product_analyzer(Sum, 'sell_out', int, qs)
+        context['most_sellout'] = {'product': most_sellout[0], 'qty': most_sellout[1]}
+        # most Sellout - Month
+        qs_m = qs.filter(date__month=qs.last().date.month)
+        month = self.product_analyzer(Sum, 'sell_out', int, qs_m)
+        context['most_sellout_month'] = {'product': month[0], 'qty': month[1]}
+        # most Sellout - Day
+        qs_1 = qs.filter(date=qs.last().date)
+        daily = self.product_analyzer(Sum, 'sell_out', int, qs_1)
+        context['most_sellout_daily'] = {'product': qs_1.get(product=daily[0]), 'qty': daily[1]} 
+        
+
+        # Most profitable - YTD
+        qs = qs.annotate(profit=F('sell_out')*(F('selling_price')-F('cost_price')))
+        most_profitable = self.product_analyzer(Sum, 'profit', Decimal, qs)
+        context['most_profitable'] = {'product': most_profitable[0], 'value': most_profitable[1]}
+        
+        # most Profitable - month
+        qs_m = qs.filter(date__month=qs.last().date.month)
+        most_profitable = self.product_analyzer(Sum, 'profit', Decimal, qs_m)
+        context['most_profitable_month'] = {'product': most_profitable[0], 'value': most_profitable[1]}
+
+        # most Profitable - day
+        qs_d = qs.filter(date=qs.last().date)
+        most_profitable = self.product_analyzer(Sum, 'profit', Decimal, qs_d)
+        context['most_profitable_day'] = {'product': qs_d.get(product=most_profitable[0]), 'value': most_profitable[1]}
+
+        # Highest GSV
+        gross_sales = self.product_analyzer(Sum, 'sales_amount', Decimal, qs)
+        context['most_gross_sales'] = {'product': gross_sales[0], 'value': gross_sales[1]}
+
+        # Highest GSV - month
+        qs_m = qs.filter(date__month=qs.last().date.month)
+        gross_sales = self.product_analyzer(Sum, 'sales_amount', Decimal, qs_m)
+        context['most_gross_sales_month'] = {'product': gross_sales[0], 'value': gross_sales[1]}
+
+        # Highest GSV - day
+        qs_d = qs.filter(date=qs.last().date)
+        gross_sales = self.product_analyzer(Sum, 'sales_amount', Decimal, qs_d)
+        context['most_gross_sales_day'] = {'product': qs_d.get(product=gross_sales[0]), 'value': gross_sales[1]}
+
+
         #Most Margin
         qs = qs.annotate(margin=F('selling_price')-F('cost_price'))
-        margin_list = [
-            (product,
-            qs.filter(product=product).aggregate(Avg('margin'))['margin__avg'])
-            for product in products
-        ]
-        value, most_margin = Decimal(0), tuple()
-        for product in margin_list:
-            if not isinstance(product[1], Decimal):
-                continue
-            if product[1] > value:
-                value = product[1]
-                most_margin = product
-        context['most_margin'] = most_margin
+        margin = self.product_analyzer(Avg, 'margin', Decimal, qs)
+        context['most_margin'] = {'product': margin[0], 'value': margin[1]}
 
-        #Most Gross Sales
-        gross_value_list = [
-            (product,
-            qs.filter(product=product).aggregate(Sum('sales_amount'))['sales_amount__sum']
-            ) for product in products
-        ]
-        value, most_gross_sales = Decimal(0), tuple()
-        for product in gross_value_list:
-            if not isinstance(product[1], Decimal):
-                continue
-            if product[1] > value:
-                value = product[1]
-                most_gross_sales = product
-            context['most_gross_sales'] = most_gross_sales
+        #Most Margin - month
+        qs_m = qs.filter(date__month=qs.last().date.month)
+        margin = self.product_analyzer(Avg, 'margin', Decimal, qs_m)
+        context['most_margin_month'] = {'product': margin[0], 'value': margin[1]}
+
+        #Most Margin - month
+        qs_d = qs.filter(date=qs.last().date)
+        margin = self.product_analyzer(Avg, 'margin', Decimal, qs_d)
+        context['most_margin_day'] = {'product': qs_d.get(product=margin[0]), 'value': margin[1]}
+
         return context
 

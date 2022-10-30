@@ -67,6 +67,9 @@ class Product(models.Model):
 
     def margin(self):
         return self.unit_price - self.cost_price
+    
+    def nickname(self):
+        return f"{self.name} {int(self.size_value)}{self.size_value_unit},{self.pack_type}"
 
     
 class ProductPerformance(models.Model):
