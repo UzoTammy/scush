@@ -137,7 +137,73 @@
                         
                     </div>
             </div>
-        </div>  
+        </div> 
+        <div class="col mt-2">
+            
+        </div> 
+    </div>
+    <div class="row mt-2">
+        <div class="col-sm-6 mt-2">
+            <table data-toggle="table" class="table shadow-lg">
+                <legend class="text-success"><i class="fa fa-sm fa-minus text-danger"></i>
+                    List of non-Performing Stock
+                    <a href="" class="btn btn-secondary btn-sm float-right text-danger">
+                        <i class="fa fa-mail-forward"></i>
+                    </a>
+                </legend>
+                <thead>
+                    <tr class="text-center">
+                        <th>Product</th>
+                        <th>Stock Value</th>
+                        <th>Sellout</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in non_performing_stock %}
+                    <tr>
+                        <td>{{obj.product}}</td>
+                        <td class="text-right">{{obj.stock_value}}</td>
+                        <td class="text-right">{{obj.sellout}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if lossers %}
+        <div class="col-sm-6 mt-2">
+            <table data-toggle="table" class="table shadow-lg">
+                <legend class="text-success"><i class="fa fa-sm fa-minus text-danger"></i>
+                    Lossers for the day
+                    <a href="" class="btn btn-secondary btn-sm float-right text-danger">
+                        <i class="fa fa-mail-forward"></i>
+                    </a>
+                </legend>
+                <thead>
+                    <tr class="text-center">
+                        <th>ID</th>
+                        <th>Product</th>
+                        <th>Loss</th>
+                        <th>Margin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in lossers %}
+                    <tr>
+                        <td>{{obj.code}}</td>
+                        <td>{{obj.product}}</td>
+                        <td class="text-right">{{obj.loss|floatformat:2}}</td>
+                        <td class="text-right">{{obj.margin|floatformat:2}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+    <div class="row mt-3">
+        <div class="col mt-2">
+            <a class="float-right" href="{% url 'product-home' %}"><i class="fa fa-reply fa-2x"></i></a>
+        </div>
     </div>
 </div>
 {% endblock%}
