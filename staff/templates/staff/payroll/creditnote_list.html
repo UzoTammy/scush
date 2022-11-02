@@ -16,7 +16,9 @@
                    data-pagination="true"
                    data-search="true"
                    class="table table-bordered table-sm">
-                <caption>Credit Note List</caption>
+                   {% with object_list|first as obj%}
+                <caption>Credit Note List - {{obj.period}}</caption>
+                {% endwith %}
                 <thead class="bg-success text-white">
                     <tr class="text-center">
                         <th scope="col">ID</th>
@@ -31,7 +33,7 @@
                 {% for object in object_list %}
                     <tr>
                         <td scope="col" class="text-center">
-                            <a href="#">{{ object.id|zeropadding:3 }}</a>
+                            <a href="{% url 'credit-detail' object.id %}">{{ object.id|zeropadding:3 }}</a>
                         </td>
                         <td scope="col">{{object.credit_date|date:'d-m-Y'}}</td>
                         <td scope="col">{{object}}</td>
@@ -40,12 +42,14 @@
                         <td scope="col">{{object.status|yesno:'Taken, Pending'}}</td>
                     </tr>
                 {% endfor %}
+                {% if total %}
+                <tr class="bg-dark text-white text-right">
+                    <td colspan="4">Total</td>
+                    <td>NGN{{total|floatformat:'2'}}</td>
+                    <td></td>
+                </tr>
+                {% endif %}
                 </tbody>
-                <tfoot>
-                    <tr>
-<!--                        <td colspan="2">hi</td>-->
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </div>
@@ -57,4 +61,31 @@
         </div>
     </div>
 </div>
+
+  <!-- Modal Credit-->
+  <div class="modal fade" 
+    id="creditModal" 
+    data-backdrop="static" 
+    data-keyboard="false" 
+    tabindex="-1" 
+    aria-labelledby="creditModalLabel" 
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="creditModalLabel"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock content %}

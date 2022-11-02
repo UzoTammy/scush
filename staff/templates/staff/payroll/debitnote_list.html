@@ -24,7 +24,7 @@
                 {% for object in object_list %}
                     <tr>
                         <td scope="col" class="text-center">
-                            <a href="#">{{ object.id|zeropadding:3 }}</a>
+                            <a href="{% url 'debit-detail' object.pk %}">{{ object.id|zeropadding:3 }}</a>
                         </td>
                         <td scope="col">{{object.debit_date|date:'d-m-Y'}}</td>
                         <td scope="col">{{object}}</td>
@@ -33,12 +33,15 @@
                         <td scope="col">{{object.status|yesno:'Taken, Pending'}}</td>
                     </tr>
                 {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-<!--                        <td colspan="2">hi</td>-->
+                    {% if total %}
+                    <tr class="bg-dark text-white text-right">
+                        <td colspan="4">Total</td>
+                        <td>NGN{{total|floatformat:'2'}}</td>
+                        <td></td>
                     </tr>
-                </tfoot>
+                    {% endif %}
+                </tbody>
+                
             </table>
         </div>
     </div>

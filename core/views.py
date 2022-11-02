@@ -208,7 +208,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
                 'sales': 'success' if context['KPI']['sales'] >= target['sales'] else 'dark',
                 'delivery': 'success' if context['KPI']['delivery'] <= target['delivery'] else 'dark',
                 'admin': 'success' if context['KPI']['admin'] <= target['admin'] else 'dark',
-                'total': 'success' if context['KPI']['delivery'] + context['KPI']['admin'] <= target['margin'] + target['admin'] else 'dark',
+                'total': 'success' if context['KPI']['delivery'] + context['KPI']['admin'] <= target['delivery'] + target['admin'] else 'dark',
             }) 
             
             # get salary and step it up by 20% 
@@ -308,7 +308,6 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
         
             context['employee_dataset'] = list(data for data in zip(periods, workforce, yields, average_pay))
 
-
         if TradeMonthly.objects.exists():
             year = TradeMonthly.objects.last().year - 1
             try:
@@ -318,10 +317,10 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
                 context['data'] = (str(year), employees, round(gross_profit/payout, 2), round(payout/employees, 2))
             except Exception as err:
                 context['data'] = (str(year), 'RNR', 'RNR', 'RNR') 
-                context['msg'] =  'RNR - Record Not Ready'         
-                
+                context['msg'] =  'RNR - Record Not Ready'                 
         return context
     
+
 class KPIMailSend(View):
     def get(self, request, **kwargs):
         # reminder: kwargs is a dictionary of strings
@@ -330,15 +329,15 @@ class KPIMailSend(View):
         
         # create and send mail
         email = EmailMessage(
-            subject=f"KPI tracking for {kpi['date'].strftime('%B, %Y')}",
+            subject=f"KPI tracking for {kpi['date_bs'].strftime('%B, %Y')}",
             body=loader.render_to_string('mail/business_KPI.html', context={'KPI': kpi, 'target': target, 'title':'KPI tracking'}),
             from_email='',
             to=[mailbox.get_email_group('All Management')],
         )
         email.content_subtype='html'
         email.send(fail_silently=True)
-
         return redirect('dashboard')
+
 
 class PoliciesView(TemplateView):
     template_name = 'core/policies.html'

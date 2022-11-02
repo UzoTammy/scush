@@ -87,8 +87,7 @@ class ProductPerformance(models.Model):
 
     def get_absolute_url(self):
         return reverse('product-performance-detail', kwargs={'pk':self.pk})
-        
-    
+         
 class ProductExtension(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     cost_price = MoneyField(
@@ -113,6 +112,7 @@ class ProductExtension(models.Model):
         message="Sales amount can't be negative")]
     )
     active = models.BooleanField(default=True) # can be used to deactivate the product
+    
     
 
     def __str__(self) -> str:

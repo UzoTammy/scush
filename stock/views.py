@@ -30,7 +30,6 @@ def get_date():
 
 
     
-
 class ProductHomeView(LoginRequiredMixin, View):
 
     @staticmethod
@@ -919,22 +918,20 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         margin = self.product_analyzer(Avg, 'margin', Decimal, qs_d)
         if margin:
             context['most_margin_day'] = {'product': qs_d.get(product=margin[0]), 'value': margin[1]}
-        
+
+
         latest_date = qs.latest('date').date
-        qs_30 = qs.filter(date__gte=latest_date-datetime.timedelta(days=30))
+        qs_30 = qs.filter(date__range=(latest_date-datetime.timedelta(days=30), latest_date))
+
         products = Product.objects.filter(active=True)
         data = list()
         for product in products:
-            try:
-                stock_value = qs_30.get(product=product).stock_value
-            except:
-                stock_value = 0
-            try:
-                sellout = qs_30.filter(product=product).aggregate(Sum('sell_out'))['sell_out__sum']
-            except:
-                sellout = Decimal()
-            
-            data.append((product, stock_value, sellout))
+            qs_30 = qs_30.filter(product=product)
+            if qs_30.exists():
+                stock_value = qs_30.latest('date').stock_value if qs_30.latest('date').stock_value != None else 0
+                sellout = qs_30.aggregate(Sum('sell_out'))['sell_out__sum']
+                data.append((product, stock_value, sellout))
+
         data = [item for item in data if item[1] != 0]
         data = [{'product': item[0],'stock_value': item[1], 'sellout': item[2]} for item in data if item[2] < 10]
         context['non_performing_stock'] = data

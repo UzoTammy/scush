@@ -31,8 +31,12 @@ urlpatterns = [
     
 urlpatterns += [
     path('payroll/credit/', CreditNoteListView.as_view(), name='credit-list'),
+    path('payroll/credit/<int:pk>/detail/', CreditDetailView.as_view(), name='credit-detail'),
     path('payroll/credit-note/new/', CreditNoteCreateView.as_view(), name='credit-create'),
+    path('payroll/credit/<int:pk>/update/', CreditUpdateView.as_view(), name='credit-update'),
     path('payroll/debit/', DebitNoteListView.as_view(), name='debit-list'),
+    path('payroll/debit/<int:pk>/detail/', DebitNoteDetailView.as_view(), name='debit-detail'),
+    path('payroll/debit/<int:pk>/update/', DebitUpdateView.as_view(), name='debit-update'),
     path('payroll/debit-note/new/', DebitNoteCreateView.as_view(), name='debit-create'),
     path('payroll/start/generate/salary/', PayrollHome.as_view(), name='salary'),
     path('payroll/views/<str:period>/', PayrollViews.as_view(), name='payroll-view'),

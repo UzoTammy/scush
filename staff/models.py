@@ -185,7 +185,6 @@ class Welfare(models.Model):
     amount = models.FloatField(default=0.0)
 
 # Create User will be seen in users model
-
 class Payroll(models.Model):
     period = models.CharField(max_length=7)
     date_paid = models.DateField(default=timezone.now)

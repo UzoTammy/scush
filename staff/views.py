@@ -959,7 +959,6 @@ class TerminatedStaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView)
             return True
         return False
 
-
 # Payroll Section
 class PayrollHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'staff/payroll/salary.html'
@@ -1004,9 +1003,10 @@ class PayrollHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             return redirect('generate-payroll', period=period)
         return render(request, self.template_name, context=context)
 
+
 class CreditNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = CreditNote
-    template_name = 'staff/payroll/credit_list.html'
+    template_name = 'staff/payroll/creditnote_list.html'
     ordering = '-pk'
 
     def test_func(self):
@@ -1014,6 +1014,45 @@ class CreditNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total'] = self.get_queryset().aggregate(Sum('value'))['value__sum']
+        return context
+    
+    
+    def get_queryset(self):
+        qs = CreditNote.objects.all()
+        if qs.exists():
+            period = CreditNote.objects.latest('credit_date').period
+            return super().get_queryset().filter(period=period)
+        return super().get_queryset()
+
+
+class CreditDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = CreditNote
+    template_name = 'staff/payroll/creditnote_detail.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+    
+
+class CreditUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = CreditNote
+    form_class = CreditForm
+    template_name = 'staff/payroll/creditnote_form.html'
+    
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+    
+    def get_success_url(self):
+        return reverse_lazy('credit-detail', kwargs={'pk': self.kwargs['pk']})
 
 class CreditNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = CreditForm
@@ -1025,10 +1064,10 @@ class CreditNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
-
+    
 class DebitNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = DebitNote
-    template_name = 'staff/payroll/debit_list.html'
+    template_name = 'staff/payroll/debitnote_list.html'
     ordering = '-pk'
 
     def test_func(self):
@@ -1036,6 +1075,33 @@ class DebitNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
+
+    def get_queryset(self):
+        qs = DebitNote.objects.all()
+        if qs.exists():
+            period = DebitNote.objects.latest('debit_date').period
+            return super().get_queryset().filter(period=period)
+        return super().get_queryset()
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total'] = self.get_queryset().aggregate(Sum('value'))['value__sum']
+        return context
+
+class DebitUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = DebitNote
+    form_class = DebitForm
+    template_name = 'staff/payroll/debitnote_form.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('debit-detail', kwargs={'pk': self.kwargs['pk']})
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+    
 
 class DebitNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = DebitForm
@@ -1047,6 +1113,18 @@ class DebitNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
+
+
+class DebitNoteDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = DebitNote
+    template_name = 'staff/payroll/debitnote_detail.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
 
 class TaxList(LoginRequiredMixin, ListView):
     model = Employee
@@ -1505,6 +1583,7 @@ class SalaryPayment(LoginRequiredMixin, UserPassesTestMixin, ListView):
 class StaffPoliciesView(TemplateView):
     template_name = 'staff/policies.html'
 
+
 class GratuityListView(ListView):
     model = EmployeeBalance
     ordering = ['-date']
@@ -1556,6 +1635,7 @@ class GratuityListView(ListView):
         context['term_staff'] = term_staff_data
         return context
 
+
 class GratuityListViewOneStaff(LoginRequiredMixin, TemplateView):
 
     template_name = 'staff/gratuity/employee_gratuity_list.html'
@@ -1573,8 +1653,10 @@ class GratuityListViewOneStaff(LoginRequiredMixin, TemplateView):
         context['net_value'] = credit_amount - debit_amount
         return context
 
+
 class GratuityDetailView(DetailView):
     model = EmployeeBalance
+
 
 class GratuityUpdateView(UpdateView):
     model = EmployeeBalance
