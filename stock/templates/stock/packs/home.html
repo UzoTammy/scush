@@ -13,8 +13,21 @@
               <span class="text-danger">Logged-in at:</span> {{user.last_login}}
               <span class="btn btn-light btn-sm float-right">
                   <!-- Button trigger modal -->
-                  <a href="." data-toggle="modal" data-target="#stockReportDateModal">
-                    Set Date
+                  <a class="btn btn-primary btn-sm" 
+                    href="." 
+                    data-toggle="modal" 
+                    data-target="#stockReportDateModal">
+                    Set Date <sup class="text-warning">1</sup>
+                  </a>
+                  <a class="btn btn-primary btn-sm" 
+                  href="." 
+                  data-toggle="modal" 
+                  data-target="#fileUploadModal">
+                    File Upload <sup class="text-warning">2</sup>
+                  </a>
+                  <a class="btn btn-primary btn-sm" 
+                    href="{% url 'bulk-update-stock' %}">
+                    Bulk Update <sup class="text-warning">3</sup>
                   </a>
               </span>
             </li>
@@ -71,8 +84,8 @@
   </div>
 </div>
 
+
 <section>
-  
 <!-- Modal -->
 <div class="modal fade" id="stockReportDateModal" tabindex="-1" aria-labelledby="stockReportDateModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -98,5 +111,52 @@
     </div>
   </div>
 </div>
+
+<!-- Modal bulk Update -->
+<div class="modal fade" id="fileUploadModal" tabindex="-1" aria-labelledby="stockReportDateModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="fileUploadModalLabel">CSV file Upload</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <form action="." method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col">
+                  <P>Stock Date: {{user.profile.stock_report_date}}</P>
+              </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col">
+                  <label for="">Select CSV File</label>
+                  <input id="fileInput" class="form-control" type="file" name="fileName" accept=".csv" required />
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+              <div class="col">
+                <button type="button" class="btn btn-secondary btn-sm float-right" data-dismiss="modal">Close</button>
+                <input type="submit" class="float-right btn btn-primary btn-sm mr-2"  value="Upload File">
+            </div>
+          </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<script>
+  const fileInput = document.getElementById('fileInput');
+  
+  fileInput.addEventListener('change', () => {
+      const fr = new FileReader();
+      fr.readAsDataURL(fileInput.files[0])  
+  })
+</script>
+
 </section>
 {% endblock %}

@@ -17,7 +17,6 @@ class ChoiceOption:
     STATES = [(i, i) for i in json_dict['product-states']]
     VOLUME_UNITS = [(i, i) for i in json_dict['product-volume-units']]
     
-
 class Product(models.Model):
     name = models.CharField(max_length=20)
     source = models.CharField(max_length=50,
@@ -70,8 +69,7 @@ class Product(models.Model):
     
     def nickname(self):
         return f"{self.name} {int(self.size_value)}{self.size_value_unit},{self.pack_type}"
-
-    
+   
 class ProductPerformance(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     outlet = models.ForeignKey(SalesCenter, on_delete=models.CASCADE)
@@ -113,8 +111,6 @@ class ProductExtension(models.Model):
     )
     active = models.BooleanField(default=True) # can be used to deactivate the product
     
-    
-
     def __str__(self) -> str:
         return f'{self.product}-{self.date}'
 

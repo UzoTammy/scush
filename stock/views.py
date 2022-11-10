@@ -1,12 +1,21 @@
+import os
+import csv
 import calendar
 import datetime
 from decimal import Decimal
 from django.http import HttpResponse
-from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.generic.base import TemplateView
 from django.contrib import messages
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.views.generic import (
+    View, ListView, DetailView, CreateView, UpdateView, DeleteView)
+
 from pdf.utils import render_to_pdf
 from pdf.views import Ozone
 from .models import (Product, ProductPerformance, ProductExtension)
@@ -14,10 +23,6 @@ from .forms import ProductExtensionUpdateForm
 from core.models import JsonDataset
 from delivery.models import DeliveryNote
 from django.db.models import Sum, F, Avg
-from django.views.generic import (
-    View, ListView, DetailView, CreateView, UpdateView, DeleteView)
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from ozone import mytools
 
 
@@ -27,7 +32,6 @@ def get_date():
     dic = JsonDataset.objects.get(pk=2).dataset
     date_string = dic['closing-stock-date'][0]
     return datetime.datetime.strptime(date_string, '%Y-%m-%d')
-
 
     
 class ProductHomeView(LoginRequiredMixin, View):
@@ -146,7 +150,6 @@ class ProductHomeView(LoginRequiredMixin, View):
         }
         return render(request, 'stock/product_home.html', context=context)
 
-
 class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'stock/report/home.html'
 
@@ -243,7 +246,6 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 return HttpResponse('Error')
         return super().get(request, *args, **kwargs)
 
-
 class ReportStockCategory(LoginRequiredMixin, ListView):
     model = Product
     ordering = 'name'
@@ -252,7 +254,6 @@ class ReportStockCategory(LoginRequiredMixin, ListView):
         if self.kwargs['source'] == 'All':
             return super().get_queryset()
         return super().get_queryset().filter(source=self.kwargs['source'])
-
 
 class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Product
@@ -304,7 +305,6 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
                 messages.info(request, "This product's stock does not exist")
         return redirect(obj)
 
-
 class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Product
     fields = '__all__'
@@ -319,7 +319,6 @@ class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'New'
         return context
-
 
 class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Product
@@ -336,7 +335,6 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context['title'] = 'Update'
         return context
 
-
 class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Product
     success_url = '/products/list/'
@@ -347,11 +345,9 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         return False
 
-
 class PricePageView(LoginRequiredMixin, ListView):
     model = Product
     template_name = 'stock/prices.html'
-
 
 class PriceUpdate(LoginRequiredMixin, UpdateView):
     model = Product
@@ -392,7 +388,6 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
         messages.info(request, msg)
         return redirect(product)
        
-
 class ProductPerformanceListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = ProductPerformance
     template_name = 'stock/performance/product_list.html'
@@ -406,7 +401,6 @@ class ProductPerformanceListView(LoginRequiredMixin, UserPassesTestMixin, ListVi
 
     def get_queryset(self):
         return super().get_queryset().filter(tag=True)
-
 
 class ProductPerformanceCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = ProductPerformance
@@ -423,7 +417,6 @@ class ProductPerformanceCreateView(LoginRequiredMixin, UserPassesTestMixin, Crea
         context = super().get_context_data(**kwargs)
         context['title'] = 'New'
         return context
-
 
 class ProductPerformanceUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Product
@@ -442,7 +435,6 @@ class ProductPerformanceUpdateView(LoginRequiredMixin, UserPassesTestMixin, Upda
         context['title'] = 'Update'
         return context
 
-
 class ProductPerformanceDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = ProductPerformance
     template_name = 'stock/performance/product_detail.html'
@@ -453,7 +445,6 @@ class ProductPerformanceDetailView(LoginRequiredMixin, UserPassesTestMixin, Deta
         if self.request.user.groups.filter(name=permitted_group_name).exists():
             return True
         return False
-
 
 class ProductExtensionUpdateView(LoginRequiredMixin, UpdateView):
     model = ProductExtension
@@ -470,11 +461,9 @@ class ProductExtensionUpdateView(LoginRequiredMixin, UpdateView):
         form.instance.selling_price = product.product.unit_price
         return super().form_valid(form)
 
-
 class ProductExtensionDetailView(LoginRequiredMixin, DetailView):
     model = ProductExtension
     template_name = 'stock/report/productextension_detail.html'
-
 
 class ProductExtensionListView(LoginRequiredMixin, ListView):
     model = ProductExtension
@@ -517,7 +506,6 @@ class ProductExtensionListView(LoginRequiredMixin, ListView):
         context['dataset'] = dataset
         
         return context
-
     
 class ProductExtensionProduct(LoginRequiredMixin, ListView):
     model = ProductExtension
@@ -542,7 +530,6 @@ class ProductExtensionProduct(LoginRequiredMixin, ListView):
         context['products'] = products
         return context
 
-
 class WatchlistHomeView(LoginRequiredMixin, TemplateView):
     template_name = 'stock/watchlist/home.html'
 
@@ -563,7 +550,6 @@ class WatchlistHomeView(LoginRequiredMixin, TemplateView):
         context['date'] = context['products'][0].date
         return context
 
-
 class WatchlistUpdateView(LoginRequiredMixin, ListView):
     model = Product
     template_name = 'stock/watchlist/update.html'
@@ -583,7 +569,6 @@ class WatchlistUpdateView(LoginRequiredMixin, ListView):
     def get(self, request, *args, **kwargs):
         
         return super().get(request, *args, **kwargs)
-
 
 class StockReportUpdateView(LoginRequiredMixin, ListView):
     model = ProductExtension
@@ -621,7 +606,6 @@ class StockReportUpdateView(LoginRequiredMixin, ListView):
             return redirect('stock-report')
 
         return super().get(request, *args, **kwargs)
-
 
 class StockReportAddView(LoginRequiredMixin, ListView):
     model = Product
@@ -666,13 +650,11 @@ class StockReportAddView(LoginRequiredMixin, ListView):
             return redirect('stock-report')
         return super().get(request, *args, **kwargs)
 
-
 class StockReportAllProducts(LoginRequiredMixin, ListView):
     model = Product
     template_name = 'stock/report/products.html'
     ordering = 'name'
     paginate_by = 9
-
 
 class StockReportOneProducts(LoginRequiredMixin, TemplateView):
     template_name = 'stock/report/one_product.html'
@@ -693,7 +675,6 @@ class StockReportOneProducts(LoginRequiredMixin, TemplateView):
         
         return context
 
-
 class StockReportHome(LoginRequiredMixin, TemplateView):
     template_name = 'stock/packs/home.html'
     
@@ -713,17 +694,125 @@ class StockReportHome(LoginRequiredMixin, TemplateView):
         context['existing_id'] = created
         return context
 
-    
     def post(self, request, **kwargs):
-        date = request.POST['date']
-        date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+        
+        if request.FILES:
+            myfile = request.FILES['fileName']
+            fs = FileSystemStorage(location=os.path.join('media', 'stock'))
+            
+            for file in os.listdir(fs.location):
+                os.remove(os.path.join(fs.location, file))
+            
+            filename = fs.save(myfile.name, myfile)
+            messages.info(request, f'{filename} uploaded successfully')
+        else:
+            date = request.POST['date']
+            date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
 
-        user = User.objects.get(username=kwargs['user'])
-        user.profile.stock_report_date = date_obj.date()
-        user.save()
-
-        messages.info(request, f'Date has been set to {date_obj.strftime("%d-%b-%Y")} successfully !!!')
+            user = User.objects.get(username=kwargs['user'])
+            user.profile.stock_report_date = date_obj.date()
+            user.save()
+            messages.info(request, f'Date has been set to {date_obj.strftime("%d-%b-%Y")} successfully !!!')
+            
         return super().get(request, **kwargs)
+
+class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    # custom Fuction
+    def string_float(self, text):
+        digit = str()
+        for t in text:
+            digit += t if t.isdigit() or t == '.' else ""
+        return float(digit)
+
+    def get(self, request, **kwargs):
+        filename = os.listdir('media/stock')[0]
+        upload_file_url = f'media/stock/{filename}'
+        with open(os.path.join(settings.BASE_DIR, upload_file_url), 'r') as csv_file:
+            csv_reader = csv.reader(csv_file)
+            header = next(csv_reader) #the header
+            content = tuple(csv_reader) #the body
+        
+        dataset, post_dataset = list(), list()
+        for record in content:
+            data = list()
+            for index, item in enumerate(record):
+                if index == 0 or index == 4 or index==6:
+                    item = self.string_float(item)
+                    data.append(int(item))
+                elif index == 2 or index == 3 or index == 5:
+                    data.append(self.string_float(item))
+                else:
+                    data.append(item)
+            
+            try:
+                data.insert(1, Product.objects.get(pk=data[0])) 
+            except:
+                data.insert(1, 'Product not found')
+            data_dict = {"id": data[0], 
+            "product": data[1], 
+            "name": data[2], 
+            "cost": data[3], 
+            "selling": data[4],
+            "balance": data[5],
+            "sales_amount" :data[6],
+            "sellout" : data[7]
+             }   
+            dataset.append(data_dict)
+
+            # list of data for the post request: queryset is forbidden, so it is removed
+            post_dataset.append({
+                "id": data[0],  
+                "name": data[2], 
+                "cost": data[3], 
+                "selling": data[4],
+                "balance": data[5],
+                "sales_amount": data[6],
+                "sellout": data[7]
+            })  
+
+        header.insert(1, 'Product')  
+        context = {
+            'date': request.user.profile.stock_report_date,
+            'filename': upload_file_url,
+            'header': header,
+            "content": dataset,
+            "post_content": post_dataset
+        }
+        return render(request, 'stock/packs/bulk_update.html', context=context)
+
+
+    def post(self, request, **kwargs):
+        # fetch from post request the date and the list of data for update to the model
+        date = datetime.datetime.strptime(request.POST['date'], '%b. %d, %Y').date()
+        content = request.POST['content']
+        list_data = eval(content)
+
+        #note: check the record dictionary for adequacy
+        for record in list_data:
+            try:
+                obj, created = ProductExtension.objects.update_or_create(
+                    product_id=record['id'],
+                    date=date,
+                    defaults={
+                        'cost_price': record['cost'],
+                        'selling_price': record['selling'],
+                        'stock_value': record['balance'],
+                        'sell_out': record['sellout'],
+                        'sales_amount': record['sales_amount'],
+                    }
+                )
+            except:
+                messages.error(request, "Data from CSV file FAILED to add or update Database")
+            else:
+                messages.info(request, "Data from CSV file added or updated to Database SUCCESSFULLY!!!")
+        return self.get(request, **kwargs)
 
 class StockReportNew(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = ProductExtension
@@ -819,7 +908,6 @@ class ProductStatusUpdate(LoginRequiredMixin, UserPassesTestMixin, View):
         product.active = False if product.active is True else True  
         product.save() 
         return redirect(product)
-
 
 class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'stock/performance/home.html'
@@ -919,7 +1007,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if margin:
             context['most_margin_day'] = {'product': qs_d.get(product=margin[0]), 'value': margin[1]}
 
-
+        # Non performing stock
         latest_date = qs.latest('date').date
         qs_30 = qs.filter(date__range=(latest_date-datetime.timedelta(days=30), latest_date))
 
@@ -931,10 +1019,10 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 stock_value = qs_30.latest('date').stock_value if qs_30.latest('date').stock_value != None else 0
                 sellout = qs_30.aggregate(Sum('sell_out'))['sell_out__sum']
                 data.append((product, stock_value, sellout))
-
+        
         data = [item for item in data if item[1] != 0]
-        data = [{'product': item[0],'stock_value': item[1], 'sellout': item[2]} for item in data if item[2] < 10]
-        context['non_performing_stock'] = data
+        least_selling = [{'product': item[0],'stock_value': item[1], 'sellout': item[2]} for item in data]
+        context['non_performing_stock'] = least_selling
 
         lossers = [
             {'code': str(obj.pk).zfill(3),'product': obj.product, 'loss': abs(obj.profit), 'margin': obj.margin}

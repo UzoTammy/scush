@@ -1,6 +1,14 @@
 {% extends 'users/base.html' %}
 {% load custom_templates %}
 
+{% block head %}
+<style>
+    .curved-edge {
+        max-width: 32rem; 
+        border-radius: 50px 50px 50px 50px;
+    }
+</style>
+{% endblock head %}
 {% block content %}
 <div class="container  px-lg-5">
 
@@ -11,97 +19,95 @@
         </div>
     </div>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
-        <div class="col">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><span class="text-info">Target </span>  
-                    <span class="float-right"> {{target.growth}}
-                        <sup style="font-size: 16px;" class="text-warning">+</sup> Pts</span></li>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush curved-edge">
                 <li class="list-group-item">Growth Rate 
                     {% if KPI.growth_1 != 0 %}
-                        {% if KPI.growth > KPI.growth_1 %}
-                            <sup class="float-right"> {{KPI.growth|minus:KPI.growth_1}}
-                                <i class="fa fa-long-arrow-up fa-lg" style="color:#05973f"></i>
-                            </sup>
-                        {% else %}
-                            <sub class="float-right">{{KPI.growth_1|minus:KPI.growth}} 
-                                <i class="fa fa-long-arrow-down" style="color: #f90505;"></i>
-                            </sub>
-                        {% endif %}
-                        <span class="float-right text-{{color.growth}}">{{KPI.growth}} </span>
+                        <span class="float-right text-{{color.growth}}">{{KPI.growth}} 
+                            <sup class="text-muted">{{target.growth}}+</sup>  
+                        </span>
                     {% endif %}
                 </li>
             </ul>
         </div>
         <div class="col mt-2">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><span class="text-info">Target</span>  
-                    <span class="float-right">{{target.margin}}
-                        <sup style="font-size: 16px;" class="text-warning">+</sup> Pts</span></li>
+            <ul class="list-group list-group-flush curved-edge">
                 <li class="list-group-item">Margin Ratio 
-                    <span class="float-right text-{{color.margin}}">{{KPI.margin}}</span></li>
-            </ul>
-        </div>
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><span class="text-info">Target </span>  
-                    <span class="float-right">{{target.sales}}
-                        <sup style="font-size: 16px;" class="text-warning">+</sup> Pts</span></li>
-                <li class="list-group-item">Sales 
-                    <span class="float-right text-{{color.sales}}">{{KPI.sales}}</span>
-                </li>
-            </ul>
-        </div>
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><span class="text-info">Target </span>  
-                    <span class="float-right">{{target.delivery}}
-                        <sup style="font-size: 18px;" class="text-warning">-</sup> Pts</span></li>
-                <li class="list-group-item">Delivery Expenses 
-                    <span class="float-right text-{{color.delivery}}">{{KPI.delivery}}</span>
-                </li>
-            </ul>
-        </div>
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><span class="text-info">Target </span> 
-                     <span class="float-right">{{target.admin}} 
-                        <sup style="font-size: 18px;" class="text-warning">-</sup> Pts</span>
-                </li>
-                <li class="list-group-item">Admin Expenses 
-                    <span class="float-right text-{{color.admin}}">{{KPI.admin}}</span>
-                </li>
-            </ul>
-        </div>
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><span class="text-info">Target </span>
-                    <span class="float-right">{{target.delivery|add:target.admin}} 
-                        <sup style="font-size: 18px;" class="text-warning">-</sup> Pts</span></li>
-                <li class="list-group-item">Total Expenses 
-                    <span class="float-right text-{{color.total}}">{{KPI.delivery|add:KPI.admin}}</span></li>
-            </ul>
-        </div>
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><span class="text-info">Target</span>  
-                    <span class="float-right">{{target.wf_productivity}} <sup style="font-size: 16px;" class="text-warning">+</sup> Pts</span>
-                </li>
-                <li class="list-group-item">Wf Productivity 
-                    <span class="float-right text-{{color.wf_productivity}}">{{KPI.wf_productivity}}</span></li>
-            </ul>
-        </div>
-        
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><span class="text-info">Target</span>  
-                    <span class="float-right">{{target.man_hour}} 
-                        <sup style="font-size: 16px;" class="text-warning">+</sup> Pts
+                    <span class="float-right text-{{color.margin}}">{{KPI.margin}}
+                        <sup class="text-muted">{{target.margin}}+</sup>
                     </span>
                 </li>
-                <li class="list-group-item">Man-Hour 
-                    <span class="float-right text-{{color.man_hour}}">{{KPI.man_hour}}</span></li>
             </ul>
         </div>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush curved-edge">
+                <li class="list-group-item">Sales 
+                    <span class="float-right text-{{color.sales}}">{{KPI.sales}}
+                        <sup class="text-muted">{{target.sales}}+</sup>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush curved-edge">
+                <li class="list-group-item">Delivery Expenses 
+                    <span class="float-right text-{{color.delivery}}">{{KPI.delivery}}
+                        <sup class="text-muted">{{target.delivery}}-</sup>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush curved-edge">
+                <li class="list-group-item">Admin Expenses 
+                    <span class="float-right text-{{color.admin}}">{{KPI.admin}}
+                        <sup class="text-muted">{{target.admin}}-</sup>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush curved-edge">
+                <li class="list-group-item">Total Expenses 
+                    <span class="float-right text-{{color.total}}">{{KPI.delivery|add:KPI.admin}}
+                        <sup class="text-muted">{{target.delivery|add:target.admin}}-</sup>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush curved-edge">
+                <li class="list-group-item">Wf Productivity 
+                    <span class="float-right text-{{color.wf_productivity}}">{{KPI.wf_productivity}}
+                        <sup class="text-muted">{{target.wf_productivity}}</sup>
+                    </span>
+                </li>
+            </ul>
+        </div>
+        <div class="col mt-2">
+            <ul class="list-group list-group-flush curved-edge">
+                <li class="list-group-item">Man-Hour 
+                    <span class="float-right text-{{color.man_hour}}">{{KPI.man_hour}}
+                        <sup class="text-muted">{{target.man_hour}}+</sup>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="d-flex row mt-3 mr-2">
+        <div class="col">
+            <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#KPIModal">
+                    Mail KPI
+                </button>
+        </div>
+    </div>
+    <div class="d-flex row mr-2">
+        <div class="col">
+            <h3>General Info</h3>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
         <div class="col mt-2">
             <div class="card text-danger" 
                 style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
@@ -128,17 +134,9 @@
                         <p class="card-text text-right">NGN{{gratuity_value|floatformat:'2g'}}</p>
                     </div>
               </div>
-        
         </div> 
     </div>
-    <div class="d-flex row mt-3 mr-2">
-        <div class="col">
-            <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#KPIModal">
-                    Mail KPI
-                </button>
-        </div>
-    </div>
+   
     <div class="d-flex row justify-content-center mt-3">
         <div class="col">
             <h3>Latest Ratios</h3>

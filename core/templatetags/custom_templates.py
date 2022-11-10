@@ -2,6 +2,7 @@ from django import template
 from django.template.defaultfilters import stringfilter
 from ozone.mytools import Month
 from datetime import date
+import decimal
 
 register = template.Library()
 
@@ -70,7 +71,7 @@ def join(value, arg):
 def divide(value, arg):
     try:
         return value/arg
-    except (ValueError, ZeroDivisionError):
+    except (ValueError, ZeroDivisionError, decimal.InvalidOperation):
         return None
 
 

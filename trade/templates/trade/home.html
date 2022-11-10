@@ -127,9 +127,17 @@
                         <hr>
                         <li>Margin Ratio: <span class="float-right">{{100|multiply:daily.net_profit|div:daily.sales.amount|floatformat:2}}%</span></li>
                         <hr>
-                        <li>Delivery Expenses Ratio: <span class="float-right">{{100|multiply:daily.direct_expenses.amount|div:daily.purchase.amount|floatformat:2}}%</span></li>
+                        <li>Delivery Expenses Ratio: 
+                            <span class="float-right">
+                                {{100|multiply:daily.direct_expenses.amount|div:daily.purchase.amount|floatformat:2}}%
+                            </span>
+                        </li>
                         <hr>
-                        <li>Admin Expenses Ratio: <span class="float-right">{{100|multiply:daily.indirect_expenses.amount|div:daily.sales.amount|floatformat:2}}%</span></li>
+                        <li>Admin Expenses Ratio: 
+                            <span class="float-right">
+                                {{100|multiply:daily.indirect_expenses.amount|div:daily.sales.amount|floatformat:2}}%
+                            </span>
+                        </li>
                         <hr>
                     </ul>
                 </div>

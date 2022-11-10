@@ -321,7 +321,7 @@ class DashBoardView(LoginRequiredMixin, TemplateView):
         return context
     
 
-class KPIMailSend(View):
+class KPIMailSend(LoginRequiredMixin, View):
     def get(self, request, **kwargs):
         # reminder: kwargs is a dictionary of strings
         target = eval(kwargs['target'])
