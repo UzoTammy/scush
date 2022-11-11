@@ -1,5 +1,5 @@
 {% extends 'users/base.html' %}
-{% load custom_templates %}
+{% load custom_tags %}
 {% load djmoney %}
 
 {% block content %}
@@ -33,7 +33,7 @@
     {% endfor %}
     </div>
     </form>
-
+    <h6 class="text-info">Only the last four payroll periods can display, Click to show payroll below</h6>
     <div class="row">
     {% if period %}
     <div class="col m-3">

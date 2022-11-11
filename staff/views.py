@@ -11,7 +11,7 @@ from .models import (
     Reassign, Terminate, Suspend, Permit,SalaryChange, 
     RequestPermission, Welfare
 )
-from .form import (DebitForm, CreditForm, RequestPermissionForm, EmployeeForm)
+from .form import (DebitForm, CreditForm, EmployeeForm)
 from core.models import JsonDataset
 from django.contrib.auth.models import User
 from django.shortcuts import render, reverse, redirect, get_object_or_404
@@ -62,49 +62,49 @@ outstanding is the amount the company is willing to reserve for the staff
 
     @staticmethod
     def regime(salary_payable, salary_less_tax):
-        if salary_payable > 2 * salary_less_tax:
-            """condition 1: if what your earned is greater than twice 
-            your salary. pay 150% of salary"""
-            deduction = Money(0, 'NGN')
-            outstanding = salary_payable - 1.5 * salary_less_tax
-            salary_payable = 1.5 * salary_less_tax
-        elif 1.8 * salary_less_tax < salary_payable <= 2 * salary_less_tax:
-            deduction = Money(0, 'NGN')
-            outstanding = salary_payable - 1.4 * salary_less_tax
-            salary_payable = 1.4 * salary_less_tax
-        elif 1.6 * salary_less_tax < salary_payable <= 1.8 * salary_less_tax:
-            deduction = Money(0, 'NGN')
-            outstanding = salary_payable - 1.3 * salary_less_tax
-            salary_payable = 1.3 * salary_less_tax
-        elif 1.4 * salary_less_tax < salary_payable <= 1.6 * salary_less_tax:
-            deduction = Money(0, 'NGN')
-            outstanding = salary_payable - 1.2 * salary_less_tax
-            salary_payable = 1.2 * salary_less_tax
-        elif 1.2 * salary_less_tax < salary_payable <= 1.4 * salary_less_tax:
-            deduction = Money(0, 'NGN')
-            outstanding = salary_payable - 1.1 * salary_less_tax
-            salary_payable = 1.1 * salary_less_tax
-        elif salary_less_tax < salary_payable <= 1.2 * salary_less_tax:
-            deduction = Money(0, 'NGN')
-            outstanding = Money(0, 'NGN')
-        elif 0.5 * salary_less_tax <= salary_payable <= salary_less_tax:
-            """condition 3: Small that is between half gross pay and
-            gross pay, get amount to pay"""
-            deduction = salary_less_tax - salary_payable
-            outstanding = Money(0, 'NGN')
-        elif Money(0, 'NGN') <= salary_payable <= 0.5 * salary_less_tax:
-            """condition 4: Too Small that is between zero and half gross
-            pay, get less than your gross pay"""
-            deduction = salary_payable
-            outstanding = Money(0, 'NGN')
-            salary_payable = Money(0, 'NGN') #salary_less_tax - salary_payable
-        else:
-            """condition 5: Too bad that is when amount to pay goes negative,
-            cease and deduct gross salary"""
-            deduction = salary_less_tax
-            outstanding = salary_payable
-            salary_payable = Money(0, 'NGN')
-        return [salary_payable, deduction, outstanding]
+        # if salary_payable > 2 * salary_less_tax:
+        #     """condition 1: if what your earned is greater than twice 
+        #     your salary. pay 150% of salary"""
+        #     deduction = Money(0, 'NGN')
+        #     outstanding = salary_payable - 1.5 * salary_less_tax
+        #     salary_payable = 1.5 * salary_less_tax
+        # elif 1.8 * salary_less_tax < salary_payable <= 2 * salary_less_tax:
+        #     deduction = Money(0, 'NGN')
+        #     outstanding = salary_payable - 1.4 * salary_less_tax
+        #     salary_payable = 1.4 * salary_less_tax
+        # elif 1.6 * salary_less_tax < salary_payable <= 1.8 * salary_less_tax:
+        #     deduction = Money(0, 'NGN')
+        #     outstanding = salary_payable - 1.3 * salary_less_tax
+        #     salary_payable = 1.3 * salary_less_tax
+        # elif 1.4 * salary_less_tax < salary_payable <= 1.6 * salary_less_tax:
+        #     deduction = Money(0, 'NGN')
+        #     outstanding = salary_payable - 1.2 * salary_less_tax
+        #     salary_payable = 1.2 * salary_less_tax
+        # elif 1.2 * salary_less_tax < salary_payable <= 1.4 * salary_less_tax:
+        #     deduction = Money(0, 'NGN')
+        #     outstanding = salary_payable - 1.1 * salary_less_tax
+        #     salary_payable = 1.1 * salary_less_tax
+        # elif salary_less_tax < salary_payable <= 1.2 * salary_less_tax:
+        #     deduction = Money(0, 'NGN')
+        #     outstanding = Money(0, 'NGN')
+        # elif 0.5 * salary_less_tax <= salary_payable <= salary_less_tax:
+        #     """condition 3: Small that is between half gross pay and
+        #     gross pay, get amount to pay"""
+        #     deduction = salary_less_tax - salary_payable
+        #     outstanding = Money(0, 'NGN')
+        # elif Money(0, 'NGN') <= salary_payable <= 0.5 * salary_less_tax:
+        #     """condition 4: Too Small that is between zero and half gross
+        #     pay, get less than your gross pay"""
+        #     deduction = salary_payable
+        #     outstanding = Money(0, 'NGN')
+        #     salary_payable = Money(0, 'NGN') #salary_less_tax - salary_payable
+        # else:
+        #     """condition 5: Too bad that is when amount to pay goes negative,
+        #     cease and deduct gross salary"""
+        #     deduction = salary_less_tax
+        #     outstanding = salary_payable
+        #     salary_payable = Money(0, 'NGN')
+        return [salary_payable, Money(0, 'NGN'), Money(0, 'NGN')]
 
 
 # Views Classes
@@ -1280,7 +1280,6 @@ class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
 class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     """Generate payroll and save to Payroll model"""
-
     template_name = 'staff/payroll/generated_payroll.html'
 
     def test_func(self):
@@ -1450,6 +1449,8 @@ class RegeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         qs = Payroll.objects.all()
         periods = qs.values_list('period', flat=True).distinct().order_by('-period')
+
+        periods = periods[:4] if len(periods) > 4 else periods
 
         str_periods = [self.fetch_period(i) for i in periods]
         context['periods'] = zip(str_periods, periods)
