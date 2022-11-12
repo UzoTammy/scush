@@ -18,25 +18,30 @@
                 </caption>
                 <thead>
                     <tr class="text-center">
-                        {% for head in header %}
-                            <th>{{head}}</th>
-                        {% endfor %}
+                        <th>ID</th>
+                        <th>Product</th>
+                        <th>Item</th>
+                        <th>Sellout</th>
+                        <th>Selling Price</th>
+                        <th>Sales Amount</th>
+                        <th>Closing Stock</th>
+                        <th>Cost Price</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for record in content %}
-                    <tr>
-                        <td class="">{{record.id}}</td>
-                        <td class="">{{record.product}}</td>
-                        <td class="">{{record.name}}</td>
-                        <td class="text-right">{{record.cost}}</td>
-                        <td class="text-right">{{record.selling}}</td>
-                        <td class="text-right">{{record.balance}}</td>
-                        <td class="text-right">{{record.sales_amount}}</td>
-                        <td class="text-right">{{record.sellout}}</td>
+                    {% for record in dataset %}
+                    <tr class="text-right">
+                        <td>{{record.id}}</td>
+                        <td class="text-left">{{record.product}}</td>
+                        <td class="text-left">{{record.item}}</td>
+                        <td>{{record.sellout}}</td>
+                        <th>{{record.selling_price}}</th>
+                        <td>{{record.sales_amount}}</td>
+                        <td>{{record.closing_balance}}</td>
+                        <td>{{record.cost_price}}</td>
                     </tr>
                     {% endfor %}
-                </tbody>
+                </tbody>    
             </table>
         </div>
     </div>
@@ -46,8 +51,12 @@
             <form action="." method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="date" value="{{date}}">
-                <input type="hidden" name="content" value="{{post_content}}">
-                <button class="btn btn-primary" type="submit">Save to Database</button>
+                <input type="hidden" name="content" value="{{post_dataset}}">
+                <button class="btn btn-primary" type="submit"
+                {% if lock_save %}
+                    disabled
+                {% endif %}
+                >Save to Database</button>
             </form>
             <a class="float-right" href="{% url 'stock-report-home' user %}"><i class="fa fa-reply fa-2x"></i></a>
         </div>

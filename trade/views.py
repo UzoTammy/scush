@@ -264,29 +264,6 @@ class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             period_label = list(i[0:3] for i in period)
             sales = monthly_trade.values_list('sales', flat=True)
 
-            # plt.bar(np.array(period_label), sales, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
-            # plt.xlabel('Period')
-            # plt.ylabel('Sales Value')
-            # plt.figtext(.5, .9, f'Sales Volume ({chr(8358)})', fontsize=20, ha='center')
-       
-            # buf = io.BytesIO()
-            # plt.savefig(buf, format='png', dpi=300)
-            # sales_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
-            # buf.close()
-            # plt.close()
-
-            # purchase = monthly_trade.values_list('purchase', flat=True)
-            # plt.bar(np.array(period_label), purchase, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
-            # plt.xlabel('Period')
-            # plt.ylabel('Purchase Value')
-            # plt.figtext(.5, .9, f'Purchase Volume ({chr(8358)})', fontsize=20, ha='center')
-            # buf = io.BytesIO()
-            # plt.savefig(buf, format='png', dpi=300)
-            # purchase_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
-            # buf.close()
-            # plt.close()
-
-
             current_month = qs.last().month
             current_month_qs = qs.get(month=current_month)
         
@@ -326,28 +303,6 @@ class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 last_record_id = qs.last().id
                 previous_record_id = last_record_id - 1
                 previous_month_qs = qs.get(id=previous_record_id)
-
-                # average = round(qs.aggregate(average=Avg('percent_margin'))['average'], 2)
-                # previous_record_id = qs.last().id - 1
-                # previous = round(qs.get(id=previous_record_id).percent_margin, 2)
-                # current = round(qs.get(id=qs.last().id).percent_margin, 2)
-                
-                # plt.pie([average, previous, current],
-                #         labels=['Cumm. Avg.', list(period)[-2], period.last()],
-                #         colors=['#addba5', '#efef9c', '#addfef'],
-                #         autopct="%1.2f%%",
-                #         explode=(0, 0, 0.1),
-                #         shadow=True,
-                #         startangle=90,
-                #         wedgeprops={'linewidth': 2, 'edgecolor': '#b5b27b'},
-                #         textprops={'color': 'b'},
-                #         )
-                # plt.figtext(.5, .9, 'Gross Profit Ratio', fontsize=20, ha='center')
-                # buf = io.BytesIO()
-                # plt.savefig(buf, format='png', dpi=300)
-                # gp_ratio_graph = base64.b64encode(buf.getvalue()).decode('utf-8').replace('\n', '')
-                # buf.close()
-                # plt.close()
 
                 previous_month = {
                 'heading': f'Previous Month {previous_month_qs.month} ({naira})',

@@ -24,7 +24,7 @@ from core.models import JsonDataset
 from delivery.models import DeliveryNote
 from django.db.models import Sum, F, Avg
 from ozone import mytools
-
+from core.utils import string_float
 
 permitted_group_name = 'Sales'
 
@@ -724,67 +724,51 @@ class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
             return True
         return False
 
-    # custom Fuction
-    def string_float(self, text):
-        digit = str()
-        for t in text:
-            digit += t if t.isdigit() or t == '.' else ""
-        return float(digit)
-
     def get(self, request, **kwargs):
         filename = os.listdir('media/stock')[0]
         upload_file_url = f'media/stock/{filename}'
-        with open(os.path.join(settings.BASE_DIR, upload_file_url), 'r') as csv_file:
-            csv_reader = csv.reader(csv_file)
-            header = next(csv_reader) #the header
-            content = tuple(csv_reader) #the body
-        
-        dataset, post_dataset = list(), list()
-        for record in content:
-            data = list()
-            for index, item in enumerate(record):
-                if index == 0 or index == 4 or index==6:
-                    item = self.string_float(item)
-                    data.append(int(item))
-                elif index == 2 or index == 3 or index == 5:
-                    data.append(self.string_float(item))
-                else:
-                    data.append(item)
+
+        with open(os.path.join(settings.BASE_DIR, upload_file_url), 'r') as rf:
+            content = csv.reader(rf)
+            heads = [next(content),next(content),next(content),next(content), next(content)] 
+            date_string = heads[2][0].split()[1]
+            date_obj = datetime.date(int(date_string.split('-')[2]), int(date_string.split('-')[1]), int(date_string.split('-')[0]))
             
-            try:
-                data.insert(1, Product.objects.get(pk=data[0])) 
-            except:
-                data.insert(1, 'Product not found')
-            data_dict = {"id": data[0], 
-            "product": data[1], 
-            "name": data[2], 
-            "cost": data[3], 
-            "selling": data[4],
-            "balance": data[5],
-            "sales_amount" :data[6],
-            "sellout" : data[7]
-             }   
-            dataset.append(data_dict)
-
-            # list of data for the post request: queryset is forbidden, so it is removed
-            post_dataset.append({
-                "id": data[0],  
-                "name": data[2], 
-                "cost": data[3], 
-                "selling": data[4],
-                "balance": data[5],
-                "sales_amount": data[6],
-                "sellout": data[7]
-            })  
-
-        header.insert(1, 'Product')  
+            dataset = [{
+                'id': int(record[0]),
+                'product': Product.objects.get(pk=int(record[0])) if Product.objects.filter(pk=int(record[0])).exists() else 'Product not found',
+                'item': record[1],
+                'sellout': int(string_float(record[2])),
+                'selling_price': string_float(record[3]),
+                'sales_amount': string_float(record[4]),
+                'closing_balance': int(string_float(record[5])),
+                'cost_price': string_float(record[6])
+            } for record in content if record[0] != '']  
+        
         context = {
-            'date': request.user.profile.stock_report_date,
+            'date': date_obj,
             'filename': upload_file_url,
-            'header': header,
-            "content": dataset,
-            "post_content": post_dataset
+            "dataset": dataset,
         }
+        
+        post_dataset = list()
+        lock_save = False
+        for data in dataset:
+            X = data.copy()
+            product = X.pop('product')
+            del X['item']
+            try:
+                product.id
+            except:
+                messages.warning(request, "This dataset is not fit to go into database !!!")
+                lock_save = True
+                break
+            else:
+                X.update({'id': product.id})
+                post_dataset.append(X)
+
+        context['post_dataset'] = post_dataset
+        context['lock_save'] = lock_save
         return render(request, 'stock/packs/bulk_update.html', context=context)
 
 
@@ -792,6 +776,7 @@ class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
         # fetch from post request the date and the list of data for update to the model
         date = datetime.datetime.strptime(request.POST['date'], '%b. %d, %Y').date()
         content = request.POST['content']
+        print(content)
         list_data = eval(content)
 
         #note: check the record dictionary for adequacy
@@ -801,17 +786,17 @@ class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
                     product_id=record['id'],
                     date=date,
                     defaults={
-                        'cost_price': record['cost'],
-                        'selling_price': record['selling'],
-                        'stock_value': record['balance'],
+                        'cost_price': record['cost_price'],
+                        'selling_price': record['selling_price'],
+                        'stock_value': record['closing_balance'],
                         'sell_out': record['sellout'],
                         'sales_amount': record['sales_amount'],
                     }
                 )
             except:
-                messages.error(request, "Data from CSV file FAILED to add or update Database")
-            else:
-                messages.info(request, "Data from CSV file added or updated to Database SUCCESSFULLY!!!")
+                messages.warning(request, f"{obj} failed to join database!!!. Process is hereby aborted")
+                return self.get(request, **kwargs)
+        messages.success(request, f"All records updated or saved into database !!!")
         return self.get(request, **kwargs)
 
 class StockReportNew(LoginRequiredMixin, UserPassesTestMixin, CreateView):

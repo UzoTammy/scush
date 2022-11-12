@@ -11,7 +11,6 @@ def get_graph():
     buffer.close()
     return graph
 
-
 def sales_stock_figure(x, y):
     plt.switch_backend('AGG')
     plt.figure(figsize=(4, 4))
@@ -22,7 +21,6 @@ def sales_stock_figure(x, y):
     plt.tight_layout()
     graph = get_graph()
     return graph
-
 
 def monthly_sales_revenue(x, y):
     plt.switch_backend('AGG')
@@ -46,3 +44,10 @@ def margin_graph(x, y):
     graph = get_graph()
     return graph
 
+
+# custom Fuction
+def string_float(text):
+    digit = str()
+    for t in text:
+        digit += t if t.isdigit() or t == '.' else ""
+    return float(digit)

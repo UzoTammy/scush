@@ -100,7 +100,7 @@
         {% csrf_token %}
         <div class="modal-body">
             <div class="form-group">
-                <input class="form-control" type="date" name="date" placeholder="Enter Date here">
+                <input class="form-control" type="date" name="date" required>
             </div>
         </div>
         <div class="modal-footer">
@@ -127,7 +127,11 @@
             {% csrf_token %}
             <div class="row">
               <div class="col">
-                  <P>Stock Date: {{user.profile.stock_report_date}}</P>
+                  <P class="text-info">Working Date: {{user.profile.stock_report_date}} <br>
+                    <small class="text-muted">It is expected that the uploaded file will be for same date
+                      <span class="text-danger">!!!</span>
+                    </small>
+                  </P>
               </div>
             </div>
             <div class="row mt-3">
