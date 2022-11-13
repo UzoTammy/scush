@@ -68,8 +68,8 @@
         <div class="col">
             <p>File format not OK. Inspect the csv file to find the cause</p>
             <ul>
-                {% for m in msg %}
-                <li>{{m}}</li>
+                {% for message in msg %}
+                <li>{{message}}</li>
                 {% endfor %}
             </ul>
             <a type="button" class="btn" href="{% url 'stock-report-home' user %}"><i class="fa fa-reply fa-2x"></i>return</a>
