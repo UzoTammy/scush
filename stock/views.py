@@ -953,12 +953,12 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['stock_value_total'] = qs_day.aggregate(Sum('value'))['value__sum']
             context['no_stock'] = qs_day.filter(stock_value__lt=0)
             context['low_stock'] = qs_day.filter(stock_value__lt=10).exclude(stock_value__lt=0)
-            context['no_sellout'] = qs_day.exclude(sell_out__lt=0)
+            context['no_sellout'] = qs_day.filter(sell_out__lt=0)
             context['low_sellout'] = qs_day.filter(sell_out__lt=10).exclude(stock_value__lt=10)
             context['no_stock_month'] = qs_month.filter(stock_value__lt=0)
-            context['low_stock_month'] = qs_day.filter(stock_value__lt=10).exclude(stock_value__lt=0)
-            context['no_sellout_month'] = qs_day.exclude(sell_out__lt=0)
-            context['low_sellout_month'] = qs_day.filter(sell_out__lt=10).exclude(stock_value__lt=10)
+            context['low_stock_month'] = qs_month.filter(stock_value__lt=10).exclude(stock_value__lt=0)
+            context['no_sellout_month'] = qs_month.exclude(sell_out__lt=0)
+            context['low_sellout_month'] = qs_month.filter(sell_out__lt=10).exclude(stock_value__lt=10)
         most_sellout = self.product_analyzer(Sum, 'sell_out', int, qs)
         context['most_sellout'] = {'product': most_sellout[0], 'qty': most_sellout[1]}
 
