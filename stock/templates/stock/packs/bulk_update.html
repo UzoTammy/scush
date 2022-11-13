@@ -2,10 +2,11 @@
 
 {% block content %}
 <div class="container-fluid p-3">
+    <h3>Stock Status Derived from CSV file</h3>
+    {% if qualifier %}
     <div class="row">
       <div class="col">
         <p>Data Source: {{filename}} </p>
-        
       </div>
     </div>
     <div class="row">
@@ -62,5 +63,18 @@
                 <i class="fa fa-reply fa-2x"></i></a>
         </div>
     </div>
+    {% else %}
+    <div class="row">
+        <div class="col">
+            <p>File format not OK. Inspect the csv file to find the cause</p>
+            <ul>
+                {% for m in msg %}
+                <li>{{m}}</li>
+                {% endfor %}
+            </ul>
+            <a type="button" class="btn" href="{% url 'stock-report-home' user %}"><i class="fa fa-reply fa-2x"></i>return</a>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

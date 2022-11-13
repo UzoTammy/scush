@@ -679,7 +679,6 @@ class StockReportHome(LoginRequiredMixin, TemplateView):
     template_name = 'stock/packs/home.html'
     
     def get_context_data(self, **kwargs):
-        # all_products = Product.objects.filter(active=True).values_list('id', flat=True)
         reports = ProductExtension.objects.filter(date=self.request.user.profile.stock_report_date)
         created = reports.values_list('product__id', flat=True)
         
@@ -728,49 +727,66 @@ class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
         filename = os.listdir('media/stock')[0]
         upload_file_url = f'media/stock/{filename}'
 
+        context, msg = dict(), list()
         with open(os.path.join(settings.BASE_DIR, upload_file_url), 'r') as rf:
             content = csv.reader(rf)
-            heads = [next(content),next(content),next(content),next(content), next(content)] 
-            date_string = heads[2][0].split()[1]
-            date_obj = datetime.date(int(date_string.split('-')[2]), int(date_string.split('-')[1]), int(date_string.split('-')[0]))
-            
-            dataset = [{
-                'id': int(record[0]),
-                'product': Product.objects.get(pk=int(record[0])) if Product.objects.filter(pk=int(record[0])).exists() else 'Product not found',
-                'item': record[1],
-                'sellout': int(string_float(record[2])),
-                'selling_price': string_float(record[3]),
-                'sales_amount': string_float(record[4]),
-                'closing_balance': int(string_float(record[5])),
-                'cost_price': string_float(record[6])
-            } for record in content if record[0] != '']  
-        
-        context = {
-            'date': date_obj,
-            'filename': upload_file_url,
-            "dataset": dataset,
-        }
-        
-        post_dataset = list()
-        lock_save = False
-        for data in dataset:
-            X = data.copy()
-            product = X.pop('product')
-            del X['item']
-            try:
-                product.id
-            except:
-                messages.warning(request, "This dataset is not fit to go into database !!!")
-                lock_save = True
-                break
-            else:
-                X.update({'id': product.id})
-                post_dataset.append(X)
+            heads = [next(content),next(content),next(content),next(content), next(content)]
+            qualifier = [True if len(heads[0]) == 7 else False]
+            if qualifier[0] is False:
+                msg.append('Number of columns must be seven')
+            qualifier.append(heads[2][0].split()[1] == heads[2][0].split()[3])
+            if qualifier[1] is False:
+                msg.append("File's date is missing or date is more than one day")
+            qualifier.append(heads[3][0] == 'All Items' and heads[3][1] == 'All MC')
+            if qualifier[2] is False:
+                msg.append("File may not have taken all items or all MCs")
+            qualifier.append(all(heads[-1]) and heads[-1][-1]=='Cost Price' and heads[-1][0]=='Product code')
+            if qualifier[3] is False:
+                msg.append("File columns may differ from what is expected")
 
-        context['post_dataset'] = post_dataset
-        context['lock_save'] = lock_save
+            if all(qualifier):
+                date_string = heads[2][0].split()[1]
+                date_obj = datetime.date(int(date_string.split('-')[2]), int(date_string.split('-')[1]), int(date_string.split('-')[0]))
+                
+                dataset = [{
+                    'id': int(record[0]),
+                    'product': Product.objects.get(pk=int(record[0])) if Product.objects.filter(pk=int(record[0])).exists() else 'Product not found',
+                    'item': record[1],
+                    'sellout': int(string_float(record[2])),
+                    'selling_price': string_float(record[3]),
+                    'sales_amount': string_float(record[4]),
+                    'closing_balance': int(string_float(record[5])),
+                    'cost_price': string_float(record[6])
+                } for record in content if record[0] != '']  
+        
+                context = {
+                    'date': date_obj,
+                    'filename': upload_file_url,
+                    "dataset": dataset,
+                }
+                
+                post_dataset = list()
+                lock_save = False
+                for data in dataset:
+                    X = data.copy()
+                    product = X.pop('product')
+                    del X['item']
+                    try:
+                        product.id
+                    except:
+                        messages.warning(request, "This dataset is not fit to go into database !!!")
+                        lock_save = True
+                        break
+                    else:
+                        X.update({'id': product.id})
+                        post_dataset.append(X)
+
+                context['post_dataset'] = post_dataset
+                context['lock_save'] = lock_save
+        context['qualifier'] = all(qualifier) #boolean 
+        context['msg'] = msg #list
         return render(request, 'stock/packs/bulk_update.html', context=context)
-
+        
 
     def post(self, request, **kwargs):
         # fetch from post request the date and the list of data for update to the model
@@ -1010,29 +1026,5 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         margin = self.product_analyzer(Avg, 'margin', Decimal, qs_d)
         if margin:
             context['most_margin_day'] = {'product': qs_d.get(product=margin[0]), 'value': margin[1]}
-
-        # Non performing stock
-        # latest_date = qs.latest('date').date
-        # qs_30 = qs.filter(date__range=(latest_date-datetime.timedelta(days=30), latest_date))
-
-        # products = Product.objects.filter(active=True)
-        # data = list()
-        # for product in products:
-        #     qs_30 = qs_30.filter(product=product)
-        #     if qs_30.exists():
-        #         stock_value = qs_30.latest('date').stock_value if qs_30.latest('date').stock_value != None else 0
-        #         sellout = qs_30.aggregate(Sum('sell_out'))['sell_out__sum']
-        #         data.append((product, stock_value, sellout))
-        
-        # data = [item for item in data if item[1] != 0]
-        # least_selling = [{'product': item[0],'stock_value': item[1], 'sellout': item[2]} for item in data]
-        # context['non_performing_stock'] = least_selling
-
-        # lossers = [
-        #     {'code': str(obj.pk).zfill(3),'product': obj.product, 'loss': abs(obj.profit), 'margin': obj.margin}
-        #     for obj in qs.filter(date=latest_date) if obj.profit < Decimal()
-        # ]
-        # context['lossers'] = lossers
-        
         return context
 
