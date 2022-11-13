@@ -18,7 +18,7 @@ mail/sample
 mail/sample.html
 extrafiles/
 xx/
-
+media/stock/*.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

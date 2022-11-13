@@ -14,7 +14,7 @@
             class="table" 
             data-pagination="true"
             data-toggle="table">
-                <caption>Stock for {{date|date:'d-m-Y'}}
+                <caption>Stock Status for {{date|date:'d-m-Y'}}
                 </caption>
                 <thead>
                     <tr class="text-center">
@@ -56,9 +56,10 @@
                 {% if lock_save %}
                     disabled
                 {% endif %}
-                >Save to Database</button>
+                >Update or Create</button>
             </form>
-            <a class="float-right" href="{% url 'stock-report-home' user %}"><i class="fa fa-reply fa-2x"></i></a>
+            <a class="float-right" href="{% url 'stock-report-home' user %}">
+                <i class="fa fa-reply fa-2x"></i></a>
         </div>
     </div>
 </div>

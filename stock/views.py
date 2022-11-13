@@ -922,23 +922,42 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
         #Most Sellout - YTD
         qs = ProductExtension.objects.filter(date__year=datetime.date.today().year)
+        if qs.exists():
+            last_date = qs.last().date
+            qs_month = qs.filter(date__month=datetime.date.today().month)
+            qs_day = qs.filter(date=last_date)
+            qs_day = qs_day.annotate(value=F('cost_price')*F('stock_value'))
+            
+            context['count'] = qs_day.filter(sell_out__gt=0)
+            context['products'] = Product.objects.filter(active=True)
+            context['sales_amount_total'] = qs_day.aggregate(Sum('sales_amount'))['sales_amount__sum']
+            context['sellout_total'] = qs_day.aggregate(Sum('sell_out'))['sell_out__sum']
+            context['stock_value_total'] = qs_day.aggregate(Sum('value'))['value__sum']
+            context['no_stock'] = qs_day.filter(stock_value__lt=0)
+            context['low_stock'] = qs_day.filter(stock_value__lt=10).exclude(stock_value__lt=0)
+            context['no_sellout'] = qs_day.exclude(sell_out__lt=0)
+            context['low_sellout'] = qs_day.filter(sell_out__lt=10).exclude(stock_value__lt=10)
+            context['no_stock_month'] = qs_month.filter(stock_value__lt=0)
+            context['low_stock_month'] = qs_day.filter(stock_value__lt=10).exclude(stock_value__lt=0)
+            context['no_sellout_month'] = qs_day.exclude(sell_out__lt=0)
+            context['low_sellout_month'] = qs_day.filter(sell_out__lt=10).exclude(stock_value__lt=10)
         most_sellout = self.product_analyzer(Sum, 'sell_out', int, qs)
         context['most_sellout'] = {'product': most_sellout[0], 'qty': most_sellout[1]}
+
         # most Sellout - Month
         qs_m = qs.filter(date__month=qs.last().date.month)
         month = self.product_analyzer(Sum, 'sell_out', int, qs_m)
         if month:
             context['most_sellout_month'] = {'product': month[0], 'qty': month[1]}
+
         # most Sellout - Day
         qs_1 = qs.filter(date=qs.last().date)
         daily = self.product_analyzer(Sum, 'sell_out', int, qs_1)
         if daily:
             context['most_sellout_daily'] = {'product': qs_1.filter(product=daily[0])[0], 'qty': daily[1]} 
         
-
         # Most profitable - YTD
         qs = qs.annotate(profit=F('sell_out')*(F('selling_price')-F('cost_price')))
         most_profitable = self.product_analyzer(Sum, 'profit', Decimal, qs)
@@ -993,27 +1012,27 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['most_margin_day'] = {'product': qs_d.get(product=margin[0]), 'value': margin[1]}
 
         # Non performing stock
-        latest_date = qs.latest('date').date
-        qs_30 = qs.filter(date__range=(latest_date-datetime.timedelta(days=30), latest_date))
+        # latest_date = qs.latest('date').date
+        # qs_30 = qs.filter(date__range=(latest_date-datetime.timedelta(days=30), latest_date))
 
-        products = Product.objects.filter(active=True)
-        data = list()
-        for product in products:
-            qs_30 = qs_30.filter(product=product)
-            if qs_30.exists():
-                stock_value = qs_30.latest('date').stock_value if qs_30.latest('date').stock_value != None else 0
-                sellout = qs_30.aggregate(Sum('sell_out'))['sell_out__sum']
-                data.append((product, stock_value, sellout))
+        # products = Product.objects.filter(active=True)
+        # data = list()
+        # for product in products:
+        #     qs_30 = qs_30.filter(product=product)
+        #     if qs_30.exists():
+        #         stock_value = qs_30.latest('date').stock_value if qs_30.latest('date').stock_value != None else 0
+        #         sellout = qs_30.aggregate(Sum('sell_out'))['sell_out__sum']
+        #         data.append((product, stock_value, sellout))
         
-        data = [item for item in data if item[1] != 0]
-        least_selling = [{'product': item[0],'stock_value': item[1], 'sellout': item[2]} for item in data]
-        context['non_performing_stock'] = least_selling
+        # data = [item for item in data if item[1] != 0]
+        # least_selling = [{'product': item[0],'stock_value': item[1], 'sellout': item[2]} for item in data]
+        # context['non_performing_stock'] = least_selling
 
-        lossers = [
-            {'code': str(obj.pk).zfill(3),'product': obj.product, 'loss': abs(obj.profit), 'margin': obj.margin}
-            for obj in qs.filter(date=latest_date) if obj.profit < Decimal()
-        ]
-        context['lossers'] = lossers
+        # lossers = [
+        #     {'code': str(obj.pk).zfill(3),'product': obj.product, 'loss': abs(obj.profit), 'margin': obj.margin}
+        #     for obj in qs.filter(date=latest_date) if obj.profit < Decimal()
+        # ]
+        # context['lossers'] = lossers
         
         return context
 

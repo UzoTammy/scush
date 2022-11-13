@@ -119,5 +119,3 @@ class ProductExtension(models.Model):
     
     def value_of_stock(self):
         return self.cost_price * self.stock_value
-
-    
