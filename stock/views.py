@@ -697,7 +697,7 @@ class StockReportHome(LoginRequiredMixin, TemplateView):
         
         if request.FILES:
             myfile = request.FILES['fileName']
-            fs = FileSystemStorage(location=os.path.join('core/static', 'stock'))
+            fs = FileSystemStorage(location=os.path.join(settings.BASE_DIR, 'core/static/stock'))
             
             for file in os.listdir(fs.location):
                 path = os.path.join(fs.location, file)
