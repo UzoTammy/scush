@@ -697,10 +697,12 @@ class StockReportHome(LoginRequiredMixin, TemplateView):
         
         if request.FILES:
             myfile = request.FILES['fileName']
-            fs = FileSystemStorage(location=os.path.join('media', 'stock'))
+            fs = FileSystemStorage(location=os.path.join('core/static', 'stock'))
             
             for file in os.listdir(fs.location):
-                os.remove(os.path.join(fs.location, file))
+                path = os.path.join(fs.location, file)
+                if os.path.exists(path):
+                    os.remove(path)
             
             filename = fs.save(myfile.name, myfile)
             messages.info(request, f'{filename} uploaded successfully')
@@ -724,8 +726,8 @@ class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
         return False
 
     def get(self, request, **kwargs):
-        filename = os.listdir('media/stock')[0]
-        upload_file_url = f'media/stock/{filename}'
+        filename = os.listdir('core/static/stock')[0]
+        upload_file_url = f'core/static/stock/{filename}'
 
         context, msg = dict(), list()
         with open(os.path.join(settings.BASE_DIR, upload_file_url), 'r') as rf:
@@ -792,7 +794,6 @@ class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
         # fetch from post request the date and the list of data for update to the model
         date = datetime.datetime.strptime(request.POST['date'], '%b. %d, %Y').date()
         content = request.POST['content']
-        print(content)
         list_data = eval(content)
 
         #note: check the record dictionary for adequacy
@@ -979,14 +980,13 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             ]
             qs_month_sellout = [
                 (x.first(), x.latest('date').stock_value, x.aggregate(Avg('sell_out'))['sell_out__avg'], 
-             
                 x.aggregate(Sum('sell_out'))['sell_out__sum']
                 ) 
                 for x in qs_month_product
             ]
             qs_month_low_sellout = [
                 {'product': x[0], 'stock_balance': x[1], 'sellout': x[3]} 
-                for x in qs_month_sellout if x[2]<=10 and x[1]>0 # an average of 10 
+                for x in qs_month_sellout if x[2]<=10 and x[1]>0 and x[3]>0 #an average of 10 
             ]
             context['no_stock_month'] = qs_month_no_stock
             context['low_stock_month'] = qs_month_low_stock
