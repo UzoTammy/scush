@@ -941,8 +941,8 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         #Most Sellout - YTD
         qs = ProductExtension.objects.filter(date__year=datetime.date.today().year)
         if qs.exists():
-            last_date = qs.last().date
-            qs_month = qs.filter(date__month=datetime.date.today().month)
+            last_date = qs.latest('date').date
+            qs_month = qs.filter(date__month=last_date.month)
             qs_day = qs.filter(date=last_date)
             qs_day = qs_day.annotate(value=F('cost_price')*F('stock_value'))
             
@@ -951,14 +951,47 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['sales_amount_total'] = qs_day.aggregate(Sum('sales_amount'))['sales_amount__sum']
             context['sellout_total'] = qs_day.aggregate(Sum('sell_out'))['sell_out__sum']
             context['stock_value_total'] = qs_day.aggregate(Sum('value'))['value__sum']
-            context['no_stock'] = qs_day.filter(stock_value__lt=0)
-            context['low_stock'] = qs_day.filter(stock_value__lt=10).exclude(stock_value__lt=0)
-            context['no_sellout'] = qs_day.filter(sell_out__lt=0)
-            context['low_sellout'] = qs_day.filter(sell_out__lt=10).exclude(stock_value__lt=10)
-            context['no_stock_month'] = qs_month.filter(stock_value__lt=0)
-            context['low_stock_month'] = qs_month.filter(stock_value__lt=10).exclude(stock_value__lt=0)
-            context['no_sellout_month'] = qs_month.exclude(sell_out__lt=0)
-            context['low_sellout_month'] = qs_month.filter(sell_out__lt=10).exclude(stock_value__lt=10)
+            context['no_stock'] = qs_day.filter(stock_value__lte=0)
+            context['low_stock'] = qs_day.filter(stock_value__lt=10).exclude(stock_value__lte=0)
+            context['no_sellout'] = qs_day.filter(sell_out=0).filter(stock_value__gt=0)
+            context['low_sellout'] = qs_day.filter(sell_out__lt=10).exclude(sell_out=0)
+
+            products = qs_month.values_list('product', flat=True).distinct()
+            qs_month_product = [qs_month.filter(product__id=product) for product in products]
+
+            qs_month_no_stock = [
+                {'product': x.first(), 'stock_balance': x.latest('date').stock_value} 
+                for x in qs_month_product if x.latest('date').stock_value<=0
+            ]
+
+            qs_month_low_stock = [
+                {'product': x.first(), 'stock_balance': x.latest('date').stock_value} 
+                for x in qs_month_product if x.latest('date').stock_value<10 and x.latest('date').stock_value>0
+            ]
+            qs_month_sellout = [
+                (x.first(), x.latest('date').stock_value, x.aggregate(Sum('sell_out'))['sell_out__sum'])
+                for x in qs_month_product
+            ]
+            
+            qs_month_no_sellout = [
+                {'product': x[0], 'stock_balance': x[1]} 
+                for x in qs_month_sellout if x[2]==0 and x[1]>0
+            ]
+            qs_month_sellout = [
+                (x.first(), x.latest('date').stock_value, x.aggregate(Avg('sell_out'))['sell_out__avg'], 
+             
+                x.aggregate(Sum('sell_out'))['sell_out__sum']
+                ) 
+                for x in qs_month_product
+            ]
+            qs_month_low_sellout = [
+                {'product': x[0], 'stock_balance': x[1], 'sellout': x[3]} 
+                for x in qs_month_sellout if x[2]<=10 and x[1]>0 # an average of 10 
+            ]
+            context['no_stock_month'] = qs_month_no_stock
+            context['low_stock_month'] = qs_month_low_stock
+            context['no_sellout_month'] = qs_month_no_sellout
+            context['low_sellout_month'] = qs_month_low_sellout
         most_sellout = self.product_analyzer(Sum, 'sell_out', int, qs)
         context['most_sellout'] = {'product': most_sellout[0], 'qty': most_sellout[1]}
 
