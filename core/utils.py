@@ -48,6 +48,8 @@ def margin_graph(x, y):
 # custom Fuction
 def string_float(text):
     digit = str()
+    text = text.strip()
+    factor = -1 if text[0] == '-' else 1
     for t in text:
         digit += t if t.isdigit() or t == '.' else ""
-    return float(digit)
+    return float(digit) * factor
