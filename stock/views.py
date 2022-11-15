@@ -933,6 +933,12 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 product_data = product
         return product_data
                 
+    def unreported_product(self, queryset):
+        products = Product.objects.values_list('id', flat=True).distinct()
+        reported_products = queryset.values_list('product', flat=True).distinct()
+        unreported_products = products.difference(reported_products)
+        unreported_products = [Product.objects.get(id=product) for product in unreported_products]
+        return unreported_products
 
     def test_func(self):
         """if user is a member of the group Sales then grant access to this view"""
@@ -1062,5 +1068,18 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         margin = self.product_analyzer(Avg, 'margin', Decimal, qs_d)
         if margin:
             context['most_margin_day'] = {'product': qs_d.get(product=margin[0]), 'value': margin[1]}
+
+        # unreported
+        qs = ProductExtension.objects.filter(active=True)
+        context['unreported_products'] = self.unreported_product(qs)
+        
+        qs = qs.filter(date__year=datetime.date.today().year)
+        context['unreported_products_year'] = self.unreported_product(qs)
+
+        qs = qs.filter(date__year=datetime.date.today().year).filter(date__month=last_date.month)
+        context['unreported_products_month'] = self.unreported_product(qs)
+
+        qs = qs.filter(date=last_date)
+        context['unreported_products_day'] = self.unreported_product(qs)
         return context
 

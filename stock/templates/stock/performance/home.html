@@ -111,13 +111,22 @@
         </div>
         <div class="col mt-2">
             <ul class="list-group curved-edge shadow-lg">
-                <h6 class="text-primary text-center">Daily</h6>
+                <h6 class="text-primary float-right">
+                    <span class="float-right mr-4">Daily</span>
+                    <span class="float-right mr-3">Monthly</span>
+                </h6>
                 <li class="list-group-item">No Stock
                    <span class="float-right">
                     <a href="#" data-toggle="modal" data-target="#noStockModal">
                        <span class="no-stock-circle">#{{no_stock.count}}</span> 
                     </a>
-                </span> 
+                    </span> 
+                    <span class="float-right mr-4">
+                        <a href="#" data-toggle="modal" data-target="#noStockMonthModal">
+                            <span class="no-stock-circle">#{{no_stock_month|length}}</span>  
+                        </a>
+                    </span>
+
                 </li>
                 <li class="list-group-item">Low Stock
                     <span class="float-right">
@@ -125,12 +134,22 @@
                             <span class="low-stock-circle">#{{low_stock.count}}</span> 
                         </a>
                     </span> 
+                    <span class="float-right mr-4">
+                        <a href="#" data-toggle="modal" data-target="#lowStockMonthModal">
+                            <span class="low-stock-circle">#{{low_stock_month|length}}</span> 
+                        </a>
+                    </span>
                  </li>
                  <li class="list-group-item">No Sellout
                     <span class="float-right"><a href="#" data-toggle="modal" data-target="#noSelloutModal">
                         <span class="no-sellout-circle">#{{no_sellout.count}}</span> 
                     </a>
-                </span> 
+                    </span>
+                    <span class="float-right mr-4">
+                        <a href="#" data-toggle="modal" data-target="#noSelloutMonthModal">
+                            <span class="no-sellout-circle">#{{no_sellout_month|length}}</span> 
+                        </a>
+                    </span> 
                  </li>
                  <li class="list-group-item">Low Sellout
                     <span class="float-right">
@@ -138,6 +157,11 @@
                            <span class="low-sellout-circle">#{{low_sellout.count}}</span> 
                         </a>
                     </span> 
+                    <span class="float-right mr-4">
+                        <a href="#" data-toggle="modal" data-target="#lowSelloutMonthModal">
+                            <span class="low-sellout-circle">#{{low_sellout_month|length}}</span> 
+                        </a>
+                    </span>
                  </li> 
             </ul>
         </div>
@@ -204,32 +228,33 @@
         </div>
         <div class="col mt-2">
             <ul class="list-group curved-edge shadow-lg">
-                <h6 class="text-primary text-center">Monthly</h6>
-                <li class="list-group-item">No Stock
+                <h6 class="text-primary text-center">Unreported</h6>
+                <li class="list-group-item">This day
                    <span class="float-right">
-                    <a href="#" data-toggle="modal" data-target="#noStockMonthModal">
-                        <span class="no-stock-circle">#{{no_stock_month|length}}</span>  
+                    <a href="#" data-toggle="modal" data-target="#unreportedProductDayModal">
+                        <span class="no-stock-circle">#{{unreported_products_day|length}}</span>  
                     </a>
                 </span> 
                 </li>
-                <li class="list-group-item">Low Stock
+                <li class="list-group-item">This Month
                     <span class="float-right">
-                        <a href="#" data-toggle="modal" data-target="#lowStockMonthModal">
-                            <span class="low-stock-circle">#{{low_stock_month|length}}</span> 
-                        </a></span> 
-                 </li>
-                 
-                 <li class="list-group-item">No Sellout
-                    <span class="float-right">
-                        <a href="#" data-toggle="modal" data-target="#noSelloutMonthModal">
-                            <span class="no-sellout-circle">#{{no_sellout_month|length}}</span> 
+                        <a href="#" data-toggle="modal" data-target="#unreportedProductMonthModal">
+                            <span class="low-stock-circle">#{{unreported_products_month|length}}</span> 
                         </a>
                     </span> 
                  </li>
-                 <li class="list-group-item">Low Sellout
+                 
+                 <li class="list-group-item">This Year
                     <span class="float-right">
-                        <a href="#" data-toggle="modal" data-target="#lowSelloutMonthModal">
-                            <span class="low-sellout-circle">#{{low_sellout_month|length}}</span> 
+                        <a href="#" data-toggle="modal" data-target="#unreportedProductYearModal">
+                            <span class="no-sellout-circle">#{{unreported_products_year|length}}</span> 
+                        </a>
+                    </span> 
+                 </li>
+                 <li class="list-group-item">Never
+                    <span class="float-right">
+                        <a href="#" data-toggle="modal" data-target="#unreportedProductNeverModal">
+                            <span class="low-sellout-circle">#{{unreported_products|length}}</span> 
                         </a>
                         </span> 
                  </li> 
@@ -582,4 +607,152 @@
     </div>
     {% endif %}
 </section>
+
+<!-- Unreported Products -->
+<section>
+    <!-- UnreportedProductDayModal -->
+    {% if unreported_products_day %} 
+     <div class="modal fade" id="unreportedProductDayModal" tabindex="-1" role="dialog" aria-labelledby="unreportedProductDayModalLabel"
+     aria-hidden="true">
+     <div class="modal-dialog" role="document">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="unreportedProductDayModalLabel">List of Products not sold this</h5>
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                 </button>
+             </div>
+             <div class="modal-body">
+                 <table class="table" data-toggle="table">
+                     <thead>
+                         <tr class="text-center">
+                             <th>Product</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                         {% for record in unreported_products_day %}
+                         <tr>
+                             <td>{{record}}</td>
+                         </tr>
+                         {% endfor %}
+                     </tbody>
+                 </table>
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+             </div>
+         </div>
+     </div>
+    </div>
+    {% endif %}
+    
+    <!-- UnreportedProductMonthModal -->
+    {% if unreported_products_month %} 
+     <div class="modal fade" id="unreportedProductMonthModal" tabindex="-1" role="dialog" aria-labelledby="unreportedProductMonthModalLabel"
+     aria-hidden="true">
+     <div class="modal-dialog" role="document">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="unreportedProductMonthModalLabel">List of Products not sold this month</h5>
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                 </button>
+             </div>
+             <div class="modal-body">
+                 <table class="table" data-toggle="table">
+                     <thead>
+                         <tr class="text-center">
+                             <th>Product</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                         {% for record in unreported_products_month %}
+                         <tr>
+                             <td>{{record}}</td>
+                         </tr>
+                         {% endfor %}
+                     </tbody>
+                 </table>
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+             </div>
+         </div>
+     </div>
+    </div>
+    {% endif %}
+    
+    <!-- UnreportedProductYearModal -->
+    {% if unreported_products_year %} 
+     <div class="modal fade" id="unreportedProductYearModal" tabindex="-1" role="dialog" aria-labelledby="unreportedProductYearModalLabel"
+     aria-hidden="true">
+     <div class="modal-dialog" role="document">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="unreportedProductYearModalLabel">List of Products not sold this year</h5>
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                 </button>
+             </div>
+             <div class="modal-body">
+                 <table class="table" data-toggle="table">
+                     <thead>
+                         <tr class="text-center">
+                             <th>Product</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                         {% for record in unreported_products_year %}
+                         <tr>
+                             <td>{{record}}</td>
+                         </tr>
+                         {% endfor %}
+                     </tbody>
+                 </table>
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+             </div>
+         </div>
+     </div>
+    </div>
+    {% endif %}
+    
+    <!-- UnreportedProductNeverModal -->
+    {% if unreported_products %} 
+     <div class="modal fade" id="unreportedProductNeverModal" tabindex="-1" role="dialog" aria-labelledby="unreportedProductNeverModalLabel"
+     aria-hidden="true">
+     <div class="modal-dialog" role="document">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="unreportedProductNeverModalLabel">List of Products never sold</h5>
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                 </button>
+             </div>
+             <div class="modal-body">
+                 <table class="table" data-toggle="table">
+                     <thead>
+                         <tr class="text-center">
+                             <th>Product</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                         {% for record in unreported_products %}
+                         <tr>
+                             <td>{{record}}</td>
+                         </tr>
+                         {% endfor %}
+                     </tbody>
+                 </table>
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+             </div>
+         </div>
+     </div>
+    </div>
+    {% endif %}
+</section>
+
 {% endblock%}
