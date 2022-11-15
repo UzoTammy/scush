@@ -697,7 +697,9 @@ class StockReportHome(LoginRequiredMixin, TemplateView):
         
         if request.FILES:
             myfile = request.FILES['fileName']
-            fs = FileSystemStorage(location=os.path.join(settings.BASE_DIR, 'core/static/stock'))
+            # os.path.join(settings.STATIC_ROOT, 'stock')
+            dirname = os.path.dirname(__file__)
+            fs = FileSystemStorage(location=os.path.join(dirname, 'status'))
             
             for file in os.listdir(fs.location):
                 path = os.path.join(fs.location, file)
@@ -726,8 +728,9 @@ class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
         return False
 
     def get(self, request, **kwargs):
-        filename = os.listdir('core/static/stock')[0]
-        upload_file_url = f'core/static/stock/{filename}'
+        directory = os.path.join(os.path.dirname(__file__), 'status')
+        file = os.listdir(directory)[0]
+        upload_file_url = os.path.join(directory, file)
 
         context, msg = dict(), list()
         with open(os.path.join(settings.BASE_DIR, upload_file_url), 'r') as rf:
