@@ -934,7 +934,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return product_data
                 
     def unreported_product(self, queryset):
-        products = Product.objects.values_list('id', flat=True).distinct()
+        products = Product.objects.filter(active=True).values_list('id', flat=True).distinct()
         reported_products = queryset.values_list('product', flat=True).distinct()
         unreported_products = products.difference(reported_products)
         unreported_products = [Product.objects.get(id=product) for product in unreported_products]
@@ -1081,5 +1081,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
         qs = qs.filter(date=last_date)
         context['unreported_products_day'] = self.unreported_product(qs)
+
+        context['inactive_products'] = Product.objects.filter(active=False)
         return context
 

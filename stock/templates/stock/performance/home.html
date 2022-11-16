@@ -37,6 +37,11 @@
         border-radius: 70%;
         padding: 0.5rem;
     }
+    .inactive-product-circle {
+        background-color: rgb(227, 233, 217);
+        border-radius: 50%;
+        padding: 0.5rem;
+    }
 </style>
 {% endblock %}
 {% block content %}
@@ -296,11 +301,53 @@
 
     <div class="row m-3">
         <div class="col">
+            <h6>Inactive
+            <a href="#" data-toggle="modal" data-target="#inactiveProductsModal">
+                <span class="inactive-product-circle">
+                    {{inactive_products.count}}
+                </span>
+            </a>
+            </h6>
             <a class="float-right" href="{% url 'product-home' %}"><i class="fa fa-reply fa-2x"></i></a>
         </div>
     </div>
 </div>
 
+
+<!-- Inactive products -->
+
+<div class="modal fade" id="inactiveProductsModal" tabindex="-1" role="dialog" aria-labelledby="inactiveProductsModalLabel"
+     aria-hidden="true">
+     <div class="modal-dialog" role="document">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h5 class="modal-title" id="inactiveProductsModalLabel">List of Active Products</h5>
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                 </button>
+             </div>
+             <div class="modal-body">
+                 <table class="table" data-toggle="table">
+                     <thead>
+                         <tr class="text-center">
+                             <th>Product</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+                         {% for record in inactive_products %}
+                         <tr>
+                             <td>{{record}}</td>
+                         </tr>
+                         {% endfor %}
+                     </tbody>
+                 </table>
+             </div>
+             <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+             </div>
+         </div>
+     </div>
+    </div>
 <!-- Daily -->
 <section>
     <!-- No Stock -->
