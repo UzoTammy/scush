@@ -1084,5 +1084,10 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         qs = qs.filter(date=last_date)
         context['unreported_products_day'] = self.unreported_product(qs)
         context['inactive_products'] = Product.objects.filter(active=False)
+        latest_date = ProductExtension.objects.latest('date').date
+        qs = ProductExtension.objects.filter(date=latest_date)
+        qs = qs.annotate(gain=F('stock_value')*(F('selling_price')-F('cost_price')))
+        context['margins'] = qs.order_by('gain')
+        context['total_margin'] = qs.aggregate(Sum('gain'))['gain__sum']
         return context
 
