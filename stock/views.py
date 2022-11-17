@@ -1071,6 +1071,8 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
         # unreported
         qs = ProductExtension.objects.filter(active=True)
+        """Unreported products are products that were not sold because it is zero stock balance
+        therefore, it will be reported as no stock"""
         context['unreported_products'] = self.unreported_product(qs)
         
         qs = qs.filter(date__year=datetime.date.today().year)
@@ -1078,10 +1080,9 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
         qs = qs.filter(date__year=datetime.date.today().year).filter(date__month=last_date.month)
         context['unreported_products_month'] = self.unreported_product(qs)
-
+        
         qs = qs.filter(date=last_date)
         context['unreported_products_day'] = self.unreported_product(qs)
-
         context['inactive_products'] = Product.objects.filter(active=False)
         return context
 

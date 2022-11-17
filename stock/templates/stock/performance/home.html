@@ -45,8 +45,20 @@
 </style>
 {% endblock %}
 {% block content %}
-<div class="container">
-    <h3 class="text-center mt-4">Products Performance</h3>
+<div class="container-fluid">
+    <h3 class="text-center mt-3">Products Performance</h3>
+    <div class="row mr-3">
+        <div class="col">
+            <h6 class="float-right">Deactivated
+                <a href="#" data-toggle="modal" data-target="#inactiveProductsModal">
+                    <span class="inactive-product-circle">
+                        {{inactive_products.count}}
+                    </span>
+                </a>
+            </h6>
+        </div>
+    </div>
+    
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 mt-3">
         <div class="col text-center mt-2 mb-1">
             <ul class="list-group circle">
@@ -123,12 +135,14 @@
                 <li class="list-group-item">No Stock
                    <span class="float-right">
                     <a href="#" data-toggle="modal" data-target="#noStockModal">
-                       <span class="no-stock-circle">#{{no_stock.count}}</span> 
+                        {% with unreported_products_day|length as upd %}
+                       <span class="no-stock-circle">#{{no_stock.count|add:upd}}</span> 
+                        {% endwith %}
                     </a>
                     </span> 
                     <span class="float-right mr-4">
                         <a href="#" data-toggle="modal" data-target="#noStockMonthModal">
-                            <span class="no-stock-circle">#{{no_stock_month|length}}</span>  
+                            <span class="no-stock-circle">#{{unreported_products_month|length}}</span>  
                         </a>
                     </span>
 
@@ -301,21 +315,12 @@
 
     <div class="row m-3">
         <div class="col">
-            <h6>Inactive
-            <a href="#" data-toggle="modal" data-target="#inactiveProductsModal">
-                <span class="inactive-product-circle">
-                    {{inactive_products.count}}
-                </span>
-            </a>
-            </h6>
             <a class="float-right" href="{% url 'product-home' %}"><i class="fa fa-reply fa-2x"></i></a>
         </div>
     </div>
 </div>
 
-
 <!-- Inactive products -->
-
 <div class="modal fade" id="inactiveProductsModal" tabindex="-1" role="dialog" aria-labelledby="inactiveProductsModalLabel"
      aria-hidden="true">
      <div class="modal-dialog" role="document">
@@ -347,7 +352,8 @@
              </div>
          </div>
      </div>
-    </div>
+</div>
+
 <!-- Daily -->
 <section>
     <!-- No Stock -->
@@ -378,6 +384,14 @@
                                 <td class="text-right">{{record.sell_out}}</td>
                             </tr>
                             {% endfor %}
+                            {% for record in unreported_products_day %}
+                            <tr>
+                                <td>{{record}}</td>
+                                <td class="text-right">0</td>
+                                <td class="text-right">0</td>
+                            </tr>
+                            {% endfor %}
+
                         </tbody>
                     </table>
                 </div>
@@ -525,10 +539,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for record in no_stock_month %}
+                            {% for record in unreported_products_month %}
                             <tr>
-                                <td>{{record.product.product}}</td>
-                                <td class="text-right">{{record.stock_balance}}</td>
+                                <td>{{record}}</td>
+                                <td class="text-right">0</td>
                             </tr>
                             {% endfor %}
                         </tbody>
