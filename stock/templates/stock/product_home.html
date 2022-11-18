@@ -1,84 +1,80 @@
 {% extends 'users/base.html' %}
 
 {% block content %}
-    <div class="container-fluid p-3">
-        <div class="row">
-            <div class="col text-center">
-                <h3>Stock Management Home Page</h3>
-            </div>
-        </div>
-        <div class="row mt-2">
-            <div class="col-3 bg-light">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item text-info">View
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">
-                                <a href="{% url 'performance-home' %}">Performance</a>
-                            </li>
-                            
-                            <li class="list-group-item">
-                                <a href="{% url 'stock-report-source' 'All' %}">All Products</a>
-                            </li>
-                            <li class="list-group-item">
-                                <!-- Button trigger modal -->
-                                <a href="{% url 'stock-report' %}">Stock Report</a>
-                            </li> 
-                            <li class="list-group-item">
-                                <a href="{% url 'watchlist-home' %}">Watchlist</a>
-                            </li>  
-                            <li class="list-group-item">
-                                <a href="{% url 'delivery-home' %}">Deliveries</a>
-                            </li>
-                             
-                        </ul>
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-sm-2 bg-light">
+            <button class="navbar-toggler 
+                bg-light float-right mt-1 mb-1 myBtn" 
+                type="button" 
+                data-toggle="collapse"
+                data-target="#dropdown" 
+                aria-controls="dropdown" 
+                aria-expanded="false" 
+                aria-label="Toggle navigation">
+                <i class="fa fa-navicon text-primary"></i>
+            </button>
+
+            <div class="collapse collapse-sm" id="dropdown">
+                <ul class="nav flex-column mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'performance-home' %}">Performance</a>
                     </li>
                     
-                    <li class="list-group-item">
-                        <a href="{% url 'product-create' %}"><i class="fa fa-plus text-info"></i> Product</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'stock-report-source' 'All' %}">All Products</a>
                     </li>
-                    <li class="list-group-item">
-                        <!-- Button trigger modal -->
-                        <a href="{% url 'stock-report-home' user %}"><i class="fa fa-plus text-info"></i> Sellout & Balance</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'stock-report' %}">Stock Report</a>
                     </li>
-                    
-                    <li class="list-group nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" 
-                        href="#" 
-                        data-toggle="dropdown"
-                        role="button"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                        >PDF View</a>
-                        
-                        <ul class="dropdown-menu">
-                            {% for source in sources %}
-                            <li class="dropdown-item"><a href="{% url 'pdf-prices' source %}">{{source}}</a></li>
-                            {% endfor %}
-                            <li class="dropdown-item"><a href="{% url 'pdf-prices' 'All' %}">All</a></li>
-                        </ul>
-                    </li>   
-                    <hr class="dropdown-divider">    
-                    <li class="list-group-item">
-                        <a href="" 
-                        data-toggle="modal" 
-                        data-target="#footNotePriceUpdate">Price Update Footnote</a>
+                
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'watchlist-home' %}">Watchlist</a>
                     </li>
                     
-                    <li class="list-group-item">
-                        <a href="{% url 'pdf-price-change' %}">Today's Price Update (PDF)</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'delivery-home' %}">Deliveries</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'product-create' %}"><i class="fa fa-plus text-info"></i> Product</a>
                     </li>
 
-                    
-                    
-                    
-                    <li class="list-group-item">
-                        <a href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
+                    <li class="nav-item">
+                        <!-- Button trigger modal -->
+                        <a class="nav-link" href="{% url 'stock-report-home' user %}"><i class="fa fa-plus text-info"></i> Sellout &
+                            Balance</a>
                     </li>
+    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button"
+                            aria-haspopup="true" aria-expanded="false">PDF View</a>
+    
+                        <ul class="dropdown-menu">
+                            {% for source in sources %}
+                            <li class="dropdown-item"><a class="nav-link" href="{% url 'pdf-prices' source %}">{{source}}</a></li>
+                            {% endfor %}
+                            <li class="dropdown-item"><a class="nav-link" href="{% url 'pdf-prices' 'All' %}">All</a></li>
+                        </ul>
+                    </li>
+                    
+                <li class="nav-item">
+                    <a class="nav-link" href="" data-toggle="modal" data-target="#footNotePriceUpdate">Price Update Footnote</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'pdf-price-change' %}">Today's Price Update (PDF)</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
+                </li>
                 </ul>
             </div>
-            <div class="col-9">
+        </nav>
+        <div class="col text-center">
+            <h3>Stock Management Home Page</h3>
+            <div class="col">
                 <div class="row">
-<!--                    Product Count-->
+                    <!--                    Product Count-->
                     <div class="col-6">
                         <h4 style="font-family: cursive" class="text-danger">Counts</h4>
                         <ul class="list-group list-group-flush">
@@ -89,14 +85,15 @@
                                 <i>NB Products: {{nb_count}}</i>
                             </li>
                             <li class="list-group-item list-group-item-info">
-                                <i>GN Products: Beer & APNAD: {{gn_count}} -- MSS: {{mss_count}} -- IPS: {{ips_count}}</i>
+                                <i>GN Products: Beer & APNAD: {{gn_count}} -- MSS: {{mss_count}} -- IPS:
+                                    {{ips_count}}</i>
                             </li>
                             <li class="list-group-item">
                                 <i>IB Products: {{ib_count}}</i>
                             </li>
                         </ul>
                     </div>
-<!--                    Quantity Delivered-->
+                    <!--                    Quantity Delivered-->
                     <div class="col-6">
                         <h4 style="font-family: cursive" class="text-danger">Quantity</h4>
                         <ul class="list-group list-group-flush">
@@ -129,11 +126,10 @@
                             <li class="list-group-item list-group-item-info">
                                 <i>Rejected: {{total_amount_credit}}</i>
                             </li>
-                            </ul>
+                        </ul>
                     </div>
                     <div class="col-6">
-                        <h4 style="font-family: cursive"
-                            class="text-danger">Sources</h4>
+                        <h4 style="font-family: cursive" class="text-danger">Sources</h4>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item list-group-item-info">
                                 <i>GN: {{gn_delivered}} ({{gn_amount}})</i>
@@ -149,7 +145,7 @@
                 </div>
                 <hr>
                 <div class="row">
-<!--                    Category right side-->
+                    <!--                    Category right side-->
                     <div class="col-6">
                         <h4 style="font-family: cursive" class="text-danger">Category</h4>
                         <ul class="list-group list-group-flush">
@@ -167,7 +163,7 @@
                             </li>
                         </ul>
                     </div>
-<!--                    Category left side-->
+                    <!--                    Category left side-->
                     <div class="col-6">
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item"><i>Stout: {{total_stout_delivered}}</i></li>
@@ -189,117 +185,110 @@
             </div>
         </div>
     </div>
+    
+</div>
 
-        
-  <!-- Modal footnote-->
-  <div class="modal fade" 
-  id="footNotePriceUpdate" 
-  data-backdrop="static" 
-  data-keyboard="false" 
-  tabindex="-1" 
-  aria-labelledby="staticBackdropLabel" 
-  aria-hidden="true">
+
+<!-- Modal footnote-->
+<div class="modal fade" id="footNotePriceUpdate" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Price Update Footnote</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Price Update Footnote</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{% url 'price-update-footnote' %}">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="footNote">Note</label>
+                        <textarea class="form-control"
+                            placeholder="enter your footnotes here to add more infomation to the price review"
+                            name="footnote" id="footNote" cols="30" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </form>
         </div>
-        <form action="{% url 'price-update-footnote' %}">
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="footNote">Note</label>
-                <textarea class="form-control"
-                placeholder="enter your footnotes here to add more infomation to the price review"
-                name="footnote" 
-                id="footNote" 
-                cols="30" 
-                rows="10"></textarea>
-            </div> 
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Submit</button>
-          <button type="button" 
-          class="btn btn-secondary" 
-          data-dismiss="modal">Close</button>
-        </div>
-    </form>
-      </div>
     </div>
-  </div>
+</div>
 
-  
-  <!-- Add Stock  Modal -->
-  <div class="modal fade" id="stockAddModal" tabindex="-1" aria-labelledby="stockAddModalLabel" aria-hidden="true">
+
+<!-- Add Stock  Modal -->
+<div class="modal fade" id="stockAddModal" tabindex="-1" aria-labelledby="stockAddModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="stockUpdateModalLabel">Add Stock - Pick A Date</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="stockUpdateModalLabel">Add Stock - Pick A Date</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="#" method="GET">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="">Date</label>
+                        <input id="stockAddInput" class="form-control" type="date" name="theDate" onchange="addFunc()">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="btnAdd" type="submit" class="btn btn-primary" disabled>Continue</button>
+                </div>
+            </form>
         </div>
-        <form action="#" method="GET">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label" for="">Date</label>
-                    <input id="stockAddInput" class="form-control" type="date" name="theDate" onchange="addFunc()">
-                </div>   
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id="btnAdd" type="submit" class="btn btn-primary" disabled>Continue</button>           
-            </div>
-        </form>
-      </div>
     </div>
-  </div>
+</div>
 
-  <!-- View Stock  Modal -->
-  <div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
+<!-- View Stock  Modal -->
+<div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="stockReportModalLabel">Stock Report - Pick A Date</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="stockReportModalLabel">Stock Report - Pick A Date</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="#" method="GET">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="">Date</label>
+                        <input id="stockReportInput" class="form-control" type="date" name="theDate"
+                            onchange="reportFunc()">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="btnReport" type="submit" class="btn btn-primary" disabled>Report</button>
+                </div>
+            </form>
         </div>
-        <form action="#" method="GET">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label" for="">Date</label>
-                    <input id="stockReportInput" class="form-control" type="date" name="theDate" onchange="reportFunc()">
-                </div>   
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button id="btnReport" type="submit" class="btn btn-primary" disabled>Report</button>           
-            </div>
-        </form>
-      </div>
     </div>
-  </div>
+</div>
 
-  <script>
-      function addFunc() {
-        
+<script>
+    function addFunc() {
+
         if (document.getElementById('stockAddInput').value == '') {
             document.getElementById('btnAdd').disabled = true;
         } else {
             document.getElementById('btnAdd').disabled = false;
-        }  
-      }
+        }
+    }
 
-      function reportFunc() {
-        
+    function reportFunc() {
+
         if (document.getElementById('stockReportInput').value == '') {
             document.getElementById('btnReport').disabled = true;
         } else {
             document.getElementById('btnReport').disabled = false;
-        }  
-      }
-  </script>
+        }
+    }
+</script>
 {% endblock %}
