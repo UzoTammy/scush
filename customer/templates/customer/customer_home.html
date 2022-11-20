@@ -1,107 +1,225 @@
 {% extends 'users/base.html' %}
+{% load static %}
+
+{% block head %}
+    <style>
+        .big-circle {
+            max-width: 32rem;
+            height: 60px;
+            background-color: rgb(115, 122, 161);
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .circle {
+            background-color: antiquewhite;
+            border-radius: 50%;
+            padding: .3rem;
+        }
+
+        .circle-green {
+            background-color: green;
+            border-radius: 50%;
+            color: white;
+            padding: .3rem;
+        }
+
+        .circle-red {
+            background-color: red;
+            border-radius: 50%;
+            color: white;
+            padding: .3rem;
+        }
+    </style>
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid mr-2">
-    <div class="row">
-            <!--        side menu-->
-            <div class="col-2 bg-dark">
-                <ul class="nav flex-column">
-                    <li class="nav-item mt-3">
-                        <a class="nav-link"
-                           href="{% url 'customer-list-all' %}">
-                            <i class="fa fa-eye-slash text-warning"></i> All
-                        </a>
-                    </li>
-                </ul>
-                <ul class="nav flex-column">
+<div class="container-fluid">
+    <div class="row mb-3">
+        <!--        side menu-->
+        <nav class="col-sm-2 bg-light">
+            <button class="navbar-toggler bg-light float-right mt-1 mb-1 myBtn" type="button" data-toggle="collapse"
+                data-target="#dropdown" aria-controls="dropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fa fa-navicon text-primary"></i>
+            </button>
+
+            <div class="collapse collapse-sm" id="dropdown">
+                <ul class="nav flex-column mr-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'customer-create' %}">
-                            <i class="fa fa-plus text-warning"></i> Add
+                            <i class="fa fa-plus text-dark"></i> Add
                         </a>
                     </li>
-                </ul>
-                <!-- <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'customer-csv' %}">
-                            <i class="fa fa-plus text-warning"></i> Add with CSV
-                        </a>
-                    </li>
-                </ul> -->
-                <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link" href="#">
-                            <i class="fa fa-question text-warning"></i> Help
+                            <i class="fa fa-file-o text-dark"></i> Import CSV
                         </a>
                     </li>
-                </ul>
-                <ul class="nav flex-column">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'customer-help' %}">
+                            <i class="fa fa-question text-dark"></i> Help
+                        </a>
+                    </li>
+                    <!--Procedures-->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'home' %}">
-                            <i class="fa fa-reply text-warning"></i> Home
+                            <i class="fa fa-reply text-dark"></i> Home
                         </a>
                     </li>
+
                 </ul>
             </div>
-            <div class="col-10 p-3">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Number of Customers: {{customers.count}}</li>
-                    <li class="list-group-item">Sales: NGN{{total_sales.sales__sum|floatformat:2}}</li>
-                    <li class="list-group-item">
-                        <i class="fa fa-cube text-danger"></i> Platinum: {{platinum_customers.count}},
-                        <i class="fa fa-cube text-primary"></i> Gold: {{gold_customers.count}},
-                        <i class="fa fa-cube text-danger"></i> Silver: {{silver_customers.count}},
-                        <i class="fa fa-cube text-primary"></i> Bronze: {{bronze_customers.count}},
-                        <i class="fa fa-cube text-danger"></i> Basic: {{basic_customers.count}},
-                        <i class="fa fa-cube text-primary"></i> Non-Categorized: {{n_customers.count}}
-                    </li>
-                    <!-- <li class="list-group-item"></li> -->
-                    <!-- <li class="list-group-item"></li> -->
-                    <!-- <li class="list-group-item"></li> -->
-                    <!-- <li class="list-group-item"></li> -->
-                    <!-- <li class="list-group-item"></li> -->
-                    
-                  </ul>
-                
-                <table class="table">
-                    <caption>Customer's performance</caption>
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Most Regular</th>
-                            <th>Biggest</th>
-                            <!-- <th>Most Profitable</th> -->
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Name</td>
-                            <td>{{most_regular_customer.name}}</td>
-                            <td>{{biggest_customer.name}}</td>
+        </nav>
+        {% if customers %}
+        <div class="col-10">
+            <div class="row">
+                <div class="col">
+                    <!-- <img class="rounded-circle mb-2" width="60rem;" src="{% static 'customer/logo.ico'%}" alt=""> -->
+                    <h3 class="text-center">Customer Analyst</h3>
+                </div>
+            </div>
+            <ul class="list-group list-group-flush">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 mt-3">
+                    <div class="col">
+                        <li class="list-group-item">Registered
+                            <a href="{% url 'customer-list' 'all' %}" class="float-right circle">{{customers.count}}</a>
+                        </li>
+                    </div>
+                    <div class="col">
+                        <li class="list-group-item">Actve
+                            <a href="{% url 'customer-list' 'active' %}"
+                                class="circle-green float-right">{{active_customers.count}}</a>
+                        </li>
+                    </div>
+                    <div class="col">
+                        <li class="list-group-item">Inactive
+                            <a href="{% url 'customer-list' 'inactive' %}"
+                                class="circle-red float-right">{{inactive_customers.count}}</a>
+                        </li>
+                    </div>
+                </div>
+            </ul>
+            <!-- <h5>From Active Customers</h5> -->
+            <ul class="list-group list-group-flush">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 mt-3">
+                    <div class="col">
+                        <li class="list-group-item">Lagos & Active
+                            <a href="{% url 'customer-list' 'lagos' %}"
+                                class="circle-green float-right">{{lagos_customers.count}}</a>
+                        </li>
+                    </div>
+                    <div class="col">
+                        <li class="list-group-item">Diaspora & Active 
+                            <a href="{% url 'customer-list' 'diaspora' %}"
+                                class="circle-green float-right">{{diaspora_customers.count}}</a>
+                        </li>
+                    </div>
+                    <div class="col">
+                        <li class="list-group-item">Outside Lagos & Active
+                            <a href="{% url 'customer-list' 'outside_lagos' %}"
+                                class="circle-green float-right">{{outside_lagos_customers.count}}</a>
+                        </li>
+                    </div>
 
-                        </tr>
-                        <tr>
-                            <td>Sales Value</td>
-                            <td>{{most_regular_customer.sales_value}}</td>
-                            <td>{{biggest_customer.sales_value}}</td>
-                            
-                        </tr>
-                        <tr>
-                            <td>Category</td>
-                            <td>{{most_regular_customer.category}}</td>
-                            <td>{{biggest_customer.category}}</td>
-                            
-                        </tr>
-                        <tr>
-                            <td>Type</td>
-                            <td>{{most_regular_customer.type}}</td>
-                            <td>{{biggest_customer.type}}</td>
-                            
-                        </tr>
-                    </tbody>
-                </table>
-                
-                
+                </div>
+            </ul>
+            
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 mt-2">
+                <div class="col text-center mt-2 mb-2">
+                    <ul class="list-group big-circle">
+                        <li class="list-group-item">
+                            <span class="text-danger">Badagry</span> <br> 
+                            <a href="{% url 'cluster-list' 'badagry' %}">{{badagry_qs.count}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col text-center mt-2 mb-2">
+                    <ul class="list-group big-circle">
+                        <li class="list-group-item">
+                            <span class="text-danger">Barracks</span> <br> 
+                            <a href="{% url 'cluster-list' 'barracks' %}">{{barracks_qs.count}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col text-center mt-2 mb-2">
+                    <ul class="list-group big-circle">
+                        <li class="list-group-item">
+                            <span class="text-danger">Festac</span> <br> 
+                            <a href="{% url 'cluster-list' 'festac' %}">{{festac_qs.count}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col text-center mt-2 mb-2">
+                    <ul class="list-group big-circle">
+                        <li class="list-group-item">
+                            <span class="text-danger">Lagos Island</span> <br> 
+                            <a href="{% url 'cluster-list' 'lagos-island' %}">{{lagos_island_qs.count}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col text-center mt-2 mb-2">
+                    <ul class="list-group big-circle">
+                        <li class="list-group-item">
+                            <span class="text-danger">Okoko</span> <br> 
+                            <a href="{% url 'cluster-list' 'okoko' %}">{{okoko_qs.count}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col text-center mt-2 mb-2">
+                    <ul class="list-group big-circle">
+                        <li class="list-group-item">
+                            <span class="text-danger">Omonile</span> <br> 
+                            <a href="{% url 'cluster-list' 'omonile' %}">{{omonile_qs.count}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col text-center mt-2 mb-2">
+                    <ul class="list-group big-circle">
+                        <li class="list-group-item">
+                            <span class="text-danger">Satellite</span> <br> 
+                            <a href="{% url 'cluster-list' 'satellite' %}">{{satellite_qs.count}}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col text-center mt-2 mb-3">
+                    <ul class="list-group big-circle">
+                        <li class="list-group-item">
+                            <span class="text-danger">Trade Fair</span><br> 
+                            <a href="{% url 'cluster-list' 'trade-fair' %}">{{trade_fair_qs.count}}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 mt-3">
+                <!-- <div class="col text-center"> 
+                </div> -->
+                <div class="col text-center">
+                    <table class="table table-striped" data-toggle="table">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Class</th>
+                                <th>Count</th>
+                                <th>Sales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for class in classes %}
+                            <tr class="text-right">
+                                <td class="text-left">{{class.name}}</td>
+                                <td>{{class.count}}</td>
+                                <td>{{class.sales}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
+        {% else %}
+        <div class="col-10 mt-5">
+            <h5>Customers need to be registered. <br> Click Add to register</h5>
+        </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock content%}

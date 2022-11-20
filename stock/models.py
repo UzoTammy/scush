@@ -119,3 +119,8 @@ class ProductExtension(models.Model):
     
     def value_of_stock(self):
         return self.cost_price * self.stock_value
+
+    def save(self, *args, **kwargs):
+        if self.cost_price == Money(0, 'NGN') and self.sell_out != Money(0, 'NGN'):
+            self.cost_price = self.product.cost_price
+        super(ProductExtension, self).save(*args, **kwargs)

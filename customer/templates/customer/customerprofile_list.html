@@ -1,0 +1,73 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="row m-2">
+    <div class="col">
+        <!--The table list of customers-->
+        <div class="row">
+            <div class="col">
+                <table data-toggle="table" data-search="true" data-pagination="true" class="table caption-top table-sm">
+                    <caption>
+                        <div class="row">
+                            <div class="col">
+                                Customers List
+                            </div>
+                            <div class="col text-right">
+                                <a class="btn btn-dark btn-sm" href="{% url 'pdf-customers-list' %}">
+                                    <i class="fa fa-file-pdf-o text-danger"></i>
+                                    <i class="fa fa-print text-white"></i>
+                                </a>
+                                <a href="{% url 'customer-create' %}" class="btn btn-dark btn-sm text-right">
+                                    <i class="fa fa-plus text-success"></i>
+                                    New Customer
+                                </a>
+                            </div>
+                        </div>
+                    </caption>
+                    <thead class="text-white bg-primary text-center">
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Business</th>
+                            <th scope="col">Owner</th>
+                            <th scope="col">Cluster</th>
+                            <th scope="col">Mobile</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Region</th>
+                            <th scope="col">Class</th>
+                            <th scope="col">Contact person</th>
+                            <th scope="col">2nd Mobile</th>
+                            <th scope="col">Active</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in customers %}
+                        <tr>
+                            <th scope="row">{{ customer.id|zeropadding:3 }}</th>
+                            <td><a href="{% url 'customer-detail' customer.id %}">{{customer.business_name}}</a></td>
+                            <td>{{customer.business_owner}}</td>
+                            <td>{{customer.cluster}}</td>
+                            <td>{{customer.mobile|addsep}}</td>
+                            <td>{{customer.email}}</td>
+                            <td>{{customer.region}}</td>
+                            <td>{{customer.classification}}</td>
+                            <td>{{customer.contact_person}}</td>
+                            <td>{{customer.second_mobile}}</td>
+                            <td>{{customer.active}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {{qs}}
+        <div class="row float-right">
+            <div class="col">
+                <a type="button" class="btn btn-outline-dark" href="{% url 'customer-home' %}">
+                    <i class="fa fa-reply"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
