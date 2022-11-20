@@ -26,18 +26,18 @@ class CustomerProfile(models.Model):
     business_name = models.CharField(max_length=100)
     business_owner = models.CharField(max_length=50, null=True, blank=True)
     address = models.CharField(max_length=120)
-    cluster = models.CharField(max_length=3,
+    cluster = models.CharField(max_length=13,
                                choices=[('TRF', 'Trade Fair'), ('FES', 'Festac'), ('OMO', 'Omonile'),
                                 ('OKO', 'Okoko'), ('BAD', 'Badagry'), ('SAT', 'Satellite'),
                                 ('BAR', 'Barracks'), ('LIS', 'Lagos Island'), ('NC', 'No Cluster')],
                             default='TRF')
-    region = models.CharField(max_length=3,
+    region = models.CharField(max_length=13,
                               choices=[('LOS', 'Lagos'), ('DSP', 'Diaspora'), ('OLS', 'Outside Lagos')],
                               default='LOS')
     mobile = models.CharField(max_length=14)
-    second_mobile = models.CharField(max_length=14, blank=True, null=True)
+    second_mobile = models.CharField(max_length=13, blank=True, null=True)
     email = models.EmailField(blank=True, null=True, help_text="<span class='text-danger'>not compulsory</span>")
-    classification = models.CharField(max_length=3, choices=[('RTN', 'Returnable'), ('OWP', '1-Way Pack'), 
+    classification = models.CharField(max_length=20, choices=[('RTN', 'Returnable'), ('OWP', '1-Way Pack'), 
         ('WIN', 'Wine'), ('ROW', 'Returnable+1-Way'), ('OWW', '1-Way+Wine'), ('ALL', 'All'),
         ('RTW', 'Returnable+Wine')],
     default='OWP'
