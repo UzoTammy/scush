@@ -1,25 +1,5 @@
 from django.db import models
-from django.urls.base import reverse_lazy
-from django.utils import timezone
 from django.urls import reverse
-from djmoney.models.fields import Money, MoneyField
-import json
-import os
-from django.conf import settings
-
-
-json_path = os.path.join(settings.BASE_DIR, "core/static/customer/customer.json")
-
-with open(json_path, 'r') as rf:
-    content = json.load(rf)
-
-cluster_choices = list()
-for i in content['cluster']:
-    cluster_choices.append((i.upper(), i))
-
-category_choices = list()
-for i in content['category']:
-    category_choices.append((i.upper(), i))
 
 
 class CustomerProfile(models.Model):
@@ -50,3 +30,4 @@ class CustomerProfile(models.Model):
 
     def get_absolute_url(self):
         return reverse('customer-detail', kwargs={'pk': self.pk})
+

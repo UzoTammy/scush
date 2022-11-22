@@ -14,6 +14,6 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('csv/customers/', CSVPart.as_view(), name='customer-csv'),
-    path('csv/<int:id>/customer/', CSVCustomerDetail.as_view(), name='CSV-customer-detail'),
+    # path('csv/customers/', CSVPart.as_view(), name='customer-csv'),
+    # path('csv/<int:id>/customer/', CSVCustomerDetail.as_view(), name='CSV-customer-detail'),
 ]
