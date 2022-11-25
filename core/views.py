@@ -119,9 +119,15 @@ class CompanyPageView(View):
         return render(request, 'core/company.html', context)
 
 
-class DashBoardView(LoginRequiredMixin, TemplateView):
+class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'core/dashboard.html'
     
+    def test_func(self):
+        # customer = self.get_object()
+        if self.request.user.is_staff:
+            return True
+        return False
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 

@@ -1,24 +1,12 @@
-# import os
-# import secrets
-# import datetime
-from django.shortcuts import render
 from django.urls import reverse_lazy
 from .models import CustomerProfile
-# from django.db.models import F, Sum, Max
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import (CreateView,
                                   ListView,
                                   DetailView,
                                   UpdateView,
                                   DeleteView,
-                                  View,
                                   TemplateView)
-# from django.conf import settings
-# from ozone.mytools import CSVtoTuple
-# from .forms import CustomerProfileForm, CustomerUpdateProfileForm
-
-
-
 
 class CustomerHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'customer/customer_home.html'
@@ -116,6 +104,7 @@ class CustomerClusterView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
 
         context['cluster'] = qs.filter(cluster=clusters.get(kwargs['cluster']))
         return context
+
 
 class CustomerDetailView(LoginRequiredMixin, DetailView):
     model = CustomerProfile

@@ -15,7 +15,7 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.views.generic import (
     View, ListView, DetailView, CreateView, UpdateView, DeleteView)
-
+from .forms import FormProduct
 from pdf.utils import render_to_pdf
 from pdf.views import Ozone
 from .models import (Product, ProductPerformance, ProductExtension)
@@ -306,9 +306,9 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         return redirect(obj)
 
 class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = Product
-    fields = '__all__'
-
+    template_name = 'stock/product_form.html'
+    form_class = FormProduct
+    
     def test_func(self):
         """if user is a member of the group Sales then grant access to this view"""
         if self.request.user.groups.filter(name=permitted_group_name).exists():
@@ -322,7 +322,8 @@ class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
 class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Product
-    fields = '__all__'
+    form_class = FormProduct
+    template_name = 'stock/product_form.html'
 
     def test_func(self):
         """if user is a member of the group Sales then grant access to this view"""

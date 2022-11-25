@@ -5,35 +5,19 @@ from django.utils import timezone
 from django.core.validators import MinValueValidator
 from djmoney.money import Money
 from outlet.models import SalesCenter
-from core.models import JsonDataset
 
 
-class ChoiceOption:
-    json_dict = JsonDataset.objects.get(pk=1).dataset
-    SOURCES = [(i, i) for i in json_dict['product-source']]
-    CATEGORY = [(i, i) for i in json_dict['product-category']]
-    UNITS = [(i, i) for i in json_dict['product-units']]
-    PACKS = [(i, i) for i in json_dict['product-packs']]
-    STATES = [(i, i) for i in json_dict['product-states']]
-    VOLUME_UNITS = [(i, i) for i in json_dict['product-volume-units']]
-    
 class Product(models.Model):
     name = models.CharField(max_length=20)
-    source = models.CharField(max_length=50,
-                              choices=ChoiceOption.SOURCES)
-    category = models.CharField(max_length=50, choices=ChoiceOption.CATEGORY)
+    source = models.CharField(max_length=50)
+    category = models.CharField(max_length=50)
     unit_price = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN', default=0.0)
-    pack_type = models.CharField(max_length=20, default='Pack',
-                                 choices=ChoiceOption.PACKS)
+    pack_type = models.CharField(max_length=20, default='Pack')
     quantity_per_pack = models.IntegerField(default=24)
-    unit_type = models.CharField(max_length=20,
-                                 default='Can',
-                                 choices=ChoiceOption.UNITS,)
-    product_state = models.CharField(max_length=20, default='Liquid', choices=ChoiceOption.STATES)
+    unit_type = models.CharField(max_length=20, default='Can')
+    product_state = models.CharField(max_length=20, default='Liquid')
     size_value = models.FloatField(default=33, blank=True, null=True)
-    size_value_unit = models.CharField(max_length=20, default='CL',
-                                       choices=ChoiceOption.VOLUME_UNITS, blank=True,
-                                       null=True)
+    size_value_unit = models.CharField(max_length=20, default='CL', blank=True, null=True)
     alcohol_content = models.FloatField(default=0.0)
     vat = models.FloatField(default=7.5, choices=[(7.5, 'Vatable'), (0.0, 'Exempted')])
     image = models.ImageField(default='default.jpg', upload_to='product_pics')
