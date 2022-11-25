@@ -9,7 +9,7 @@ import time
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from pdf.utils import render_to_pdf
-from customer.models import CustomerProfile
+from customer.models import Profile as CustomerProfile
 from apply.models import Applicant
 from django.contrib.auth.models import User
 from django.views.generic import (View, ListView, DetailView, TemplateView)

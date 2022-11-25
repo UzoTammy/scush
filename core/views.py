@@ -10,7 +10,7 @@ from django.db.models import F, Sum, Avg
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from staff.models import Employee, Payroll, EmployeeBalance, Permit, RequestPermission
 from stock.models import Product, ProductExtension
-from customer.models import CustomerProfile
+from customer.models import Profile as CustomerProfile
 from survey.models import Question
 from apply.models import Applicant
 from trade.models import TradeDaily, TradeMonthly, BalanceSheet

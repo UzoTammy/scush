@@ -1,12 +1,10 @@
 import os
 from django.shortcuts import render
-from django.core.mail import BadHeaderError, send_mail
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.views.generic import View
 from django.template import loader
 from ozone.mytools import CSVtoTuple
-from customer.models import CustomerProfile
 
 
 class SendMailView(View):

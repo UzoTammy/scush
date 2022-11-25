@@ -2,7 +2,7 @@ from django.db import models
 from django.urls import reverse
 
 
-class CustomerProfile(models.Model):
+class Profile(models.Model):
     business_name = models.CharField(max_length=100)
     business_owner = models.CharField(max_length=50, null=True, blank=True)
     address = models.CharField(max_length=120)
