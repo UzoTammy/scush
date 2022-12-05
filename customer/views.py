@@ -1,5 +1,11 @@
+import os
+import csv
+from django.contrib import messages
+from django.core.files.storage import FileSystemStorage
 from django.urls import reverse_lazy
+from django.conf import settings
 from .models import Profile as CustomerProfile
+from .forms import CustomerProfileForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import (CreateView,
                                   ListView,
@@ -7,6 +13,7 @@ from django.views.generic import (CreateView,
                                   UpdateView,
                                   DeleteView,
                                   TemplateView)
+
 
 class CustomerHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'customer/customer_home.html'
@@ -53,6 +60,24 @@ class CustomerHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['classes'] = classifications
         return context
 
+    def post(self, request, **kwargs):
+        
+        if request.FILES:
+            myfile = request.FILES['fileName']
+            dirname = os.path.dirname(__file__)
+            fs = FileSystemStorage(location=os.path.join(dirname, 'profile'))
+            
+            # remove all files and folders in fs.location
+            for file in os.listdir(fs.location):
+                path = os.path.join(fs.location, file)
+                if os.path.exists(path):
+                    os.remove(path)
+            
+            filename = fs.save(myfile.name, myfile)
+            messages.info(request, f'{filename} uploaded successfully')
+            
+        return super().get(request, **kwargs)
+
 
 class CustomerListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = CustomerProfile
@@ -71,22 +96,28 @@ class CustomerListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             qs = self.get_queryset().filter(active=True)
             if self.kwargs['select'] == 'active':
                 context['customers'] = self.get_queryset().filter(active=True)
+                the_list = 'Active'
             elif self.kwargs['select'] == 'inactive':
                 context['customers'] = self.get_queryset().filter(active=False)
+                the_list = 'Deactivated'
             elif self.kwargs['select'] == 'lagos':
                 context['customers'] = qs.filter(region='LOS')
+                the_list = 'Lagos'
             elif self.kwargs['select'] == 'diaspora':
                 context['customers'] = qs.filter(region='DSP')
+                the_list = 'Diaspora'
             elif self.kwargs['select'] == 'outside_lagos':
                 context['customers'] = qs.filter(region='OLS')
+                the_list = 'Outside Lagos'
             else:
                 context['customers'] = self.get_queryset()
-
+                the_list = 'All'
+        context['the_list'] = the_list
         return context
 
 
 class CustomerClusterView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    template_name = 'customer/customer_cluster.html'
+    template_name = 'customer/profile_list.html'
     
     def test_func(self):
         # customer = self.get_object()
@@ -101,8 +132,8 @@ class CustomerClusterView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
             'badagry': 'BAD','barracks': 'BAR', 'lagos-island':'LIS', 'festac': 'FES', 
             'okoko': 'OKO', 'omonile': 'OMO','satellite': 'SAT', 'trade-fair': 'TRF'
         }
-
-        context['cluster'] = qs.filter(cluster=clusters.get(kwargs['cluster']))
+        context['customers'] = qs.filter(cluster=clusters.get(kwargs['cluster']))
+        context['the_list'] = kwargs['cluster']
         return context
 
 
@@ -111,8 +142,10 @@ class CustomerDetailView(LoginRequiredMixin, DetailView):
 
 
 class CustomerCreateView(LoginRequiredMixin, CreateView):
-    model = CustomerProfile
-    fields = "__all__"
+    form_class = CustomerProfileForm
+    template_name = 'customer/profile_form.html'
+    # model = CustomerProfile
+    # fields = "__all__"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -123,8 +156,8 @@ class CustomerCreateView(LoginRequiredMixin, CreateView):
 
 class CustomerUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomerProfile
-    fields = "__all__"
-    # form_class = CustomerUpdateProfileForm
+    # fields = "__all__"
+    form_class = CustomerProfileForm
 
     def get(self, request, *args, **kwargs):
         obj = self.get_queryset().get(pk=kwargs['pk'])
@@ -142,7 +175,7 @@ class CustomerUpdateView(LoginRequiredMixin, UpdateView):
 
 class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = CustomerProfile
-    success_url = reverse_lazy('customer-list-all')  # '/','/index/'
+    success_url = reverse_lazy('customer-home')  # '/','/index/'
 
     def test_func(self):
         # customer = self.get_object()
@@ -156,4 +189,54 @@ class RequestHome(LoginRequiredMixin, TemplateView):
 
 
 class CustomerHelpView(TemplateView):
+
     template_name = 'customer/customer_help.html'
+
+
+class CustomerProfileCSVView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'customer/csv/profile_list.html'
+
+    def test_func(self):
+        # customer = self.get_object()
+        if self.request.user.is_superuser:
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # with open()
+        dirname = os.path.join(os.path.dirname(__file__), 'profile')
+        filename = os.listdir(dirname)[0]
+        file_path = os.path.join(dirname, filename)
+
+        with open(file_path, 'r') as rf:
+            content = csv.reader(rf)
+            
+            header = next(content)
+            body = tuple(data for data in content if data[0] != '' or data[1] != '')
+                
+        context['header'] = header  
+        context['body'] = body
+        context['file_path'] = file_path
+        context['dataset'] = CustomerProfile.objects.all()
+        return context
+
+    def post(self, request, **kwargs):
+        data = self.get_context_data(**kwargs)['body']
+        for record in data:
+            obj, created = CustomerProfile.objects.update_or_create(
+                mobile = record[5],
+                defaults={
+                    'business_name': record[0],
+                    'business_owner': record[1],
+                    'address': record[2],
+                    'cluster': record[3],
+                    'region': record[4],
+                    'second_mobile': record[6],
+                    'email': record[7],
+                    'classification': record[8],
+                    'contact_person': record[9]
+                }
+            )
+        messages.info(request, f'{CustomerProfile.objects.count()} records now in customer profile')    
+        return super().get(request, **kwargs)

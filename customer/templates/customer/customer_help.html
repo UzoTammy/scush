@@ -4,7 +4,41 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <h1>Help</h1>
+            <h1>Help for Customer Profile</h1>
+            <p>Customer Profile is maintained in a database. Like every database table, CRUD (
+                Create, Read or View, Update and Delete) is neccessary. In this table, We decided to 
+                avoid DELETE but rather to make a profile active or inactive.
+            </p>
+            <h5>Create</h5>
+            <p>
+                <i class="fa fa-plus bg-light">Add</i> is used to create a profile. Alternatively,
+                profiles can be created from csv file by importing the file, viewing and saving or updating
+                (if record already exist) to the database table.
+            </p>
+            <h5>View or Read multiple Profiles</h5>
+            <p>
+                It is important to view, see or display the profiles and that can be done through the categories.
+                Click on any of the circled number to view the profiles accordingly.
+            </p>
+            <h5>View or Read single Profile</h5>
+            <p>
+                The detailed view is to read a single profile, which can be updated through the 
+                <span class="btn btn-info btn-sm">Update</span> button at the buttom of the page
+            </p>
+            <h5>Update</h5>
+            <p>
+                Since update will require you to pick a profile, going through the view will be required
+                before you can update a profile. The blue coloured Business name column is a link to the
+                single View
+                of the profile 
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <a href="{% url 'customer-home' %}" class="float-right">
+                <i class="fa fa-reply fa-2x"></i>
+            </a>
         </div>
     </div>
 </div>

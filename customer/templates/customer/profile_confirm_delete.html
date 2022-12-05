@@ -1,0 +1,15 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row mt-3">
+            <div class="col">
+                <p>Are you sure you want to delete customer profile {{object}}?</p>
+                <form action="{% url 'customer-delete' object.pk %}" method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

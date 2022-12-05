@@ -117,7 +117,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="fileUploadModalLabel">CSV file Upload</h5>
+        <h5 class="modal-title" id="fileUploadModalLabel">Moving Data from csv file into database</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -127,8 +127,9 @@
             {% csrf_token %}
             <div class="row">
               <div class="col">
-                  <P class="text-info">Working Date: {{user.profile.stock_report_date}} <br>
-                    <small class="text-muted">It is expected that the uploaded file will be for same date
+                  <P class="text-info">Set Date is: {{user.profile.stock_report_date|date:'d-m-Y'}} <br>
+                    <small class="text-muted">The file to be uploaded has got a date with it.
+                      If records exist in the database for this date, it will be updated and if not, it will be added
                       <span class="text-danger">!!!</span>
                     </small>
                   </P>

@@ -35,8 +35,11 @@ class Ozone:
 
 
 class CustomerView(LoginRequiredMixin, View):
+
     def get(self, request, *args, **kwargs):
+        print(kwargs)
         query_set = CustomerProfile.objects.all()
+
         context = {
             'customers': query_set,
             'logo_image': Ozone.logo(),

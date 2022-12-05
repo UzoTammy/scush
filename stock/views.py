@@ -7,14 +7,19 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.generic.base import TemplateView
-from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.views.generic import (
-    View, ListView, DetailView, CreateView, UpdateView, DeleteView)
+                            View, 
+                            ListView,
+                            DetailView, 
+                            CreateView, 
+                            UpdateView, 
+                            DeleteView
+                        )
 from .forms import FormProduct
 from pdf.utils import render_to_pdf
 from pdf.views import Ozone
@@ -25,6 +30,7 @@ from delivery.models import DeliveryNote
 from django.db.models import Sum, F, Avg
 from ozone import mytools
 from core.utils import string_float
+
 
 permitted_group_name = 'Sales'
 
@@ -115,7 +121,6 @@ class ProductHomeView(LoginRequiredMixin, View):
 
     def get(self, request):
         json_data = JsonDataset.objects.get(pk=1).dataset
-        
         
         context = {
             'total_count': Product.objects.all().count(),
@@ -729,12 +734,12 @@ class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
         return False
 
     def get(self, request, **kwargs):
-        directory = os.path.join(os.path.dirname(__file__), 'status')
-        file = os.listdir(directory)[0]
-        upload_file_url = os.path.join(directory, file)
+        dirname = os.path.join(os.path.dirname(__file__), 'status')
+        filename = os.listdir(dirname)[0]
+        filepath = os.path.join(dirname, filename)
 
         context, msg = dict(), list()
-        with open(os.path.join(settings.BASE_DIR, upload_file_url), 'r') as rf:
+        with open(filepath, 'r') as rf:
             content = csv.reader(rf)
             heads = [next(content),next(content),next(content),next(content), next(content)]
             qualifier = [True if len(heads[0]) == 7 else False]
@@ -767,7 +772,7 @@ class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
         
                 context = {
                     'date': date_obj,
-                    'filename': upload_file_url,
+                    'filename': filepath,
                     "dataset": dataset,
                 }
                 

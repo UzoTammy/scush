@@ -37,8 +37,13 @@
     <div class="row mb-3">
         <!--        side menu-->
         <nav class="col-sm-2 bg-light">
-            <button class="navbar-toggler bg-light float-right mt-1 mb-1 myBtn" type="button" data-toggle="collapse"
-                data-target="#dropdown" aria-controls="dropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler bg-light float-right mt-1 mb-1 myBtn" 
+                type="button" 
+                data-toggle="collapse"
+                data-target="#dropdown" 
+                aria-controls="dropdown" 
+                aria-expanded="false" 
+                aria-label="Toggle navigation">
                 <i class="fa fa-navicon text-primary"></i>
             </button>
 
@@ -49,12 +54,24 @@
                             <i class="fa fa-plus text-dark"></i> Add
                         </a>
                     </li>
+                    {% if user.is_superuser %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fa fa-file-o text-dark"></i> Import CSV
+                        <a class="nav-link" 
+                            href="." 
+                            data-toggle="modal" 
+                            data-target="#fileUploadModal">
+                            <i class="fa fa-file-o text-dark"></i> Import Profile
                         </a>
                     </li>
-
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" 
+                            href="{% url 'csv-list-view' %}">
+                            <i class="fa fa-edit text-dark"></i>
+                            View Imported Profile
+                        </a>
+                    </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'customer-help' %}">
                             <i class="fa fa-question text-dark"></i> Help
@@ -75,7 +92,7 @@
             <div class="row">
                 <div class="col">
                     <!-- <img class="rounded-circle mb-2" width="60rem;" src="{% static 'customer/logo.ico'%}" alt=""> -->
-                    <h3 class="text-center">Customer Analyst</h3>
+                    <h3 class="text-center mt-2">Customer Profile Page</h3>
                 </div>
             </div>
             <ul class="list-group list-group-flush">
@@ -222,4 +239,50 @@
         {% endif %}
     </div>
 </div>
+
+<!-- modals -->
+<section>
+    <!--csv for customer profile-->
+    <div class="modal fade" 
+        id="fileUploadModal" 
+        tabindex="-1" 
+        aria-labelledby="stockReportDateModalLabel" 
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="fileUploadModalLabel">
+                Import Customer Profile from CSV file
+                </h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                <form action="." method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <div class="row">
+                    <div class="col">
+                        <P class="text-info"></P>
+                    </div>
+                  </div>
+                  <div class="row mt-3">
+                      <div class="col">
+                        <label class="text-danger" for="">Select CSV File</label>
+                        <input id="fileInput" class="form-control" type="file" name="fileName" accept=".csv" required />
+                      </div>
+                  </div>
+                  
+                  <div class="row mt-3">
+                    <div class="col">
+                      <button type="button" class="btn btn-secondary btn-sm float-right" data-dismiss="modal">Close</button>
+                      <input type="submit" class="float-right btn btn-primary btn-sm mr-2"  value="Import">
+                  </div>
+                </form>
+            </div>
+            
+          </div>
+        </div>
+    </div>
+</section>
 {% endblock content%}

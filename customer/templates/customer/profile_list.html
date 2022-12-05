@@ -11,7 +11,7 @@
                     <caption>
                         <div class="row">
                             <div class="col">
-                                Customers List
+                                Customers List - {{the_list|upper}}
                             </div>
                             <div class="col text-right">
                                 <a class="btn btn-dark btn-sm" href="{% url 'pdf-customers-list' %}">
@@ -42,18 +42,18 @@
                     </thead>
                     <tbody>
                         {% for customer in customers %}
-                        <tr>
+                        <tr class="text-center">
                             <th scope="row">{{ customer.id|zeropadding:3 }}</th>
-                            <td><a href="{% url 'customer-detail' customer.id %}">{{customer.business_name}}</a></td>
-                            <td>{{customer.business_owner}}</td>
+                            <td class="text-left"><a href="{% url 'customer-detail' customer.id %}">{{customer.business_name}}</a></td>
+                            <td class="text-left">{{customer.business_owner}}</td>
                             <td>{{customer.cluster}}</td>
                             <td>{{customer.mobile|addsep}}</td>
-                            <td>{{customer.email}}</td>
+                            <td class="text-right">{{customer.email|default_if_none:'-'}}</td>
                             <td>{{customer.region}}</td>
                             <td>{{customer.classification}}</td>
-                            <td>{{customer.contact_person}}</td>
-                            <td>{{customer.second_mobile}}</td>
-                            <td>{{customer.active}}</td>
+                            <td>{{customer.contact_person|default_if_none:'-'}}</td>
+                            <td>{{customer.second_mobile|default_if_none:'-'}}</td>
+                            <td>{{customer.active|yesno:'Yes, No'}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
