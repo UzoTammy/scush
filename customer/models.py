@@ -21,7 +21,8 @@ class Profile(models.Model):
         ('RTW', 'Returnable+Wine')],
     default='OWP'
     )
-    contact_person = models.CharField(max_length=50, blank=True, null=True, help_text="firstname, mobile number")
+    contact_person = models.CharField(max_length=50, blank=True, null=True, 
+    help_text="format: firstname-mobile")
     active = models.BooleanField(default=True)
     
     def __str__(self):

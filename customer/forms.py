@@ -8,7 +8,7 @@ class CustomerProfileForm(forms.ModelForm):
     mobile = forms.CharField(max_length=17, 
     help_text='<span class="text-danger">Intl Format: +###-###-###-####</span>')
     second_mobile = forms.CharField(max_length=17, 
-    help_text='<span class="text-danger">Intl Format: +###-###-###-####</span>')
+    help_text='<span class="text-danger">Intl Format: +###-###-###-####</span>', required=False)
 
     class Meta:
         model = CustomerProfile

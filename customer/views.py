@@ -144,26 +144,30 @@ class CustomerDetailView(LoginRequiredMixin, DetailView):
 class CustomerCreateView(LoginRequiredMixin, CreateView):
     form_class = CustomerProfileForm
     template_name = 'customer/profile_form.html'
-    # model = CustomerProfile
-    # fields = "__all__"
-
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "New"
         context['btn_text'] = 'Create'
         return context
 
+    def form_valid(self, form):
+        if form.instance.contact_person == None:
+            form.instance.contact_person = 'same as owner'
+        if form.instance.contact_person.lower() == 'same as owner':
+            form.instance.contact_person = f'{form.instance.business_owner.split()[0]}-{form.instance.mobile}'
+        return super().form_valid(form)
 
 class CustomerUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomerProfile
     # fields = "__all__"
     form_class = CustomerProfileForm
 
-    def get(self, request, *args, **kwargs):
-        obj = self.get_queryset().get(pk=kwargs['pk'])
+    # def get(self, request, *args, **kwargs):
+        # obj = self.get_queryset().get(pk=kwargs['pk'])
         #get the string of section & convert to list
         # section = ast.literal_eval(obj.section)
-        return super().get(request, *args, **kwargs)
+        # return super().get(request, *args, **kwargs)
     
     
     def get_context_data(self, **kwargs):
@@ -171,6 +175,13 @@ class CustomerUpdateView(LoginRequiredMixin, UpdateView):
         context['title'] = "Update"
         context['btn_text'] = 'Update'
         return context
+
+    def form_valid(self, form):
+        if form.instance.contact_person == None:
+            form.instance.contact_person = 'same as owner'
+        if form.instance.contact_person.lower() == 'same as owner':
+            form.instance.contact_person = f'{form.instance.business_owner.split()[0]}-{form.instance.mobile}'
+        return super().form_valid(form)
 
 
 class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -189,12 +200,11 @@ class RequestHome(LoginRequiredMixin, TemplateView):
 
 
 class CustomerHelpView(TemplateView):
-
     template_name = 'customer/customer_help.html'
 
 
 class CustomerProfileCSVView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    template_name = 'customer/csv/profile_list.html'
+    template_name = 'customer/CSV/profile_list.html'
 
     def test_func(self):
         # customer = self.get_object()
@@ -224,6 +234,8 @@ class CustomerProfileCSVView(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
     def post(self, request, **kwargs):
         data = self.get_context_data(**kwargs)['body']
         for record in data:
+            if record[9].lower() == 'same as owner' or record[9] == '':
+                record[9] = f'{record[1].split()[0]}-{record[5]}' 
             obj, created = CustomerProfile.objects.update_or_create(
                 mobile = record[5],
                 defaults={
