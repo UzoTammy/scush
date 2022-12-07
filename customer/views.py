@@ -155,21 +155,13 @@ class CustomerCreateView(LoginRequiredMixin, CreateView):
         if form.instance.contact_person == None:
             form.instance.contact_person = 'same as owner'
         if form.instance.contact_person.lower() == 'same as owner':
-            form.instance.contact_person = f'{form.instance.business_owner.split()[0]}-{form.instance.mobile}'
+            form.instance.contact_person = f'{form.instance.business_owner.split()[0]}//{form.instance.mobile}'
         return super().form_valid(form)
 
 class CustomerUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomerProfile
-    # fields = "__all__"
     form_class = CustomerProfileForm
 
-    # def get(self, request, *args, **kwargs):
-        # obj = self.get_queryset().get(pk=kwargs['pk'])
-        #get the string of section & convert to list
-        # section = ast.literal_eval(obj.section)
-        # return super().get(request, *args, **kwargs)
-    
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "Update"
@@ -180,7 +172,7 @@ class CustomerUpdateView(LoginRequiredMixin, UpdateView):
         if form.instance.contact_person == None:
             form.instance.contact_person = 'same as owner'
         if form.instance.contact_person.lower() == 'same as owner':
-            form.instance.contact_person = f'{form.instance.business_owner.split()[0]}-{form.instance.mobile}'
+            form.instance.contact_person = f'{form.instance.business_owner.split()[0]}//{form.instance.mobile}'
         return super().form_valid(form)
 
 
@@ -235,7 +227,7 @@ class CustomerProfileCSVView(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
         data = self.get_context_data(**kwargs)['body']
         for record in data:
             if record[9].lower() == 'same as owner' or record[9] == '':
-                record[9] = f'{record[1].split()[0]}-{record[5]}' 
+                record[9] = f'{record[1].split()[0]}//{record[5]}' 
             obj, created = CustomerProfile.objects.update_or_create(
                 mobile = record[5],
                 defaults={

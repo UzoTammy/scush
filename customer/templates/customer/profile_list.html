@@ -47,7 +47,7 @@
                             <td class="text-left"><a href="{% url 'customer-detail' customer.id %}">{{customer.business_name}}</a></td>
                             <td class="text-left">{{customer.business_owner}}</td>
                             <td>{{customer.cluster}}</td>
-                            <td>{{customer.mobile|addsep}}</td>
+                            <td>{{customer.mobile}}</td>
                             <td class="text-right">{{customer.email|default_if_none:'-'}}</td>
                             <td>{{customer.region}}</td>
                             <td>{{customer.classification}}</td>
