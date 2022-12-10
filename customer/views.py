@@ -254,6 +254,7 @@ class CustomerProfileCSVView(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
 class CustomerCreditListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = CustomerCredit
     template_name = 'customer/credit/customercredit_list.html'
+    ordering = ('isPermanent', '-current_credit')
 
     def test_func(self):
         # customer = self.get_object()
