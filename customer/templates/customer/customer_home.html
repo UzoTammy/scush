@@ -73,6 +73,12 @@
                     </li>
                     {% endif %}
                     <li class="nav-item">
+                        <a class="nav-link" href="{% url 'customer-credit-list' %}">
+                            <i class="fa fa-credit-card text-dark"></i> Credit Limit
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'customer-help' %}">
                             <i class="fa fa-question text-dark"></i> Help
                         </a>
@@ -208,8 +214,9 @@
                 </div>
             </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 mt-3">
-                <!-- <div class="col text-center"> 
-                </div> -->
+                <!-- <div class="col text-center">  -->
+                    <!-- <p class="circle">Credit Limit: 1000</p> -->
+                <!-- </div>  -->
                 <div class="col text-center">
                     <table class="table table-striped" data-toggle="table">
                         <thead>

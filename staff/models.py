@@ -16,7 +16,6 @@ class ActiveEmployeeManager(models.Manager):
         """Either True for active or false for Terminated Employee"""
         return super().get_queryset().filter(status=True)
 
-
 class Employee(models.Model):
 
     staff = models.ForeignKey(Applicant, on_delete=models.CASCADE)
@@ -138,7 +137,6 @@ class Permit(models.Model):
             return f'{days - 1}D'
 
 class Reassign(models.Model):
-    
     staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
     reassign_type = models.CharField(max_length=10, default='Temporal',
                                      choices=[('T', 'Temporal'),

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from staff. models import Employee
+from staff.models import Employee
 from django.utils import timezone
 
 class Profile(models.Model):

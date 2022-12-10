@@ -16,3 +16,9 @@ urlpatterns = [
 urlpatterns += [
     path('imported/csv/', CustomerProfileCSVView.as_view(), name='csv-list-view')
 ]
+
+urlpatterns += [
+    path('credit/view/', CustomerCreditListView.as_view(), name='customer-credit-list'),
+    path('credit/<int:code>/create/', CustomerCreditCreateView.as_view(), name='customer-credit-create'),
+    path('credit/<int:pk>/update/', CustomerCreditUpdateView.as_view(), name='customer-credit-update')  
+]

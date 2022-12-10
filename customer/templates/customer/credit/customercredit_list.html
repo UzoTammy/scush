@@ -1,0 +1,87 @@
+{% extends 'users/base.html' %}
+
+{% block head %}
+<style>
+    .circle {
+        max-width: 32rem;
+        height: 60px;
+        background-color: rgb(115, 122, 161);
+        border-radius: 50%;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+    {% if object_list %}
+    {% if total_credit_value %}
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 mt-3">
+        <div class="col text-center mt-2 mb-1">
+            <ul class="list-group circle">
+                <li class="list-group-item">
+                    Total Credit Value <br> NGN{{total_credit_value|floatformat:2}}
+                </li>
+            </ul>
+        </div>
+        <div class="col text-center mt-2 mb-1">
+            <ul class="list-group circle">
+                <li class="list-group-item">
+                    Credit Risk Factor <br>{{capital_risk_factor}}%
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+    <div class="row mt-2">
+        <div class="col">
+            <table class="table" data-toggle="table" data-pagination="true">
+                <caption>
+                    Credit Limit For Customers
+                </caption>
+                <thead>
+                    <tr class="text-white bg-dark text-center">
+                        <th>Customer</th>
+                        <th>Credit Limit</th>
+                        <th>Credit Value</th>
+                        <th>Head Room</th>
+                        <th>Expiry Date</th>
+                        <th>Days</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in object_list %}
+                    <tr class="text-right">
+                        <td class="text-left">
+                            <a href="{% url 'customer-credit-update' record.pk %}">
+                                {{record.customerID.business_name}}
+                            </a>
+                        </td>
+                        <td>{{record.credit_limit}}</td>
+                        <td>{{record.current_credit}}</td>
+                        <td>{{record.headroom|floatformat:2}}</td>
+                        <td>{{record.expiry_date}}</td>
+                        <td>{{record.date_created}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="row mt-3">
+                <div class="col">
+                    <a href="{% url 'customer-home' %}" class="btn btn-primary btn-sm float-right">
+                        <i class="fa fa-reply"></i>
+                        Home
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {% else %}
+    <div class="row mt-3">
+        <div class="col">
+            <h3>No Credit Record</h3>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

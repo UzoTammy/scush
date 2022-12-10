@@ -8,8 +8,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import (View, TemplateView, ListView, CreateView, DetailView, UpdateView)
 from django.db.models import F, Sum, Avg 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from staff.models import Employee, Payroll, EmployeeBalance, Permit, RequestPermission
-from stock.models import Product, ProductExtension
+from staff.models import Employee, Payroll, EmployeeBalance, RequestPermission
+from stock.models import Product
 from customer.models import Profile as CustomerProfile
 from survey.models import Question
 from apply.models import Applicant

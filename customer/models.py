@@ -1,5 +1,9 @@
+import datetime
 from django.db import models
+from djmoney.models.fields import MoneyField, Money
 from django.urls import reverse
+from users.models import Profile as UserProfile
+
 
 class Profile(models.Model):
     business_name = models.CharField(max_length=100)
@@ -22,7 +26,7 @@ class Profile(models.Model):
     default='OWP'
     )
     contact_person = models.CharField(max_length=50, blank=True, null=True, 
-    help_text="format: firstname-mobile")
+    help_text="format: firstname//mobile")
     active = models.BooleanField(default=True)
     
     def __str__(self):
@@ -30,3 +34,18 @@ class Profile(models.Model):
 
     def get_absolute_url(self):
         return reverse('customer-detail', kwargs={'pk': self.pk})
+
+
+class CustomerCredit(models.Model):
+    customerID = models.OneToOneField(Profile, on_delete=models.CASCADE)
+    credit_limit = MoneyField(max_digits=14, decimal_places=2)
+    current_credit = MoneyField(max_digits=14, decimal_places=2, default=Money(0, 'NGN'))
+    date_created = models.DateField(default=datetime.date.today)
+    expiry_date = models.DateField()
+    approved_by = models.ForeignKey(UserProfile, on_delete=models.DO_NOTHING)
+    isPermanent = models.BooleanField(default=True)
+
+    def __str__(self) -> str:
+        return self.customerID.business_name
+
+    

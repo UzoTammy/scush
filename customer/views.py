@@ -3,9 +3,12 @@ import csv
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.urls import reverse_lazy
-from django.conf import settings
-from .models import Profile as CustomerProfile
-from .forms import CustomerProfileForm
+from django.shortcuts import get_object_or_404
+from django.db.models import F, Sum
+from .models import Profile as CustomerProfile, CustomerCredit
+from .forms import CustomerProfileForm, CustomerCreditForm
+from trade.models import BalanceSheet
+from users.models import Profile as UserProfile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import (CreateView,
                                   ListView,
@@ -78,7 +81,6 @@ class CustomerHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             
         return super().get(request, **kwargs)
 
-
 class CustomerListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = CustomerProfile
     ordering = ['-pk']
@@ -115,7 +117,6 @@ class CustomerListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context['the_list'] = the_list
         return context
 
-
 class CustomerClusterView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'customer/profile_list.html'
     
@@ -136,10 +137,18 @@ class CustomerClusterView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
         context['the_list'] = kwargs['cluster']
         return context
 
-
 class CustomerDetailView(LoginRequiredMixin, DetailView):
     model = CustomerProfile
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = CustomerCredit.objects.filter(customerID=self.kwargs['pk'])
+        if qs.exists():
+            context['credit_value'] = (qs[0].current_credit, qs[0].credit_limit)
+            context['has_credit'] = True
+        else:
+            context['has_credit'] = False
+        return context
 
 class CustomerCreateView(LoginRequiredMixin, CreateView):
     form_class = CustomerProfileForm
@@ -175,7 +184,6 @@ class CustomerUpdateView(LoginRequiredMixin, UpdateView):
             form.instance.contact_person = f'{form.instance.business_owner.split()[0]}//{form.instance.mobile}'
         return super().form_valid(form)
 
-
 class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = CustomerProfile
     success_url = reverse_lazy('customer-home')  # '/','/index/'
@@ -186,14 +194,11 @@ class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         return False
 
-
 class RequestHome(LoginRequiredMixin, TemplateView):
     template_name = 'customer/requests/request.html'
 
-
 class CustomerHelpView(TemplateView):
     template_name = 'customer/customer_help.html'
-
 
 class CustomerProfileCSVView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'customer/CSV/profile_list.html'
@@ -244,3 +249,66 @@ class CustomerProfileCSVView(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
             )
         messages.info(request, f'{CustomerProfile.objects.count()} records now in customer profile')    
         return super().get(request, **kwargs)
+
+# Credits
+class CustomerCreditListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = CustomerCredit
+    template_name = 'customer/credit/customercredit_list.html'
+
+    def test_func(self):
+        # customer = self.get_object()
+        if self.request.user.is_superuser:
+            return True
+        return False
+
+    def get_queryset(self):
+        qs = super().get_queryset().annotate(headroom=F('credit_limit') - F('current_credit'))
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        capital = BalanceSheet.objects.last().capital
+        total_credit = self.get_queryset().aggregate(Sum('current_credit'))['current_credit__sum']
+        context['total_credit_value'] = total_credit
+        context['capital_risk_factor'] = round(100*total_credit/capital.amount, 2)
+        return context
+
+class CustomerCreditCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    # model = CustomerCredit
+    form_class = CustomerCreditForm
+    template_name = 'customer/credit/customercredit_form.html'
+    
+    
+    def test_func(self):
+        if self.request.user.is_superuser:
+            return True
+        return False
+
+    def get_success_url(self) -> str:
+        
+        return reverse_lazy('customer-detail', kwargs={'pk': self.kwargs['code']})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['customer'] = get_object_or_404(CustomerProfile, pk=self.kwargs['code'])
+        context['approver'] = self.request.user.profile.staff
+        return context
+    
+
+    def form_valid(self, form):
+        form.instance.customerID = get_object_or_404(CustomerProfile, pk=self.kwargs['code'])
+        form.instance.approved_by = get_object_or_404(UserProfile, pk=self.request.user.pk)
+        return super().form_valid(form)
+
+class CustomerCreditUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = CustomerCredit
+    fields = "__all__"
+    template_name = 'customer/credit/customercredit_form.html'
+    
+    def test_func(self):
+        if self.request.user.is_superuser:
+            return True
+        return False
+
+    def get_success_url(self) -> str:
+        return reverse_lazy('customer-credit-list')

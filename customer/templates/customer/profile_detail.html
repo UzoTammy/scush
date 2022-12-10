@@ -25,6 +25,20 @@
     <div class="col-sm-6">
         <ul class="list-group list-group-flush">
             <li class="list-group-item active">{{object.business_name}}</li>
+            <li class="list-group-item">
+                {% if not has_credit %}
+                <span class="float-right">
+                    <a href="{% url 'customer-credit-create' object.pk %}">
+                        <i class="fa fa-plus"></i>
+                        Set Credit Limit
+                    </a>
+                </span>
+                {% else %}
+                <span class="">
+                    Credit Status: <span class="float-right text-danger">{{credit_value|first}} of {{credit_value|last}}</span>  
+                </span>
+                {% endif %}
+            </li>
             <li class="list-group-item">Owner: <span class="float-right">{{object.business_owner}}</span></li>
             <li class="list-group-item">Mobile: <span class="float-right">{{object.mobile}}</span></li>
             <li class="list-group-item">Alternate Mobile: <span class="float-right">{{object.second_mobile|default_if_none:'-'}}</span></li>

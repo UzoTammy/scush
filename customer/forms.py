@@ -1,5 +1,6 @@
 from django import forms
-from .models import Profile as CustomerProfile
+from .models import Profile as CustomerProfile, CustomerCredit
+import datetime
 # from django.core.validators import RegexValidator
 
 
@@ -13,3 +14,19 @@ class CustomerProfileForm(forms.ModelForm):
     class Meta:
         model = CustomerProfile
         fields = '__all__'
+
+
+class CustomerCreditForm(forms.ModelForm):
+    one_year_ahead = datetime.date.today() + datetime.timedelta(days=365)
+    date_created = forms.DateField(widget=forms.DateInput(attrs={
+        'type': 'date'
+    }), initial=datetime.date.today)
+    
+    expiry_date = forms.DateField(widget=forms.DateInput(attrs={
+        'type': 'date'
+    }), initial=one_year_ahead)
+    
+    
+    class Meta:
+        model = CustomerCredit
+        fields = ('credit_limit', 'date_created', 'expiry_date')

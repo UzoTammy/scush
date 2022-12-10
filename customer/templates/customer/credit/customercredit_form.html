@@ -1,0 +1,36 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row p-3 d-flex justify-content-center">
+        <div class="col-sm-8 shadow">
+            <form method="POST">
+                {% csrf_token %}
+                <legend class="text-info">
+                    Set Credit Limit for {% if customer %}
+                    {{customer}}
+                    {% else %}
+                    {{object}}
+                    {% endif %}
+                </legend>
+                <fieldset class="bg-light">
+                    <div class="ml-2">{{ form|crispy }}</div>
+                </fieldset>
+                {% if approver %}
+                <p class="text-danger ml-3">To be approved by: {{approver}}</p>
+                {% endif %}
+                <div class="form-group p-2">
+                    <button class="btn btn-outline-info" type="submit">Submit</button>
+                    <a class="btn btn-outline-light float-right"
+                       href="{% url 'customer-credit-list' %}">
+                        <i class="fa fa-reply text-danger"></i> Return</a>
+                </div>
+            </form>
+            
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
