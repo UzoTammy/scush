@@ -20,5 +20,6 @@ urlpatterns += [
 urlpatterns += [
     path('credit/view/', CustomerCreditListView.as_view(), name='customer-credit-list'),
     path('credit/<int:code>/create/', CustomerCreditCreateView.as_view(), name='customer-credit-create'),
-    path('credit/<int:pk>/update/', CustomerCreditUpdateView.as_view(), name='customer-credit-update')  
+    path('credit/<int:pk>/update/', CustomerCreditUpdateView.as_view(), name='customer-credit-update'),
+    path('credit/<int:pk>/change-credit/', CustomerChangeCreditValueView.as_view(), name='customer-change-credit-value')  
 ]

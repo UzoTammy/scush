@@ -1,0 +1,39 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-3">
+        <div class="col-sm-6">
+            <form action="" method="post">
+                {% csrf_token %}
+                <legend>Update Credit Value for {{object}}</legend>
+                <fieldset>
+                    {{form|crispy}}
+                </fieldset>
+                <div class="row">
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            Save
+                        </button>
+                        <a class="btn btn-dark btn-sm float-right" href="{% url 'customer-credit-list' %}">
+                            <i class="fa fa-reply"></i>
+                        </a>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <h6>For complete Update of Credit Record
+                <span>
+                    <a href="{% url 'customer-credit-update' view.kwargs.pk %}">click here</a>
+                </span>
+            </h6>
+                    
+        </div>
+    </div>
+</div>
+{% endblock %}

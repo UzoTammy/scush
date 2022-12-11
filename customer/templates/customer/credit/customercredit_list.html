@@ -37,16 +37,16 @@
         <div class="col">
             <table class="table" data-toggle="table" data-pagination="true">
                 <caption>
-                    Credit Limit For Customers
+                    Credit Record For Customers
                 </caption>
                 <thead>
                     <tr class="text-white bg-dark text-center">
                         <th>Customer</th>
                         <th>Credit Limit</th>
                         <th>Credit Value</th>
-                        <th>Head Room</th>
-                        <th>Expiry Date</th>
                         <th>Duration</th>
+                        <th>Expiry Date</th>
+                        <th>Head Room</th>
                         <th>Permanent</th>
                     </tr>
                 </thead>
@@ -54,25 +54,39 @@
                     {% for record in object_list %}
                     <tr class="text-right">
                         <td class="text-left">
-                            <a href="{% url 'customer-credit-update' record.pk %}">
+                            <a href="{% url 'customer-change-credit-value' record.pk %}">
                                 {{record.customerID.business_name}}
                             </a>
                         </td>
                         <td>{{record.credit_limit.amount}}</td>
                         <td>{{record.current_credit.amount}}</td>
+                        <td>{{record.date_created|timesince}}</td>
+                        <td>{{record.expiry_date}}</td>
                         {% if record.headroom >= 0 %}
                         <td>{{record.headroom|floatformat:2}}</td>
                         {% else %}
                         <td class="text-danger">{{record.headroom|abs|floatformat:2}}</td>
                         {% endif %}
-                        <td>{{record.expiry_date}}</td>
-                        <td>{{record.date_created|timesince}}</td>
-                        <td>{{record.isPermanent}}</td>
+                        
+                        <td class="text-center">
+                            {% if record.isPermanent %}
+                            <i class="fa fa-check text-success"></i>
+                            {% else %}
+                            <i class="fa fa-times text-danger"></i>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             <div class="row mt-3">
+                <form action="." method="post">
+                    {% csrf_token %}
+                    <div class="col">
+                        <input type="submit" class="btn btn-primary btn-sm" value="Send Email">
+                    </div>
+                </form>
+                
                 <div class="col">
                     <a href="{% url 'customer-home' %}" class="btn btn-primary btn-sm float-right">
                         <i class="fa fa-reply"></i>
@@ -80,9 +94,23 @@
                     </a>
                 </div>
             </div>
-
+            <div class="row mt-3">
+                <div class="col">
+                    <ul>
+                        <li class="text-muted">Click 
+                            <span class="text-primary">Customer Name</span>  on customer column
+                            to Change Credit Value and also to UPDATE credit record.
+                        </li>
+                        <li class="text-muted">Click 
+                            <span class="text-primary">Send Mail</span>  
+                            after you must have completed changes for the day.</li>
+                    </ul>
+                    
+                </div>
+            </div>
         </div>
     </div>
+
     {% else %}
     <div class="row mt-3">
         <div class="col">

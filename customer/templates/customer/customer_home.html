@@ -74,7 +74,7 @@
                     {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'customer-credit-list' %}">
-                            <i class="fa fa-credit-card text-dark"></i> Credit Limit
+                            <i class="fa fa-credit-card text-dark"></i> Credit Record
                         </a>
                     </li>
                     
@@ -223,7 +223,6 @@
                             <tr class="text-center">
                                 <th>Class</th>
                                 <th>Count</th>
-                                <th>Sales</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -231,7 +230,6 @@
                             <tr class="text-right">
                                 <td class="text-left">{{class.name}}</td>
                                 <td>{{class.count}}</td>
-                                <td>{{class.sales}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

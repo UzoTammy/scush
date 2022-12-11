@@ -5,8 +5,10 @@ from django.core.files.storage import FileSystemStorage
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
 from django.db.models import F, Sum
+from django.core.mail import send_mail
+from django.contrib import messages
 from .models import Profile as CustomerProfile, CustomerCredit
-from .forms import CustomerProfileForm, CustomerCreditForm
+from .forms import CustomerProfileForm, CustomerCreditForm, ChangeCreditValueForm
 from trade.models import BalanceSheet
 from users.models import Profile as UserProfile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -56,7 +58,7 @@ class CustomerHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             }
             result = [(klass, qs.filter(classification=klass)) for klass in qs_list] # list of querysets
             classifications = [
-                {'name': classes.get(topple[0]), 'count': topple[1].count, 'sales': 20} 
+                {'name': classes.get(topple[0]), 'count': topple[1].count} 
             for topple in result
             ]
             
@@ -250,12 +252,12 @@ class CustomerProfileCSVView(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
         messages.info(request, f'{CustomerProfile.objects.count()} records now in customer profile')    
         return super().get(request, **kwargs)
 
-# Credits
+# Credits Record
 class CustomerCreditListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = CustomerCredit
     template_name = 'customer/credit/customercredit_list.html'
     ordering = ('isPermanent', '-current_credit')
-
+    
     def test_func(self):
         # customer = self.get_object()
         if self.request.user.is_superuser:
@@ -267,13 +269,27 @@ class CustomerCreditListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return qs
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = super(CustomerCreditListView, self).get_context_data(**kwargs)
         capital = BalanceSheet.objects.last().capital
         total_credit = self.get_queryset().aggregate(Sum('current_credit'))['current_credit__sum']
         context['total_credit_value'] = total_credit
         context['capital_risk_factor'] = round(100*total_credit/capital.amount, 2)
         return context
-
+    
+    def post(self, request, **kwargs):
+        send_mail(
+            subject='Credit Limit Report', 
+            message="""
+            Credit Limit has been updated.
+            <a href='https://www.scush.com.ng/customer/credit/view/'>Click Here to view</a>
+            """,
+            from_email='',
+            recipient_list=['uzo.nwokoro@ozonefl.com'],
+            fail_silently=True
+            )
+        messages.info(request, "Credit Limit email alert has been sent successfully!!!")
+        return self.get(request, **kwargs)
+    
 class CustomerCreditCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     # model = CustomerCredit
     form_class = CustomerCreditForm
@@ -306,6 +322,19 @@ class CustomerCreditUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateVi
     fields = "__all__"
     template_name = 'customer/credit/customercredit_form.html'
     
+    def test_func(self):
+        if self.request.user.is_superuser:
+            return True
+        return False
+
+    def get_success_url(self) -> str:
+        return reverse_lazy('customer-credit-list')
+
+class CustomerChangeCreditValueView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = CustomerCredit
+    template_name = 'customer/credit/changecreditvalue.html'
+    form_class = ChangeCreditValueForm
+
     def test_func(self):
         if self.request.user.is_superuser:
             return True

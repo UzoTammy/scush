@@ -30,3 +30,10 @@ class CustomerCreditForm(forms.ModelForm):
     class Meta:
         model = CustomerCredit
         fields = ('credit_limit', 'date_created', 'expiry_date')
+
+
+class ChangeCreditValueForm(forms.ModelForm):
+
+    class Meta:
+        model = CustomerCredit
+        fields = ['current_credit']
