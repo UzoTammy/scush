@@ -265,7 +265,7 @@ class CustomerCreditListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return False
 
     def get_queryset(self):
-        qs = super().get_queryset().annotate(headroom=F('credit_limit') - F('current_credit'))
+        qs = super().get_queryset().filter(status=True).annotate(headroom=F('credit_limit') - F('current_credit'))
         return qs
 
     def get_context_data(self, **kwargs):
@@ -289,7 +289,37 @@ class CustomerCreditListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             )
         messages.info(request, "Credit Limit email alert has been sent successfully!!!")
         return self.get(request, **kwargs)
+
+class BlackListCreditListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = CustomerCredit
+    template_name = 'customer/credit/blacklisted_list.html'
+    ordering = ('isPermanent', '-current_credit')
     
+    def test_func(self):
+        # customer = self.get_object()
+        if self.request.user.is_superuser:
+            return True
+        return False
+
+    def get_queryset(self):
+        qs = super().get_queryset().filter(status=None)
+        return qs
+
+class DisabledListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = CustomerCredit
+    template_name = 'customer/credit/disabled_list.html'
+    ordering = ('isPermanent', '-current_credit')
+    
+    def test_func(self):
+        # customer = self.get_object()
+        if self.request.user.is_superuser:
+            return True
+        return False
+
+    def get_queryset(self):
+        qs = super().get_queryset().filter(status=False)
+        return qs
+
 class CustomerCreditCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     # model = CustomerCredit
     form_class = CustomerCreditForm
@@ -302,7 +332,6 @@ class CustomerCreditCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateVi
         return False
 
     def get_success_url(self) -> str:
-        
         return reverse_lazy('customer-detail', kwargs={'pk': self.kwargs['code']})
 
     def get_context_data(self, **kwargs):

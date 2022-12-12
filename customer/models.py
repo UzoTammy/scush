@@ -44,6 +44,9 @@ class CustomerCredit(models.Model):
     expiry_date = models.DateField()
     approved_by = models.ForeignKey(UserProfile, on_delete=models.DO_NOTHING)
     isPermanent = models.BooleanField(default=True)
+    status = models.BooleanField(default=True, choices=[
+        (True, 'Active'), (None, 'Blacklist'), (False, 'Disable')],
+        null=True, blank=True)
 
     def __str__(self) -> str:
         return self.customerID.business_name

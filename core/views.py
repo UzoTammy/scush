@@ -27,7 +27,6 @@ from target.models import PositionKPIMonthly
 
 
 def index(request):
-    
     context = {
         'debug_mode': True if settings.DEBUG else False,
         'siter': 'https://www.scush.com.ng/home/'

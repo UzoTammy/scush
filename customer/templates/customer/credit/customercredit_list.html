@@ -37,7 +37,7 @@
         <div class="col">
             <table class="table" data-toggle="table" data-pagination="true">
                 <caption>
-                    Credit Record For Customers
+                    Active Credit Record For Customers
                 </caption>
                 <thead>
                     <tr class="text-white bg-dark text-center">
@@ -88,9 +88,17 @@
                 </form>
                 
                 <div class="col">
-                    <a href="{% url 'customer-home' %}" class="btn btn-primary btn-sm float-right">
+                    <a href="{% url 'customer-home' %}" class="btn btn-dark btn-sm float-right ml-1">
                         <i class="fa fa-reply"></i>
                         Home
+                    </a>
+                    <a href="{% url 'blacklisted-list' %}" class="btn btn-danger btn-sm float-right ml-1">
+                        <i class="fa fa-"></i>
+                        Balcklisted
+                    </a>
+                    <a href="{% url 'disabled-list' %}" class="btn btn-warning btn-sm float-right ml-1">
+                        <i class="fa fa-"></i>
+                        Disabled
                     </a>
                 </div>
             </div>
