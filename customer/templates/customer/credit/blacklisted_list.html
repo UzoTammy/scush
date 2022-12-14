@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container">
     {% if object_list %}
-    
+
     <div class="row mt-2">
         <div class="col">
             <table class="table" data-toggle="table" data-pagination="true">
@@ -24,15 +24,13 @@
                     {% for record in object_list %}
                     <tr class="text-right">
                         <td class="text-left">
-                            <a href="{% url 'customer-change-credit-value' record.pk %}">
-                                {{record.customerID.business_name}}
-                            </a>
+                            {{record.customerID.business_name}}
                         </td>
                         <td>{{record.credit_limit.amount}}</td>
                         <td>{{record.current_credit.amount}}</td>
                         <td>{{record.date_created|timesince}}</td>
                         <td>{{record.expiry_date}}</td>
-                        
+
                         <td class="text-center">
                             {% if record.isPermanent %}
                             <i class="fa fa-check text-success"></i>
@@ -45,16 +43,22 @@
                 </tbody>
             </table>
             <div class="row mt-3">
-                
+                {% if object_list %}
+                <div class="col">
+                    
+                    <i>All blacklisted customers remains in this state except for MD's approval to revoke
+                        from backend
+                    </i>
+                </div>
+                {% endif %}
                 <div class="col">
                     <a href="{% url 'customer-home' %}" class="btn btn-dark btn-sm float-right ml-1">
                         <i class="fa fa-reply"></i>
                         Home
                     </a>
-                    
                 </div>
             </div>
-            
+
         </div>
     </div>
 

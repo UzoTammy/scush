@@ -5,7 +5,7 @@
 <div class="container">
     <div class="row mt-3">
         <div class="col-sm-6">
-            <form action="" method="post">
+            <form id="creditValueChange" action="." method="post">
                 {% csrf_token %}
                 <legend>Update Credit Value for {{object}}</legend>
                 <fieldset>
@@ -16,13 +16,19 @@
                         <button type="submit" class="btn btn-primary btn-sm">
                             Save
                         </button>
+                        <button 
+                            type="button" 
+                            data-toggle="modal" 
+                            data-target="#changeStatus" 
+                            class="btn btn-primary btn-sm">
+                            Change Status
+                        </button>
                         <a class="btn btn-dark btn-sm float-right" href="{% url 'customer-credit-list' %}">
                             <i class="fa fa-reply"></i>
                         </a>
                     </div>
                 </div>
             </form>
-
         </div>
     </div>
     <div class="row mt-3">
@@ -36,4 +42,56 @@
         </div>
     </div>
 </div>
+
+<section>
+    <!-- Modal -->
+    <div class="modal fade" id="changeStatus" 
+        tabindex="-1" 
+        role="dialog" 
+        aria-labelledby="chnageStatusLabel" 
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <form action="{% url 'customer-credit-list' %}" method="post">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Change Status for {{object}}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check">
+                        <input onchange="clicker()" class="form-check-input" type="radio" name="status" id="option1" 
+                        value="disable-{{object.pk}}">
+                        <label class="form-check-label text-secondary" for="option1">Disable</label>
+                    </div>
+                    <hr>
+                    <div class="form-check">
+                        <input onchange="clicker()" class="form-check-input" type="radio" name="status" id="option2" value="blacklist-{{object.pk}}">
+                        <label class="form-check-label text-danger" for="option2">Blacklist</label>
+                    </div>
+                </div>   
+                <div class="modal-footer">
+                    <button id="btnSave" type="submit" class="btn btn-primary btn-sm mr-2" disabled>Save</button> 
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                </div> 
+            </div>
+        </form>
+        </div>
+    </div>
+</section>
+
+<section>
+    <script>
+        function clicker() {
+            let radioActivate = document.getElementById('option1')
+            let radioBlacklist = document.getElementById('option2')
+            if (radioActivate.value || radioBlacklist.value) {
+                document.getElementById('btnSave').disabled = false;
+            }
+        }
+        
+    </script>
+</section>
 {% endblock %}

@@ -277,6 +277,17 @@ class CustomerCreditListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
     
     def post(self, request, **kwargs):
+        if 'status' in request.POST:
+            customer_status = request.POST['status']
+            customer_status = customer_status.split('-')
+            customer_id = int(customer_status[1])
+            status = customer_status[0]
+            status = False if status == 'disable' else None
+            customer = get_object_or_404(CustomerCredit, pk=customer_id)
+            customer.status = status
+            customer.save()
+            return self.get(request, **kwargs)
+
         send_mail(
             subject='Credit Limit Report', 
             message="""
@@ -319,6 +330,15 @@ class DisabledListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def get_queryset(self):
         qs = super().get_queryset().filter(status=False)
         return qs
+
+    def post(self, request, **kwargs):
+        customer_id = request.POST['customer']
+        customer = CustomerCredit.objects.get(pk=customer_id)
+        customer.status = True
+        customer.save()
+        messages.info(request, f'{customer} is activated and moved successfully!!!')
+        return self.get(request, **kwargs)
+
 
 class CustomerCreditCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     # model = CustomerCredit
