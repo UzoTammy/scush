@@ -335,7 +335,10 @@ class KPIMailSend(LoginRequiredMixin, View):
         # create and send mail
         email = EmailMessage(
             subject=f"KPI tracking for {kpi['date_bs'].strftime('%B, %Y')}",
-            body=loader.render_to_string('mail/business_KPI.html', context={'KPI': kpi, 'target': target, 'title':'KPI tracking'}),
+            body=loader.render_to_string(
+                'mail/business_KPI.html', 
+                context={'KPI': kpi, 'target': target, 'title':'KPI tracking'}
+                ),
             from_email='',
             to=[mailbox.get_email_group('All Management')],
         )

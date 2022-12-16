@@ -1,25 +1,26 @@
-
 <!doctype html>
 {% load static %}
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
-          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
     <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
 
     <!--icon font awesome    -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
         body {
-            background-color:white;
+            background-color: white;
             /* background-color:#313029; */
-            color:dimgray
+            color: dimgray
         }
+
         a:hover {
             color: red;
             background-color: transparent;
@@ -29,6 +30,7 @@
     <title>SCusH</title>
     <link rel="icon" class="shadow-xl" href="{% static 'customer/logo.ico' %}">
 </head>
+
 <body>
     <div class="row">
         <div class="col text-center">
@@ -41,126 +43,125 @@
             {% endif %}
         </div>
     </div>
-      
-<div class="container-fluid">
-    <div class="row bg-transparent">
-        <div class="col-sm ml-3 mb-3">
-            <div class="row m-3">
-                <div class="col">
-                    <h2>The SCusH Web Platform</h2>
+    <div class="container-fluid">
+        <div class="row bg-transparent">
+            <div class="col-sm ml-3 mb-3">
+                <div class="row m-3">
+                    <div class="col">
+                        <h2>The SCusH Web Platform</h2>
+                    </div>
                 </div>
-            </div>
-            <div class="row p-3">
-                <img src="{% static 'customer/logo.png' %}"
-                     class="rounded-circle shadow-lg"
-                     alt="">
-            </div>
-            <div class="row">
-                <h3>
-                    <font
-                        face="cursive">Welcome to Ozone F & L
-                        <span class="text-danger">(Happy Zone)</span> -
-                        A Trading Company
-                    </font>
-                </h3>
-            </div>
-            <div class="row">
+                <div class="row p-3">
+                    <img src="{% static 'customer/logo.png' %}" class="rounded-circle shadow-lg">
+                </div>
+                <div class="row">
+                    <h3>
+                        <font face="cursive">Welcome to Ozone F & L
+                            <span class="text-danger">(Happy Zone)</span> -
+                            A Trading Company
+                        </font>
+                    </h3>
+                </div>
+                <div class="row">
                     <h5><i>We add value to other businesses</i>
-                        <i class="fa fa-pagelines fa-2x text-success"></i></h5>
-                        <!-- <a href="#">Hello</a> -->
+                        <i class="fa fa-pagelines fa-2x text-success"></i>
+                    </h5>
                 </div>
-            <div class="row">
-                {% if user.is_authenticated %}
-                <div class="col"> <i class="fa fa-home fa-1x"></i> <a href="{% url 'home' %}">Go to staff home page</a></div>
-                {% else %}
-                <div class="col"><i class="fa fa-sign-in fa-1x"></i> <small class="text-muted">Only staff with sign in credentials can</small> 
-                    <a href="{% url 'login' %}">Log In </a> 
-                    
-                    {% if debug_mode %}
-                    <p><a href="{% url 'developer' %}">Developer Express Access</a></p>
+                <div class="row">
+                    {% if user.is_authenticated %}
+                    <div class="col"> <i class="fa fa-home fa-1x"></i> <a href="{% url 'home' %}">Go to staff home
+                            page</a></div>
+                    {% else %}
+                    <div class="col"><i class="fa fa-sign-in fa-1x"></i> <small class="text-muted">Only staff with sign
+                            in credentials can</small>
+                        <a href="{% url 'login' %}">Log In </a>
+
+                        {% if debug_mode %}
+                        <p><a href="{% url 'developer' %}">Developer Express Access</a></p>
+                        {% endif %}
+
+                    </div>
                     {% endif %}
 
                 </div>
-                {% endif %}
-                
             </div>
-        </div>
-        <div class="col-sm bg-white text-center">
-            <img src="{% static 'customer/background/team.jpeg' %}" height="auto" alt="">
-            <div class="row">
-                <div class="col">
-                    <img src="{% static 'customer/photo/redbull.jpeg' %}" height="100px" alt="">
+            <div class="col-sm bg-white text-center">
+                <img src="{% static 'customer/background/team.jpeg' %}" height="auto" alt="">
+                <div class="row">
+                    <div class="col">
+                        <img src="{% static 'customer/photo/redbull.jpeg' %}" height="100px" alt="">
+                    </div>
+                    <div class="col">
+                        <img src="{% static 'customer/brands/malta-guinness.jpeg' %}" height="100px" alt="">
+                    </div>
+                    <div class="col">
+                        <img src="{% static 'customer/brands/jonnywalker.jpeg' %}" height="100px" alt="">
+                    </div>
+                    <div class="col">
+                        <img src="{% static 'customer/brands/amstel-malta.jpeg' %}" height="100px" alt="">
+                    </div>
                 </div>
-                <div class="col">
-                    <img src="{% static 'customer/brands/malta-guinness.jpeg' %}" height="100px" alt="">
-                </div>
-                <div class="col">
-                    <img src="{% static 'customer/brands/jonnywalker.jpeg' %}" height="100px" alt="">
-                </div>
-                <div class="col">
-                    <img src="{% static 'customer/brands/amstel-malta.jpeg' %}" height="100px" alt="">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <img src="{% static 'customer/background/customer.png' %}" height="auto" alt="">
+                <div class="row">
+                    <div class="col">
+                        <img src="{% static 'customer/background/customer.png' %}" height="auto" alt="">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<hr>
-<nav class="navbar fixed-bottom navbar-light bg-light">
-    <a class="navbar-brand" href="{% url 'about' %}">About <img class="rounded-circle" src="{% static 'customer/logo.ico' %}" width="20%" alt=""></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarText">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="{% url 'apply-create' %}">Apply <span class="sr-only">(current)</span></a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'policies' %}">Policies</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Procedures</a>
-          </li>
-            <!--    SCUSH-->
-            {% if user.is_superuser %}
-          <li class="list-item">
-            <a class="nav-link" href="{% url 'scush' %}">SCUSH</a>
-          </li>
-            {% endif %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'survey-update' %}">Survey</a>
-          </li>
-            
-          <li class="nav-item">
-            {% if user.is_authenticated %}
-            <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-sign-in fa-1x"></i> Log Out</a>
-            {% else %}
-            <a class="nav-link" href="{% url 'login' %}"><i class="fa fa-sign-in fa-1x"></i> Log In</a>
-            {% endif %}
-          </li>
-          
-        </ul>
-    <span class="navbar-text">
-        Navbar text with an inline element
-    </span>
-</nav>
-<!-- Option 2: Separate Popper and Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    <hr>
+    <nav class="navbar fixed-bottom navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'about' %}">About <img class="rounded-circle"
+                src="{% static 'customer/logo.ico' %}" width="20%" alt=""></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'apply-create' %}">Apply <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'policies' %}">Policies</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Procedures</a>
+                </li>
+                <!--    SCUSH-->
+                {% if user.is_superuser %}
+                <li class="list-item">
+                    <a class="nav-link" href="{% url 'scush' %}">SCUSH</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'survey-update' %}">Survey</a>
+                </li>
+
+                <li class="nav-item">
+                    {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'logout' %}"><i class="fa fa-sign-in fa-1x"></i> Log Out</a>
+                    {% else %}
+                    <a class="nav-link" href="{% url 'login' %}"><i class="fa fa-sign-in fa-1x"></i> Log In</a>
+                    {% endif %}
+                </li>
+
+            </ul>
+            <span class="navbar-text">
+                Navbar text with an inline element
+            </span>
+    </nav>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
         integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
         crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"
         integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF"
         crossorigin="anonymous"></script>
 
 </body>
 </html>
-
-

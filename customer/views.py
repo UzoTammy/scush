@@ -290,13 +290,14 @@ class CustomerCreditListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
         send_mail(
             subject='Credit Limit Report', 
-            message="""
+            html_message="""
             Credit Limit has been updated.
             <a href='https://www.scush.com.ng/customer/credit/view/'>Click Here to view</a>
             """,
             from_email='',
             recipient_list=['uzo.nwokoro@ozonefl.com'],
             fail_silently=True
+            
             )
         messages.info(request, "Credit Limit email alert has been sent successfully!!!")
         return self.get(request, **kwargs)
