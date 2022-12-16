@@ -290,10 +290,8 @@ class CustomerCreditListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
         send_mail(
             subject='Credit Limit Report', 
-            html_message="""
-            Credit Limit has been updated.
-            <a href='https://www.scush.com.ng/customer/credit/view/'>Click Here to view</a>
-            """,
+            message="",
+            html_message="Credit Limit has been updated. <br> <a href='https://www.scush.com.ng/customer/credit/view/'>Click Here to view</a>",
             from_email='',
             recipient_list=['uzo.nwokoro@ozonefl.com'],
             fail_silently=True
