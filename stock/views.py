@@ -1107,12 +1107,16 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
             return True
         return False
 
+    def sort_dict(obj):
+        if obj['sellout'] is not None:
+            return obj['sellout']
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         active_products = Product.objects.filter(active=True).values_list('pk', flat=True).distinct().order_by('source')
         all_products_qs = list()
         date2 = ProductExtension.objects.latest('date').date
-        date1 = date2 - datetime.timedelta(days=3)
+        date1 = date2 - datetime.timedelta(days=4) if date2.weekday() == 1 else date2 - datetime.timedelta(days=3)
         
         for product in active_products:
             "queryset to use the previous year's record until end of first month"
@@ -1123,6 +1127,7 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
             if product_data.exists():
                 average_sellout = product_data.aggregate(Avg('sell_out'))['sell_out__avg']
                 sellout = product_data_last_days.aggregate(Sum('sell_out'))['sell_out__sum']
+                sellout = 0 if sellout is None else sellout
                 run_rate = 0 if average_sellout is None else int(18*average_sellout)
                 all_products_qs.append({
                     'name': product_data.first().product, 
