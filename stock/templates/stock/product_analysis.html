@@ -1,0 +1,70 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row mt-3">
+        <div class="col">
+            <h3 class="text-center">Product Analysis</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <table class="table table-bordered" data-toggle="table" data-pagination="true">
+                <caption class="text-info">Run Rate - <small class="text-muted">3 weeks</small></caption>
+                <thead class="bg-dark text-white">
+                    <tr class="text-center">
+                        <th>Product</th>
+                        <th>Run Rate</th>
+                        <th>Balance</th>
+                        <th>Status</th>
+                        <th>Replenish</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in all_products_qs %}
+                    <tr>
+                        <td>{{item.name}}</td>
+                        <td class="text-right">{{item.run_rate}}</td>
+                        <td class="text-right">{{item.closing_stock}}</td>
+                        {% if item.closing_stock > item.run_rate %}
+                        <td class="text-center bg-light" colspan="2"><i class="fa fa-check text-success"></i></td>
+                        
+                        {% else %}
+                        <td class="text-center"><i class="fa fa-times text-danger"></i></td>
+                        <td class="text-right">{{item.run_rate|minus:item.closing_stock}}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm-6">
+            <table class="table table-bordered" data-toggle="table" data-pagination="true">
+                <caption class="text-info">Top Ten Selling - <small class="text-muted">Last 3 days</small></caption>
+                <thead class="bg-dark text-white">
+                    <tr class="text-center">
+                        <th>Product</th>
+                        <th>Sellout</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in sort_qs_by_sellout %}
+                    <tr>
+                        <td>{{item.name}}</td>
+                        <td class="text-right">{{item.sellout}}</td>
+                        <td class="text-right">{{item.closing_stock}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <a class="float-right" href="{% url 'product-home' %}"><i class="fa fa-reply fa-2x"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock %}

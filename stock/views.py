@@ -1089,7 +1089,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         
         qs = qs.filter(date=last_date)
         context['unreported_products_day'] = self.unreported_product(qs)
-        context['inactive_products'] = Product.objects.filter(active=False)
+        context['inactive_products'] = Product.objects.filter(active=False).order_by('name')
         latest_date = ProductExtension.objects.latest('date').date
         qs = ProductExtension.objects.filter(date=latest_date).filter(sell_out__gt=0)
         qs = qs.annotate(gain=F('sell_out')*(F('selling_price')-F('cost_price')))
@@ -1097,3 +1097,41 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['total_margin'] = qs.aggregate(Sum('gain'))['gain__sum']
         return context
 
+
+class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'stock/product_analysis.html'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        active_products = Product.objects.filter(active=True).values_list('pk', flat=True).distinct().order_by('source')
+        all_products_qs = list()
+        date2 = ProductExtension.objects.latest('date').date
+        date1 = date2 - datetime.timedelta(days=3)
+        
+        for product in active_products:
+            "queryset to use the previous year's record until end of first month"
+            current_year = datetime.date.today().year
+            year = current_year if ProductExtension.objects.latest('date').date >= datetime.date(current_year, 1, 31) else year - 1
+            product_data = ProductExtension.objects.filter(date__year=year).filter(product=product)
+            product_data_last_days = product_data.filter(date__range=[date1, date2])
+            if product_data.exists():
+                average_sellout = product_data.aggregate(Avg('sell_out'))['sell_out__avg']
+                sellout = product_data_last_days.aggregate(Sum('sell_out'))['sell_out__sum']
+                run_rate = 0 if average_sellout is None else int(18*average_sellout)
+                all_products_qs.append({
+                    'name': product_data.first().product, 
+                    'run_rate': run_rate,
+                    'closing_stock': product_data.last().stock_value,
+                    'sellout': sellout   
+                    })
+    
+        context['all_products_qs'] = all_products_qs
+        sort_qs_by_sellout = sorted(all_products_qs, key=lambda x:x['sellout'], reverse=True)[:10]
+        context['sort_qs_by_sellout'] = sort_qs_by_sellout
+        return context
