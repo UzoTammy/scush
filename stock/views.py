@@ -1170,14 +1170,13 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
         product_data_7days_ago = product_data.filter(date__range=[date3, date2]).filter(stock_value__gt=0).filter(sell_out=0)
         if product_data_7days_ago.exists():
             for product in product_data:
-                qs = product_data_7days_ago.filter(product=product)
                 sold = ProductExtension.objects.filter(product=product).filter(sell_out__gt=0)
-                if sold.exist():
-                    date = sold.last().date()
+                date = sold.last().date if sold.exists() else datetime.date(1, 1, datetime.date.today().year)
+                
                 no_sellout.append(
                     {
-                        'product': qs.first().product,
-                        'closing_stock': qs.last().stock_value,
+                        'product': product_data_7days_ago.first().product,
+                        'closing_stock': product_data_7days_ago.last().stock_value,
                         'date': date
                     }
                 )
