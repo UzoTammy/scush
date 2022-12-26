@@ -1113,30 +1113,75 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        active_products = Product.objects.filter(active=True).values_list('pk', flat=True).distinct().order_by('source')
-        all_products_qs = list()
-        date2 = ProductExtension.objects.latest('date').date
-        date1 = date2 - datetime.timedelta(days=4) if date2.weekday() == 1 else date2 - datetime.timedelta(days=3)
-        
+
+        # run rate, sellout and profit
+        all_products_qs = list() # a list that will contain dictionary   
+
+        if Product.objects.exists():
+            active_products = Product.objects.filter(active=True).values_list('pk', flat=True).distinct().order_by('source')
+        else:
+            return context
+
+        if ProductExtension.objects.exists():
+            date2 = ProductExtension.objects.latest('date').date
+            date1 = date2 - datetime.timedelta(days=4) if date2.weekday() == 1 else date2 - datetime.timedelta(days=3)
+        else:
+            return context
+
         for product in active_products:
             "queryset to use the previous year's record until end of first month"
             current_year = datetime.date.today().year
             year = current_year if ProductExtension.objects.latest('date').date >= datetime.date(current_year, 1, 31) else year - 1
             product_data = ProductExtension.objects.filter(date__year=year).filter(product=product)
-            product_data_last_days = product_data.filter(date__range=[date1, date2])
+            product_data = product_data.annotate(profit=F('sell_out')*(F('selling_price')-F('cost_price')))
+            
             if product_data.exists():
+                product_data_3days_ago = product_data.filter(date__range=[date1, date2])
+                
                 average_sellout = product_data.aggregate(Avg('sell_out'))['sell_out__avg']
-                sellout = product_data_last_days.aggregate(Sum('sell_out'))['sell_out__sum']
-                sellout = 0 if sellout is None else sellout
                 run_rate = 0 if average_sellout is None else int(18*average_sellout)
+
+                sellout = product_data_3days_ago.aggregate(Sum('sell_out'))['sell_out__sum']
+                sellout = 0 if sellout is None else sellout
+
+                profit = product_data_3days_ago.aggregate(Sum('profit'))['profit__sum']
+                profit = 0 if profit is None else profit
+
+                
                 all_products_qs.append({
                     'name': product_data.first().product, 
                     'run_rate': run_rate,
                     'closing_stock': product_data.last().stock_value,
-                    'sellout': sellout   
+                    'sellout': sellout, 
+                    'profit': profit
                     })
-    
+                   
+        
+        if all_products_qs:
+            sort_qs_by_sellout = sorted(all_products_qs, key=lambda x:x['sellout'], reverse=True)[:10]
+            context['sort_qs_by_sellout'] = sort_qs_by_sellout
+        
+        context['current_date'] = date1 
         context['all_products_qs'] = all_products_qs
-        sort_qs_by_sellout = sorted(all_products_qs, key=lambda x:x['sellout'], reverse=True)[:10]
-        context['sort_qs_by_sellout'] = sort_qs_by_sellout
+    
+        # products that have not sold out in the last 7 days even though they are available        
+        no_sellout = list()
+        date3 = date2 - datetime.timedelta(days=7)
+        product_data_7days_ago = product_data.filter(date__range=[date3, date2]).filter(stock_value__gt=0).filter(sell_out=0)
+        if product_data_7days_ago.exists():
+            for product in product_data:
+                qs = product_data_7days_ago.filter(product=product)
+                sold = ProductExtension.objects.filter(product=product).filter(sell_out__gt=0)
+                if sold.exist():
+                    date = sold.last().date()
+                no_sellout.append(
+                    {
+                        'product': qs.first().product,
+                        'closing_stock': qs.last().stock_value,
+                        'date': date
+                    }
+                )
+            
+        context['no_sellout'] = no_sellout 
+        
         return context

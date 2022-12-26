@@ -9,7 +9,13 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col">
+            <p class="float-right">As at {{current_date}}</p>
+        </div>
+    </div>
+    {% if all_products_qs %}
+    <div class="row mt-3">
+        <div class="col">
             <table class="table table-bordered" data-toggle="table" data-pagination="true">
                 <caption class="text-info">Run Rate - <small class="text-muted">3 weeks</small></caption>
                 <thead class="bg-dark text-white">
@@ -39,14 +45,20 @@
                 </tbody>
             </table>
         </div>
-        <div class="col-sm-6">
+    </div>
+    {% endif %}
+    
+    {% if sort_qs_by_sellout %}
+    <div class="row">
+        <div class="col">
             <table class="table table-bordered" data-toggle="table" data-pagination="true">
-                <caption class="text-info">Top Ten Selling - <small class="text-muted">Last 3 days</small></caption>
+                <caption class="text-info">Top Ten Sellout Stocks - <small class="text-muted">Last 3 days</small></caption>
                 <thead class="bg-dark text-white">
                     <tr class="text-center">
                         <th>Product</th>
                         <th>Sellout</th>
                         <th>Balance</th>
+                        <th>Profit</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,13 +67,41 @@
                         <td>{{item.name}}</td>
                         <td class="text-right">{{item.sellout}}</td>
                         <td class="text-right">{{item.closing_stock}}</td>
+                        <td class="text-right">{{item.profit|floatformat:2}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-    <div class="row mt-3">
+    {% endif %}
+
+    {% if no_sellout %}
+    <div class="row">
+        <div class="col">
+            <table class="table table-bordered" data-toggle="table" data-pagination="true">
+                <caption class="text-info">Products not selling - <small class="text-muted">Last 7 days</small></caption>
+                <thead class="bg-dark text-white">
+                    <tr class="text-center">
+                        <th>Product</th>
+                        <th>Balance</th>
+                        <th>Sold last on</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in no_sellout %}
+                    <tr>
+                        <td>{{item.product}}</td>
+                        <td class="text-right">{{item.closing_stock}}</td>
+                        <td>{{item.date}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    <div class="row mt-3">    
         <div class="col">
             <a class="float-right" href="{% url 'product-home' %}"><i class="fa fa-reply fa-2x"></i></a>
         </div>
