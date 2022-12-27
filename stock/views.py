@@ -1168,18 +1168,18 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
         no_sellout = list()
         date3 = date2 - datetime.timedelta(days=7)
         product_data_7days_ago = product_data.filter(date__range=[date3, date2]).filter(stock_value__gt=0).filter(sell_out=0)
+        
         if product_data_7days_ago.exists():
-            for product in product_data:
-                sold = ProductExtension.objects.filter(product=product).filter(sell_out__gt=0)
-                date = sold.last().date if sold.exists() else datetime.date(1, 1, datetime.date.today().year)
-                
-                no_sellout.append(
-                    {
-                        'product': product_data_7days_ago.first().product,
-                        'closing_stock': product_data_7days_ago.last().stock_value,
-                        'date': date
-                    }
-                )
+            sold = ProductExtension.objects.filter(product=product).filter(sell_out__gt=0)
+            date = sold.last().date if sold.exists() else datetime.date(1, 1, datetime.date.today().year)
+
+            no_sellout.append(
+                {
+                    'product': product_data_7days_ago.first().product,
+                    'closing_stock': product_data_7days_ago.last().stock_value,
+                    'date': date
+                }
+            )
             
         context['no_sellout'] = no_sellout 
         
