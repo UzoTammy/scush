@@ -2,6 +2,28 @@
 {% load static %}
 
 {% block head %}
+<style>
+    body {
+        background-color: white;
+    }
+    .nb {
+        width: 200px;
+    }
+    .gn {
+        width: 120px;
+    }
+    .ab {
+        width:200px;
+    }
+    .redbull {
+        width: 150px;
+        rotate: 30deg;
+    }
+    .cousin {
+        width: 160px;
+        rotate: 45deg;
+    }
+</style>
 {% endblock head %}
 
 {% block content %}
@@ -9,7 +31,7 @@
 <div class="row">
     <div class="col bg-secondary text-center text-white" style="height:180px;
         background: url('{% static "customer/background/bluesky.jpeg" %}')">
-        <h1 class="mt-4 m-0">SCUSH</h1>
+        <h1 class="mt-4 m-0">SCusH</h1>
         <h5>Ozone Online Platform — in one web interface</h5>
         {% if not user.is_authenticated %}
         <a href="{% url 'login' %}"
@@ -20,16 +42,16 @@
     </div>
 </div>
 <div class="container-fluid">
-    <div class="row mt-4 ml-2">
+    <!-- <div class="row mt-4 ml-2">
         <h3>Transaction Processes</h3>
         {% if user.username == 'Uzo-02' %}
             <a href="{% url 'practice' %}">My Link</a>
         {% endif%}
     </div>
-    <div class="row">
-        <div class="col-md-3 mt-2">
+    <div class="row"> -->
+        <!-- <div class="col-md-3 mt-2">
             <div class="card">
-                <img src="{% static 'customer/photo/salesOrder.png' %}"
+                <img src="{% static 'customer/photo/salesOrder1.png' %}"
                      class="card-img-top"
                      height="200px"
                      alt="...">
@@ -47,7 +69,7 @@
         </div>
         <div class="col-md-3 mt-2">
             <div class="card">
-                <img src="{% static 'customer/photo/payment.jpeg' %}"
+                <img src="{% static 'customer/photo/payment1.jpeg' %}"
                      class="card-img-top"
                      height="200px"
                      width="200px"
@@ -67,7 +89,7 @@
         </div>
         <div class="col-md-3 mt-2">
             <div class="card">
-                <img src="{% static 'customer/photo/invoice.jpeg' %}"
+                <img src="{% static 'customer/photo/invoice1.jpeg' %}"
                      class="card-img-top"
                      height="200px"
                      alt="...">
@@ -86,7 +108,7 @@
         </div>
         <div class="col-md-3 mt-2">
             <div class="card bg-light">
-                <img src="{% static 'customer/photo/delivery.jpeg' %}"
+                <img src="{% static 'customer/photo/delivery1.jpeg' %}"
                      class="card-img-top"
                      height="200px"
                      alt="...">
@@ -102,46 +124,43 @@
                     </p>
                 </div>
             </div>
-        </div>
-    </div>
+        </div> -->
+    <!-- </div> -->
 
     <!--    Social Media and key partners-->
-    <div class="row mt-4 ml-2">
-        <div class="col-4">
-            <h4 class="text-secondary">Follow Us:
-                <a href="#"><i class="fa fa-facebook text-primary p-2"></i></a>
-                <a href="#"><i class="fa fa-twitter text-primary p-2"></i></a>
-                <a href="#"><i class="fa fa-instagram text-primary p-2"></i></a>
-            </h4>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <img class="rounded-circle mt-3" src="{% static 'customer/logo.png' %}" alt="">
         </div>
-        <div class="col-8">
-            <h4 class="text-secondary">Key Partners:
+        <div class="row">
+            <div class="col-sm">
+                <h3 class="mt-4">Key Partners</h3>
+            </div>
+            
+            <div class="col">
+                <a href=""><img src="{% static 'customer/photo/GN.png'%}" class="rounded-circle gn"></a>
+            </div>
+            <div class="col">
                 <a href="#">
-                    <img src="{% static 'customer/photo/NB.jpeg'%}"
-                         style="width:100px"
-                         alt=""></a>
-                <a href="#">
-                    <img src="{% static 'customer/photo/GN.png'%}"
-                                 style="width:50px"
-                                 alt=""
-                                 class="rounded-circle">
+                    <img class="nb" src="{% static 'customer/photo/NB.jpeg'%}">
                 </a>
-                <a href="#"><img src="{% static 'customer/photo/AB.jpeg'%}"
-                                 style="width:120px"
-                                 alt=""></a>
-                <a href="#"><img src="{% static 'customer/photo/redbull.jpeg'%}"
-                                 style="width:50px"
-                                 alt=""></a>
-                <a href="#"><img src="{% static 'customer/photo/4cousins.jpeg'%}"
-                                 style="width:80px"
-                                 alt=""></a>
-                <a href="#"><img src="{% static 'customer/photo/hayat.png'%}"
-                                 style="width:50px"
-                                 alt=""></a>
-            </h4>
+            </div>
+            <div class="col">
+                <a href="#"><img class="ab" src="{% static 'customer/photo/AB.jpeg'%}"></a>
+            </div>
+            <div class="col">
+                <a href="#"><img class="redbull" src="{% static 'customer/photo/redbull.jpeg'%}"></a>
+            </div>
+            <div class="col">
+                <a href="#"><img class="cousin" src="{% static 'customer/photo/4cousins.jpeg'%}"></a>
+            </div>
+        </div>
+        <div class="row float-right">
+            <a href="#"><i class="fa fa-facebook fa-2x text-primary p-2"></i></a>
+            <a href="#"><i class="fa fa-twitter fa-2x text-primary p-2"></i></a>
+            <a href="#"><i class="fa fa-instagram fa-2x text-primary p-2"></i></a>
         </div>
     </div>
-    
 </div>
 
 

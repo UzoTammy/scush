@@ -1131,7 +1131,7 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
         for product in active_products:
             "queryset to use the previous year's record until end of first month"
             current_year = datetime.date.today().year
-            year = current_year if ProductExtension.objects.latest('date').date >= datetime.date(current_year, 1, 31) else year - 1
+            year = current_year if ProductExtension.objects.latest('date').date >= datetime.date(current_year, 1, 31) else current_year - 1
             product_data = ProductExtension.objects.filter(date__year=year).filter(product=product)
             product_data = product_data.annotate(profit=F('sell_out')*(F('selling_price')-F('cost_price')))
             
@@ -1177,6 +1177,7 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
                 {
                     'product': product_data_7days_ago.first().product,
                     'closing_stock': product_data_7days_ago.last().stock_value,
+                    'sold': sold.last().sell_out,
                     'date': date
                 }
             )

@@ -3,78 +3,72 @@
 {% load custom_tags %}
 
 {% block head %}
-    <style>
-        .newspaper {
-            column-count: 3;
-        }
-    </style>
+<style>
+    .newspaper {
+        column-count: 3;
+    }
+</style>
 {% endblock head %}
 
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-sm-2 bg-dark">
-            <button
-                class="navbar-toggler bg-light float-right mt-1 mb-1 myBtn" 
-                type="button" 
-                data-toggle="collapse" 
-                data-target="#dropdown"
-                aria-controls="dropdown"
-                aria-expanded="false"
-                aria-label="Toggle navigation">
+        <nav class="col-sm-2 bg-light">
+            <button class="navbar-toggler bg-light float-right mt-1 mb-1 myBtn" type="button" data-toggle="collapse"
+                data-target="#dropdown" aria-controls="dropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="fa fa-navicon text-primary"></i>
             </button>
-        
-        <div class="collapse collapse-sm" id="dropdown">
-            <ul class="nav flex-column mr-auto">
-                <!--Employee-->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'staff-list' %}">
-                        Employee
-                    </a>
-                </li>
-                <!--Payroll-->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'salary' %}">Payroll</a>
-                </li>
-                <!--Policies-->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'staff-policies' %}">Policies</a>
-                </li>
-                <!--Procedures-->
-                <li class="nav-item"><a class="nav-link" href="">Procedure</a></li>
-                <li class="text-muted ml-1">-----Views-----</li>    
-                <!--gratuity-->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'employee-balance-list' %}">
-                        Gratuity
-                    </a>
-                </li>
-                <!-- Permission -->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'request-permission-list' %}">
-                        Permission
-                    </a>
-                </li>
-                <!--Welfare-->
-                {% if user.is_superuser %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'welfare-support-list' %}">Welfare Support
+
+            <div class="collapse collapse-sm" id="dropdown">
+                <ul class="nav flex-column mr-auto">
+                    <!--Employee-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'staff-list' %}">
+                            Employee
+                        </a>
+                    </li>
+                    <!--Payroll-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'salary' %}">Payroll</a>
+                    </li>
+                    <!--Policies-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'staff-policies' %}">Policies</a>
+                    </li>
+                    <!--Procedures-->
+                    <li class="nav-item"><a class="nav-link" href="">Procedure</a></li>
+                    <li class="text-muted ml-1">--Views</li>
+                    <!--gratuity-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'employee-balance-list' %}">
+                            Gratuity
+                        </a>
+                    </li>
+                    <!-- Permission -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'request-permission-list' %}">
+                            Permission
+                        </a>
+                    </li>
+                    <!--Welfare-->
+                    {% if user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'welfare-support-list' %}">Welfare Support
                             <!-- <sup class="badge badge-danger">new</sup> -->
-                    </a>
-                </li>
-                {% endif %}
-            
-                <!-- Survey -->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'survey-home' %}">Survey - Number of Children</a>
-                </li>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- Survey -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'survey-home' %}">Survey - Number of Children</a>
+                    </li>
                     <!--                Return Home-->
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
-                </li>
-            </ul>
-        </div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
+                    </li>
+                </ul>
+            </div>
         </nav>
         <!--   Body of Page     -->
         <div class="col-sm-9" style="font-family: Times New Roman; font-size: 12pt">
@@ -82,15 +76,14 @@
                 <div class="col">
                     {% for key, value in countdown %}
                     {% if value == 0 %}
-                       <h5 style="font-family: cursive; color: #21ae10"
-                           class="text-center">
-                           Happy Birthday {{key}}. Our management and staff hereby wishes
-                you a lovely years ahead</h5>
+                    <h5 style="font-family: cursive; color: #21ae10" class="text-center">
+                        Happy Birthday {{key}}. Our management and staff hereby wishes
+                        you a lovely years ahead</h5>
                     {% endif %}
-                {% endfor %}
+                    {% endfor %}
                 </div>
             </div>
-        <!--    upcoming birthdays-->
+            <!--    upcoming birthdays-->
             {% if countdown %}
             <div class="row">
                 <div class="col">
@@ -101,182 +94,197 @@
                 <!--        {{countdown}}-->
                 <div class="col-sm-6">
                     <ul>
-                {% for key, value in countdown %}
-                    {% if value != 0 %}
-                            <li style="font-family: cursive; font-size:13pt" class="text-info">{{key}}, your birthday comes up in {{value}}
-                                day{{value|pluralize}}
-                            </li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
+                        {% for key, value in countdown %}
+                        {% if value != 0 %}
+                        <li style="font-family: cursive; font-size:13pt" class="text-info">{{key}}, your birthday comes
+                            up in {{value}}
+                            day{{value|pluralize}}
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
             {% endif %}
             <div class="container">
                 {{payroll_list}}
-            <p class="newspaper">{{message_one}}</p>
-        <!--Workforce basic characteristics -->
-            <div class="container mb-3">
-                <div class="row text-info">
-                <div class="col">
-                    <i class="fa fa-group fa-2x text-danger"></i>
-                    Workforce {{workforce}}
-                </div>
-                <div class="col">
-                    <i class="fa fa-male fa-2x text-danger"></i>
-                    Male {{male}}
-                </div>
-                <div class="col">
-                    <i class="fa fa-female fa-2x text-danger"></i>
-                    Female {{female}}
-                </div>
-                <div class="col">
-                    <i class="fa fa-mars-double fa-2x text-danger"></i>
-                    Married: {{married}}
-                </div>
-                <div class="col">
-                    <i class="fa fa-mars fa-2x text-danger"></i>
-                    Single {{single}}
-                </div>
-            </div>
-            </div>
-            <p class="newspaper">{{ message_two }}</p>
-            <div class="container mb-3">
-                <div class="row text-info">
-                    <div class="col">
-                        <i class="fa fa-briefcase fa-2x text-danger"></i>
-                        Management {{management}}
-                    </div>
-                    <div class="col">
-                        <i class="fa fa-cog fa-2x text-danger"></i>
-                        Non-Management {{non_management}}
-                    </div>
-                    <div class="col">
-                        <a href="{% url 'terminated' staff_category %}">
-                            <i class="fa fa-stop fa-2x text-danger"></i>
-                            Terminated {{terminated}}</a>
-                    </div>
-                    <div class="col">
-                        <i class="fa fa-step-forward fa-2x text-danger"></i>
-                        Probation {{probation}}
+                <p class="newspaper">{{message_one}}</p>
+                <!--Workforce basic characteristics -->
+                <div class="container mb-3">
+                    <div class="row text-info">
+                        <div class="col">
+                            <i class="fa fa-group fa-2x text-danger"></i>
+                            Workforce {{workforce}}
+                        </div>
+                        <div class="col">
+                            <i class="fa fa-male fa-2x text-danger"></i>
+                            Male {{male}}
+                        </div>
+                        <div class="col">
+                            <i class="fa fa-female fa-2x text-danger"></i>
+                            Female {{female}}
+                        </div>
+                        <div class="col">
+                            <i class="fa fa-mars-double fa-2x text-danger"></i>
+                            Married: {{married}}
+                        </div>
+                        <div class="col">
+                            <i class="fa fa-mars fa-2x text-danger"></i>
+                            Single {{single}}
+                        </div>
                     </div>
                 </div>
-            </div>
-    <!--            Probation Tables-->
-            <div class="row">
-                <div class="col-sm-6 text-center">
-                    <table class="table table-sm" 
-                    data-toggle="table" 
-                    data-pagination="true"
-                    data-page-list="[5, 10, All]"
-                    data-page-size="5">
-                        <caption>Primary Probation</caption>
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Employee</th>
-                            <th>Time Left</th>
-                            <th>Due Date</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for staff in staff_on_probation %}
-                        <tr>
-                            <td>{{staff.code|zeropadding:3}}</td>
-                            <td>{{staff.name}}</td>
-                            <td>{{staff.date|timeuntil:today }}</td>
-                            <td>{{staff.date|date:'jS M, Y'}}</td>
-                        </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
+                <p class="newspaper">{{ message_two }}</p>
+                <div class="container mb-3">
+                    <div class="row text-info">
+                        <div class="col">
+                            <i class="fa fa-briefcase fa-2x text-danger"></i>
+                            Management {{management}}
+                        </div>
+                        <div class="col">
+                            <i class="fa fa-cog fa-2x text-danger"></i>
+                            Non-Management {{non_management}}
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'terminated' staff_category %}">
+                                <i class="fa fa-stop fa-2x text-danger"></i>
+                                Terminated {{terminated}}</a>
+                        </div>
+                        <div class="col">
+                            <i class="fa fa-step-forward fa-2x text-danger"></i>
+                            Probation {{probation}}
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="col-sm-6 text-center">
-                    <table 
-                    class="table table-sm" 
-                    data-toggle="table" 
-                    data-pagination="true"
-                    data-page-list="[5, 10, All]"
-                    data-page-size="5">
-                        <caption>Secondary Probation</caption>
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Employee</th>
-                            <th>Start Date</th>
-                            <th>Due Date</th>
-                            <th>Days Left</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for data in reassign_data %}
-                        <tr>
-                            <td>{{data.code|zeropadding:3}}</td>
-                            <td>{{data.staff}}</td>
-                            <td>{{data.start_date|date:'jS M, Y'}}</td>
-                            <td>{{data.due_date|date:'jS M, Y'}}</td>
-                            {% if data.days_left > 0 %}
-                            <td>{{data.days_left}}</td>
-                            {% else %}
-                            <td>Complete</td>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
 
-                        </tbody>
-                    </table>
-                </div>
-                
-            </div>
-            <div class="row mt-2">
-                <div class="col-sm-6 text-center">
-                    <table 
-                        class="table table-sm" 
-                        data-toggle="table" 
-                        data-click-to-select="true"
-                        data-pagination="true"
-                        data-page-list="[5, 10, All]"
-                        data-page-size="5">
-                        <caption>Permission This Year</caption>
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Employee</th>
-                            <th>Duration</th>
-                            <th>Count</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for permit in permissions %}
-                        <tr>
-                            <td>{{permit.code|zeropadding:3}}</td>
-                            <td>{{permit.name}}</td>
-                            <td>
-                                {% if permit.duration|first != 0 %}
-                                {{permit.duration|first }}Day{{permit.duration|first|pluralize}}
-                                {% endif %}
-
-                                {% if permit.duration|last != 0 %}
-                                {{permit.duration|last}}Hr{{permit.duration|last|pluralize}}
-                                {% endif %}
-                            </td>
-                            <td>{{permit.count}}</td>
-                        </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="col-sm-6 text-center">
+                <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 mt-3">
+                    <div class="col">
+                        <div class="card mb-3" style="max-width: 12rem;">
+                            <div class="card-header bg-primary text-white">Primary Probation</div>
+                            <div class="card-body">
+                              <h5 class="card-title"></h5>
+                              <p class="card-text text-center">Number of Staff <br>
+                                <a href="#" style="font-size: 2rem;">{{probation}}</a>
+                            </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card mb-3" style="max-width: 12rem;">
+                            <div class="card-header bg-secondary text-white">Secondary Probation</div>
+                            <div class="card-body">
+                              <h5 class="card-title"></h5>
+                              <p class="card-text text-center">Number of Staff <br>
+                                <a href="#" style="font-size: 2rem;">{{probation}}</a>
+                            </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card mb-3" style="max-width: 12rem;">
+                            <div class="card-header bg-danger text-white">Permission Taken</div>
+                            <div class="card-body">
+                              <h5 class="card-title"></h5>
+                              <p class="card-text text-center">Number of Staff <br>
+                                <a href="#" style="font-size:2rem;">{{number_of_permissions}}</a>
+                            </p>
+                            </div>
+                        </div>
+                    </div>
                     
+                    <div class="col">
+                        <table class="table table-sm" data-toggle="table" data-pagination="true"
+                            data-page-list="[5, 10, All]" data-page-size="5">
+                            <caption>Primary Probation</caption>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Employee</th>
+                                    <th>Time Left</th>
+                                    <th>Due Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for staff in staff_on_probation %}
+                                <tr>
+                                    <td>{{staff.code|zeropadding:3}}</td>
+                                    <td>{{staff.name}}</td>
+                                    <td>{{staff.date|timeuntil:today }}</td>
+                                    <td>{{staff.date|date:'jS M, Y'}}</td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col">
+                        <table class="table table-sm" data-toggle="table" data-pagination="true"
+                            data-page-list="[5, 10, All]" data-page-size="5">
+                            <caption>Secondary Probation</caption>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Employee</th>
+                                    <th>Start Date</th>
+                                    <th>Due Date</th>
+                                    <th>Days Left</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in reassign_data %}
+                                <tr>
+                                    <td>{{data.code|zeropadding:3}}</td>
+                                    <td>{{data.staff}}</td>
+                                    <td>{{data.start_date|date:'jS M, Y'}}</td>
+                                    <td>{{data.due_date|date:'jS M, Y'}}</td>
+                                    {% if data.days_left > 0 %}
+                                    <td>{{data.days_left}}</td>
+                                    {% else %}
+                                    <td>Complete</td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col">
+                        <table class="table table-sm" data-toggle="table" data-click-to-select="true"
+                            data-pagination="true" data-page-list="[5, 10, All]" data-page-size="5">
+                            <caption>Permission This Year</caption>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Employee</th>
+                                    <th>Duration</th>
+                                    <th>Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for permit in permissions %}
+                                <tr>
+                                    <td>{{permit.code|zeropadding:3}}</td>
+                                    <td>{{permit.name}}</td>
+                                    <td>
+                                        {% if permit.duration|first != 0 %}
+                                        {{permit.duration|first }}Day{{permit.duration|first|pluralize}}
+                                        {% endif %}
+
+                                        {% if permit.duration|last != 0 %}
+                                        {{permit.duration|last}}Hr{{permit.duration|last|pluralize}}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{permit.count}}</td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                
+                <!--            Probation Tables-->
             </div>
-            </div>
-            
+
         </div>
     </div>
 </div>

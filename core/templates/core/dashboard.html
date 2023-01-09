@@ -4,353 +4,53 @@
 {% block head %}{% endblock head %}
 
 {% block content %}
-<div class="container  px-lg-5">
-
-    <div class="row">
+<div class="container text-center">
+    <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 mt-3">
+        {% for basic in basics %}
         <div class="col mt-2">
-            <h3>KPI Parameters</h3>
-            <small>Growth Rate - {{KPI.date_bs}} and others - {{KPI.date_pl}} </small>
-        </div>
-    </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 mt-3">
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush curved-edge">
-                <li class="list-group-item">Growth Rate 
-                    {% if KPI.growth_1 != 0 %}
-                        <span class="float-right text-{{color.growth}}">{{KPI.growth}} 
-                            <sup class="text-muted">{{target.growth}}+</sup>  
-                        </span>
-                    {% endif %}
-                </li>
-            </ul>
-        </div>
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush curved-edge">
-                <li class="list-group-item">Margin Ratio 
-                    <span class="float-right text-{{color.margin}}">{{KPI.margin}}
-                        <sup class="text-muted">{{target.margin}}+</sup>
-                    </span>
-                </li>
-            </ul>
-        </div>
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush curved-edge">
-                <li class="list-group-item">Sales 
-                    <span class="float-right text-{{color.sales}}">{{KPI.sales}}
-                        <sup class="text-muted">{{target.sales}}+</sup>
-                    </span>
-                </li>
-            </ul>
-        </div>
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush curved-edge">
-                <li class="list-group-item">Delivery Expenses 
-                    <span class="float-right text-{{color.delivery}}">{{KPI.delivery}}
-                        <sup class="text-muted">{{target.delivery}}-</sup>
-                    </span>
-                </li>
-            </ul>
-        </div>
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush curved-edge">
-                <li class="list-group-item">Admin Expenses 
-                    <span class="float-right text-{{color.admin}}">{{KPI.admin}}
-                        <sup class="text-muted">{{target.admin}}-</sup>
-                    </span>
-                </li>
-            </ul>
-        </div>
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush curved-edge">
-                <li class="list-group-item">Total Expenses 
-                    <span class="float-right text-{{color.total}}">{{KPI.delivery|add:KPI.admin}}
-                        <sup class="text-muted">{{target.delivery|add:target.admin}}-</sup>
-                    </span>
-                </li>
-            </ul>
-        </div>
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush curved-edge">
-                <li class="list-group-item">Wf Productivity 
-                    <span class="float-right text-{{color.wf_productivity}}">{{KPI.wf_productivity}}
-                        <sup class="text-muted">{{target.wf_productivity}}</sup>
-                    </span>
-                </li>
-            </ul>
-        </div>
-        <div class="col mt-2">
-            <ul class="list-group list-group-flush curved-edge">
-                <li class="list-group-item">Man-Hour 
-                    <span class="float-right text-{{color.man_hour}}">{{KPI.man_hour}}
-                        <sup class="text-muted">{{target.man_hour}}+</sup>
-                    </span>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div class="d-flex row mt-3 mr-2">
-        <div class="col">
-            <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#KPIModal">
-                    Mail KPI
-                </button>
-        </div>
-    </div>
-    <div class="d-flex row mr-2">
-        <div class="col">
-            <h3>General Info</h3>
-        </div>
-    </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
-        <div class="col mt-2">
-            <div class="card text-danger" 
-                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
-                    <div class="card-body">
-                        <p class="card-title">Workforce</p>
-                        <p class="card-text float-right">{{workforce}}</p>
-                    </div>
-            </div>
-        </div>
-        <div class="col mt-2">
-            <div class="card text-info" 
-                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
-                    <div class="card-body">
-                        <h5 class="card-title">Annual Rent</h5>
-                        <p class="card-text text-right">NGN{{rent|floatformat:'2g'}}</p>
-                    </div>
-              </div>
-        </div>
-        <div class="col mt-2">
-            <div class="card text-secondary" 
-                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
-                    <div class="card-body">
-                        <h5 class="card-title">Gratuity</h5>
-                        <p class="card-text text-right">NGN{{gratuity_value|floatformat:'2g'}}</p>
-                    </div>
-              </div>
-        </div> 
-    </div>
-   
-    <div class="d-flex row justify-content-center mt-3">
-        <div class="col">
-            <h3>Latest Ratios</h3>
-            <div class="row mb-1">
-                <div class="col-sm">
-                    <div class="card bg-light text-success" 
-                    style="max-width: 32rem; max-height: 60px; border-radius: 50px 50px 50px 50px;">
-                    <div class="card-body">
-                        <h6 class="card-title">Growth Ratio: {{bs_ratios.growth_ratio}}  
-                            <span class="float-right">Quick Ratio: {{bs_ratios.quick_ratio}}</span>
-                        </h6>
-                    </div>
-                </div>
-                </div>
-                <div class="col-sm">
-                    <div class="card bg-light text-success" 
-                    style="max-width: 32rem; max-height: 60px; border-radius: 50px 50px 50px 50px;">
-                    <div class="card-body">
-                        <h6 class="card-title">Margin Ratio: {{pl_ratios.margin_ratio}} 
-                            <span class="float-right">Expense Ratio: {{pl_ratios.expense_ratio}}</span>
-                        </h6>
-                    </div>
-                </div>
+            <div class="card bg-{{color|array:forloop.counter0}}" 
+                style="max-width: 12rem; border-radius: 100px 50px 100px 50px;">
+                <div class="card-body text-white">
+                    <p class="card-title">{{basic|first}}</p>
+                    <p class="card-text float-right">{{basic|last}}</p>
                 </div>
             </div>
         </div>
+        {% endfor %}
+        
     </div>
-
-    <div class="d-flex row justify-content-center mt-5">
-        <div class="col">
-            <table class="table bg-white shadow-sm" data-toggle="table">
-                <h3>The Business</h3>
-                <thead>
-                    <tr class="text-center">
-                        <th>Year</th>
-                        <th>Sales</th>
-                        <th>Purchase</th>
-                        <th>Rent</th>
-                        <th>Payout</th>
-                        <th>Gross Profit</th>
-                        <th>Direct Expenses</th>
-                        <th>Indirect Expenses</th>
-                        <th>Net Profit</th>
-                    </tr>
-                </thead>
-                <tbody>   
-                    {% for data in year_data %}
-                        <tr>
-                            <td>{{data|array_index:0}}</td>
-                            <td class="text-right">{{data|array_index:1|default_if_none:0|floatformat:'2g'}}</td>
-                            <td class="text-right">{{data|array_index:2|default_if_none:0|floatformat:'2g'}}</td>
-                            <td class="text-right">{{data|array_index:3|default_if_none:0|floatformat:'2g'}}</td>
-                            <td class="text-right">{{data|array_index:4|default_if_none:0|floatformat:'2g'}}</td>
-                            <td class="text-right">{{data|array_index:5|default_if_none:0|floatformat:'2g'}}</td>
-                            <td class="text-right">{{data|array_index:6|default_if_none:0|floatformat:'2g'}}</td>
-                            <td class="text-right">{{data|array_index:7|default_if_none:0|floatformat:'2g'}}</td>
-                            {% with data|array_index:7|default_if_none:0 as netValue %}
-                            <td class="text-right">{{data|array_index:5|default_if_none:0|minus:netValue|floatformat:'2g'}}</td>
-                            {% endwith %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-                
-            </table>
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 mt-3">
+        {% for extra in extras %}
+        <div class="col mt-2">
+            <div class="card bg-secondary" 
+                style="max-width: 7rem; border-radius: 100px 100px 100px 100px;;">
+                <div class="card-body text-white">
+                    <p class="card-title text-center">{{extra|first}}</p>
+                    <p class="card-text float-right">{{extra|last|myriad}}</p>
+                </div>
+            </div>
         </div>
+        {% endfor %}
+        
     </div>
-
-    <h3>Application</h3>
-    <div class="d-flex row justify-content-center mt-2">
-        <div class="col float-center">
-            <table class="table bg-white shadow-sm" data-toggle="table">
-                <thead>
-                    <tr class="text-center">
-                        <th>Year</th>
-                        <th>Applications</th>
-                        <th>Employed</th>
-                        <th>Rejected</th>
-                        <th>Pending</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for key, value in application_count.items %}
-                    <tr class="text-center">
-                        <td>{{key}}</td>
-                        {% for item in value %}
-                        <td>{{item}}</td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 mt-3">
+        {% for point in points %}
+        <div class="col mt-2">
+            <div class="card bg-dark" 
+                style="max-width: 8rem; border-radius: 10px 10px 10px 10px;;">
+                <div class="card-body text-white">
+                    <p class="card-title text-center">{{point|first}}</p>
+                    <p class="card-text float-right">{{point|last}} <sup class="text-danger">Pts</sup> </p>
+                </div>
+            </div>
         </div>
+        {% endfor %}
     </div>
-    <h3>Employees</h3>
-    <div class="d-flex row justify-content-center mt-2 mb-1">
-        <div class="col float-center">
-            <table class="table bg-white shadow-sm" data-toggle="table">
-                <legend></legend>
-                <thead>
-                    <tr class="text-center">
-                        <th class="text-left">Period</th>
-                        <th>Workforce</th>
-                        <th class="text-right">Yield</th>
-                        <th>Average Payout</th>
-                        <!-- <th>Pending</th> -->
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="bg-success text-white text-center">
-                        <td class="text-left">{{current_data|array_index:0}}</td>
-                        <td>{{current_data|array_index:1}}</td>
-                        <td class="text-right">{{current_data|array_index:2}}</td>
-                        <td>{{current_data|array_index:3}}</td>
-                    </tr>
-                    {% for dataset in employee_dataset %}
-                    <tr class="text-center">
-                        <td class="text-left">{{dataset|array_index:0}}</td>
-                        <td>{{dataset|array_index:1}}</td>
-                        <td class="text-right">{{dataset|array_index:2}}</td>
-                        <td>{{dataset|array_index:3}}</td>
-                    </tr>
-                    {% endfor %}
-                    <tr class="bg-dark text-white text-center">
-                        <td class="text-left">{{data|array_index:0}}</td>
-                        <td>{{data|array_index:1}}</td>
-                        <td class="text-right">{{data|array_index:2}}</td>
-                        <td>{{data|array_index:3}}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p class="text-danger">{{msg}}</p>
-        </div>
-    </div>
+    <hr>
     <div class="row mb-3">
         <div class="col">
             <a class="float-right" href="{% url 'home' %}"><i class="fa fa-reply fa-2x"></i> Home</a>
         </div>
     </div>
 </div>
-  
-  <!-- Modal -->
-  <div class="modal fade" id="KPIModal" tabindex="-1" 
-  role="dialog" aria-labelledby="KPIModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="KPIModalLabel">KPI Report</h5>
-          {% if KPI.date_bs != KPI.date_pl %} <span class="text-danger"><i class="fa fa-warning text-warning">
-            </i> **Dates difers, update your record</span>
-            {% endif %}
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-            <div class="row">
-                <div class="col">
-                    <table class="table">
-                        <small>Growth Rate - {{KPI.date_bs}} and Others - {{KPI.date_pl}}</small>
-                        <thead>
-                            <tr class="">
-                                <th>Parameters</th>
-                                <th class="text-right">Target</th>
-                                <th class="text-right">Points</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="text-{{color.growth}}">
-                                <th>Growth<sup class="text-danger">+</sup></th>
-                                <th class="text-right">{{target.growth}} </th>
-                                <th class="text-right">{{KPI.growth}}</th>
-                            </tr>
-                            <tr class="text-{{color.margin}}">
-                                <th>Margin<sup class="text-danger">+</sup></th>
-                                <th class="text-right">{{target.margin}}</th>
-                                <th class="text-right">{{KPI.margin}}</th>
-                            </tr>
-                            <tr class="text-{{color.sales}}">
-                                <th>Sales<sup class="text-danger">+</sup></th>
-                                <th class="text-right">{{target.sales}}</th>
-                                <th class="text-right">{{KPI.sales}}</th>
-                            </tr>
-                            <tr class="text-{{color.total}}">
-                                <th>Expenses<sup class="text-danger">-</sup></th>
-                                <th class="text-right">{{target.delivery|add:target.admin}}</th>
-                                <th class="text-right">{{KPI.delivery|add:KPI.admin}}</th>
-                            </tr>
-                            <tr class="text-{{color.delivery}}">
-                                <th>Delivery<sup class="text-danger">-</sup></th>
-                                <th class="text-right">{{target.delivery}}</th>
-                                <th class="text-right">{{KPI.delivery}}</th>
-                            </tr>
-                            <tr class="text-{{color.admin}}">
-                                <th>Admin<sup class="text-danger">-</sup></th>
-                                <th class="text-right">{{target.admin}}</th>
-                                <th class="text-right">{{KPI.admin}}</th>
-                            </tr>
-                            <tr class="text-{{color.man_hour}}">
-                                <th>Man Hour<sup class="text-danger">+</sup></th>
-                                <th class="text-right">{{target.man_hour}}</th>
-                                <th class="text-right">{{KPI.man_hour}}</th>
-                            </tr>
-                            <tr class="text-{{color.wf_productivity}}">
-                                <th>Workforce Productivity<sup class="text-danger">+</sup></th>
-                                <th class="text-right">{{target.wf_productivity}}</th>
-                                <th class="text-right">{{KPI.wf_productivity}}</th>
-                            </tr>
-                            <tr>
-                                <td class="text-danger">{{target_message}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <a type="button" class="btn btn-primary" href="{% url 'kpi_mail' target KPI %}">Send Mail</a>
-        </div>
-      </div>
-    </div>
-  </div>
 {% endblock content %}

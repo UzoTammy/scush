@@ -47,7 +47,7 @@
         </div>
     </div>
     {% endif %}
-    
+
     {% if sort_qs_by_sellout %}
     <div class="row">
         <div class="col">
@@ -80,12 +80,14 @@
     <div class="row">
         <div class="col">
             <table class="table table-bordered" data-toggle="table" data-pagination="true">
-                <caption class="text-info">Products not selling - <small class="text-muted">Last 7 days</small></caption>
+                <caption class="text-info">Products not sold  
+                    <small class="text-muted">in the last 7 days or more</small></caption>
                 <thead class="bg-dark text-white">
                     <tr class="text-center">
                         <th>Product</th>
-                        <th>Balance</th>
+                        <th>Current Stock</th>
                         <th>Sold last on</th>
+                        <th>Qty Last Sold</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -93,7 +95,8 @@
                     <tr>
                         <td>{{item.product}}</td>
                         <td class="text-right">{{item.closing_stock}}</td>
-                        <td>{{item.date}}</td>
+                        <td class="text-center">{{item.date}}</td>
+                        <td class="text-right">{{item.sold}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

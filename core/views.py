@@ -129,200 +129,218 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        workforce = Employee.active.count()
+        product_count = Product.objects.filter(active=True).count()
+        customer_base = CustomerProfile.objects.filter(active=True).count()
 
-        context['workforce'] = Employee.active.count()
-        context['products'] = Product.objects.count()
-        context['customers'] = CustomerProfile.objects.count()
-        context['number_of_kids'] = Question.objects.aggregate(Sum('number_kids'))['number_kids__sum']
+        qs = TradeDaily.objects.filter(date__year=datetime.date.today().year)
+        sales = float(qs.aggregate(Sum('sales'))['sales__sum']) if qs.exists() else 0.0
+        purchase = float(qs.aggregate(Sum('purchase'))['sales__sum']) if qs.exists() else 0.0
+
+        qs = Applicant.this_year.all()
+        application = qs.count() if qs.exists() else 0
+
+        store_count = Stores.active.count()
+        qs = Stores.active.filter(status=True)
+        rent_paid = float(qs.aggregate(Sum('rent_amount'))['rent_amount__sum']) if qs.exists() else 0.0
+        
+        context['color'] = ['success', 'info', 'warning']
+        context['basics'] = [('Product Count', product_count), ('Customer Base', customer_base), ('Workforce', workforce)]
+        context['extras'] = [('Sales', sales), ("Purchase", purchase), ("Application", application),('Stores', store_count), ('Rent Paid', rent_paid)]
+        context['points'] = [('Growth', 10), ('Margin', 20), ('Expenses', 30), ('Man-Hour', 40), ('Productivity', 50)]
+        # context['number_of_kids'] = Question.objects.aggregate(Sum('number_kids'))['number_kids__sum']
 
         """let us consider the year of the last record"""
-        if TradeMonthly.objects.exists():
-            qs_last = TradeMonthly.objects.last()
-            year = qs_last.year
-            month = qs_last.month
-            m = (str(index).zfill(2) for index, i in enumerate(calendar.month_name) if i == month)
-            period = f'{year}-{next(m)}'
-            net_pay = Payroll.objects.filter(period=period).aggregate(Sum('net_pay'))['net_pay__sum']
-            qs = TradeMonthly.objects.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
-            net_profit = qs.filter(year=year, month=month).aggregate(Sum('net_profit'))['net_profit__sum']
-            context['net_profit'] = net_profit
-            context['net_pay'] = net_pay
-            qs_daily_last = TradeDaily.objects.last()
-            try:
-                context['gp_ratio'] = 100*qs_daily_last.gross_profit/qs_daily_last.sales
-            except:
-                context['gp_ratio'] = 0
-            context['sales'] = qs_daily_last.sales
-            context['day'] = qs_daily_last.date
+        # if TradeMonthly.objects.exists():
+        #     qs_last = TradeMonthly.objects.last()
+        #     year = qs_last.year
+        #     month = qs_last.month
+        #     m = (str(index).zfill(2) for index, i in enumerate(calendar.month_name) if i == month)
+        #     period = f'{year}-{next(m)}'
+        #     net_pay = Payroll.objects.filter(period=period).aggregate(Sum('net_pay'))['net_pay__sum']
+        #     qs = TradeMonthly.objects.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
+        #     net_profit = qs.filter(year=year, month=month).aggregate(Sum('net_profit'))['net_profit__sum']
+        #     context['net_profit'] = net_profit
+        #     context['net_pay'] = net_pay
+        #     qs_daily_last = TradeDaily.objects.last()
+        #     try:
+        #         context['gp_ratio'] = 100*qs_daily_last.gross_profit/qs_daily_last.sales
+        #     except:
+        #         context['gp_ratio'] = 0
+        #     context['sales'] = qs_daily_last.sales
+        #     context['day'] = qs_daily_last.date
 
-        qs = BalanceSheet.objects.filter(date__year=datetime.date.today().year).order_by('date')
-        if qs.exists():
-            obj = qs.latest('date')
-            context['bs_ratios'] = {"growth_ratio": f"{obj.growth_ratio()}%", "quick_ratio": obj.quick_ratio()} 
+        # qs = BalanceSheet.objects.filter(date__year=datetime.date.today().year).order_by('date')
+        # if qs.exists():
+        #     obj = qs.latest('date')
+        #     context['bs_ratios'] = {"growth_ratio": f"{obj.growth_ratio()}%", "quick_ratio": obj.quick_ratio()} 
 
-            month = obj.date.month
-            base_value = Decimal('0') if month == 1 else qs.filter(
-                date__month=month-1).latest('date').growth_ratio()
-
-        # picking target from database, first to pick from the month of balance sheet above
-        # and if no record matching the month, the last record will be picked
-        target_qs = PositionKPIMonthly.objects.filter(year=obj.date.year).filter(month=month)
-        if target_qs.exists():
-            target = target_qs.values()[0]
-        else:
-            target = PositionKPIMonthly.objects.values().last()
-            month_name = datetime.date(2022, target['month'], 1).strftime('%B')
-            context['target_message'] = f"Target in use is for {month_name}, {target['year']}"
+        #     month = obj.date.month
+        #     base_value = Decimal('0') if month == 1 else qs.filter(
+        #         date__month=month-1).latest('date').growth_ratio()
+            
+        #     # picking target from database, first to pick from the month of balance sheet above
+        #     # and if no record matching the month, the last record will be picked
+        #     target_qs = PositionKPIMonthly.objects.filter(year=obj.date.year).filter(month=month)
+        # else:
+        #     target_qs = PositionKPIMonthly.objects.none()
+        
+        # if target_qs.exists():
+        #     target = target_qs.values()[0]
+        # else:
+        #     target = PositionKPIMonthly.objects.values().last()
+        #     month_name = datetime.date(2022, target['month'], 1).strftime('%B')
+        #     context['target_message'] = f"Target in use is for {month_name}, {target['year']}"
     
-        context['KPI'] = {
-                'date_bs': obj.date,
-                'growth': int(100 * (obj.growth_ratio() - base_value)),
-            }
-        # get previous growth
-        for index,record in enumerate(qs):
-            if record == obj:
-                if record == qs[0]:
-                    context['KPI'].update({'growth_1': 0})
-                else:
-                    context['KPI'].update({'growth_1': int(100 * qs[index-1].growth_ratio() - base_value)}) 
+        # context['KPI'] = {
+        #         'date_bs': obj.date,
+        #         'growth': int(100 * (obj.growth_ratio() - base_value)),
+        #     }
+        # # get previous growth
+        # for index,record in enumerate(qs):
+        #     if record == obj:
+        #         if record == qs[0]:
+        #             context['KPI'].update({'growth_1': 0})
+        #         else:
+        #             context['KPI'].update({'growth_1': int(100 * qs[index-1].growth_ratio() - base_value)}) 
 
-        context['color'] = {'growth': 'success' if context['KPI']['growth'] >= target['growth'] else 'dark'}
+        # context['color'] = {'growth': 'success' if context['KPI']['growth'] >= target['growth'] else 'dark'}
         
-        qs = TradeDaily.objects.filter(date__year=datetime.date.today().year).order_by('date')
-        if qs.exists():
-            obj = qs.latest('date')
-            context['pl_ratios'] = {"margin_ratio": f"{obj.margin_ratio()}%",
-             "expense_ratio": obj.delivery_expense_ratio() + obj.admin_expense_ratio(),} 
-            qs = qs.filter(date__month=month)
-            sales = qs.aggregate(Sum('sales')).get('sales__sum')
-            profit = qs.aggregate(Sum('gross_profit')).get('gross_profit__sum')
-            direct_expenses = qs.aggregate(Sum('direct_expenses')).get('direct_expenses__sum')
-            indirect_expenses = qs.aggregate(Sum('indirect_expenses')).get('indirect_expenses__sum')
-            purchase = qs.aggregate(Sum('purchase')).get('purchase__sum')
-            # purchase = qs.aggregate(Sum('purchase')).get('purchase__sum')
+        # qs = TradeDaily.objects.filter(date__year=datetime.date.today().year).order_by('date')
+        # if qs.exists():
+        #     obj = qs.latest('date')
+        #     context['pl_ratios'] = {"margin_ratio": f"{obj.margin_ratio()}%",
+        #      "expense_ratio": obj.delivery_expense_ratio() + obj.admin_expense_ratio(),} 
+        #     qs = qs.filter(date__month=month)
+        #     sales = qs.aggregate(Sum('sales')).get('sales__sum')
+        #     profit = qs.aggregate(Sum('gross_profit')).get('gross_profit__sum')
+        #     direct_expenses = qs.aggregate(Sum('direct_expenses')).get('direct_expenses__sum')
+        #     indirect_expenses = qs.aggregate(Sum('indirect_expenses')).get('indirect_expenses__sum')
+        #     purchase = qs.aggregate(Sum('purchase')).get('purchase__sum')
+        #     # purchase = qs.aggregate(Sum('purchase')).get('purchase__sum')
 
-            context['KPI'].update({
-                'date_pl': obj.date,
-                'margin': int(100*100*(profit-indirect_expenses)/sales),
-                'sales': int(sales/Decimal('1000000')),
-                'delivery': int(100*100*direct_expenses/purchase) if purchase > Decimal('0') else 0,
-                'admin': int(100*100*indirect_expenses/sales) if sales > Decimal('0') else 0
-            }) 
-            context['color'].update({
-                'margin': 'success' if context['KPI']['margin'] >= target['margin'] else 'dark',
-                'sales': 'success' if context['KPI']['sales'] >= target['sales'] else 'dark',
-                'delivery': 'success' if context['KPI']['delivery'] <= target['delivery'] else 'dark',
-                'admin': 'success' if context['KPI']['admin'] <= target['admin'] else 'dark',
-                'total': 'success' if context['KPI']['delivery'] + context['KPI']['admin'] <= target['delivery'] + target['admin'] else 'dark',
-            }) 
+        #     context['KPI'].update({
+        #         'date_pl': obj.date,
+        #         'margin': int(100*100*(profit-indirect_expenses)/sales),
+        #         'sales': int(sales/Decimal('1000000')),
+        #         'delivery': int(100*100*direct_expenses/purchase) if purchase > Decimal('0') else 0,
+        #         'admin': int(100*100*indirect_expenses/sales) if sales > Decimal('0') else 0
+        #     }) 
+        #     context['color'].update({
+        #         'margin': 'success' if context['KPI']['margin'] >= target['margin'] else 'dark',
+        #         'sales': 'success' if context['KPI']['sales'] >= target['sales'] else 'dark',
+        #         'delivery': 'success' if context['KPI']['delivery'] <= target['delivery'] else 'dark',
+        #         'admin': 'success' if context['KPI']['admin'] <= target['admin'] else 'dark',
+        #         'total': 'success' if context['KPI']['delivery'] + context['KPI']['admin'] <= target['delivery'] + target['admin'] else 'dark',
+        #     }) 
             
-            # get salary and step it up by 20% 
-            employee =  Employee.active.all()
-            salary = employee.aggregate(Sum('basic_salary')).get('basic_salary__sum') + employee.aggregate(
-                Sum('allowance')).get('allowance__sum')
-            # step up by 20% to allow for incentive
-            context['KPI'].update({
-                'wf_productivity': int(10*(profit-indirect_expenses)/(Decimal('1.2')*salary)),
-                })
-            context['color'].update({
-                'wf_productivity': 'success' if context['KPI']['wf_productivity'] >= target['wf_productivity'] else 'dark',
-            }) 
+        #     # get salary and step it up by 20% 
+        #     employee =  Employee.active.all()
+        #     salary = employee.aggregate(Sum('basic_salary')).get('basic_salary__sum') + employee.aggregate(
+        #         Sum('allowance')).get('allowance__sum')
+        #     # step up by 20% to allow for incentive
+        #     context['KPI'].update({
+        #         'wf_productivity': int(10*(profit-indirect_expenses)/(Decimal('1.2')*salary)),
+        #         })
+        #     context['color'].update({
+        #         'wf_productivity': 'success' if context['KPI']['wf_productivity'] >= target['wf_productivity'] else 'dark',
+        #     }) 
             
-            date = qs.last().date
-            days = mytools.Month.number_of_working_days(date.year, date.month)
-            # workforce = 
-            man_hours = days * 10 * Employee.active.count()
-            qs = RequestPermission.objects.filter(status=True).filter(date__year=date.year).filter(date__month=date.month)
-            durations = list(obj.duration() for obj in qs)
-            days = list(int(duration[:-1]) for duration in durations if duration[-1] == 'D')
-            hours = list(int(duration[:-1]) for duration in durations if duration[-1] == 'H')
-            hours = 10*sum(days) + sum(hours)
-            context['KPI'].update({'man_hour': int(100*(1-hours/man_hours))})
-            context['color'].update({'man_hour': 'success' if context['KPI']['man_hour'] >= target['man_hour'] else 'dark'})
-            context['target'] = target
+        #     date = qs.last().date
+        #     days = mytools.Month.number_of_working_days(date.year, date.month)
+        #     # workforce = 
+        #     man_hours = days * 10 * Employee.active.count()
+        #     qs = RequestPermission.objects.filter(status=True).filter(date__year=date.year).filter(date__month=date.month)
+        #     durations = list(obj.duration() for obj in qs)
+        #     days = list(int(duration[:-1]) for duration in durations if duration[-1] == 'D')
+        #     hours = list(int(duration[:-1]) for duration in durations if duration[-1] == 'H')
+        #     hours = 10*sum(days) + sum(hours)
+        #     context['KPI'].update({'man_hour': int(100*(1-hours/man_hours))})
+        #     context['color'].update({'man_hour': 'success' if context['KPI']['man_hour'] >= target['man_hour'] else 'dark'})
+        #     context['target'] = target
 
-        context['salaries'] = Payroll.objects.filter(date_paid__year=datetime.date.today().year).aggregate(Sum('net_pay'))['net_pay__sum']
+        # context['salaries'] = Payroll.objects.filter(date_paid__year=datetime.date.today().year).aggregate(Sum('net_pay'))['net_pay__sum']
         
-        context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
+        # context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
         
-        positive_grat = EmployeeBalance.objects.filter(value_type='Cr').aggregate(Sum('value'))['value__sum']
-        negative_grat = EmployeeBalance.objects.filter(value_type='Dr').aggregate(Sum('value'))['value__sum']
-        context['gratuity_value'] = positive_grat - negative_grat
+        # positive_grat = EmployeeBalance.objects.filter(value_type='Cr').aggregate(Sum('value'))['value__sum']
+        # negative_grat = EmployeeBalance.objects.filter(value_type='Dr').aggregate(Sum('value'))['value__sum']
+        # context['gratuity_value'] = positive_grat - negative_grat
         
-        current_year = datetime.date.today().year
-        context['last_year_rent'] = Renewal.objects.filter(date__year=current_year-1).aggregate(Sum('amount_paid'))['amount_paid__sum']
-        last_four_years = [current_year, current_year-1, current_year-2, current_year-3]
+        # current_year = datetime.date.today().year
+        # context['last_year_rent'] = Renewal.objects.filter(date__year=current_year-1).aggregate(Sum('amount_paid'))['amount_paid__sum']
+        # last_four_years = [current_year, current_year-1, current_year-2, current_year-3]
     
-        context['year_data'] = list((str(i), 
-            TradeMonthly.objects.filter(year=i).aggregate(Sum('sales')).get('sales__sum'),
-            TradeMonthly.objects.filter(year=i).aggregate(Sum('purchase')).get('purchase__sum'),
-            Renewal.objects.filter(date__year=i).aggregate(Sum('store__rent_amount'))['store__rent_amount__sum'],
-            Payroll.objects.filter(period__startswith=i).aggregate(Sum('net_pay'))['net_pay__sum'],
-            TradeMonthly.objects.filter(year=i).aggregate(Sum('gross_profit')).get('gross_profit__sum'),
-            TradeMonthly.objects.filter(year=i).aggregate(Sum('direct_expenses')).get('direct_expenses__sum'),
-            TradeMonthly.objects.filter(year=i).aggregate(Sum('indirect_expenses')).get('indirect_expenses__sum'),
-        ) 
-        for i in last_four_years)
+        # context['year_data'] = list((str(i), 
+        #     TradeMonthly.objects.filter(year=i).aggregate(Sum('sales')).get('sales__sum'),
+        #     TradeMonthly.objects.filter(year=i).aggregate(Sum('purchase')).get('purchase__sum'),
+        #     Renewal.objects.filter(date__year=i).aggregate(Sum('store__rent_amount'))['store__rent_amount__sum'],
+        #     Payroll.objects.filter(period__startswith=i).aggregate(Sum('net_pay'))['net_pay__sum'],
+        #     TradeMonthly.objects.filter(year=i).aggregate(Sum('gross_profit')).get('gross_profit__sum'),
+        #     TradeMonthly.objects.filter(year=i).aggregate(Sum('direct_expenses')).get('direct_expenses__sum'),
+        #     TradeMonthly.objects.filter(year=i).aggregate(Sum('indirect_expenses')).get('indirect_expenses__sum'),
+        # ) 
+        # for i in last_four_years)
 
-        # Applicants summary
-        if Applicant.objects.exists():
-            applicant = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year)
-            applicants_this_year = [applicant.count(), applicant.filter(status=True).count(), applicant.filter(status=False).count(), applicant.filter(status=None).count()]
-            applicant = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1)
-            applicants_last_year = [applicant.count(), applicant.filter(status=True).count(), applicant.filter(status=False).count(), applicant.filter(status=None).count()]
-        context['application_count'] = {
-            str(datetime.datetime.now().year): applicants_this_year,
-            str(datetime.datetime.now().year-1): applicants_last_year
-        }
+        # # Applicants summary
+        # if Applicant.objects.exists():
+        #     applicant = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year)
+        #     applicants_this_year = [applicant.count(), applicant.filter(status=True).count(), applicant.filter(status=False).count(), applicant.filter(status=None).count()]
+        #     applicant = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1)
+        #     applicants_last_year = [applicant.count(), applicant.filter(status=True).count(), applicant.filter(status=False).count(), applicant.filter(status=None).count()]
+        # context['application_count'] = {
+        #     str(datetime.datetime.now().year): applicants_this_year,
+        #     str(datetime.datetime.now().year-1): applicants_last_year
+        # }
 
-        # Employees
-        # first row for the current data
-        qs = Employee.active.all()
-        number_of_employees = qs.count()
-        qs = qs.annotate(salary=F('basic_salary') + F('allowance'))
-        payout = qs.aggregate(Sum('salary'))['salary__sum']
-        latest_date = TradeDaily.objects.latest('date').date
-        year, month = latest_date.year, latest_date.month
-        gross_profits = TradeDaily.objects.filter(date__year=year).filter(date__month=month).aggregate(
-            Sum('gross_profit'))['gross_profit__sum']
+        # # Employees
+        # # first row for the current data
+        # qs = Employee.active.all()
+        # number_of_employees = qs.count()
+        # qs = qs.annotate(salary=F('basic_salary') + F('allowance'))
+        # payout = qs.aggregate(Sum('salary'))['salary__sum']
+        # latest_date = TradeDaily.objects.latest('date').date
+        # year, month = latest_date.year, latest_date.month
+        # gross_profits = TradeDaily.objects.filter(date__year=year).filter(date__month=month).aggregate(
+        #     Sum('gross_profit'))['gross_profit__sum']
         
-        context['current_data'] = (
-            latest_date, 
-            number_of_employees, 
-            round(float(gross_profits)/(1.1*float(payout)), 2),
-            round((1.1*float(payout)/number_of_employees), 2)
-            )
+        # context['current_data'] = (
+        #     latest_date, 
+        #     number_of_employees, 
+        #     round(float(gross_profits)/(1.1*float(payout)), 2),
+        #     round((1.1*float(payout)/number_of_employees), 2)
+        #     )
         
-        if Payroll.objects.exists():
-            all_periods = set(Payroll.objects.values_list('period', flat=True))
-            lastest_10_periods = sorted(list(all_periods)[:10], reverse=True)
-            periods = (f"{mytools.Period.full_months[i.split('-')[1]]}, {i.split('-')[0]}" for i in lastest_10_periods)
-            workforce = tuple(Payroll.objects.filter(period=period).count() for period in lastest_10_periods)
-            total_payout = tuple(Payroll.objects.filter(period=period).aggregate(Sum('net_pay'))['net_pay__sum'] for period in lastest_10_periods)
+        # if Payroll.objects.exists():
+        #     all_periods = set(Payroll.objects.values_list('period', flat=True))
+        #     lastest_10_periods = sorted(list(all_periods)[:10], reverse=True)
+        #     periods = (f"{mytools.Period.full_months[i.split('-')[1]]}, {i.split('-')[0]}" for i in lastest_10_periods)
+        #     workforce = tuple(Payroll.objects.filter(period=period).count() for period in lastest_10_periods)
+        #     total_payout = tuple(Payroll.objects.filter(period=period).aggregate(Sum('net_pay'))['net_pay__sum'] for period in lastest_10_periods)
             
-            gross_profits = list(TradeMonthly.objects.filter(
-                year=period.split('-')[0], 
-                month=mytools.Period.full_months[period.split('-')[1]]
-                ).aggregate(Sum('gross_profit'))['gross_profit__sum']
-                for period in lastest_10_periods)
+        #     gross_profits = list(TradeMonthly.objects.filter(
+        #         year=period.split('-')[0], 
+        #         month=mytools.Period.full_months[period.split('-')[1]]
+        #         ).aggregate(Sum('gross_profit'))['gross_profit__sum']
+        #         for period in lastest_10_periods)
             
-            gross_profits = list(0 if profit == None else profit for profit in gross_profits)  
+        #     gross_profits = list(0 if profit == None else profit for profit in gross_profits)  
             
-            yields = tuple(round(x/y, 2) for x, y in zip(gross_profits, total_payout))
-            average_pay = tuple(round(x/y, 2)for x, y in zip(total_payout, workforce))
+        #     yields = tuple(round(x/y, 2) for x, y in zip(gross_profits, total_payout))
+        #     average_pay = tuple(round(x/y, 2)for x, y in zip(total_payout, workforce))
         
-            context['employee_dataset'] = list(data for data in zip(periods, workforce, yields, average_pay))
+        #     context['employee_dataset'] = list(data for data in zip(periods, workforce, yields, average_pay))
 
-        if TradeMonthly.objects.exists():
-            year = TradeMonthly.objects.last().year - 1
-            try:
-                payout = Payroll.objects.filter(period__startswith=str(year)).aggregate(Sum('net_pay'))['net_pay__sum']
-                employees = Employee.active.filter(date_employed__year=year).count()
-                gross_profit = TradeMonthly.objects.aggregate(Sum('gross_profit'))['gross_profit__sum']
-                context['data'] = (str(year), employees, round(gross_profit/payout, 2), round(payout/employees, 2))
-            except Exception as err:
-                context['data'] = (str(year), 'RNR', 'RNR', 'RNR') 
-                context['msg'] =  'RNR - Record Not Ready'                 
+        # if TradeMonthly.objects.exists():
+        #     year = TradeMonthly.objects.last().year - 1
+        #     try:
+        #         payout = Payroll.objects.filter(period__startswith=str(year)).aggregate(Sum('net_pay'))['net_pay__sum']
+        #         employees = Employee.active.filter(date_employed__year=year).count()
+        #         gross_profit = TradeMonthly.objects.aggregate(Sum('gross_profit'))['gross_profit__sum']
+        #         context['data'] = (str(year), employees, round(gross_profit/payout, 2), round(payout/employees, 2))
+        #     except Exception as err:
+        #         context['data'] = (str(year), 'RNR', 'RNR', 'RNR') 
+        #         context['msg'] =  'RNR - Record Not Ready'                 
         return context
     
 

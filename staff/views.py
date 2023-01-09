@@ -229,6 +229,7 @@ happiness of our staff is important, that is what we expect them to transfer to 
             'reassign_data': recordset,
             'today': datetime.date.today(),
             'staff_category': 'terminate',
+            'number_of_permissions': len(permit_list),
             'permissions': permit_list #Permit.objects.all().order_by('-starting_from')
         }
         return render(request, self.template_name, context=context)

@@ -84,6 +84,16 @@ def minus(value, arg):
 def dividedby(value, arg):
     return value/arg
 
+@register.filter
+def myriad(value):
+    if 1e3 <= value < 1e6:
+        return f"{round(value/1e3, 1)}K"
+    elif 1e6 <= value < 1e9:
+        return f"{round(value/1e6, 1)}M"
+    elif value >= 1e9:
+        return f"{round(value/1e9, 1)}B"
+    return round(value, 1)
+
 
 @register.filter
 def array(value, arg):
