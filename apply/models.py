@@ -4,6 +4,9 @@ from django.utils import timezone
 import datetime
 from ozone import mytools
 
+class ApplicantManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset()
 
 class ThisYearApplicantManager(models.Manager):
     def get_queryset(self):
@@ -55,6 +58,7 @@ class Applicant(models.Model):
     employed = EmployedManager()
     pending = PendingManager()
     rejected = RejectedManager()
+    objects = ApplicantManager()
 
     def __str__(self):
         return f'{self.last_name}, {self.first_name} {self.second_name}'

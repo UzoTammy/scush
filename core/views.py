@@ -1,4 +1,24 @@
 
+"""Summary:
+This script is hosting all the views for the core app. 
+The core app is for general purpose, it is hosting all the activities that are required by this site which is
+not specific to any app. It is good for simple things, things required by all apps or the site as a whole.
+
+Here are the list of all that is done here
+    1. The index: This is a view for the index or landing page.
+    2. The developer login: This function is only used in production, just to authenticate the developer and avoid
+        login in each time he want to run the site.
+    3. The Scush View: This was used to help my documentation. It will be removed.
+    4. Home View: This is for the landing page for staff. It requires authenticated users to be able to use the home page.
+    5. The About View: It is for the about page of the site.
+    6. The Company Profile: This CBV is for the company's profile.
+    7. The Dashboard: CBV whose aim is to pull summary information from all apps on one page.
+    8. There are other CBVs which requires examination to ascertain their relevance and continued existence.
+        (All the views below the dashboard view needs to be examined)
+    
+"""
+
+# all imports
 import datetime
 import calendar
 from django.core.mail import EmailMessage
@@ -8,7 +28,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import (View, TemplateView, ListView, CreateView, DetailView, UpdateView)
 from django.db.models import F, Sum, Avg 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from staff.models import Employee, Payroll, EmployeeBalance, RequestPermission
+from staff.models import Employee, Payroll, EmployeeBalance, RequestPermission, Permit
 from stock.models import Product
 from customer.models import Profile as CustomerProfile
 from survey.models import Question
@@ -23,30 +43,37 @@ from django.contrib.auth import authenticate, login
 from mail import mailbox
 from django.template import loader
 from target.models import PositionKPIMonthly
-
-
+import itertools
 
 def index(request):
+    """
+    Summary:The debug mode will define the mode we are in. If it is production, debug is True and 
+            will display a link to authenticate the site. A way of allowing the developer to have direct
+            access without logging in. 
+    """
     context = {
         'debug_mode': True if settings.DEBUG else False,
-        'siter': 'https://www.scush.com.ng/home/'
+        # 'siter': 'https://www.scush.com.ng/home/'
     }
     return render(request, 'core/index.html', context)
 
 
 def developer_login(request):
+    """
+    The developer is logged in automatically with his credentials.
+    if authenticate is successful it becomes the logged in user object and if not it is none
+    """
     user = authenticate(username='Uzo-02', password='Zebra.,/Ozone')
     if user is not None:
         login(request, user)
         return redirect('home')
     return redirect('index')
-
-class PracticeView(View):
-    def get(self, *args, **kwargs):
-        return HttpResponse('number_of_user')
     
 
 class ScushView(TemplateView):
+    """
+    This is to be examined to know its relevance
+    """
     template_name = 'core/scush.html'
 
     def get_context_data(self, **kwargs):
@@ -78,17 +105,25 @@ class ScushView(TemplateView):
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
+    """Summary
+    The home view is mainly an html page with just a title context.
+    It only requires authenticated user with no permission
+    """
     template_name = 'core/home.html'
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
         context['title'] = 'Home'
-        context['trade'] = TradeDaily.objects.all()
-        
+        # context['trade'] = TradeDaily.objects.all()
         return context
 
 
 class AboutView(TemplateView):
+    """
+        The about page will be about the importance of processes and management and 
+        what they aim to achieve to improve performance of a company.
+        It will explain Stock or inventory management, Customer management, and human resource management
+    """
     template_name = 'core/about.html'
 
     def get_context_data(self, **kwargs):
@@ -119,6 +154,12 @@ class CompanyPageView(View):
 
 
 class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    """Summary: 
+        For display of important information and overview of the current state of some key features
+        number of active products, active customer base, and our current workforce. 
+        It also displays sales and purchase for the month, application for the year, number of stores,
+        and the rent paid this year. The KPIs for the month is also displayed.
+    """
     template_name = 'core/dashboard.html'
     
     def test_func(self):
@@ -127,16 +168,30 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             return True
         return False
 
+    def exclude_sunday(self, start_date, end_date):
+        """
+            Function to eliminate sundays that occured between two dates
+        """
+        delta = end_date - start_date
+        count = 0
+        for i in range(delta.days + 1):
+            """start date and end date inclusive"""
+            current_date = start_date + datetime.timedelta(i)
+            if current_date.weekday() == calendar.SUNDAY:
+                count += 1
+        return delta.days - count
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        working_hours = 10
         workforce = Employee.active.count()
         product_count = Product.objects.filter(active=True).count()
         customer_base = CustomerProfile.objects.filter(active=True).count()
 
         qs = TradeDaily.objects.filter(date__year=datetime.date.today().year)
         sales = float(qs.aggregate(Sum('sales'))['sales__sum']) if qs.exists() else 0.0
-        purchase = float(qs.aggregate(Sum('purchase'))['sales__sum']) if qs.exists() else 0.0
-
+        purchase = float(qs.aggregate(Sum('purchase'))['purchase__sum']) if qs.exists() else 0.0
+        
         qs = Applicant.this_year.all()
         application = qs.count() if qs.exists() else 0
 
@@ -144,205 +199,144 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         qs = Stores.active.filter(status=True)
         rent_paid = float(qs.aggregate(Sum('rent_amount'))['rent_amount__sum']) if qs.exists() else 0.0
         
+        # growth is the ratio of money made over the financial year to the capital invested
+        if BalanceSheet.objects.exists():
+            # 1. financial year will be defined by the year of the last record
+            obj = BalanceSheet.objects.latest('date')
+            growth = int(100*obj.growth_ratio())
+            quick_ratio = int(obj.quick_ratio())
+        else:
+            growth = 0
+
+        # From Profit & Loss for the month
+        if TradeDaily.objects.exists():
+            trade = TradeDaily.objects.latest('date')
+            margin = int(100*trade.margin_ratio())
+            expenses = int(1000*trade.delivery_expense_ratio()) + int(1000*trade.admin_expense_ratio())
+        else:
+            margin, expenses = 0, 0
+        
+        # The Workforce Productivity is the ratio of the salary payable and the profit made over one month period.
+            # 1. get salary payable
+                # i get the period
+        employees = Employee.active.all()
+        if employees.exists():
+            employees = employees.annotate(salary=F('allowance') + F('basic_salary'))
+            salary_payable = employees.aggregate(Sum('salary'))['salary__sum']
+
+            # add 20% to the salary due to incentive we pay
+            salary_payable = 1.2 * float(salary_payable)
+        else:
+            salary_payable = 0
+
+        if TradeDaily.objects.exists():
+            last_record_date = TradeDaily.objects.latest('date').date
+            qs = TradeDaily.objects.filter(date__year=last_record_date.year).filter(date__month=last_record_date.month)
+            qs = qs.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
+            profit = float(qs.aggregate(Sum('net_profit'))['net_profit__sum'])
+            wf_prod = int(100*salary_payable/profit)
+        else:
+            wf_prod = 0
+        
+        number_of_employees = employees.count()
+        today = datetime.date.today()
+        year, month = today.year, today.month  #the month and the year on focus
+        calendar_matrix = calendar.monthcalendar(year, month)
+        days = [day for week in calendar_matrix for day in week if day and week[calendar.SUNDAY] != day]
+        # res = [day for week in calendar_matrix for day in week if day != 0 and day != week[6]]
+        days = len(days)
+        man_power_employed = number_of_employees * days * working_hours #hours per day
+
+        """"The Permission and determination of lost man-hour 
+        man-hour KPI is the ratio of lost man-hour to the man-hour available for the period.
+        The lost man-hour is obtained from the permissions taken.
+        Permission:
+        Permissions in the database is either open(True) or closed(False) from the status field.
+        From the open permissions, determine the span.
+            Type 1. Same month span - start date and end date are of same month
+            Type 2. Consecutive month span - end date's month is ahead of start date's month by 1
+            Type 3. Non-consecutive month span - end date's month is ahead of start date's month by more than 1.
+        Type 1 is the simplest and days permitted is smply end date - start date excluding work free days 
+        (sundays and holidays)
+        Type 2, start date's month is X and end date's month is X+1. This will divide the permission into 2
+            permissions = permission1 + permission2.
+            permission1 = start date to start date's month end
+            permission2 = end date's month start to end date  
+        Type 3, start date's month is X and end date's month is greater than X + 1.
+            permissions = permission1 + permission2 + ... + permissionN
+            permission1 = start date to start date's month end
+            permission2 and any permission in between will be the whole month
+            permissionN = end date's month start to end date   
+        """
+        permits = Permit.objects.filter(status=True) # Open permissions
+        today = datetime.date.today()
+        # permits = permits.filter(ending_at__date__gte=today)
+        lost_hours = []
+        
+        # separate permits into the 3 types
+        if permits.exists():
+            for permit in permits:
+                start_date = permit.starting_from
+                end_date = permit.ending_at
+                next_period = (start_date.year+1, 1) if start_date.month == 12 else (start_date.year, start_date.month+1)
+                if start_date.date() == end_date.date():
+                    # no need for split
+                    hours = (permit.ending_at - permit.starting_from).total_seconds()//(60*60)
+                    lost_hours.append(hours)
+                elif start_date.month == end_date.month and start_date.year == end_date.year:
+                    # no need for split
+                    days = self.exclude_sunday(start_date.date(), end_date.date())
+                    lost_hours.append(days*working_hours)
+                elif next_period == (end_date.year, end_date.month):
+                    # need two splits and to chose 1
+                    last_day = datetime.date(
+                        start_date.year, start_date.month, 
+                        calendar.monthrange(start_date.year, start_date.month)[1]
+                    )
+                    if (today.year, today.month) == (start_date.year, start_date.month):
+                        days = self.exclude_sunday(start_date.date(), last_day)
+                    else:
+                        days = self.exclude_sunday(last_day, end_date.date())
+                    lost_hours.append(days*working_hours)
+                else:
+                    # need more than two splits and to chose 1
+                    year, month = start_date.year, start_date.month
+                    next_period = (year, month)
+                    periods = []
+                    while next_period != (permit.ending_at.year, permit.ending_at.month):
+                        next_period = (next_period[0] + 1, 1) if next_period[1] == 12 else (next_period[0], next_period[1] + 1)
+                        periods.append(next_period)
+                    periods.insert(0, (year, month))
+                    # chose the relevant permission period
+                    for i, period in enumerate(periods):
+                        if period == (today.year, today.month) and (i != 0 or i != len(periods) - 1):
+                            date1 = datetime.date(period[0], period[1], 1)
+                            date2 = datetime.date(period[0], period[1], calendar.monthrange(period[0], period[1])[1])
+                            days = self.exclude_sunday(date1, date2)
+                        elif period == (today.year, today.month) and i == 0:
+                            days = self.exclude_sunday(start_date, datetime.date(
+                                    start_date.year, 
+                                    start_date.month,
+                                    calendar.monthrange(start_date.year, start_date.month)[1]
+                                    ))
+                        elif period ==(today.year, today.month) and i == len(periods) - 1:
+                            days = self.exclude_sunday(
+                                datetime.date(end_date.year, end_date.month, 1), end_date.date()
+                            )
+                        else:
+                            days = 0    
+                    lost_hours.append(days*working_hours)
+        
         context['color'] = ['success', 'info', 'warning']
         context['basics'] = [('Product Count', product_count), ('Customer Base', customer_base), ('Workforce', workforce)]
         context['extras'] = [('Sales', sales), ("Purchase", purchase), ("Application", application),('Stores', store_count), ('Rent Paid', rent_paid)]
-        context['points'] = [('Growth', 10), ('Margin', 20), ('Expenses', 30), ('Man-Hour', 40), ('Productivity', 50)]
-        # context['number_of_kids'] = Question.objects.aggregate(Sum('number_kids'))['number_kids__sum']
-
-        """let us consider the year of the last record"""
-        # if TradeMonthly.objects.exists():
-        #     qs_last = TradeMonthly.objects.last()
-        #     year = qs_last.year
-        #     month = qs_last.month
-        #     m = (str(index).zfill(2) for index, i in enumerate(calendar.month_name) if i == month)
-        #     period = f'{year}-{next(m)}'
-        #     net_pay = Payroll.objects.filter(period=period).aggregate(Sum('net_pay'))['net_pay__sum']
-        #     qs = TradeMonthly.objects.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
-        #     net_profit = qs.filter(year=year, month=month).aggregate(Sum('net_profit'))['net_profit__sum']
-        #     context['net_profit'] = net_profit
-        #     context['net_pay'] = net_pay
-        #     qs_daily_last = TradeDaily.objects.last()
-        #     try:
-        #         context['gp_ratio'] = 100*qs_daily_last.gross_profit/qs_daily_last.sales
-        #     except:
-        #         context['gp_ratio'] = 0
-        #     context['sales'] = qs_daily_last.sales
-        #     context['day'] = qs_daily_last.date
-
-        # qs = BalanceSheet.objects.filter(date__year=datetime.date.today().year).order_by('date')
-        # if qs.exists():
-        #     obj = qs.latest('date')
-        #     context['bs_ratios'] = {"growth_ratio": f"{obj.growth_ratio()}%", "quick_ratio": obj.quick_ratio()} 
-
-        #     month = obj.date.month
-        #     base_value = Decimal('0') if month == 1 else qs.filter(
-        #         date__month=month-1).latest('date').growth_ratio()
-            
-        #     # picking target from database, first to pick from the month of balance sheet above
-        #     # and if no record matching the month, the last record will be picked
-        #     target_qs = PositionKPIMonthly.objects.filter(year=obj.date.year).filter(month=month)
-        # else:
-        #     target_qs = PositionKPIMonthly.objects.none()
-        
-        # if target_qs.exists():
-        #     target = target_qs.values()[0]
-        # else:
-        #     target = PositionKPIMonthly.objects.values().last()
-        #     month_name = datetime.date(2022, target['month'], 1).strftime('%B')
-        #     context['target_message'] = f"Target in use is for {month_name}, {target['year']}"
-    
-        # context['KPI'] = {
-        #         'date_bs': obj.date,
-        #         'growth': int(100 * (obj.growth_ratio() - base_value)),
-        #     }
-        # # get previous growth
-        # for index,record in enumerate(qs):
-        #     if record == obj:
-        #         if record == qs[0]:
-        #             context['KPI'].update({'growth_1': 0})
-        #         else:
-        #             context['KPI'].update({'growth_1': int(100 * qs[index-1].growth_ratio() - base_value)}) 
-
-        # context['color'] = {'growth': 'success' if context['KPI']['growth'] >= target['growth'] else 'dark'}
-        
-        # qs = TradeDaily.objects.filter(date__year=datetime.date.today().year).order_by('date')
-        # if qs.exists():
-        #     obj = qs.latest('date')
-        #     context['pl_ratios'] = {"margin_ratio": f"{obj.margin_ratio()}%",
-        #      "expense_ratio": obj.delivery_expense_ratio() + obj.admin_expense_ratio(),} 
-        #     qs = qs.filter(date__month=month)
-        #     sales = qs.aggregate(Sum('sales')).get('sales__sum')
-        #     profit = qs.aggregate(Sum('gross_profit')).get('gross_profit__sum')
-        #     direct_expenses = qs.aggregate(Sum('direct_expenses')).get('direct_expenses__sum')
-        #     indirect_expenses = qs.aggregate(Sum('indirect_expenses')).get('indirect_expenses__sum')
-        #     purchase = qs.aggregate(Sum('purchase')).get('purchase__sum')
-        #     # purchase = qs.aggregate(Sum('purchase')).get('purchase__sum')
-
-        #     context['KPI'].update({
-        #         'date_pl': obj.date,
-        #         'margin': int(100*100*(profit-indirect_expenses)/sales),
-        #         'sales': int(sales/Decimal('1000000')),
-        #         'delivery': int(100*100*direct_expenses/purchase) if purchase > Decimal('0') else 0,
-        #         'admin': int(100*100*indirect_expenses/sales) if sales > Decimal('0') else 0
-        #     }) 
-        #     context['color'].update({
-        #         'margin': 'success' if context['KPI']['margin'] >= target['margin'] else 'dark',
-        #         'sales': 'success' if context['KPI']['sales'] >= target['sales'] else 'dark',
-        #         'delivery': 'success' if context['KPI']['delivery'] <= target['delivery'] else 'dark',
-        #         'admin': 'success' if context['KPI']['admin'] <= target['admin'] else 'dark',
-        #         'total': 'success' if context['KPI']['delivery'] + context['KPI']['admin'] <= target['delivery'] + target['admin'] else 'dark',
-        #     }) 
-            
-        #     # get salary and step it up by 20% 
-        #     employee =  Employee.active.all()
-        #     salary = employee.aggregate(Sum('basic_salary')).get('basic_salary__sum') + employee.aggregate(
-        #         Sum('allowance')).get('allowance__sum')
-        #     # step up by 20% to allow for incentive
-        #     context['KPI'].update({
-        #         'wf_productivity': int(10*(profit-indirect_expenses)/(Decimal('1.2')*salary)),
-        #         })
-        #     context['color'].update({
-        #         'wf_productivity': 'success' if context['KPI']['wf_productivity'] >= target['wf_productivity'] else 'dark',
-        #     }) 
-            
-        #     date = qs.last().date
-        #     days = mytools.Month.number_of_working_days(date.year, date.month)
-        #     # workforce = 
-        #     man_hours = days * 10 * Employee.active.count()
-        #     qs = RequestPermission.objects.filter(status=True).filter(date__year=date.year).filter(date__month=date.month)
-        #     durations = list(obj.duration() for obj in qs)
-        #     days = list(int(duration[:-1]) for duration in durations if duration[-1] == 'D')
-        #     hours = list(int(duration[:-1]) for duration in durations if duration[-1] == 'H')
-        #     hours = 10*sum(days) + sum(hours)
-        #     context['KPI'].update({'man_hour': int(100*(1-hours/man_hours))})
-        #     context['color'].update({'man_hour': 'success' if context['KPI']['man_hour'] >= target['man_hour'] else 'dark'})
-        #     context['target'] = target
-
-        # context['salaries'] = Payroll.objects.filter(date_paid__year=datetime.date.today().year).aggregate(Sum('net_pay'))['net_pay__sum']
-        
-        # context['rent'] = Stores.objects.aggregate(Sum('rent_amount'))['rent_amount__sum']
-        
-        # positive_grat = EmployeeBalance.objects.filter(value_type='Cr').aggregate(Sum('value'))['value__sum']
-        # negative_grat = EmployeeBalance.objects.filter(value_type='Dr').aggregate(Sum('value'))['value__sum']
-        # context['gratuity_value'] = positive_grat - negative_grat
-        
-        # current_year = datetime.date.today().year
-        # context['last_year_rent'] = Renewal.objects.filter(date__year=current_year-1).aggregate(Sum('amount_paid'))['amount_paid__sum']
-        # last_four_years = [current_year, current_year-1, current_year-2, current_year-3]
-    
-        # context['year_data'] = list((str(i), 
-        #     TradeMonthly.objects.filter(year=i).aggregate(Sum('sales')).get('sales__sum'),
-        #     TradeMonthly.objects.filter(year=i).aggregate(Sum('purchase')).get('purchase__sum'),
-        #     Renewal.objects.filter(date__year=i).aggregate(Sum('store__rent_amount'))['store__rent_amount__sum'],
-        #     Payroll.objects.filter(period__startswith=i).aggregate(Sum('net_pay'))['net_pay__sum'],
-        #     TradeMonthly.objects.filter(year=i).aggregate(Sum('gross_profit')).get('gross_profit__sum'),
-        #     TradeMonthly.objects.filter(year=i).aggregate(Sum('direct_expenses')).get('direct_expenses__sum'),
-        #     TradeMonthly.objects.filter(year=i).aggregate(Sum('indirect_expenses')).get('indirect_expenses__sum'),
-        # ) 
-        # for i in last_four_years)
-
-        # # Applicants summary
-        # if Applicant.objects.exists():
-        #     applicant = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year)
-        #     applicants_this_year = [applicant.count(), applicant.filter(status=True).count(), applicant.filter(status=False).count(), applicant.filter(status=None).count()]
-        #     applicant = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1)
-        #     applicants_last_year = [applicant.count(), applicant.filter(status=True).count(), applicant.filter(status=False).count(), applicant.filter(status=None).count()]
-        # context['application_count'] = {
-        #     str(datetime.datetime.now().year): applicants_this_year,
-        #     str(datetime.datetime.now().year-1): applicants_last_year
-        # }
-
-        # # Employees
-        # # first row for the current data
-        # qs = Employee.active.all()
-        # number_of_employees = qs.count()
-        # qs = qs.annotate(salary=F('basic_salary') + F('allowance'))
-        # payout = qs.aggregate(Sum('salary'))['salary__sum']
-        # latest_date = TradeDaily.objects.latest('date').date
-        # year, month = latest_date.year, latest_date.month
-        # gross_profits = TradeDaily.objects.filter(date__year=year).filter(date__month=month).aggregate(
-        #     Sum('gross_profit'))['gross_profit__sum']
-        
-        # context['current_data'] = (
-        #     latest_date, 
-        #     number_of_employees, 
-        #     round(float(gross_profits)/(1.1*float(payout)), 2),
-        #     round((1.1*float(payout)/number_of_employees), 2)
-        #     )
-        
-        # if Payroll.objects.exists():
-        #     all_periods = set(Payroll.objects.values_list('period', flat=True))
-        #     lastest_10_periods = sorted(list(all_periods)[:10], reverse=True)
-        #     periods = (f"{mytools.Period.full_months[i.split('-')[1]]}, {i.split('-')[0]}" for i in lastest_10_periods)
-        #     workforce = tuple(Payroll.objects.filter(period=period).count() for period in lastest_10_periods)
-        #     total_payout = tuple(Payroll.objects.filter(period=period).aggregate(Sum('net_pay'))['net_pay__sum'] for period in lastest_10_periods)
-            
-        #     gross_profits = list(TradeMonthly.objects.filter(
-        #         year=period.split('-')[0], 
-        #         month=mytools.Period.full_months[period.split('-')[1]]
-        #         ).aggregate(Sum('gross_profit'))['gross_profit__sum']
-        #         for period in lastest_10_periods)
-            
-        #     gross_profits = list(0 if profit == None else profit for profit in gross_profits)  
-            
-        #     yields = tuple(round(x/y, 2) for x, y in zip(gross_profits, total_payout))
-        #     average_pay = tuple(round(x/y, 2)for x, y in zip(total_payout, workforce))
-        
-        #     context['employee_dataset'] = list(data for data in zip(periods, workforce, yields, average_pay))
-
-        # if TradeMonthly.objects.exists():
-        #     year = TradeMonthly.objects.last().year - 1
-        #     try:
-        #         payout = Payroll.objects.filter(period__startswith=str(year)).aggregate(Sum('net_pay'))['net_pay__sum']
-        #         employees = Employee.active.filter(date_employed__year=year).count()
-        #         gross_profit = TradeMonthly.objects.aggregate(Sum('gross_profit'))['gross_profit__sum']
-        #         context['data'] = (str(year), employees, round(gross_profit/payout, 2), round(payout/employees, 2))
-        #     except Exception as err:
-        #         context['data'] = (str(year), 'RNR', 'RNR', 'RNR') 
-        #         context['msg'] =  'RNR - Record Not Ready'                 
+        context['points'] = [
+                ('Growth', growth), 
+                ('Margin', margin), 
+                ('Expenses', expenses), 
+                ('Man-Hour', int(100*(1 - sum(lost_hours)/man_power_employed))), 
+                ('WFP', wf_prod)]
         return context
-    
 
 class KPIMailSend(LoginRequiredMixin, View):
     def get(self, request, **kwargs):

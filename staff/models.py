@@ -119,6 +119,8 @@ class Permit(models.Model):
     starting_from = models.DateTimeField(default=timezone.now)
     ending_at = models.DateTimeField(default=timezone.now)
     reason = models.CharField(max_length=150)
+    status = models.BooleanField(default=True)
+    review = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"""{self.staff.fullname()}-{self.id}"""

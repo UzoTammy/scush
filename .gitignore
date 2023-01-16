@@ -19,7 +19,8 @@ mail/sample.html
 extrafiles/
 xx/
 stock/status/
-
+/image
+*.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

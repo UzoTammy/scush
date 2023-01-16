@@ -1,15 +1,29 @@
 {% extends 'users/base.html' %}
 {% load custom_tags %}
 
-{% block head %}{% endblock head %}
+{% block head %}
+<style>
+    .oval {
+        max-width: 12rem;
+        border-radius: 50px 50px 50px 50px;
+    }
+    .circle {
+        max-width: 7rem; 
+        border-radius: 100px 100px 100px 100px;
+    }
+    .curved-rectangle {
+        max-width: 8rem;
+        border-radius: 10px 10px 10px 10px;
+    }
+</style>
+{% endblock head %}
 
 {% block content %}
 <div class="container text-center">
     <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 mt-3">
         {% for basic in basics %}
         <div class="col mt-2">
-            <div class="card bg-{{color|array:forloop.counter0}}" 
-                style="max-width: 12rem; border-radius: 100px 50px 100px 50px;">
+            <div class="card bg-{{color|array:forloop.counter0}} oval">
                 <div class="card-body text-white">
                     <p class="card-title">{{basic|first}}</p>
                     <p class="card-text float-right">{{basic|last}}</p>
@@ -22,8 +36,7 @@
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 mt-3">
         {% for extra in extras %}
         <div class="col mt-2">
-            <div class="card bg-secondary" 
-                style="max-width: 7rem; border-radius: 100px 100px 100px 100px;;">
+            <div class="card bg-secondary circle">
                 <div class="card-body text-white">
                     <p class="card-title text-center">{{extra|first}}</p>
                     <p class="card-text float-right">{{extra|last|myriad}}</p>
@@ -36,8 +49,7 @@
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 mt-3">
         {% for point in points %}
         <div class="col mt-2">
-            <div class="card bg-dark" 
-                style="max-width: 8rem; border-radius: 10px 10px 10px 10px;;">
+            <div class="card bg-dark curved-rectangle">
                 <div class="card-body text-white">
                     <p class="card-title text-center">{{point|first}}</p>
                     <p class="card-text float-right">{{point|last}} <sup class="text-danger">Pts</sup> </p>

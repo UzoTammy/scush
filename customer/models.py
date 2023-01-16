@@ -26,7 +26,8 @@ class Profile(models.Model):
     default='OWP'
     )
     contact_person = models.CharField(max_length=50, blank=True, null=True, 
-    help_text="format: firstname//mobile")
+                                        help_text="format: firstname//mobile"
+                                        )
     active = models.BooleanField(default=True)
     
     def __str__(self):

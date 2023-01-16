@@ -1,3 +1,13 @@
+<!-- 
+    The home page is extended to the base html located in the users folder.
+    Since there are static pictures, They are kept in static folder and accessed easily with
+    the load static command and all styled at the head of the html inside the style tag.
+    An attention catching jumbotron is used to make bold statment of what the app is all about 
+    and also state the sectors.
+    The logos of the ozone and its partner companies are displayed to define our kind of trade.
+    The link to our social media platforms - yet to be activated though
+-->
+
 {% extends 'users/base.html' %}
 {% load static %}
 
@@ -6,400 +16,113 @@
     body {
         background-color: white;
     }
+
+    .background-photo {
+        height: 180px;
+        background-image: url('{% static "customer/background/bluesky.jpeg" %}');
+    }
+
     .nb {
         width: 200px;
     }
+
     .gn {
         width: 120px;
     }
+
     .ab {
-        width:200px;
+        width: 200px;
     }
+
     .redbull {
-        width: 150px;
+        width: 130px;
         rotate: 30deg;
     }
+
     .cousin {
-        width: 160px;
+        width: 130px;
         rotate: 45deg;
+    }
+
+    @keyframes blink {
+        50% {
+            opacity: 0;
+        }
+    }
+
+    .blinking {
+        animation: blink 3s linear infinite;
     }
 </style>
 {% endblock head %}
 
 {% block content %}
-
-<div class="row">
-    <div class="col bg-secondary text-center text-white" style="height:180px;
-        background: url('{% static "customer/background/bluesky.jpeg" %}')">
-        <h1 class="mt-4 m-0">SCusH</h1>
-        <h5>Ozone Online Platform — in one web interface</h5>
-        {% if not user.is_authenticated %}
-        <a href="{% url 'login' %}"
-           class="btn text-white shadow-lg bg-warning">
-           <b>Log back in</b>
-        </a>
-        {% endif %}
-    </div>
-</div>
 <div class="container-fluid">
-    <!-- <div class="row mt-4 ml-2">
-        <h3>Transaction Processes</h3>
-        {% if user.username == 'Uzo-02' %}
-            <a href="{% url 'practice' %}">My Link</a>
-        {% endif%}
+    <!-- BillBoard -->
+    <div class="row">
+        <div class="col bg-secondary text-center text-white background-photo">
+            <h1 class="mt-4 m-0">SCusH</h1>
+            <h5>Ozone Online Platform — in a web interface</h5>
+            {% if not user.is_authenticated %}
+            <a href="{% url 'login' %}" class="btn text-white shadow-lg bg-warning">
+                <b>Log back in</b>
+            </a>
+            {% endif %}
+        </div>
     </div>
-    <div class="row"> -->
-        <!-- <div class="col-md-3 mt-2">
-            <div class="card">
-                <img src="{% static 'customer/photo/salesOrder1.png' %}"
-                     class="card-img-top"
-                     height="200px"
-                     alt="...">
-                <div class="card-body">
-                    <p class="card-text text-center">
-                        <a href="#"
-                            class="card-text text-centre"
-                            data-toggle="modal"
-                            data-target="#SOModal">
-                    Sales Order
-                        </a>
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mt-2">
-            <div class="card">
-                <img src="{% static 'customer/photo/payment1.jpeg' %}"
-                     class="card-img-top"
-                     height="200px"
-                     width="200px"
-                     alt="...">
-                <div class="card-body">
-                    <p class="card-text text-center">
-                        <a
-                            href="#"
-                            class="card-text text-centre"
-                            data-toggle="modal"
-                            data-target="#pModal">
-                    Payment
-                        </a>
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mt-2">
-            <div class="card">
-                <img src="{% static 'customer/photo/invoice1.jpeg' %}"
-                     class="card-img-top"
-                     height="200px"
-                     alt="...">
-                <div class="card-body bg-light">
-                    <p class="card-text text-center">
-                        <a
-                            href="#"
-                            class="card-text text-centre"
-                            data-toggle="modal"
-                            data-target="#SIModal">
-                    Sales Invoice
-                        </a>
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mt-2">
-            <div class="card bg-light">
-                <img src="{% static 'customer/photo/delivery1.jpeg' %}"
-                     class="card-img-top"
-                     height="200px"
-                     alt="...">
-                <div class="card-body">
-                    <p class="card-text text-center">
-                        <a
-                            href="#"
-                            class="card-text text-centre"
-                            data-toggle="modal"
-                            data-target="#dModal">
-                    Delivery
-                        </a>
-                    </p>
-                </div>
-            </div>
-        </div> -->
-    <!-- </div> -->
 
-    <!--    Social Media and key partners-->
-    <div class="container-fluid">
-        <div class="row justify-content-center">
+    <!-- The big message -->
+    <div class="jumbotron jumbotron-fluid bg-white">
+        <div class="container">
+            <h1 class="display-4 text-danger blinking">Administrative Web App for Ozone</h1>
+            <div class="row lead text-center">
+                <div class="col-sm">
+                    <span class="green-box"></span>
+                    <a href=""><i class="fa fa-square text-warning"></i> Stock</a>
+                </div>
+                <div class="col-sm">
+                    <a href=""><i class="fa fa-square text-success"></i> Customers</a>
+                </div>
+                <div class="col-sm">
+                    <a href=""><i class="fa fa-square text-primary"></i> Human Resources</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- The companies logo -->
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-6 mt-3 p-2">
+        <div class="col">
             <img class="rounded-circle mt-3" src="{% static 'customer/logo.png' %}" alt="">
         </div>
-        <div class="row">
-            <div class="col-sm">
-                <h3 class="mt-4">Key Partners</h3>
-            </div>
-            
-            <div class="col">
-                <a href=""><img src="{% static 'customer/photo/GN.png'%}" class="rounded-circle gn"></a>
-            </div>
-            <div class="col">
-                <a href="#">
-                    <img class="nb" src="{% static 'customer/photo/NB.jpeg'%}">
-                </a>
-            </div>
-            <div class="col">
-                <a href="#"><img class="ab" src="{% static 'customer/photo/AB.jpeg'%}"></a>
-            </div>
-            <div class="col">
-                <a href="#"><img class="redbull" src="{% static 'customer/photo/redbull.jpeg'%}"></a>
-            </div>
-            <div class="col">
-                <a href="#"><img class="cousin" src="{% static 'customer/photo/4cousins.jpeg'%}"></a>
-            </div>
+        <div class="col">
+            <a href="#">
+                <img class="nb" src="{% static 'customer/photo/NB.jpeg'%}">
+            </a>
         </div>
-        <div class="row float-right">
-            <a href="#"><i class="fa fa-facebook fa-2x text-primary p-2"></i></a>
-            <a href="#"><i class="fa fa-twitter fa-2x text-primary p-2"></i></a>
-            <a href="#"><i class="fa fa-instagram fa-2x text-primary p-2"></i></a>
+        <div class="col">
+            <a href=""><img src="{% static 'customer/photo/GN.png'%}" class="rounded-circle gn"></a>
         </div>
-    </div>
-</div>
 
+        <div class="col">
+            <a href="#"><img class="ab" src="{% static 'customer/photo/AB.jpeg'%}"></a>
+        </div>
+        <div class="col mt-3">
+            <a href="#"><img class="cousin" src="{% static 'customer/photo/4cousins.jpeg'%}"></a>
+        </div>
+        <div class="col mt-3">
+            <a href="#"><img class="redbull" src="{% static 'customer/photo/redbull.jpeg'%}"></a>
+        </div>
 
-<!--Register-->
-<div class="modal fade"
-     id="registerModal"
-     tabindex="-1"
-     aria-labelledby="registerModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="registerModalLabel">Registration Access Token</h5>
-        <button type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close text-danger"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-          <div class="container">
-              <div class="row text-danger">
-                  <p>
-                      <i class="fa fa-book"> </i>
-                      Obtain token from the Administrator if you do not have one
-                  </p>
-              </div>
-              <div class="row">
-        <form method="POST">{% csrf_token %}
-            <div class="form-group">
-                Your Token: <input
-                    class="form-control"
-                    type="text"
-                    id="token_id"
-                    name="token"
-                    placeholder="enter secret token here!"
-                    value="">
+    </div>
 
-            </div>
-            <div>
-                <button id="confirm_token"
-                        onclick="func()"
-                        type="button"
-                        class="btn btn-outline-primary btn-sm mb-3">Confirm Token
-                </button>
-                <p id="token_result" hidden>{{ token }}</p>
-            </div>
-        </form>
+    <!--    Social Media and key partners-->
+    <div class="row float-right mr-3">
+        <a href="#"><i class="fa fa-facebook fa-2x p-2"></i></a>
+        <a href="#"><i class="fa fa-twitter fa-2x p-2"></i></a>
+        <a href="#"><i class="fa fa-instagram fa-2x p-2"></i></a>
+    </div>
 
-         </div>
-      </div>
-      </div>
-      <div class="modal-footer">
-        <a id="btnRegister"
-           href="{% url 'register' %}"
-           type="button"
-           class="btn btn-success" hidden>Register</a>
-        <button
-           type="button" class="btn btn-secondary" data-dismiss="modal">Abort</button>
-      </div>
-    </div>
-  </div>
 </div>
-<!--Sales order modal-->
-<div class="modal fade"
-     id="SOModal"
-     tabindex="-1"
-     aria-labelledby="SOModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"
-            id="SOModalLabel">
-            Sales Order
-        </h5>
-        <button
-                type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-            <h5 class="text-info">
-                <i class="fa fa-info-circle text-warning"></i>
-                Still under development
-                <i class="fa fa-exclamation text-danger"></i>
-            </h5>
-      </div>
-      <div class="modal-footer">
-        <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal">Close
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<!--Payment modal-->
-<div class="modal fade"
-     id="pModal"
-     tabindex="-1"
-     aria-labelledby="pModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"
-            id="pModalLabel">
-            Payment
-        </h5>
-        <button
-                type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-            <h5 class="text-info">
-                <i class="fa fa-info-circle text-warning"></i>
-                Still under development
-                <i class="fa fa-exclamation text-danger"></i>
-            </h5>
-      </div>
-      <div class="modal-footer">
-        <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal">Close
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<!--Sales invoice modal-->
-<div class="modal fade"
-     id="SIModal"
-     tabindex="-1"
-     aria-labelledby="SIModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"
-            id="SIModalLabel">
-            Sales Invoice
-        </h5>
-        <button
-                type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-            <h5 class="text-info">
-                <i class="fa fa-info-circle text-warning"></i>
-                Still under development
-                <i class="fa fa-exclamation text-danger"></i>
-            </h5>
-      </div>
-      <div class="modal-footer">
-        <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal">Close
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<!--Delivery modal-->
-<div class="modal fade"
-     id="dModal"
-     tabindex="-1"
-     aria-labelledby="dModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"
-            id="dModalLabel">
-            Delivery
-        </h5>
-        <button
-                type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-            <h5 class="text-info">
-                <i class="fa fa-info-circle text-warning"></i>
-                Still under development
-                <i class="fa fa-exclamation text-danger"></i>
-            </h5>
-      </div>
-      <div class="modal-footer">
-        <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal">Close
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<script type="text/javascript">
-    function func() {
-        let elemOne = document.getElementById("token_id")
-        let elemTwo = document.getElementById("token_result")
-        if (elemOne.value == elemTwo.innerHTML) {
-               elemTwo.hidden = false
-               elemTwo.innerHTML = "Correct. Click register to continue";
-               document.getElementById('btnRegister').hidden = false;
-               elemOne.value = '';
-               elemTwo.style.color = '#63df18';
-        }
-        else {
-            elemTwo.value = ''
-            elemTwo.hidden = false
-            elemTwo.innerHTML = "Incorrect Token, Check carefully or contact admin. It may have expired";
-            document.getElementById('btnRegister').hidden = true;
-            elemOne.value = '';
-            elemTwo.style.color = '#de2018'
-        };
-    };
-</script>
 
 {% endblock %}
-
-

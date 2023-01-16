@@ -84,8 +84,8 @@ class TradeDaily(models.Model):
         if self.sales > Money(0, 'NGN'):
             return round(100*self.indirect_expenses/self.sales, 3)
         return Decimal('0')
-
-
+    
+    
 class BalanceSheet(models.Model):
     date = models.DateField(default=date.today)
     profit = MoneyField(max_digits=12, decimal_places=2)
@@ -105,6 +105,7 @@ class BalanceSheet(models.Model):
 
     def get_absolute_url(self):
         return reverse('trade-bs-detail', kwargs={'pk': self.pk})
+    
     def growth_ratio(self):
         return round(100*self.profit/self.capital, 2)
 

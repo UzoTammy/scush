@@ -1,183 +1,186 @@
 {% extends 'users/base.html' %}
+{% load static %}
 {% block head %}
-{% load static  %}
-
-    <style>
+<style>
     #navmain {
         display: none;
+    }
+    .display-big {
+        font-size: x-large;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="row p-3 d-flex justify-content-center">
-            
-            <div class="col-sm-8 p-3 shadow-lg">
-                <img src="{% static 'customer/logo.png' %}"
-                 class="rounded-circle shadow"
-                 width="70px"
-                 alt=""> <i class="text-danger">F & L Trading Co Ltd, A Distribution Company</i><br><br>
-                <i class="fa fa-info-circle text-info"></i>
-                <i class="text-primary">
-                    You will receive a confirmation email with the email address
-                    provided to us on this form. Kindly ensure a valid email address
-                    is provided and do check your inbox soon after submission
-                </i>
-                <hr>
-                <form method="POST">{% csrf_token %}
-                    {{form.errors}}
-                    <fieldset class="form-group bg-light">
-                        <legend class="text-info"><i>{{ title }} Application</i>
-                            <small class="text-muted float-right">{% now 'd-m-Y@h:mA' %}</small>
-                        </legend>
-                        <div class="form-row">
-                            <div class="col">
-                                <span class="">First Name </span>
-                                <span class="text-danger">*</span>
-                                {{form.first_name}}
-                            </div>
-                            <div class="col-auto">
-                                <span>Second Name </span>{{form.second_name}}
-                            </div>
-                            <div class="col-auto">
-                                <span>
-                                    Last Name
-                                    <span class="text-danger">*</span>
-                                </span>{{form.last_name}}
-                            </div>
+<div class="container">
+    <div class="row p-3 d-flex justify-content-center">
+
+        <div class="col-sm p-3 shadow-lg">
+            <img src="{% static 'customer/logo.png' %}" class="rounded-circle shadow" width="80px" alt=""> 
+            <i class="text-danger display-big">F & L Trading Co Ltd, A Distribution Company</i><br><br>
+            <i class="fa fa-info-circle text-info"></i>
+            <i class="text-primary">
+                You will receive a confirmation email with the email address
+                provided to us on this form. Kindly ensure a valid email address
+                is provided and do check your inbox soon after submission
+            </i>
+            <hr>
+            <form method="POST">{% csrf_token %}
+                {{form.errors}}
+                <fieldset class="form-group bg-light">
+                    <legend class="text-info"><i>Application Form</i>
+                        <small class="text-muted float-right">{% now 'd-m-Y@h:mA' %}</small>
+                    </legend>
+                    <div class="form-row">
+                        <div class="col-sm-4">
+                            <span class="form-label text-info">First Name </span>
+                            <span class="text-danger">*</span>
+                            {{form.first_name}}
                         </div>
-                        <hr>
-                        <div class="form-row">
+                        <div class="col-sm-4">
+                            <span class="form-label text-info">Second Name </span>
+                            <span class="text-muted">(optional)</span>
+                            {{form.second_name}}
+                        </div>
+                        <div class="col-sm-4">
+                            <span class="form-label text-info">Last Name</span>
+                            <span class="text-danger">*</span>
+                            {{form.last_name}}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-row">
+                        <div class="col-sm-4">
+                            <div class="row">
                                 <div class="col">
-                                    <div class="form-label">Gender
-                                    <span class="text-danger">*</span>
+                                    <div class="form-label text-info">Gender
+                                        <span class="text-danger">*</span>
                                     </div>
                                     <div class="form-check">{{form.gender}}</div>
                                 </div>
-                                <div class="col">
-                                    <div class="form-label">
+                                <div class="col text-right mr-2">
+                                    <div class="form-label text-info">
                                         Marital Status<span class="text-danger">*</span>
                                     </div>
                                     <div class="form-check">{{form.marital_status}}</div>
                                 </div>
-                                <div class="col-sm-3">
-                                    <div class="form-label">
-                                        Qualification<span class="text-danger">*</span>
-                                    </div>
-                                    <div class="mb-2">{{form.qualification}}</div>
-                                </div>
-                                <div class="col-sm-5">
-                                    <div class="form-label">
-                                        Date of Birth<span class="text-danger">*</span>
-                                    </div>
-                                    <div>{{ form.birth_date }} 
-                                        <small class="text-danger">Applicant must be older than 18 and younger than 50</small>
-                                    </div>
-                                </div>
                             </div>
-                        <hr>
-                        <div class="form-row">
-                            <div class="col">
-                                <div class="form-label">Course</div>
-                                <div>{{ form.course }}</div>
+
+                        </div>
+
+                        <div class="col-sm-4">
+                            <div class="form-label text-info">
+                                Qualification<span class="text-danger">*</span>
                             </div>
-                            <div class="col">
-                                <div class="form-label">
-                                    Mobile<span class="text-danger">*</span>
-                                </div>
-                                <div>{{ form.mobile }}
-                                    <small class="form-help text-danger">Format:XXX-XXXX-XXXXX</small>
-                                </div>
-                                
+                            <div class="mb-2">{{form.qualification}}</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-label text-info">
+                                Date of Birth<span class="text-danger">*</span>
+                            </div>
+                            <div>{{ form.birth_date }}
+                                <small class="text-danger">Applicant must be older than 18 and younger than 50</small>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-label text-info">Course <span class="text-muted">(optional)</span></div>
+                            <div>{{ form.course }}</div>
+                        </div>
+                        <div class="col">
+                            <div class="form-label text-info">
+                                Mobile<span class="text-danger">*</span>
+                            </div>
+                            <div>{{ form.mobile }}
+                                <small class="form-help text-danger">Format:XXX-XXXX-XXXXX</small>
+                            </div>
+
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-row">
+                        <div class="col-sm">
+                            <div class="form-label text-info">Email
+                                <span class="text-muted">(highly recommended, but optional)</span>
+                            </div>
+                            <div>{{ form.email }}</div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-label text-info">
+                                Address<span class="text-danger">*</span>
+                            </div>
+                            <div class="">{{ form.address }}</div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        {% if title == 'Update' %}
+                        <div class="col-auto">
+                            <div class="form-label text-secondary">
+                                <b>Application Date</b>
+                                <small class="text-danger">(readonly)</small>
+                            </div>
+                            <div class="bg-dark text-white text-center shadow">
+                                {{ application_date }}
                             </div>
                         </div>
                         <hr>
-                        <div class="form-row">
-                            <div class="col-sm">
-                                <div class="form-label">Email
-<!--                                <span class="text-danger">*</span>-->
-                                </div>
-                                <div>{{ form.email }}</div>
-                            </div>
-                            <div class="col-sm">
-                                <div class="form-label">
-                                    Address<span class="text-danger">*</span>
-                                </div>
-                                <div class="">{{ form.address }}</div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            {% if title == 'Update' %}
-                            <div class="col-auto">
-                                <div class="form-label text-secondary">
-                                    <b>Application Date</b>
-                                    <small class="text-danger">(readonly)</small>
-                                </div>
-                                <div class="bg-dark text-white text-center shadow">
-                                    {{ application_date }}
-                                </div>
-                            </div>
-                            <hr>
-                            {% endif %}
-                        </div>
-                        
-                    </fieldset>
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-7">
-                            <button class="btn btn-outline-info"
-                                    type="submit">
+                        {% endif %}
+                    </div>
+
+                </fieldset>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col ml-5">
+                            <button class="btn btn-outline-info" type="submit">
                                 <small>
-                                    {%  if title == 'Update' %}
-                                        {{ title }}
+                                    {% if title == 'Update' %}
+                                    {{ title }}
                                     {% else %}
-                                        Apply Now
+                                    Apply Now
                                     {% endif %}
                                 </small>
                             </button>
                         </div>
-                            <div class="col d-flex justify-content-end">
-                                {% if title == 'Update' %}
-                                <a class="btn btn-outline-secondary"
-                               type="button" href="{% url 'apply-pending' %}">
-                            <i class="fa fa-reply text-danger"></i> Return</a>
-                                {% else %}
-                            <a class="btn btn-outline-secondary"
-                               type="button" href="{% url 'index' %}">
-                            <i class="fa fa-reply text-danger"></i> Return</a>
-                                {% endif %}
-                        </div>
+                        <div class="col d-flex justify-content-end mr-5">
+                            {% if title == 'Update' %}
+                            <a class="btn btn-outline-secondary" type="button" href="{% url 'apply-pending' %}">
+                                <i class="fa fa-reply text-danger"></i> Cancel</a>
+                            {% else %}
+                            <a class="btn btn-outline-secondary" type="button" href="{% url 'index' %}">
+                                <i class="fa fa-reply text-danger"></i> Cancel</a>
+                            {% endif %}
                         </div>
                     </div>
-                </form>
-                <div class="row">
-                    <div class="col-auto">
-                        <div class="card bg-warning">
-                            <div class="card-body shadow">
-                                <h5 class="card-title">
-                                    <i class="fa fa-warning text-danger"></i>Warning
-                                </h5>
-                                <p class="card-text">
-                                    Ensure that the information provided
-                                    is correct. Any confirmation to the
-                                    contrary will result in rejection of 
-                                    your application or termination
-                                    of your employment without notice and benefits.
-                                </p>
-                            </div>
-                            <div class="card-footer bg-white">
-                                <p class="text-muted text-center">Information provided to us is for employment
-                                    purposes only and cannot be compromised.
-                                </p>
+                </div>
+            </form>
+            <div class="row">
+                <div class="col-auto">
+                    <div class="card bg-warning">
+                        <div class="card-body shadow">
+                            <h5 class="card-title">
+                                <i class="fa fa-warning text-danger"></i>Warning
+                            </h5>
+                            <p class="card-text">
+                                Ensure that the information provided
+                                is correct. Any confirmation to the
+                                contrary will result in rejection of
+                                your application or termination
+                                of your employment without notice and benefits.
+                            </p>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <p class="text-muted text-center">Information provided to us is for employment
+                                purposes only and cannot be compromised.
+                            </p>
 
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
-
