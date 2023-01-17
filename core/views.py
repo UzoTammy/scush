@@ -183,11 +183,16 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        if Employee.objects.none() or TradeDaily.objects.none() or BalanceSheet.objects.none():
+            context['empty_record'] = True
+            return context
         working_hours = 10
-        workforce = Employee.active.count()
+        """Number of active products currently trading, active customers and staff strength"""
         product_count = Product.objects.filter(active=True).count()
         customer_base = CustomerProfile.objects.filter(active=True).count()
-
+        workforce = Employee.active.count()
+        
+        """Year to date records"""
         qs = TradeDaily.objects.filter(date__year=datetime.date.today().year)
         sales = float(qs.aggregate(Sum('sales'))['sales__sum']) if qs.exists() else 0.0
         purchase = float(qs.aggregate(Sum('purchase'))['purchase__sum']) if qs.exists() else 0.0
@@ -203,18 +208,41 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if BalanceSheet.objects.exists():
             # 1. financial year will be defined by the year of the last record
             obj = BalanceSheet.objects.latest('date')
-            growth = int(100*obj.growth_ratio())
-            quick_ratio = int(obj.quick_ratio())
+            obj_date = obj.date
+            qs = BalanceSheet.objects.filter(date__month=obj_date.month)
+            profit = qs.aggregate(Sum('profit'))['profit__sum']
+            growth = int(100*100*profit/obj.capital.amount)
         else:
             growth = 0
 
+        
         # From Profit & Loss for the month
-        if TradeDaily.objects.exists():
-            trade = TradeDaily.objects.latest('date')
-            margin = int(100*trade.margin_ratio())
-            expenses = int(1000*trade.delivery_expense_ratio()) + int(1000*trade.admin_expense_ratio())
+        
+        latest_date = TradeDaily.objects.latest('date').date
+        qs = TradeDaily.objects.filter(date__year=latest_date.year)
+            
+        if qs.exists():
+            """margin ratio is the profit made against the total sales revenue for the current month
+                The strategy will be to get the current month from the date of the latest record. 
+                This month will be used to filter the database to obtain queryset for the month
+                A net profit will be derived and its aggregate will be obtained
+                Likewise, the aggregate of the sales will be obtained
+                The ratio of both will give the margin ratio for the month
+            """
+            qs=qs.filter(date__month=latest_date.month)
+            qs = qs.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
+            net_profit = qs.aggregate(Sum('net_profit'))['net_profit__sum']
+            monthly_sales = qs.aggregate(Sum('sales'))['sales__sum']
+            margin = int(100*100*net_profit/monthly_sales)
+            
+            # expenses = 0
+            direct_expenses = qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum']
+            direct_ratio = 100*direct_expenses/monthly_sales
+            indirect_expenses = qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum']
+            indirect_ratio = 100*indirect_expenses/monthly_sales
+            expenses = int(100*(direct_ratio + indirect_ratio))
         else:
-            margin, expenses = 0, 0
+            margin, expenses, wf_prod = 0, 0, 0
         
         # The Workforce Productivity is the ratio of the salary payable and the profit made over one month period.
             # 1. get salary payable
@@ -228,16 +256,12 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             salary_payable = 1.2 * float(salary_payable)
         else:
             salary_payable = 0
-
-        if TradeDaily.objects.exists():
-            last_record_date = TradeDaily.objects.latest('date').date
-            qs = TradeDaily.objects.filter(date__year=last_record_date.year).filter(date__month=last_record_date.month)
-            qs = qs.annotate(net_profit=F('gross_profit') - F('indirect_expenses'))
-            profit = float(qs.aggregate(Sum('net_profit'))['net_profit__sum'])
-            wf_prod = int(100*salary_payable/profit)
-        else:
-            wf_prod = 0
         
+        try:
+            wf_prod = int(100*salary_payable/float(net_profit))
+        except Exception:
+            wf_prod = 0
+            
         number_of_employees = employees.count()
         today = datetime.date.today()
         year, month = today.year, today.month  #the month and the year on focus
@@ -326,6 +350,9 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                         else:
                             days = 0    
                     lost_hours.append(days*working_hours)
+            man_hour_kpi = int(100*(1 - sum(lost_hours)/man_power_employed))   
+        else:
+            man_hour_kpi = 0
         
         context['color'] = ['success', 'info', 'warning']
         context['basics'] = [('Product Count', product_count), ('Customer Base', customer_base), ('Workforce', workforce)]
@@ -334,7 +361,7 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 ('Growth', growth), 
                 ('Margin', margin), 
                 ('Expenses', expenses), 
-                ('Man-Hour', int(100*(1 - sum(lost_hours)/man_power_employed))), 
+                ('Man-Hour', man_hour_kpi), 
                 ('WFP', wf_prod)]
         return context
 
