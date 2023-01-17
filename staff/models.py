@@ -177,6 +177,9 @@ class Terminate(models.Model):
 
     def __str__(self):
         return self.staff.fullname()
+    
+    def duration(self):
+        return (self.date - self.staff.date_employed).days
 
 class Welfare(models.Model):
     staff = models.ForeignKey(Employee, on_delete=models.CASCADE)

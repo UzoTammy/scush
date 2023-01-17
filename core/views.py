@@ -205,19 +205,10 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         rent_paid = float(qs.aggregate(Sum('rent_amount'))['rent_amount__sum']) if qs.exists() else 0.0
         
         # growth is the ratio of money made over the financial year to the capital invested
-        if BalanceSheet.objects.exists():
-            # 1. financial year will be defined by the year of the last record
-            obj = BalanceSheet.objects.latest('date')
-            obj_date = obj.date
-            qs = BalanceSheet.objects.filter(date__month=obj_date.month)
-            profit = qs.aggregate(Sum('profit'))['profit__sum']
-            growth = int(100*100*profit/obj.capital.amount)
-        else:
-            growth = 0
-
-        
+        obj = BalanceSheet.objects.latest('date')
+        growth = int(100*100*obj.profit/obj.capital) # 
+            
         # From Profit & Loss for the month
-        
         latest_date = TradeDaily.objects.latest('date').date
         qs = TradeDaily.objects.filter(date__year=latest_date.year)
             
@@ -248,14 +239,10 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             # 1. get salary payable
                 # i get the period
         employees = Employee.active.all()
-        if employees.exists():
-            employees = employees.annotate(salary=F('allowance') + F('basic_salary'))
-            salary_payable = employees.aggregate(Sum('salary'))['salary__sum']
-
-            # add 20% to the salary due to incentive we pay
-            salary_payable = 1.2 * float(salary_payable)
-        else:
-            salary_payable = 0
+        employees = employees.annotate(salary=F('allowance') + F('basic_salary'))
+        salary_payable = employees.aggregate(Sum('salary'))['salary__sum']
+        # add 20% to the salary due to incentive we pay
+        salary_payable = 1.2 * float(salary_payable)
         
         try:
             wf_prod = int(100*salary_payable/float(net_profit))
@@ -352,8 +339,9 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                     lost_hours.append(days*working_hours)
             man_hour_kpi = int(100*(1 - sum(lost_hours)/man_power_employed))   
         else:
-            man_hour_kpi = 0
+            man_hour_kpi = 100
         
+        context['date_of_record'] = latest_date
         context['color'] = ['success', 'info', 'warning']
         context['basics'] = [('Product Count', product_count), ('Customer Base', customer_base), ('Workforce', workforce)]
         context['extras'] = [('Sales', sales), ("Purchase", purchase), ("Application", application),('Stores', store_count), ('Rent Paid', rent_paid)]

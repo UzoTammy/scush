@@ -952,14 +952,14 @@ class UserHandleCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class TerminatedStaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Terminate
     template_name = 'staff/staff_views.html'
-    ordering = '-pk'
+    ordering = '-date'
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
-
+    
 # Payroll Section
 class PayrollHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'staff/payroll/salary.html'

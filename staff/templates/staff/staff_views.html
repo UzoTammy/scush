@@ -25,7 +25,7 @@
                 <th scope="col">Name</th>
                 <th scope="col">Date Employed</th>
                 <th scope="col">Date Terminated</th>
-                <th scope="col">Mobile</th>
+                <th scope="col">Worked for</th>
                 <th scope="col">Nature</th>
             </tr>
             </thead>
@@ -45,7 +45,7 @@
                 <td class="text-left">{{employee.staff.fullname}}</td>
                 <td>{{employee.staff.date_employed}}</td>
                 <td>{{employee.date}}</td>
-                <td>{{employee.staff.mobile|addsep}}</td>
+                <td>{{employee.duration}} days</td>
                 <td>{{employee.termination_type}}</td>
             </tr>
             {% endfor %}
