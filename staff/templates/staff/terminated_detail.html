@@ -7,7 +7,7 @@
 <div class="container">
     <div class="row">
         <div class="col mt-3">
-            <h2 class="text-secondary text-center bg-light">Re-engage Staff - {{object.staff.id|zeropadding:3}}</h2>
+            <h2 class="text-secondary text-center bg-light">{{object.staff}} - {{object.staff.id|zeropadding:3}}</h2>
             <div class="row">
                 <div class="col-sm-9">
                     <div class="media">
@@ -17,11 +17,14 @@
                              class="rounded mr-3"
                              alt="...">
                         <div class="media-body">
-                            <h5 class="text-info mt-0">{{object}}</h5>
+                            <p>Date Employed: {{object.staff.date_employed}}</p>
                             <p>Date Terminated: {{object.date}}</p>
+                            <p>Worked for {{object.duration}} days</p>
                             <p>Type of Termination: {{object.termination_type}}</p>
                             <p>Reason for Termination: {{object.remark}}</p>
-                            <p>Was a {% if object.staff.is_management %} management {% else %} Non-management {% endif %} staff</p>
+                            <p>Ended as: {% if object.staff.is_management %} Management {% else %} Non-management {% endif %} Staff</p>
+                            <p>Salary paid out: {{salary_paid_out}}</p> 
+                            <p>Permission granted in hours: {{permissions_taken}}</p>
                             <p>
                                 <a type="button" class="btn btn-outline-info" href="#" data-toggle="modal" data-target="#reEngage">Engage</a>
                                 <a type="button" class="btn btn-dark" href="{% url 'terminated' 'terminate' %}">Return</a>

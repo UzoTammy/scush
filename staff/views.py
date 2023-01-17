@@ -747,8 +747,9 @@ class StaffTerminate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         messages.info(request, "Incorrect key word, Staff yet to be terminated")
         return redirect('employee-detail', pk=kwargs['pk'])
 
-class StaffReEngage(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    template_name = 'staff/re_engage.html'
+class StaffReEngage(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Terminate
+    template_name = 'staff/terminated_detail.html'
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -758,7 +759,12 @@ class StaffReEngage(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['object'] = get_object_or_404(Terminate, pk=kwargs['pk'])
+        obj = get_object_or_404(Terminate, pk=self.kwargs['pk'])
+        staff = Payroll.objects.filter(staff__pk=obj.staff.pk)
+        permissions = Permit.objects.filter(staff__pk=obj.staff.pk)
+        hours = int(sum([(p.ending_at - p.starting_from).total_seconds() for p in permissions])/(60*60)) if permissions else None
+        context['salary_paid_out'] = staff.aggregate(Sum('net_pay'))['net_pay__sum']
+        context['permissions_taken'] = hours
         return context
     
 
