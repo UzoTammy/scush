@@ -2,9 +2,33 @@
 {% load static %}
 {% load custom_tags %}
 
+{% block head %}
+<style>
+    .circle-red {
+        border-radius: 100px 50px 50px 100px;
+        background-color: red;
+        border-color: black;
+        border-width: 15px;
+        padding: 10px;
+    }
+    .circle-orange {
+        border-radius: 100px 50px 50px 100px;
+        background-color: orange;
+        border-color: black;
+        border-width: 15px;
+        padding: 10px;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container mt-3">
+    <div class="row">
+        <div class="col">
+            <span class="float-right text-white circle-red ml-2">Resigned: {{resigned}}</span>
+            <span class="float-right text-white circle-orange">Sacked: {{sacked}}</span>
+        </div>
+    </div>
     <div class="row">
         <div class="col">
             <table data-toggle="table"

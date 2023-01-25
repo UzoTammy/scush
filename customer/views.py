@@ -69,18 +69,21 @@ class CustomerHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         
         if request.FILES:
             myfile = request.FILES['fileName']
-            dirname = os.path.dirname(__file__)
-            fs = FileSystemStorage(location=os.path.join(dirname, 'profile'))
+            directory_path = os.path.dirname(__file__)
+            fs = FileSystemStorage(location=os.path.join(directory_path, 'profile'))
             
             # remove all files and folders in fs.location
-            for file in os.listdir(fs.location):
-                path = os.path.join(fs.location, file)
-                if os.path.exists(path):
-                    os.remove(path)
+            if not fs.exists(fs.location):
+                os.makedirs(fs.location)
+
+            for file in fs.listdir('')[1]:
+                path_file = os.path.join(fs.location, file)
+                if os.path.exists(path_file):
+                    os.remove(path_file)
             
+            # # save the file into the file system
             filename = fs.save(myfile.name, myfile)
             messages.info(request, f'{filename} uploaded successfully')
-            
         return super().get(request, **kwargs)
 
 class CustomerListView(LoginRequiredMixin, UserPassesTestMixin, ListView):

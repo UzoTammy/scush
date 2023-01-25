@@ -17,18 +17,26 @@
                              class="rounded mr-3"
                              alt="...">
                         <div class="media-body">
-                            <p>Date Employed: {{object.staff.date_employed}}</p>
-                            <p>Date Terminated: {{object.date}}</p>
-                            <p>Worked for {{object.duration}} days</p>
-                            <p>Type of Termination: {{object.termination_type}}</p>
-                            <p>Reason for Termination: {{object.remark}}</p>
-                            <p>Ended as: {% if object.staff.is_management %} Management {% else %} Non-management {% endif %} Staff</p>
-                            <p>Salary paid out: {{salary_paid_out}}</p> 
-                            <p>Permission granted in hours: {{permissions_taken}}</p>
-                            <p>
+                          <ul class="list-group list-group-flush list-group-light">
+                            <li class="list-group-item">Date Employed: <span class="badge badge-dark badge-pill p-2 float-right">{{object.staff.date_employed}}</span></li>
+                            <li class="list-group-item">Date Terminated: <span class="badge badge-dark badge-pill p-2 float-right">{{object.date}}</span></li>
+                            <li class="list-group-item">Worked for: <span class="badge badge-dark badge-pill p-2 float-right">{{object.duration}} days</span></li>
+                            <li class="list-group-item">Type of Termination: <span class="badge badge-dark badge-pill p-2 float-right">{{object.termination_type}}</span></li>
+                            <li class="list-group-item">Reason for Termination: <span class="badge badge-dark badge-pill p-2 float-right">{{object.remark}}</span></li>
+                            <li class="list-group-item">Ended as: <span class="badge badge-dark badge-pill p-2 float-right">{% if object.staff.is_management %} Management {% else %} Non-management {% endif %} Staff</span></li>
+                            <li class="list-group-item">Salary paid out: <span class="badge badge-dark badge-pill p-2 float-right">{{salary_paid_out}}</span></li>
+                            <li class="list-group-item">Permission granted in hours: <span class="badge badge-dark badge-pill p-2 float-right">{{permissions_taken}}</span></li>
+                            <li class="list-group-item">Gratuity: <span class="badge badge-dark badge-pill p-2 float-right">{{gratuity}}</span></li>
+                          </ul>
+                            
+                            <div class="row m-3">
+                              <div class="col">
                                 <a type="button" class="btn btn-outline-info" href="#" data-toggle="modal" data-target="#reEngage">Engage</a>
-                                <a type="button" class="btn btn-dark" href="{% url 'terminated' 'terminate' %}">Return</a>
-                            </p>
+                              </div>
+                              <div class="col">
+                                <a type="button" class="btn btn-dark float-right" href="{% url 'terminated' 'terminate' %}">Return</a>
+                              </div>
+                            </div>
                         </div>
                     </div>
                     

@@ -747,7 +747,7 @@ class StaffTerminate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         messages.info(request, "Incorrect key word, Staff yet to be terminated")
         return redirect('employee-detail', pk=kwargs['pk'])
 
-class StaffReEngage(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+class StaffTerminateDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Terminate
     template_name = 'staff/terminated_detail.html'
 
@@ -763,8 +763,12 @@ class StaffReEngage(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         staff = Payroll.objects.filter(staff__pk=obj.staff.pk)
         permissions = Permit.objects.filter(staff__pk=obj.staff.pk)
         hours = int(sum([(p.ending_at - p.starting_from).total_seconds() for p in permissions])/(60*60)) if permissions else None
+        gratuity = EmployeeBalance.objects.filter(staff__pk=obj.staff.pk)
+        gratuity = round(sum([g.value.amount for g in gratuity]), 2)
         context['salary_paid_out'] = staff.aggregate(Sum('net_pay'))['net_pay__sum']
         context['permissions_taken'] = hours
+        context['welfare'] = ''
+        context['gratuity'] = gratuity
         return context
     
 
@@ -965,7 +969,12 @@ class TerminatedStaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView)
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
-    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sacked'] = self.get_queryset().filter(termination_type='Sack').count()
+        context['resigned'] = self.get_queryset().filter(termination_type='Resign').count()
+        
+        return context
 # Payroll Section
 class PayrollHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'staff/payroll/salary.html'

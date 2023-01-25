@@ -5,12 +5,12 @@
 <div class="container">
     <div class="row mt-3">
         <div class="col">
-            <h3 class="text-center">Product Analysis</h3>
+            <h3 class="text-center">Product Analysis <br> <span class="float-right">As at {{current_date}}</span></h3>
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <p class="float-right">As at {{current_date}}</p>
+            
         </div>
     </div>
     {% if all_products_qs %}
@@ -104,6 +104,7 @@
         </div>
     </div>
     {% endif %}
+
     <div class="row mt-3">    
         <div class="col">
             <a class="float-right" href="{% url 'product-home' %}"><i class="fa fa-reply fa-2x"></i></a>

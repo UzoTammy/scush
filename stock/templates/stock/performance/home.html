@@ -6,12 +6,15 @@
     .text-lime {
         color: lime;
     }
+
     .text-lightgreen {
         color: lightgreen
     }
+
     .bg-lightblue {
         background-color: rgb(133, 164, 230);
     }
+
     .circle {
         max-width: 32rem;
         height: 60px;
@@ -19,125 +22,135 @@
         border-radius: 50%;
         display: inline-block;
     }
+
     .no-stock-circle {
         background-color: aliceblue;
         border-radius: 70%;
         padding: 0.5rem;
     }
+
     .low-stock-circle {
         background-color: azure;
         border-radius: 70%;
         padding: 0.5rem;
     }
+
     .no-sellout-circle {
         background-color: rgb(230, 241, 237);
         border-radius: 70%;
         padding: 0.5rem;
     }
+
     .low-sellout-circle {
         background-color: rgb(193, 221, 231);
         border-radius: 70%;
         padding: 0.5rem;
     }
+
     .inactive-product-circle {
         background-color: rgb(227, 233, 217);
         border-radius: 50%;
         padding: 0.5rem;
     }
+
     .product-circle {
         background-color: rgba(227, 233, 217);
         border-radius: 50%;
         padding: 0.3rem;
-        
+
     }
-    
 </style>
 {% endblock %}
 {% block content %}
 <div class="container-fluid">
     <h3 class="text-center mt-3">Products Performance</h3>
+    {% if record_exist %}
     <div class="row mr-3">
         <div class="col">
-            <h6 class="float-right">Deactivated
-                <a href="#" data-toggle="modal" data-target="#inactiveProductsModal">
-                    <span class="inactive-product-circle">
-                        {{inactive_products.count}}
-                    </span>
-                </a>
+            <h6 class="ml-3">Presently: Active Products
+                <span class="inactive-product-circle">
+                    #{{products.count}}
+                </span>
+                <span class="ml-3">Deactivated
+                    <a href="#" data-toggle="modal" data-target="#inactiveProductsModal">
+                        <span class="inactive-product-circle">
+                            #{{inactive_products.count}}
+                        </span>
+                    </a>
+                </span>
             </h6>
         </div>
     </div>
-    
+
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 mt-3">
         <div class="col text-center mt-2 mb-1">
             <ul class="list-group circle">
                 <li class="list-group-item">
-                    <span class="text-danger">Products Sold</span><br> 
+                    <span class="text-danger">Products Sold</span><br>
                     <h6 class="text-success">
-                        <a class="product-circle" 
-                        href="modal"
-                        data-toggle="modal" data-target="#marginModal">
-                        {{count.count}}</a> out of {{products.count}}
-                    </h6> 
+                        <a class="product-circle" href="modal" data-toggle="modal" data-target="#marginModal">
+                            #{{count.count}}
+                        </a>
+                    </h6>
                 </li>
             </ul>
         </div>
         <div class="col text-center mt-2 mb-1">
             <ul class="list-group circle">
                 <li class="list-group-item">
-                    <span class="text-danger">Sales Amount</span> <br> 
-                    <span class="text-success">N{{sales_amount_total|floatformat:2}}</span> 
+                    <span class="text-danger">Sales Amount</span> <br>
+                    <span class="text-success">N{{sales_amount_total|floatformat:2}}</span>
                 </li>
             </ul>
         </div>
         <div class="col text-center mt-2">
             <ul class="list-group circle">
                 <li class="list-group-item">
-                    <span class="text-danger">Sellout</span> <br> 
-                    <span class="text-success">#{{sellout_total}}</span> 
+                    <span class="text-danger">Sellout</span> <br>
+                    <span class="text-success">#{{sellout_total}}</span>
                 </li>
             </ul>
         </div>
         <div class="col text-center mt-2">
             <ul class="list-group circle">
                 <li class="list-group-item">
-                    <span class="text-danger">Stock Value</span> <br> 
+                    <span class="text-danger">Stock Value</span> <br>
                     <span class="text-success">N{{stock_value_total|floatformat:2}}</span>
                 </li>
             </ul>
         </div>
     </div>
-    
+
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 mt-3">
         <div class="col mt-2">
-            <div class="card text-white bg-lightblue shadow-lg" 
+            <div class="card text-white bg-lightblue shadow-lg"
                 style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
-                    <div class="card-body">
-                        <a class="btn btn-light btn-sm float-right" href="">
-                            <i class="fa fa-edit text-danger"></i></a>
-                        <p class="card-title text-dark">Most Sold-Quantity 
-                            <span class="float-right mr-2">{{most_sellout_daily.product.date|date:'d-m-Y'}}</span>
-                        </p>
-                        <table class="table">
-                            <tbody class="text-white">
-                                <tr>
-                                    <td>This Day</td>
-                                    <td>{{most_sellout_daily.product.product.nickname}}</td>
-                                    <td>{{most_sellout_daily.qty}}</td>
-                                </tr>
-                                <tr>
-                                    <td>This Month</td>
-                                    <td>{{most_sellout_month.product.nickname}}</td>
-                                    <td>{{most_sellout_month.qty}}</td>
-                                </tr>
-                                <tr>
-                                    <td>YTD</td>
-                                    <td>{{most_sellout.product.nickname}}</td>
-                                    <td>{{most_sellout.qty}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="card-body">
+                    <a class="btn btn-light btn-sm float-right" href="">
+                        <i class="fa fa-edit text-danger"></i></a>
+                    <p class="card-title text-dark">Most Sold-Quantity
+                        <span class="float-right mr-2">{{most_sellout_daily.product.date|date:'d-m-Y'}}</span>
+                    </p>
+                    <table class="table">
+                        <tbody class="text-white">
+                            <tr>
+                                <td>This Day</td>
+                                <td>{{most_sellout_daily.product.product.nickname}}</td>
+                                <td>{{most_sellout_daily.qty}}</td>
+                            </tr>
+                            <tr>
+                                <td>This Month</td>
+                                <td>{{most_sellout_month.product.nickname}}</td>
+                                <td>{{most_sellout_month.qty}}</td>
+                            </tr>
+                            <tr>
+                                <td>YTD</td>
+                                <td>{{most_sellout.product.nickname}}</td>
+                                <td>{{most_sellout.qty}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col mt-2">
@@ -147,16 +160,16 @@
                     <span class="float-right mr-3">Monthly</span>
                 </h6>
                 <li class="list-group-item">No Stock
-                   <span class="float-right">
-                    <a href="#" data-toggle="modal" data-target="#noStockModal">
-                        {% with unreported_products_day|length as upd %}
-                       <span class="no-stock-circle">#{{no_stock.count|add:upd}}</span> 
-                        {% endwith %}
-                    </a>
-                    </span> 
+                    <span class="float-right">
+                        <a href="#" data-toggle="modal" data-target="#noStockModal">
+                            {% with unreported_products_day|length as upd %}
+                            <span class="no-stock-circle">#{{no_stock.count|add:upd}}</span>
+                            {% endwith %}
+                        </a>
+                    </span>
                     <span class="float-right mr-4">
                         <a href="#" data-toggle="modal" data-target="#noStockMonthModal">
-                            <span class="no-stock-circle">#{{unreported_products_month|length}}</span>  
+                            <span class="no-stock-circle">#{{unreported_products_month|length}}</span>
                         </a>
                     </span>
 
@@ -164,167 +177,167 @@
                 <li class="list-group-item">Low Stock
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#lowStockModal">
-                            <span class="low-stock-circle">#{{low_stock.count}}</span> 
-                        </a>
-                    </span> 
-                    <span class="float-right mr-4">
-                        <a href="#" data-toggle="modal" data-target="#lowStockMonthModal">
-                            <span class="low-stock-circle">#{{low_stock_month|length}}</span> 
+                            <span class="low-stock-circle">#{{low_stock.count}}</span>
                         </a>
                     </span>
-                 </li>
-                 <li class="list-group-item">No Sellout
+                    <span class="float-right mr-4">
+                        <a href="#" data-toggle="modal" data-target="#lowStockMonthModal">
+                            <span class="low-stock-circle">#{{low_stock_month|length}}</span>
+                        </a>
+                    </span>
+                </li>
+                <li class="list-group-item">No Sellout
                     <span class="float-right"><a href="#" data-toggle="modal" data-target="#noSelloutModal">
-                        <span class="no-sellout-circle">#{{no_sellout.count}}</span> 
-                    </a>
+                            <span class="no-sellout-circle">#{{no_sellout.count}}</span>
+                        </a>
                     </span>
                     <span class="float-right mr-4">
                         <a href="#" data-toggle="modal" data-target="#noSelloutMonthModal">
-                            <span class="no-sellout-circle">#{{no_sellout_month|length}}</span> 
-                        </a>
-                    </span> 
-                 </li>
-                 <li class="list-group-item">Low Sellout
-                    <span class="float-right">
-                        <a href="#" data-toggle="modal" data-target="#lowSelloutModal">
-                           <span class="low-sellout-circle">#{{low_sellout.count}}</span> 
-                        </a>
-                    </span> 
-                    <span class="float-right mr-4">
-                        <a href="#" data-toggle="modal" data-target="#lowSelloutMonthModal">
-                            <span class="low-sellout-circle">#{{low_sellout_month|length}}</span> 
+                            <span class="no-sellout-circle">#{{no_sellout_month|length}}</span>
                         </a>
                     </span>
-                 </li> 
+                </li>
+                <li class="list-group-item">Low Sellout
+                    <span class="float-right">
+                        <a href="#" data-toggle="modal" data-target="#lowSelloutModal">
+                            <span class="low-sellout-circle">#{{low_sellout.count}}</span>
+                        </a>
+                    </span>
+                    <span class="float-right mr-4">
+                        <a href="#" data-toggle="modal" data-target="#lowSelloutMonthModal">
+                            <span class="low-sellout-circle">#{{low_sellout_month|length}}</span>
+                        </a>
+                    </span>
+                </li>
             </ul>
         </div>
         <div class="col mt-2">
-            <div class="card text-white bg-lightblue shadow-lg" 
+            <div class="card text-white bg-lightblue shadow-lg"
                 style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
-                    <div class="card-body">
-                        <a class="btn btn-light btn-sm float-right" href=""><i class="fa fa-edit text-danger"></i></a>
-                        <p class="card-title text-dark">Most Profitable
-                            <span class="float-right mr-2">{{most_profitable_day.product.date|date:'d-m-Y'}}</span>
-                        </p>
-                        <table class="table">
-                            <tbody class="text-white">
-                                <tr>
-                                    <td>This Day</td>
-                                    <td>{{most_profitable_day.product.product.nickname}}</td>
-                                    <td>{{most_profitable_day.value|floatformat:'2'}}</td>
-                                </tr>
-                                <tr>
-                                    <td>This Month</td>
-                                    <td>{{most_profitable_month.product.nickname}}</td>
-                                    <td>{{most_profitable_month.value|floatformat:'2'}}</td>
-                                </tr>
-                                <tr>
-                                    <td>YTD</td>
-                                    <td>{{most_profitable.product.nickname}}</td>
-                                    <td>{{most_profitable.value|floatformat:'2'}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="card-body">
+                    <a class="btn btn-light btn-sm float-right" href=""><i class="fa fa-edit text-danger"></i></a>
+                    <p class="card-title text-dark">Most Profitable
+                        <span class="float-right mr-2">{{most_profitable_day.product.date|date:'d-m-Y'}}</span>
+                    </p>
+                    <table class="table">
+                        <tbody class="text-white">
+                            <tr>
+                                <td>This Day</td>
+                                <td>{{most_profitable_day.product.product.nickname}}</td>
+                                <td>{{most_profitable_day.value|floatformat:'2'}}</td>
+                            </tr>
+                            <tr>
+                                <td>This Month</td>
+                                <td>{{most_profitable_month.product.nickname}}</td>
+                                <td>{{most_profitable_month.value|floatformat:'2'}}</td>
+                            </tr>
+                            <tr>
+                                <td>YTD</td>
+                                <td>{{most_profitable.product.nickname}}</td>
+                                <td>{{most_profitable.value|floatformat:'2'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col mt-2">
-            <div class="card text-white bg-lightblue shadow-lg" 
+            <div class="card text-white bg-lightblue shadow-lg"
                 style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
-                    <div class="card-body">
-                        <a class="btn btn-light btn-sm float-right" href=""><i class="fa fa-edit text-danger"></i></a>
-                        <p class="card-title text-dark">Most Average Margin
-                            <span class="float-right mr-2">{{most_margin_day.product.date|date:'d-m-Y'}}</span>
-                        </p>
-                        <table class="table">
-                            <tbody class="text-white">
-                                <tr>
-                                    <td>This Day</td>
-                                    <td>{{most_margin_day.product.product.nickname}}</td>
-                                    <td>{{most_margin_day.value|floatformat:'2'}}</td>
-                                </tr>
-                                <tr>
-                                    <td>This Month</td>
-                                    <td>{{most_margin_month.product.nickname}}</td>
-                                    <td>{{most_margin_month.value|floatformat:'2'}}</td>
-                                </tr>
-                                <tr>
-                                    <td>YTD</td>
-                                    <td>{{most_margin.product.nickname}}</td>
-                                    <td>{{most_margin.value|floatformat:'2'}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        
-                    </div>
+                <div class="card-body">
+                    <a class="btn btn-light btn-sm float-right" href=""><i class="fa fa-edit text-danger"></i></a>
+                    <p class="card-title text-dark">Most Average Margin
+                        <span class="float-right mr-2">{{most_margin_day.product.date|date:'d-m-Y'}}</span>
+                    </p>
+                    <table class="table">
+                        <tbody class="text-white">
+                            <tr>
+                                <td>This Day</td>
+                                <td>{{most_margin_day.product.product.nickname}}</td>
+                                <td>{{most_margin_day.value|floatformat:'2'}}</td>
+                            </tr>
+                            <tr>
+                                <td>This Month</td>
+                                <td>{{most_margin_month.product.nickname}}</td>
+                                <td>{{most_margin_month.value|floatformat:'2'}}</td>
+                            </tr>
+                            <tr>
+                                <td>YTD</td>
+                                <td>{{most_margin.product.nickname}}</td>
+                                <td>{{most_margin.value|floatformat:'2'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
             </div>
         </div>
         <div class="col mt-2">
             <ul class="list-group curved-edge shadow-lg">
                 <h6 class="text-primary text-center">Unreported</h6>
                 <li class="list-group-item">This day
-                   <span class="float-right">
-                    <a href="#" data-toggle="modal" data-target="#unreportedProductDayModal">
-                        <span class="no-stock-circle">#{{unreported_products_day|length}}</span>  
-                    </a>
-                </span> 
+                    <span class="float-right">
+                        <a href="#" data-toggle="modal" data-target="#unreportedProductDayModal">
+                            <span class="no-stock-circle">#{{unreported_products_day|length}}</span>
+                        </a>
+                    </span>
                 </li>
                 <li class="list-group-item">This Month
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#unreportedProductMonthModal">
-                            <span class="low-stock-circle">#{{unreported_products_month|length}}</span> 
+                            <span class="low-stock-circle">#{{unreported_products_month|length}}</span>
                         </a>
-                    </span> 
-                 </li>
-                 
-                 <li class="list-group-item">This Year
+                    </span>
+                </li>
+
+                <li class="list-group-item">This Year
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#unreportedProductYearModal">
-                            <span class="no-sellout-circle">#{{unreported_products_year|length}}</span> 
+                            <span class="no-sellout-circle">#{{unreported_products_year|length}}</span>
                         </a>
-                    </span> 
-                 </li>
-                 <li class="list-group-item">Never
+                    </span>
+                </li>
+                <li class="list-group-item">Never
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#unreportedProductNeverModal">
-                            <span class="low-sellout-circle">#{{unreported_products|length}}</span> 
+                            <span class="low-sellout-circle">#{{unreported_products|length}}</span>
                         </a>
-                        </span> 
-                 </li> 
+                    </span>
+                </li>
             </ul>
         </div>
         <div class="col mt-2">
-            <div class="card text-white bg-lightblue shadow-lg" 
+            <div class="card text-white bg-lightblue shadow-lg"
                 style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
-                    <div class="card-body">
-                        <a class="btn btn-light btn-sm float-right" href="">
-                            <i class="fa fa-edit text-danger"></i></a>
-                        <p class="card-title text-dark">Highest Gross Sales
-                            <span class="float-right mr-2">{{most_gross_sales_day.product.date|date:'d-m-Y'}}</span>
-                        </p>
-                        <table class="table">
-                            <tbody class="text-white">
-                                <tr>
-                                    <td>This Day</td>
-                                    <td>{{most_gross_sales_day.product.product.nickname}}</td>
-                                    <td>{{most_gross_sales_day.value|floatformat:'2'}}</td>
-                                </tr>
-                                <tr>
-                                    <td>This Month</td>
-                                    <td>{{most_gross_sales_month.product.nickname}}</td>
-                                    <td>{{most_gross_sales_month.value|floatformat:'2'}}</td>
-                                </tr>
-                                <tr>
-                                    <td>YTD</td>
-                                    <td>{{most_gross_sales.product.nickname}}</td>
-                                    <td>{{most_gross_sales.value|floatformat:'2'}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        
-                    </div>
+                <div class="card-body">
+                    <a class="btn btn-light btn-sm float-right" href="">
+                        <i class="fa fa-edit text-danger"></i></a>
+                    <p class="card-title text-dark">Highest Gross Sales
+                        <span class="float-right mr-2">{{most_gross_sales_day.product.date|date:'d-m-Y'}}</span>
+                    </p>
+                    <table class="table">
+                        <tbody class="text-white">
+                            <tr>
+                                <td>This Day</td>
+                                <td>{{most_gross_sales_day.product.product.nickname}}</td>
+                                <td>{{most_gross_sales_day.value|floatformat:'2'}}</td>
+                            </tr>
+                            <tr>
+                                <td>This Month</td>
+                                <td>{{most_gross_sales_month.product.nickname}}</td>
+                                <td>{{most_gross_sales_month.value|floatformat:'2'}}</td>
+                            </tr>
+                            <tr>
+                                <td>YTD</td>
+                                <td>{{most_gross_sales.product.nickname}}</td>
+                                <td>{{most_gross_sales.value|floatformat:'2'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
             </div>
-        </div> 
+        </div>
     </div>
 
     <div class="row m-3">
@@ -332,87 +345,91 @@
             <a class="float-right" href="{% url 'product-home' %}"><i class="fa fa-reply fa-2x"></i></a>
         </div>
     </div>
+    {% else %}
+    <h5>No Record to process</h5>
+    <a class="btn btn-primary" href="{% url 'product-home' %}">Home</a>
+    {% endif %}
 </div>
 
 <!-- Inactive products -->
-<div class="modal fade" id="inactiveProductsModal" tabindex="-1" role="dialog" aria-labelledby="inactiveProductsModalLabel"
-     aria-hidden="true">
-     <div class="modal-dialog" role="document">
-         <div class="modal-content">
-             <div class="modal-header">
-                 <h5 class="modal-title" id="inactiveProductsModalLabel">List of Active Products</h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                 </button>
-             </div>
-             <div class="modal-body">
-                 <table class="table" data-toggle="table">
-                     <thead>
-                         <tr class="text-center">
-                             <th>Product</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         {% for record in inactive_products %}
-                         <tr>
-                             <td>{{record}}</td>
-                         </tr>
-                         {% endfor %}
-                     </tbody>
-                 </table>
-             </div>
-             <div class="modal-footer">
-                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-             </div>
-         </div>
-     </div>
+<div class="modal fade" id="inactiveProductsModal" tabindex="-1" role="dialog"
+    aria-labelledby="inactiveProductsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="inactiveProductsModalLabel">List of Active Products</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table" data-toggle="table">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Product</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in inactive_products %}
+                        <tr>
+                            <td>{{record}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Yield Modal -->
 <div class="modal fade" id="marginModal" tabindex="-1" role="dialog" aria-labelledby="marginModalLabel"
-     aria-hidden="true">
-     <div class="modal-dialog" role="document">
-         <div class="modal-content">
-             <div class="modal-header">
-                 <h5 class="modal-title" id="marginModalLabel">Product Yield</h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                 </button>
-             </div>
-             <div class="modal-body">
-                 <table class="table" data-toggle="table">
-                     <thead>
-                         <tr class="text-center">
-                             <th>Product</th>
-                             <th>Sellout</th>
-                             <th>Yield</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         {% for record in margins %}
-                            <tr>
-                                <td>{{record.product}}</td>
-                                <td class="text-right">{{record.sell_out}}</td>
-                                {% if record.gain <= 0 %}
-                                <td class="text-right text-danger">{{record.gain|floatformat:2}}</td>
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="marginModalLabel">Product Yield</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table" data-toggle="table">
+                    <thead>
+                        <tr class="text-center">
+                            <th>Product</th>
+                            <th>Sellout</th>
+                            <th>Yield</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in margins %}
+                        <tr>
+                            <td>{{record.product}}</td>
+                            <td class="text-right">{{record.sell_out}}</td>
+                            {% if record.gain <= 0 %} <td class="text-right text-danger">{{record.gain|floatformat:2}}
+                                </td>
                                 {% else %}
                                 <td class="text-right">{{record.gain|floatformat:2}}</td>
                                 {% endif %}
-                            </tr>            
-                         {% endfor %}
+                        </tr>
+                        {% endfor %}
                         <tr class="text-muted">
                             <td>Count - Total</td>
                             <td class="text-right">#{{margins.count}}</td>
                             <td class="text-right">{{total_margin|floatformat:2}}</td>
                         </tr>
-                     </tbody>
-                 </table>
-             </div>
-             <div class="modal-footer">
-                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-             </div>
-         </div>
-     </div>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Daily -->
@@ -539,42 +556,42 @@
         </div>
     </div>
 
-     <!-- Low Sellout -->
-     <div class="modal fade" id="lowSelloutModal" tabindex="-1" role="dialog" aria-labelledby="lowSelloutModalLabel"
-     aria-hidden="true">
-     <div class="modal-dialog" role="document">
-         <div class="modal-content">
-             <div class="modal-header">
-                 <h5 class="modal-title" id="lowSelloutModalLabel">Products with Low Sellout - Daily</h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                 </button>
-             </div>
-             <div class="modal-body">
-                 <table class="table" data-toggle="table">
-                     <thead>
-                         <tr class="text-center">
-                             <th>Product</th>
-                             <th>Balance</th>
-                             <th>Sellout</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         {% for record in low_sellout %}
-                         <tr>
-                             <td>{{record.product}}</td>
-                             <td class="text-right">{{record.stock_value}}</td>
-                             <td class="text-right">{{record.sell_out}}</td>
-                         </tr>
-                         {% endfor %}
-                     </tbody>
-                 </table>
-             </div>
-             <div class="modal-footer">
-                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-             </div>
-         </div>
-     </div>
+    <!-- Low Sellout -->
+    <div class="modal fade" id="lowSelloutModal" tabindex="-1" role="dialog" aria-labelledby="lowSelloutModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lowSelloutModalLabel">Products with Low Sellout - Daily</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table" data-toggle="table">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Product</th>
+                                <th>Balance</th>
+                                <th>Sellout</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in low_sellout %}
+                            <tr>
+                                <td>{{record.product}}</td>
+                                <td class="text-right">{{record.stock_value}}</td>
+                                <td class="text-right">{{record.sell_out}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -617,8 +634,8 @@
     </div>
 
     <!-- Low Stock -->
-    <div class="modal fade" id="lowStockMonthModal" tabindex="-1" role="dialog" aria-labelledby="lowStockMonthModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="lowStockMonthModal" tabindex="-1" role="dialog"
+        aria-labelledby="lowStockMonthModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -654,8 +671,8 @@
 
     <!-- No Sellout -->
     {% if no_sellout_month %}
-    <div class="modal fade" id="noSelloutMonthModal" tabindex="-1" role="dialog" aria-labelledby="noSelloutMonthModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="noSelloutMonthModal" tabindex="-1" role="dialog"
+        aria-labelledby="noSelloutMonthModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -689,43 +706,43 @@
         </div>
     </div>
     {% endif %}
-     <!-- Low Sellout -->
-    {% if low_sellout_month %} 
-     <div class="modal fade" id="lowSelloutMonthModal" tabindex="-1" role="dialog" aria-labelledby="lowSelloutMonthModalLabel"
-     aria-hidden="true">
-     <div class="modal-dialog" role="document">
-         <div class="modal-content">
-             <div class="modal-header">
-                 <h5 class="modal-title" id="lowSelloutMonthModalLabel">Products with Low Sellout - Monthly</h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                 </button>
-             </div>
-             <div class="modal-body">
-                 <table class="table" data-toggle="table">
-                     <thead>
-                         <tr class="text-center">
-                             <th>Product</th>
-                             <th>Balance</th>
-                             <th>Sellout</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         {% for record in low_sellout_month %}
-                         <tr>
-                             <td>{{record.product.product}}</td>
-                             <td class="text-right">{{record.stock_balance}}</td>
-                             <td class="text-right">{{record.sellout}}</td>
-                         </tr>
-                         {% endfor %}
-                     </tbody>
-                 </table>
-             </div>
-             <div class="modal-footer">
-                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-             </div>
-         </div>
-     </div>
+    <!-- Low Sellout -->
+    {% if low_sellout_month %}
+    <div class="modal fade" id="lowSelloutMonthModal" tabindex="-1" role="dialog"
+        aria-labelledby="lowSelloutMonthModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lowSelloutMonthModalLabel">Products with Low Sellout - Monthly</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table" data-toggle="table">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Product</th>
+                                <th>Balance</th>
+                                <th>Sellout</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in low_sellout_month %}
+                            <tr>
+                                <td>{{record.product.product}}</td>
+                                <td class="text-right">{{record.stock_balance}}</td>
+                                <td class="text-right">{{record.sellout}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
     {% endif %}
 </section>
@@ -733,146 +750,148 @@
 <!-- Unreported Products -->
 <section>
     <!-- UnreportedProductDayModal -->
-    {% if unreported_products_day %} 
-     <div class="modal fade" id="unreportedProductDayModal" tabindex="-1" role="dialog" aria-labelledby="unreportedProductDayModalLabel"
-     aria-hidden="true">
-     <div class="modal-dialog" role="document">
-         <div class="modal-content">
-             <div class="modal-header">
-                 <h5 class="modal-title" id="unreportedProductDayModalLabel">List of Products not sold this</h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                 </button>
-             </div>
-             <div class="modal-body">
-                 <table class="table" data-toggle="table">
-                     <thead>
-                         <tr class="text-center">
-                             <th>Product</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         {% for record in unreported_products_day %}
-                         <tr>
-                             <td>{{record}}</td>
-                         </tr>
-                         {% endfor %}
-                     </tbody>
-                 </table>
-             </div>
-             <div class="modal-footer">
-                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-             </div>
-         </div>
-     </div>
+    {% if unreported_products_day %}
+    <div class="modal fade" id="unreportedProductDayModal" tabindex="-1" role="dialog"
+        aria-labelledby="unreportedProductDayModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unreportedProductDayModalLabel">List of Products not sold this</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table" data-toggle="table">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Product</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in unreported_products_day %}
+                            <tr>
+                                <td>{{record}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
     {% endif %}
-    
+
     <!-- UnreportedProductMonthModal -->
-    {% if unreported_products_month %} 
-     <div class="modal fade" id="unreportedProductMonthModal" tabindex="-1" role="dialog" aria-labelledby="unreportedProductMonthModalLabel"
-     aria-hidden="true">
-     <div class="modal-dialog" role="document">
-         <div class="modal-content">
-             <div class="modal-header">
-                 <h5 class="modal-title" id="unreportedProductMonthModalLabel">List of Products not sold this month</h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                 </button>
-             </div>
-             <div class="modal-body">
-                 <table class="table" data-toggle="table">
-                     <thead>
-                         <tr class="text-center">
-                             <th>Product</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         {% for record in unreported_products_month %}
-                         <tr>
-                             <td>{{record}}</td>
-                         </tr>
-                         {% endfor %}
-                     </tbody>
-                 </table>
-             </div>
-             <div class="modal-footer">
-                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-             </div>
-         </div>
-     </div>
+    {% if unreported_products_month %}
+    <div class="modal fade" id="unreportedProductMonthModal" tabindex="-1" role="dialog"
+        aria-labelledby="unreportedProductMonthModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unreportedProductMonthModalLabel">List of Products not sold this month
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table" data-toggle="table">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Product</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in unreported_products_month %}
+                            <tr>
+                                <td>{{record}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
     {% endif %}
-    
+
     <!-- UnreportedProductYearModal -->
-    {% if unreported_products_year %} 
-     <div class="modal fade" id="unreportedProductYearModal" tabindex="-1" role="dialog" aria-labelledby="unreportedProductYearModalLabel"
-     aria-hidden="true">
-     <div class="modal-dialog" role="document">
-         <div class="modal-content">
-             <div class="modal-header">
-                 <h5 class="modal-title" id="unreportedProductYearModalLabel">List of Products not sold this year</h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                 </button>
-             </div>
-             <div class="modal-body">
-                 <table class="table" data-toggle="table">
-                     <thead>
-                         <tr class="text-center">
-                             <th>Product</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         {% for record in unreported_products_year %}
-                         <tr>
-                             <td>{{record}}</td>
-                         </tr>
-                         {% endfor %}
-                     </tbody>
-                 </table>
-             </div>
-             <div class="modal-footer">
-                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-             </div>
-         </div>
-     </div>
+    {% if unreported_products_year %}
+    <div class="modal fade" id="unreportedProductYearModal" tabindex="-1" role="dialog"
+        aria-labelledby="unreportedProductYearModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unreportedProductYearModalLabel">List of Products not sold this year
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table" data-toggle="table">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Product</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in unreported_products_year %}
+                            <tr>
+                                <td>{{record}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
     {% endif %}
-    
+
     <!-- UnreportedProductNeverModal -->
-    {% if unreported_products %} 
-     <div class="modal fade" id="unreportedProductNeverModal" tabindex="-1" role="dialog" aria-labelledby="unreportedProductNeverModalLabel"
-     aria-hidden="true">
-     <div class="modal-dialog" role="document">
-         <div class="modal-content">
-             <div class="modal-header">
-                 <h5 class="modal-title" id="unreportedProductNeverModalLabel">List of Products never sold</h5>
-                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                 </button>
-             </div>
-             <div class="modal-body">
-                 <table class="table" data-toggle="table">
-                     <thead>
-                         <tr class="text-center">
-                             <th>Product</th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         {% for record in unreported_products %}
-                         <tr>
-                             <td>{{record}}</td>
-                         </tr>
-                         {% endfor %}
-                     </tbody>
-                 </table>
-             </div>
-             <div class="modal-footer">
-                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-             </div>
-         </div>
-     </div>
+    {% if unreported_products %}
+    <div class="modal fade" id="unreportedProductNeverModal" tabindex="-1" role="dialog"
+        aria-labelledby="unreportedProductNeverModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="unreportedProductNeverModalLabel">List of Products never sold</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table" data-toggle="table">
+                        <thead>
+                            <tr class="text-center">
+                                <th>Product</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in unreported_products %}
+                            <tr>
+                                <td>{{record}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
     {% endif %}
 </section>

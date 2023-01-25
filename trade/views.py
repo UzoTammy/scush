@@ -67,6 +67,7 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             daily_qs = daily_qs.filter(date__year=year, date__month=month)
 
             context['daily_monthly'] = {
+                'opening_stock': daily_qs.earliest('date').opening_value,
                 "sales": daily_qs.aggregate(Sum('sales'))['sales__sum'],
                 "indirect_expenses": daily_qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'],
                 "direct_income": daily_qs.aggregate(Sum('indirect_income'))['indirect_income__sum'],

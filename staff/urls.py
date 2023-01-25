@@ -60,7 +60,7 @@ urlpatterns += [
     path('request/permission/list/', RequestPermissionListView.as_view(), name='request-permission-list'),
     path('permission/from/<int:pk>/request/', PermissionFromRequest.as_view(), name='permission-from-request'),
     path('request/permission/<int:pk>/disapprove/', RequestPermissionDisapprove.as_view(), name='request-permission-disapprove'),
-    path('terminated/<int:pk>/detail/', StaffReEngage.as_view(), name='terminated-detail')
+    path('terminated/<int:pk>/detail/', StaffTerminateDetailView.as_view(), name='terminated-detail')
 ]
 
 urlpatterns += [
