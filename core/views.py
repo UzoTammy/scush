@@ -30,7 +30,7 @@ from django.db.models import F, Sum, Avg
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from staff.models import Employee, Payroll, EmployeeBalance, RequestPermission, Permit
 from stock.models import Product
-from customer.models import Profile as CustomerProfile
+from customer.models import CustomerCredit, Profile as CustomerProfile
 from survey.models import Question
 from apply.models import Applicant
 from trade.models import TradeDaily, TradeMonthly, BalanceSheet
@@ -341,16 +341,20 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         else:
             man_hour_kpi = 100
         
+        qs = CustomerCredit.objects.all()
+        credit_balance = float(qs.aggregate(Sum('current_credit'))['current_credit__sum']) if qs.exists() else 0.0
+        
         context['date_of_record'] = latest_date
         context['color'] = ['success', 'info', 'warning']
         context['basics'] = [('Product Count', product_count), ('Customer Base', customer_base), ('Workforce', workforce)]
-        context['extras'] = [('Sales', sales), ("Purchase", purchase), ("Application", application),('Stores', store_count), ('Rent Paid', rent_paid)]
+        context['trades'] = [('Sales', sales), ("Purchase", purchase), ("Credits", credit_balance),('Rent Paid', rent_paid)]
         context['points'] = [
                 ('Growth', growth), 
                 ('Margin', margin), 
                 ('Expenses', expenses), 
                 ('Man-Hour', man_hour_kpi), 
                 ('WFP', wf_prod)]
+        context['extras'] = [('Stores', store_count), ("Application", application)]
         return context
 
 class KPIMailSend(LoginRequiredMixin, View):

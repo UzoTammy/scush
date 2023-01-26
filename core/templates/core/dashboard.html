@@ -49,19 +49,19 @@
         
     </div>
     <h3 class="text-left mt-4"><i>YTD</i></h3>
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 mt-3">
-        {% for extra in extras %}
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 mt-3">
+        {% for trade in trades %}
         <div class="col mt-2">
             <div class="card bg-secondary circle">
                 <div class="card-body text-white">
-                    <p class="card-title text-center">{{extra|first}}</p>
-                    <p class="card-text float-right">{{extra|last|myriad}}</p>
+                    <p class="card-title text-center">{{trade|first}}</p>
+                    <p class="card-text float-right">{{trade|last|myriad}}</p>
                 </div>
             </div>
         </div>
         {% endfor %}
-        
     </div>
+    <hr>
     <h3 class="text-left mt-4"><i>Monthly KPI</i></h3>
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 mt-3">
         
@@ -71,6 +71,20 @@
                 <div class="card-body text-white">
                     <p class="card-title text-center">{{point|first}}</p>
                     <p class="card-text float-right">{{point|last}} <sup class="text-danger">Pts</sup> </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <hr>
+    <h3 class="text-left mt-4"><i></i>More info</h3>
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-2 mt-3">
+        {% for extra in extras %}
+        <div class="col mt-2">
+            <div class="card bg-secondary circle">
+                <div class="card-body text-white">
+                    <p class="card-title text-center">{{extra|first}}</p>
+                    <p class="card-text float-right">{{extra|last|myriad}}</p>
                 </div>
             </div>
         </div>

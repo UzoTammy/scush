@@ -66,8 +66,11 @@
     <h3 class="text-center mt-3">Products Performance</h3>
     {% if record_exist %}
     <div class="row mr-3">
-        <div class="col">
-            <h6 class="ml-3">Presently: Active Products
+        <div class="col-sm-6">
+            <h5>As at {{current_date}}</h5>
+        </div>
+        <div class="col-sm-6">
+            <h6 class="ml-3 float-right">Products: Active
                 <span class="inactive-product-circle">
                     #{{products.count}}
                 </span>
@@ -135,18 +138,18 @@
                         <tbody class="text-white">
                             <tr>
                                 <td>This Day</td>
-                                <td>{{most_sellout_daily.product.product.nickname}}</td>
-                                <td>{{most_sellout_daily.qty}}</td>
+                                <td>{{highest_sellout_day|first}}</td>
+                                <td>{{highest_sellout_day|last}}</td>
                             </tr>
                             <tr>
                                 <td>This Month</td>
-                                <td>{{most_sellout_month.product.nickname}}</td>
-                                <td>{{most_sellout_month.qty}}</td>
+                                <td>{{highest_sellout_month|first}}</td>
+                                <td>{{highest_sellout_month|last}}</td>
                             </tr>
                             <tr>
                                 <td>YTD</td>
-                                <td>{{most_sellout.product.nickname}}</td>
-                                <td>{{most_sellout.qty}}</td>
+                                <td>{{highest_sellout_year|first}}</td>
+                                <td>{{highest_sellout_year|last}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -216,25 +219,23 @@
                 style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
                 <div class="card-body">
                     <a class="btn btn-light btn-sm float-right" href=""><i class="fa fa-edit text-danger"></i></a>
-                    <p class="card-title text-dark">Most Profitable
-                        <span class="float-right mr-2">{{most_profitable_day.product.date|date:'d-m-Y'}}</span>
-                    </p>
+                    <p class="card-title text-dark">Most Profitable</p>
                     <table class="table">
                         <tbody class="text-white">
                             <tr>
                                 <td>This Day</td>
-                                <td>{{most_profitable_day.product.product.nickname}}</td>
-                                <td>{{most_profitable_day.value|floatformat:'2'}}</td>
+                                <td>{{most_profitable_day|first}}</td>
+                                <td>{{most_profitable_day|last|floatformat:'2'}}</td>
                             </tr>
                             <tr>
                                 <td>This Month</td>
-                                <td>{{most_profitable_month.product.nickname}}</td>
-                                <td>{{most_profitable_month.value|floatformat:'2'}}</td>
+                                <td>{{most_profitable_month|first}}</td>
+                                <td>{{most_profitable_month|last|floatformat:'2'}}</td>
                             </tr>
                             <tr>
                                 <td>YTD</td>
-                                <td>{{most_profitable.product.nickname}}</td>
-                                <td>{{most_profitable.value|floatformat:'2'}}</td>
+                                <td>{{most_profitable_year|first}}</td>
+                                <td>{{most_profitable_year|last|floatformat:'2'}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -246,25 +247,23 @@
                 style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
                 <div class="card-body">
                     <a class="btn btn-light btn-sm float-right" href=""><i class="fa fa-edit text-danger"></i></a>
-                    <p class="card-title text-dark">Most Average Margin
-                        <span class="float-right mr-2">{{most_margin_day.product.date|date:'d-m-Y'}}</span>
-                    </p>
+                    <p class="card-title text-dark">Margin</p>
                     <table class="table">
                         <tbody class="text-white">
                             <tr>
-                                <td>This Day</td>
-                                <td>{{most_margin_day.product.product.nickname}}</td>
-                                <td>{{most_margin_day.value|floatformat:'2'}}</td>
+                                <td>Best Margin</td>
+                                <td>{{best_margin_day|first}}</td>
+                                <td>{{best_margin_day|last|floatformat:'2'}}</td>
                             </tr>
                             <tr>
-                                <td>This Month</td>
-                                <td>{{most_margin_month.product.nickname}}</td>
-                                <td>{{most_margin_month.value|floatformat:'2'}}</td>
+                                <td>Worst Margin</td>
+                                <td>{{worst_margin_day|first}}</td>
+                                <td>{{worst_margin_day|last|floatformat:'2'}} <sup class="text-danger">**</sup></td>
                             </tr>
                             <tr>
-                                <td>YTD</td>
-                                <td>{{most_margin.product.nickname}}</td>
-                                <td>{{most_margin.value|floatformat:'2'}}</td>
+                                <td>Average Margin</td>
+                                <td colspan="2">{{average_margin|floatformat:2}}%</td>
+                                <!-- <td>{{most_margin.value|floatformat:'2'}}</td> -->
                             </tr>
                         </tbody>
                     </table>
@@ -312,25 +311,23 @@
                 <div class="card-body">
                     <a class="btn btn-light btn-sm float-right" href="">
                         <i class="fa fa-edit text-danger"></i></a>
-                    <p class="card-title text-dark">Highest Gross Sales
-                        <span class="float-right mr-2">{{most_gross_sales_day.product.date|date:'d-m-Y'}}</span>
-                    </p>
+                    <p class="card-title text-dark">Highest Gross Sales</p>
                     <table class="table">
                         <tbody class="text-white">
                             <tr>
                                 <td>This Day</td>
-                                <td>{{most_gross_sales_day.product.product.nickname}}</td>
-                                <td>{{most_gross_sales_day.value|floatformat:'2'}}</td>
+                                <td>{{most_sales_day|first}}</td>
+                                <td>{{most_sales_day|last|myriad}}</td>
                             </tr>
                             <tr>
                                 <td>This Month</td>
-                                <td>{{most_gross_sales_month.product.nickname}}</td>
-                                <td>{{most_gross_sales_month.value|floatformat:'2'}}</td>
+                                <td>{{most_sales_month|first}}</td>
+                                <td>{{most_sales_month|last|myriad}}</td>
                             </tr>
                             <tr>
                                 <td>YTD</td>
-                                <td>{{most_gross_sales.product.nickname}}</td>
-                                <td>{{most_gross_sales.value|floatformat:'2'}}</td>
+                                <td>{{most_sales_year|first}}</td>
+                                <td>{{most_sales_year|last|myriad}}</td>
                             </tr>
                         </tbody>
                     </table>

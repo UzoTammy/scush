@@ -967,6 +967,8 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         
         #Most Sellout - YTD
         dataset = ProductExtension.objects.all()
+        context['record_exist'] = True if dataset.exists() else False
+
         if dataset.exists():
             latest_record = dataset.latest('date')
             qs = dataset.filter(date__year=latest_record.date.year)
@@ -986,114 +988,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['no_sellout'] = qs_day.filter(stock_value__gt=0).filter(sell_out=0)
             context['low_sellout'] = qs_day.filter(sell_out__lt=10).exclude(sell_out=0)
 
-            products = qs_month.values_list('product', flat=True).distinct()
-            qs_month_product = [qs_month.filter(product__id=product) for product in products]
-
-            qs_month_no_stock = [
-                {'product': x.first(), 'stock_balance': x.latest('date').stock_value} 
-                for x in qs_month_product if x.latest('date').stock_value<=0
-            ]
-
-            qs_month_low_stock = [
-                {'product': x.first(), 'stock_balance': x.latest('date').stock_value} 
-                for x in qs_month_product if x.latest('date').stock_value<10 and x.latest('date').stock_value>0
-            ]
-            qs_month_sellout = [
-                (x.first(), x.latest('date').stock_value, x.aggregate(Sum('sell_out'))['sell_out__sum'])
-                for x in qs_month_product
-            ]
             
-            qs_month_no_sellout = [
-                {'product': x[0], 'stock_balance': x[1]} 
-                for x in qs_month_sellout if x[2]==0 and x[1]>0
-            ]
-            qs_month_sellout = [
-                (x.first(), x.latest('date').stock_value, x.aggregate(Avg('sell_out'))['sell_out__avg'], 
-                x.aggregate(Sum('sell_out'))['sell_out__sum']
-                ) 
-                for x in qs_month_product
-            ]
-            qs_month_low_sellout = [
-                {'product': x[0], 'stock_balance': x[1], 'sellout': x[3]} 
-                for x in qs_month_sellout if x[2]<=10 and x[1]>0 and x[3]>0 #an average of 10 
-            ]
-            context['no_stock_month'] = qs_month_no_stock
-            context['low_stock_month'] = qs_month_low_stock
-            context['no_sellout_month'] = qs_month_no_sellout
-            context['low_sellout_month'] = qs_month_low_sellout
-        
-            most_sellout = self.product_analyzer(Sum, 'sell_out', int, qs)
-            context['most_sellout'] = {'product': most_sellout[0], 'qty': most_sellout[1]}
-
-            # most Sellout - Month
-            qs_m = qs.filter(date__month=qs.last().date.month)
-            month = self.product_analyzer(Sum, 'sell_out', int, qs_m)
-            if month:
-                context['most_sellout_month'] = {'product': month[0], 'qty': month[1]}
-
-            # most Sellout - Day
-            qs_1 = qs.filter(date=qs.last().date)
-            daily = self.product_analyzer(Sum, 'sell_out', int, qs_1)
-            if daily:
-                context['most_sellout_daily'] = {'product': qs_1.filter(product=daily[0])[0], 'qty': daily[1]} 
-        
-            # Most profitable - YTD
-            qs = qs.annotate(profit=F('sell_out')*(F('selling_price')-F('cost_price')))
-            most_profitable = self.product_analyzer(Sum, 'profit', Decimal, qs)
-            context['most_profitable'] = {'product': most_profitable[0], 'value': most_profitable[1]}
-        
-            # most Profitable - month
-            qs_m = qs.filter(date__month=qs.last().date.month)
-            most_profitable = self.product_analyzer(Sum, 'profit', Decimal, qs_m)
-            if most_profitable:
-                context['most_profitable_month'] = {'product': most_profitable[0], 'value': most_profitable[1]}
-
-            # most Profitable - day
-            qs_d = qs.filter(date=qs.last().date)
-            most_profitable = self.product_analyzer(Sum, 'profit', Decimal, qs_d)
-            if most_profitable:
-                context['most_profitable_day'] = {'product': qs_d.filter(product=most_profitable[0])[0], 'value': most_profitable[1]}
-
-            # Highest GSV
-            gross_sales = self.product_analyzer(Sum, 'sales_amount', Decimal, qs)
-            if gross_sales:
-                context['most_gross_sales'] = {'product': gross_sales[0], 'value': gross_sales[1]}
-
-            # Highest GSV - month
-            qs_m = qs.filter(date__month=qs.last().date.month)
-            gross_sales = self.product_analyzer(Sum, 'sales_amount', Decimal, qs_m)
-            if gross_sales:
-                context['most_gross_sales_month'] = {'product': gross_sales[0], 'value': gross_sales[1]}
-
-            # Highest GSV - day
-            qs_d = qs.filter(date=qs.last().date)
-            gross_sales = self.product_analyzer(Sum, 'sales_amount', Decimal, qs_d)
-            if gross_sales:
-                context['most_gross_sales_day'] = {'product': qs_d.filter(product=gross_sales[0])[0], 'value': gross_sales[1]}
-
-
-            #Most Margin
-            qs = qs.annotate(margin=F('selling_price')-F('cost_price'))
-            margin = self.product_analyzer(Avg, 'margin', Decimal, qs)
-            if margin:
-                context['most_margin'] = {'product': margin[0], 'value': margin[1]}
-
-            #Most Margin - month
-            qs_m = qs.filter(date__month=qs.last().date.month)
-            margin = self.product_analyzer(Avg, 'margin', Decimal, qs_m)
-            if margin:
-                context['most_margin_month'] = {'product': margin[0], 'value': margin[1]}
-
-            #Most Margin - month
-            qs_d = qs.filter(date=qs.last().date)
-            margin = self.product_analyzer(Avg, 'margin', Decimal, qs_d)
-            if margin:
-                context['most_margin_day'] = {'product': qs_d.get(product=margin[0]), 'value': margin[1]}
-
-        # unreported
-        """Unreported products are products that were not sold because it is zero stock balance
-        therefore, it will be reported as no stock"""
-        
         qs = ProductExtension.objects.filter(active=True)
         context['unreported_products'] = self.unreported_product(qs)
             
@@ -1113,7 +1008,143 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['margins'] = qs.order_by('gain')
             context['total_margin'] = qs.aggregate(Sum('gain'))['gain__sum']
         
-        context['record_exist'] = True if dataset.exists() else False
+        
+        if ProductExtension.objects.exists():
+            latest_date = ProductExtension.objects.latest('date').date
+            context['current_date'] = latest_date
+            # Most sold out product of the day
+            qs_data = ProductExtension.objects.filter(date=latest_date)
+            # get a tuple of the product and the sellout
+            data = qs_data.values_list('product', 'sell_out') 
+            max_sellout = max(data, key=lambda x:x[1]) # --> (n, n)
+            highest_sellout_day = (Product.objects.get(pk=max_sellout[0]).nickname(), max_sellout[1])
+
+            #put date in context
+            context['highest_sellout_day'] = highest_sellout_day
+
+            # Most soldout product of the month
+            qs_data = ProductExtension.objects.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
+            products = qs_data.values_list('product', flat=True).distinct() # product pk only
+            # create a list of tuple of products and its aggregate sellout
+            most_sellout_list = [
+                (product, qs_data.filter(product=product).aggregate(Sum('sell_out'))['sell_out__sum'])
+                for product in products
+            ]
+            max_sellout = max(most_sellout_list, key=lambda x:x[1])
+            highest_sellout_month = (Product.objects.get(pk=max_sellout[0]).nickname(), max_sellout[1])
+            context['highest_sellout_month'] = highest_sellout_month
+            
+            """Most soldout product of the year"""
+            qs_data = ProductExtension.objects.filter(date__year=latest_date.year)
+            products = qs_data.values_list('product', flat=True).distinct() # product pk only
+            # create a list of tuple of products and its aggregate sellout
+            most_sellout_list = [
+                (product, qs_data.filter(product=product).aggregate(Sum('sell_out'))['sell_out__sum'])
+                for product in products
+            ]
+            max_sellout = max(most_sellout_list, key=lambda x:x[1])
+            highest_sellout_year = (Product.objects.get(pk=max_sellout[0]).nickname(), max_sellout[1])
+            context['highest_sellout_year'] = highest_sellout_year
+            
+            """This section is for the most profitable"""
+            # For the latest date
+            qs_data = ProductExtension.objects.filter(date=latest_date)
+            qs_data = qs_data.annotate(profit = F('sell_out')*(F('selling_price') - F('cost_price')))
+            
+            # get a tuple of the product and the sellout
+            data = qs_data.values_list('product', 'profit') 
+            
+            max_profit = max(data, key=lambda x:x[1]) # --> (n, n)
+            highest_profit_day = (Product.objects.get(pk=max_profit[0]).nickname(), max_profit[1])
+
+            context['most_profitable_day'] = highest_profit_day
+
+            # for the latest date's month
+            qs_data = ProductExtension.objects.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
+            qs_data = qs_data.annotate(profit = F('sell_out')*(F('selling_price') - F('cost_price')))
+
+            products = qs_data.values_list('product', flat=True).distinct() # product pk only
+            # create a list of tuple of products and its aggregate sellout
+            most_profit_list = [
+                (product, qs_data.filter(product=product).aggregate(Sum('profit'))['profit__sum'])
+                for product in products
+            ]
+            max_profit = max(most_profit_list, key=lambda x:x[1])
+            highest_profit_month = (Product.objects.get(pk=max_profit[0]).nickname(), max_profit[1])
+            context['most_profitable_month'] = highest_profit_month
+            
+            # for the latest date's month
+            qs_data = ProductExtension.objects.filter(date__year=latest_date.year)
+            qs_data = qs_data.annotate(profit = F('sell_out')*(F('selling_price') - F('cost_price')))
+
+            products = qs_data.values_list('product', flat=True).distinct() # product pk only
+            # create a list of tuple of products and its aggregate sellout
+            most_profit_list = [
+                (product, qs_data.filter(product=product).aggregate(Sum('profit'))['profit__sum'])
+                for product in products
+            ]
+            max_profit = max(most_profit_list, key=lambda x:x[1])
+            highest_profit_year = (Product.objects.get(pk=max_profit[0]).nickname(), max_profit[1])
+            context['most_profitable_year'] = highest_profit_year
+            
+            # Margins
+            # 1. the product with the best margin
+            qs_data = ProductExtension.objects.filter(date=latest_date)
+            qs_data = qs_data.annotate(margin=F('selling_price') - F('cost_price'))
+            # get a tuple of the product and the sellout
+            data = qs_data.values_list('product', 'margin') 
+            
+            max_margin = max(data, key=lambda x:x[1]) # --> (n, n)
+            highest_margin_day = (Product.objects.get(pk=max_margin[0]).nickname(), max_margin[1])
+            context['best_margin_day'] = highest_margin_day
+
+            #2. the product with the worst margin
+            min_margin = min(data, key=lambda x:x[1])
+            lowest_margin_day = (Product.objects.get(pk=min_margin[0]).nickname(), min_margin[1])
+            context['worst_margin_day'] = lowest_margin_day
+
+            #3 Average margin
+            qs_data = qs_data.annotate(profit=F('sell_out') * F('margin'))
+            total_profit = qs_data.aggregate(Sum('profit'))['profit__sum']
+            total_sales = qs_data.aggregate(Sum('sales_amount'))['sales_amount__sum']
+            context['average_margin'] = float(total_profit/total_sales) * 100 
+            
+            """The gross sales"""
+            #1. Product with the highest gross sales value
+            qs_data = ProductExtension.objects.filter(date=latest_date)
+            
+                # get a tuple of the product and the sales
+            data = qs_data.values_list('product', 'sales_amount') 
+            
+            max_sales = max(data, key=lambda x:x[1]) # --> (n, n)
+            highest_sales_day = (Product.objects.get(pk=max_sales[0]).nickname(), float(max_sales[1]))
+            context['most_sales_day'] = highest_sales_day
+
+            #2. Product with the highest GSV in the month
+            qs_data = ProductExtension.objects.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
+            
+            products = qs_data.values_list('product', flat=True).distinct() # product pk only
+            # create a list of tuple of products and its aggregate sellout
+            most_profit_list = [
+                (product, qs_data.filter(product=product).aggregate(Sum('sales_amount'))['sales_amount__sum'])
+                for product in products
+            ]
+            max_sales = max(most_profit_list, key=lambda x:x[1])
+            highest_sales_month = (Product.objects.get(pk=max_sales[0]).nickname(), float(max_sales[1]))
+            context['most_sales_month'] = highest_sales_month
+            
+            #2. Product with the highest GSV for the year
+            qs_data = ProductExtension.objects.filter(date__year=latest_date.year)
+            
+            products = qs_data.values_list('product', flat=True).distinct() # product pk only
+            # create a list of tuple of products and its aggregate sellout
+            most_profit_list = [
+                (product, qs_data.filter(product=product).aggregate(Sum('sales_amount'))['sales_amount__sum'])
+                for product in products
+            ]
+            max_sales = max(most_profit_list, key=lambda x:x[1])
+            highest_sales_year = (Product.objects.get(pk=max_sales[0]).nickname(), float(max_sales[1]))
+            context['most_sales_year'] = highest_sales_year
         return context
 
 
@@ -1138,7 +1169,7 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
 
         all_products_qs = list() # a list that will contain dictionary   
 
-        if Product.objects.exists():
+        if Product.objects.exclude(name__icontains='Empty').exists():
             active_products = Product.objects.filter(active=True).values_list('pk', flat=True).distinct().order_by('source')
         else:
             return context
