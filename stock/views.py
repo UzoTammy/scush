@@ -922,6 +922,17 @@ class ProductStatusUpdate(LoginRequiredMixin, UserPassesTestMixin, View):
 
 class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'stock/performance/home.html'
+    
+    def color(self, indicator):
+        if indicator < 50:
+            x = ('text-danger', 'Poor')
+        elif 50 < indicator < 70:
+            x = ('text-warning', 'Fair')
+        elif 70 < indicator < 90:
+            x = ('text-primary', 'Good')
+        else:
+            x = ('text-success', 'Excellent')
+        return x
 
     def product_analyzer(self, ops, field, field_type, qs):
         """
@@ -969,6 +980,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         dataset = ProductExtension.objects.all()
         context['record_exist'] = True if dataset.exists() else False
 
+        
         if dataset.exists():
             latest_record = dataset.latest('date')
             qs = dataset.filter(date__year=latest_record.date.year)
@@ -976,6 +988,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             qs_month = qs.filter(date__month=latest_record.date.month)
             qs_day = dataset.filter(date=latest_record.date) #qs.filter(date__day=latest_record.date.day)
             qs_day = qs_day.annotate(value=F('cost_price')*F('stock_value'))
+            
             
             context['count'] = qs_day.filter(sell_out__gt=0)
             context['products'] = Product.objects.filter(active=True)
@@ -992,6 +1005,11 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['low_stock_month'] = qs_month.filter(stock_value__lt=10).exclude(stock_value__lte=0)
             context['no_sellout_month'] = qs_month.filter(stock_value__gt=0).filter(sell_out=0)
             context['low_sellout_month'] = qs_month.filter(sell_out__lt=10).exclude(sell_out=0)
+
+            context['availability_ratio'] = 100 * (1 - context['no_stock'].count()/context['products'].count())
+            context['av_color'] = self.color(context['availability_ratio'])
+            context['movement_ratio'] = 100 * (1 - context['no_sellout'].count()/(context['products'].count() - context['no_stock'].count()))
+            context['mv_color'] = self.color(context['movement_ratio'])
             
         qs = ProductExtension.objects.filter(active=True)
         context['unreported_products'] = self.unreported_product(qs)

@@ -165,14 +165,12 @@
                 <li class="list-group-item">No Stock
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#noStockModal">
-                            {% with unreported_products_day|length as upd %}
-                            <span class="no-stock-circle">#{{no_stock.count|add:upd}}</span>
-                            {% endwith %}
+                            <span class="no-stock-circle">#{{no_stock.count}}</span>
                         </a>
                     </span>
                     <span class="float-right mr-4">
                         <a href="#" data-toggle="modal" data-target="#noStockMonthModal">
-                            <span class="no-stock-circle">#{{unreported_products_month|length}}</span>
+                            <span class="no-stock-circle">#{{no_stock_month.count}}</span>
                         </a>
                     </span>
 
@@ -185,7 +183,7 @@
                     </span>
                     <span class="float-right mr-4">
                         <a href="#" data-toggle="modal" data-target="#lowStockMonthModal">
-                            <span class="low-stock-circle">#{{low_stock_month|length}}</span>
+                            <span class="low-stock-circle">#{{low_stock_month.count}}</span>
                         </a>
                     </span>
                 </li>
@@ -196,7 +194,7 @@
                     </span>
                     <span class="float-right mr-4">
                         <a href="#" data-toggle="modal" data-target="#noSelloutMonthModal">
-                            <span class="no-sellout-circle">#{{no_sellout_month|length}}</span>
+                            <span class="no-sellout-circle">#{{no_sellout_month.count}}</span>
                         </a>
                     </span>
                 </li>
@@ -208,7 +206,7 @@
                     </span>
                     <span class="float-right mr-4">
                         <a href="#" data-toggle="modal" data-target="#lowSelloutMonthModal">
-                            <span class="low-sellout-circle">#{{low_sellout_month|length}}</span>
+                            <span class="low-sellout-circle">#{{low_sellout_month.count}}</span>
                         </a>
                     </span>
                 </li>
@@ -273,36 +271,38 @@
         </div>
         <div class="col mt-2">
             <ul class="list-group curved-edge shadow-lg">
-                <h6 class="text-primary text-center">Unreported</h6>
-                <!-- <li class="list-group-item">This day
+                <h6 class="text-primary text-center">Performance Indicators</h6>
+                <li class="list-group-item">Availability
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#unreportedProductDayModal">
-                            <span class="no-stock-circle">#{{unreported_products_day|length}}</span>
+                            <span class="no-stock-circle {{av_color|first}}">({{av_color|last}}) {{availability_ratio}}%</span>
                         </a>
                     </span>
                 </li>
-                <li class="list-group-item">This Month
+                <li class="list-group-item">Movement
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#unreportedProductMonthModal">
-                            <span class="low-stock-circle">#{{unreported_products_month|length}}</span>
+                            <span class="low-stock-circle {{mv_color|first}}">
+                                ({{mv_color|last}}) {{movement_ratio}}%
+                            </span>
                         </a>
                     </span>
                 </li>
 
-                <li class="list-group-item">This Year
-                    <span class="float-right">
+                <!-- <li class="list-group-item"> -->
+                    <!-- <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#unreportedProductYearModal">
                             <span class="no-sellout-circle">#{{unreported_products_year|length}}</span>
                         </a>
-                    </span>
-                </li>
-                <li class="list-group-item">Never
-                    <span class="float-right">
+                    </span> -->
+                <!-- </li> -->
+                <!-- <li class="list-group-item"> -->
+                    <!-- <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#unreportedProductNeverModal">
                             <span class="low-sellout-circle">#{{unreported_products|length}}</span>
                         </a>
-                    </span>
-                </li> -->
+                    </span> -->
+                <!-- </li> -->
             </ul>
         </div>
         <div class="col mt-2">
