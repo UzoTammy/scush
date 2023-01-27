@@ -988,6 +988,10 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['no_sellout'] = qs_day.filter(stock_value__gt=0).filter(sell_out=0)
             context['low_sellout'] = qs_day.filter(sell_out__lt=10).exclude(sell_out=0)
 
+            context['no_stock_month'] = qs_month.filter(stock_value__lte=0)
+            context['low_stock_month'] = qs_month.filter(stock_value__lt=10).exclude(stock_value__lte=0)
+            context['no_sellout_month'] = qs_month.filter(stock_value__gt=0).filter(sell_out=0)
+            context['low_sellout_month'] = qs_month.filter(sell_out__lt=10).exclude(sell_out=0)
             
         qs = ProductExtension.objects.filter(active=True)
         context['unreported_products'] = self.unreported_product(qs)
@@ -1012,8 +1016,9 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if ProductExtension.objects.exists():
             latest_date = ProductExtension.objects.latest('date').date
             context['current_date'] = latest_date
+            product_extension = ProductExtension.objects.filter(sell_out__gt=0)
             # Most sold out product of the day
-            qs_data = ProductExtension.objects.filter(date=latest_date)
+            qs_data = product_extension.filter(date=latest_date)
             # get a tuple of the product and the sellout
             data = qs_data.values_list('product', 'sell_out') 
             max_sellout = max(data, key=lambda x:x[1]) # --> (n, n)
@@ -1023,7 +1028,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['highest_sellout_day'] = highest_sellout_day
 
             # Most soldout product of the month
-            qs_data = ProductExtension.objects.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
+            qs_data = product_extension.filter(date__year=latest_date.year).filter(date__month=latest_date.month).filter(sell_out__gt=0)
             products = qs_data.values_list('product', flat=True).distinct() # product pk only
             # create a list of tuple of products and its aggregate sellout
             most_sellout_list = [
@@ -1035,7 +1040,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['highest_sellout_month'] = highest_sellout_month
             
             """Most soldout product of the year"""
-            qs_data = ProductExtension.objects.filter(date__year=latest_date.year)
+            qs_data = product_extension.filter(date__year=latest_date.year)
             products = qs_data.values_list('product', flat=True).distinct() # product pk only
             # create a list of tuple of products and its aggregate sellout
             most_sellout_list = [
@@ -1048,7 +1053,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             
             """This section is for the most profitable"""
             # For the latest date
-            qs_data = ProductExtension.objects.filter(date=latest_date)
+            qs_data = product_extension.filter(date=latest_date)
             qs_data = qs_data.annotate(profit = F('sell_out')*(F('selling_price') - F('cost_price')))
             
             # get a tuple of the product and the sellout
@@ -1060,7 +1065,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['most_profitable_day'] = highest_profit_day
 
             # for the latest date's month
-            qs_data = ProductExtension.objects.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
+            qs_data = product_extension.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
             qs_data = qs_data.annotate(profit = F('sell_out')*(F('selling_price') - F('cost_price')))
 
             products = qs_data.values_list('product', flat=True).distinct() # product pk only
@@ -1074,7 +1079,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['most_profitable_month'] = highest_profit_month
             
             # for the latest date's month
-            qs_data = ProductExtension.objects.filter(date__year=latest_date.year)
+            qs_data = product_extension.filter(date__year=latest_date.year)
             qs_data = qs_data.annotate(profit = F('sell_out')*(F('selling_price') - F('cost_price')))
 
             products = qs_data.values_list('product', flat=True).distinct() # product pk only
@@ -1089,11 +1094,12 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             
             # Margins
             # 1. the product with the best margin
-            qs_data = ProductExtension.objects.filter(date=latest_date)
+            qs_data = product_extension.filter(date=latest_date).filter(sell_out__gt=0)
             qs_data = qs_data.annotate(margin=F('selling_price') - F('cost_price'))
+            
             # get a tuple of the product and the sellout
             data = qs_data.values_list('product', 'margin') 
-            
+        
             max_margin = max(data, key=lambda x:x[1]) # --> (n, n)
             highest_margin_day = (Product.objects.get(pk=max_margin[0]).nickname(), max_margin[1])
             context['best_margin_day'] = highest_margin_day
@@ -1111,7 +1117,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             
             """The gross sales"""
             #1. Product with the highest gross sales value
-            qs_data = ProductExtension.objects.filter(date=latest_date)
+            qs_data = product_extension.filter(date=latest_date)
             
                 # get a tuple of the product and the sales
             data = qs_data.values_list('product', 'sales_amount') 
@@ -1121,7 +1127,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['most_sales_day'] = highest_sales_day
 
             #2. Product with the highest GSV in the month
-            qs_data = ProductExtension.objects.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
+            qs_data = product_extension.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
             
             products = qs_data.values_list('product', flat=True).distinct() # product pk only
             # create a list of tuple of products and its aggregate sellout
@@ -1134,7 +1140,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['most_sales_month'] = highest_sales_month
             
             #2. Product with the highest GSV for the year
-            qs_data = ProductExtension.objects.filter(date__year=latest_date.year)
+            qs_data = product_extension.filter(date__year=latest_date.year)
             
             products = qs_data.values_list('product', flat=True).distinct() # product pk only
             # create a list of tuple of products and its aggregate sellout
