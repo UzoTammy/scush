@@ -1006,7 +1006,17 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['stock_value_total'] = qs_day.aggregate(Sum('value'))['value__sum']
             context['profit_total'] = qs_day.aggregate(Sum('profit'))['profit__sum']
 
-            context['no_stock'] = qs_day.filter(stock_value__lte=0)
+            """In the ProductExtension model, products without stock and sellout are not created even though
+            the product may be active. For this reason, we exploit the models to extract the/those product(s)
+            as follows
+            """
+            products_1 = Product.objects.filter(active=True).values_list('pk', flat=True)
+            products_2 = qs_day.values_list('product', flat=True).distinct()
+            products = products_1.difference(products_2)
+            products = products.union(qs_day.filter(stock_value__lte=0).values_list('product', flat=True))
+
+            context['no_stock'] = Product.objects.filter(pk__in=products)
+            
             context['low_stock'] = qs_day.filter(stock_value__lt=10).exclude(stock_value__lte=0)
             context['no_sellout'] = qs_day.filter(stock_value__gt=0).filter(sell_out=0)
             context['low_sellout'] = qs_day.filter(sell_out__lt=10).exclude(sell_out=0)

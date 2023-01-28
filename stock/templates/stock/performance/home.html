@@ -168,11 +168,11 @@
                             <span class="no-stock-circle">#{{no_stock.count}}</span>
                         </a>
                     </span>
-                    <span class="float-right mr-4">
+                    <!-- <span class="float-right mr-4">
                         <a href="#" data-toggle="modal" data-target="#noStockMonthModal">
                             <span class="no-stock-circle">#{{no_stock_month|length}}</span>
                         </a>
-                    </span>
+                    </span> -->
 
                 </li>
                 <li class="list-group-item">Low Stock
@@ -432,16 +432,12 @@
                         <thead>
                             <tr class="text-center">
                                 <th>Product</th>
-                                <th>Balance</th>
-                                <th>Sellout</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for record in no_stock %}
+                            {% for product in no_stock %}
                             <tr>
-                                <td>{{record.product}}</td>
-                                <td class="text-right">{{record.stock_value}}</td>
-                                <td class="text-right">{{record.sell_out}}</td>
+                                <td>{{product.nickname}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
