@@ -926,14 +926,30 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def color(self, indicator):
         if indicator < 50:
             x = ('text-danger', 'Poor')
-        elif 50 < indicator < 70:
+        elif 50 <= indicator < 70:
             x = ('text-warning', 'Fair')
-        elif 70 < indicator < 90:
+        elif 70 <= indicator < 90:
             x = ('text-primary', 'Good')
         else:
             x = ('text-success', 'Excellent')
         return x
 
+    def month_process(self, qs, qs_month):
+        dates = qs.values_list('date', flat=True).distinct()
+        number_of_dates = dates.count()
+        products = qs.values_list('product', flat=True).distinct()
+        product_list = []
+        for product in products:
+            N = 0
+            for date in dates:
+                obj = qs_month.filter(product=product).filter(date=date)
+                
+                if obj.exists():
+                    N += 1
+            if number_of_dates == N:
+                product_list.append(obj)
+        return product_list   
+            
     def product_analyzer(self, ops, field, field_type, qs):
         """
             This function is to give a tuple of the product object and the sum
@@ -960,13 +976,6 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         
         return product_data #max(sell_out_list, key=lambda X:X[1])
                 
-    def unreported_product(self, queryset):
-        products = Product.objects.filter(active=True).values_list('id', flat=True).distinct()
-        reported_products = queryset.values_list('product', flat=True).distinct()
-        unreported_products = products.difference(reported_products)
-        unreported_products = [Product.objects.get(id=product) for product in unreported_products]
-        return unreported_products
-
     def test_func(self):
         """if user is a member of the group Sales then grant access to this view"""
         if self.request.user.groups.filter(name=permitted_group_name).exists():
@@ -979,57 +988,39 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         #Most Sellout - YTD
         dataset = ProductExtension.objects.all()
         context['record_exist'] = True if dataset.exists() else False
-
-        
+  
         if dataset.exists():
             latest_record = dataset.latest('date')
             qs = dataset.filter(date__year=latest_record.date.year)
-            
             qs_month = qs.filter(date__month=latest_record.date.month)
+            
             qs_day = dataset.filter(date=latest_record.date) #qs.filter(date__day=latest_record.date.day)
             qs_day = qs_day.annotate(value=F('cost_price')*F('stock_value'))
+            qs_day = qs_day.annotate(profit=F('sell_out')*(F('selling_price')-F('cost_price')))
             
-            
-            context['count'] = qs_day.filter(sell_out__gt=0)
+            context['sales'] = qs_day.filter(sell_out__gt=0)
             context['products'] = Product.objects.filter(active=True)
+            context['inactive_products'] = Product.objects.filter(active=False)
             context['sales_amount_total'] = qs_day.aggregate(Sum('sales_amount'))['sales_amount__sum']
             context['sellout_total'] = qs_day.aggregate(Sum('sell_out'))['sell_out__sum']
             context['stock_value_total'] = qs_day.aggregate(Sum('value'))['value__sum']
+            context['profit_total'] = qs_day.aggregate(Sum('profit'))['profit__sum']
 
             context['no_stock'] = qs_day.filter(stock_value__lte=0)
             context['low_stock'] = qs_day.filter(stock_value__lt=10).exclude(stock_value__lte=0)
             context['no_sellout'] = qs_day.filter(stock_value__gt=0).filter(sell_out=0)
             context['low_sellout'] = qs_day.filter(sell_out__lt=10).exclude(sell_out=0)
 
-            context['no_stock_month'] = qs_month.filter(stock_value__lte=0)
-            context['low_stock_month'] = qs_month.filter(stock_value__lt=10).exclude(stock_value__lte=0)
-            context['no_sellout_month'] = qs_month.filter(stock_value__gt=0).filter(sell_out=0)
-            context['low_sellout_month'] = qs_month.filter(sell_out__lt=10).exclude(sell_out=0)
+            context['no_stock_month'] = self.month_process(qs_month, qs_month.filter(stock_value__lte=0))
+            context['low_stock_month'] = self.month_process(qs_month, qs_month.filter(stock_value__lt=10).exclude(stock_value__lte=0))
+            context['no_sellout_month'] = self.month_process(qs_month, qs_month.filter(stock_value__gt=0).filter(sell_out=0))
+            context['low_sellout_month'] = self.month_process(qs_month, qs_month.filter(sell_out__lt=10).exclude(sell_out=0))
 
             context['availability_ratio'] = 100 * (1 - context['no_stock'].count()/context['products'].count())
             context['av_color'] = self.color(context['availability_ratio'])
             context['movement_ratio'] = 100 * (1 - context['no_sellout'].count()/(context['products'].count() - context['no_stock'].count()))
             context['mv_color'] = self.color(context['movement_ratio'])
             
-        qs = ProductExtension.objects.filter(active=True)
-        context['unreported_products'] = self.unreported_product(qs)
-            
-        qs = qs.filter(date__year=latest_record.date.year)
-        if qs.exists():
-            context['unreported_products_year'] = self.unreported_product(qs)
-
-            qs = qs.filter(date__year=latest_record.date.year).filter(date__month=latest_record.date.month)
-            context['unreported_products_month'] = self.unreported_product(qs)
-            
-            qs = qs.filter(date=latest_record.date)
-            context['unreported_products_day'] = self.unreported_product(qs)
-            context['inactive_products'] = Product.objects.filter(active=False).order_by('name')
-            latest_date = ProductExtension.objects.latest('date').date
-            qs = ProductExtension.objects.filter(date=latest_date).filter(sell_out__gt=0)
-            qs = qs.annotate(gain=F('sell_out')*(F('selling_price')-F('cost_price')))
-            context['margins'] = qs.order_by('gain')
-            context['total_margin'] = qs.aggregate(Sum('gain'))['gain__sum']
-        
         
         if ProductExtension.objects.exists():
             latest_date = ProductExtension.objects.latest('date').date

@@ -91,8 +91,8 @@
                 <li class="list-group-item">
                     <span class="text-danger">Products Sold</span><br>
                     <h6 class="text-success">
-                        <a class="product-circle" href="modal" data-toggle="modal" data-target="#marginModal">
-                            #{{count.count}}
+                        <a class="product-circle" href="#" data-toggle="modal" data-target="#marginModal">
+                            #{{sales.count}}
                         </a>
                     </h6>
                 </li>
@@ -170,7 +170,7 @@
                     </span>
                     <span class="float-right mr-4">
                         <a href="#" data-toggle="modal" data-target="#noStockMonthModal">
-                            <span class="no-stock-circle">#{{no_stock_month.count}}</span>
+                            <span class="no-stock-circle">#{{no_stock_month|length}}</span>
                         </a>
                     </span>
 
@@ -183,7 +183,7 @@
                     </span>
                     <span class="float-right mr-4">
                         <a href="#" data-toggle="modal" data-target="#lowStockMonthModal">
-                            <span class="low-stock-circle">#{{low_stock_month.count}}</span>
+                            <span class="low-stock-circle">#{{low_stock_month|length}}</span>
                         </a>
                     </span>
                 </li>
@@ -194,7 +194,7 @@
                     </span>
                     <span class="float-right mr-4">
                         <a href="#" data-toggle="modal" data-target="#noSelloutMonthModal">
-                            <span class="no-sellout-circle">#{{no_sellout_month.count}}</span>
+                            <span class="no-sellout-circle">#{{no_sellout_month|length}}</span>
                         </a>
                     </span>
                 </li>
@@ -206,7 +206,7 @@
                     </span>
                     <span class="float-right mr-4">
                         <a href="#" data-toggle="modal" data-target="#lowSelloutMonthModal">
-                            <span class="low-sellout-circle">#{{low_sellout_month.count}}</span>
+                            <span class="low-sellout-circle">#{{low_sellout_month|length}}</span>
                         </a>
                     </span>
                 </li>
@@ -275,7 +275,7 @@
                 <li class="list-group-item">Availability
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#unreportedProductDayModal">
-                            <span class="no-stock-circle {{av_color|first}}">({{av_color|last}}) {{availability_ratio}}%</span>
+                            <span class="no-stock-circle {{av_color|first}}">({{av_color|last}}) {{availability_ratio|floatformat:'2'}}%</span>
                         </a>
                     </span>
                 </li>
@@ -283,26 +283,11 @@
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#unreportedProductMonthModal">
                             <span class="low-stock-circle {{mv_color|first}}">
-                                ({{mv_color|last}}) {{movement_ratio}}%
+                                ({{mv_color|last}}) {{movement_ratio|floatformat:'2'}}%
                             </span>
                         </a>
                     </span>
                 </li>
-
-                <!-- <li class="list-group-item"> -->
-                    <!-- <span class="float-right">
-                        <a href="#" data-toggle="modal" data-target="#unreportedProductYearModal">
-                            <span class="no-sellout-circle">#{{unreported_products_year|length}}</span>
-                        </a>
-                    </span> -->
-                <!-- </li> -->
-                <!-- <li class="list-group-item"> -->
-                    <!-- <span class="float-right">
-                        <a href="#" data-toggle="modal" data-target="#unreportedProductNeverModal">
-                            <span class="low-sellout-circle">#{{unreported_products|length}}</span>
-                        </a>
-                    </span> -->
-                <!-- </li> -->
             </ul>
         </div>
         <div class="col mt-2">
@@ -354,7 +339,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="inactiveProductsModalLabel">List of Active Products</h5>
+                <h5 class="modal-title" id="inactiveProductsModalLabel">List of Deactivated Products</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -369,7 +354,7 @@
                     <tbody>
                         {% for record in inactive_products %}
                         <tr>
-                            <td>{{record}}</td>
+                            <td>{{record.nickname}}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -399,25 +384,25 @@
                         <tr class="text-center">
                             <th>Product</th>
                             <th>Sellout</th>
-                            <th>Yield</th>
+                            <th>Profit</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for record in margins %}
+                        {% for record in sales %}
                         <tr>
-                            <td>{{record.product}}</td>
+                            <td>{{record.product.nickname}}</td>
                             <td class="text-right">{{record.sell_out}}</td>
-                            {% if record.gain <= 0 %} <td class="text-right text-danger">{{record.gain|floatformat:2}}
-                                </td>
-                                {% else %}
-                                <td class="text-right">{{record.gain|floatformat:2}}</td>
-                                {% endif %}
+                            {% if record.profit >= 0 %}
+                            <td class="text-right">{{record.profit|floatformat:2}}</td>
+                            {% else %}
+                            <td class="text-right text-danger">{{record.profit|floatformat:2|abs}}</td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
-                        <tr class="text-muted">
-                            <td>Count - Total</td>
-                            <td class="text-right">#{{margins.count}}</td>
-                            <td class="text-right">{{total_margin|floatformat:2}}</td>
+                        <tr class="text-success">
+                            <td>Income from sales</td>
+                            <td class="text-right"></td>
+                            <td class="text-right">{{profit_total|floatformat:2}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -459,14 +444,6 @@
                                 <td class="text-right">{{record.sell_out}}</td>
                             </tr>
                             {% endfor %}
-                            {% for record in unreported_products_day %}
-                            <tr>
-                                <td>{{record}}</td>
-                                <td class="text-right">0</td>
-                                <td class="text-right">0</td>
-                            </tr>
-                            {% endfor %}
-
                         </tbody>
                     </table>
                 </div>
@@ -611,14 +588,20 @@
                             <tr class="text-center">
                                 <th>Product</th>
                                 <th>Balance</th>
+                                <th>Cost Price</th>
+                                <th>Selling Price</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for record in unreported_products_month %}
+                            {% for queryset in no_stock_month %}
+                            {% for object in queryset %}
                             <tr>
-                                <td>{{record}}</td>
-                                <td class="text-right">0</td>
+                                <td>{{object.product.nickname}}</td>
+                                <td class="text-right">{{object.stock_value}}</td>
+                                <td class="text-right">{{object.cost_price}}</td>
+                                <td class="text-right">{{object.selling_price}}</td>
                             </tr>
+                            {% endfor %}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -650,11 +633,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for record in low_stock_month %}
+                            {% for queryset in low_stock_month %}
+                            {% for object in queryset %}
                             <tr>
-                                <td>{{record.product.product}}</td>
-                                <td class="text-right">{{record.stock_balance}}</td>
+                                <td>{{object.product}}</td>
+                                <td class="text-right">{{object.stock_value}}</td>
                             </tr>
+                            {% endfor %}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -687,11 +672,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for record in no_sellout_month %}
+                            {% for queryset in no_sellout_month %}
+                            {% for object in queryset %}
                             <tr>
-                                <td>{{record.product.product}}</td>
-                                <td class="text-right">{{record.stock_balance}}</td>
+                                <td>{{object.product.nickname}}</td>
+                                <td class="text-right">{{object.stock_value}}</td>
                             </tr>
+                            {% endfor %}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -725,12 +712,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for record in low_sellout_month %}
+                            {% for queryset in low_sellout_month %}
+                            {% for object in queryset %}
                             <tr>
-                                <td>{{record.product.product}}</td>
-                                <td class="text-right">{{record.stock_balance}}</td>
-                                <td class="text-right">{{record.sellout}}</td>
+                                <td>{{object.product.nickname}}</td>
+                                <td class="text-right">{{object.stock_value}}</td>
+                                <td class="text-right">{{object.sell_out}}</td>
                             </tr>
+                            {% endfor %}
                             {% endfor %}
                         </tbody>
                     </table>
@@ -744,153 +733,5 @@
     {% endif %}
 </section>
 
-<!-- Unreported Products -->
-<section>
-    <!-- UnreportedProductDayModal -->
-    {% if unreported_products_day %}
-    <div class="modal fade" id="unreportedProductDayModal" tabindex="-1" role="dialog"
-        aria-labelledby="unreportedProductDayModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="unreportedProductDayModalLabel">List of Products not sold this</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table" data-toggle="table">
-                        <thead>
-                            <tr class="text-center">
-                                <th>Product</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for record in unreported_products_day %}
-                            <tr>
-                                <td>{{record}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- UnreportedProductMonthModal -->
-    {% if unreported_products_month %}
-    <div class="modal fade" id="unreportedProductMonthModal" tabindex="-1" role="dialog"
-        aria-labelledby="unreportedProductMonthModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="unreportedProductMonthModalLabel">List of Products not sold this month
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table" data-toggle="table">
-                        <thead>
-                            <tr class="text-center">
-                                <th>Product</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for record in unreported_products_month %}
-                            <tr>
-                                <td>{{record}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- UnreportedProductYearModal -->
-    {% if unreported_products_year %}
-    <div class="modal fade" id="unreportedProductYearModal" tabindex="-1" role="dialog"
-        aria-labelledby="unreportedProductYearModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="unreportedProductYearModalLabel">List of Products not sold this year
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table" data-toggle="table">
-                        <thead>
-                            <tr class="text-center">
-                                <th>Product</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for record in unreported_products_year %}
-                            <tr>
-                                <td>{{record}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- UnreportedProductNeverModal -->
-    {% if unreported_products %}
-    <div class="modal fade" id="unreportedProductNeverModal" tabindex="-1" role="dialog"
-        aria-labelledby="unreportedProductNeverModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="unreportedProductNeverModalLabel">List of Products never sold</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table" data-toggle="table">
-                        <thead>
-                            <tr class="text-center">
-                                <th>Product</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for record in unreported_products %}
-                            <tr>
-                                <td>{{record}}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-</section>
 
 {% endblock%}
