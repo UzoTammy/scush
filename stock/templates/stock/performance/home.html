@@ -395,7 +395,7 @@
                             {% if record.profit >= 0 %}
                             <td class="text-right">{{record.profit|floatformat:2}}</td>
                             {% else %}
-                            <td class="text-right text-danger">{{record.profit|floatformat:2|abs}}</td>
+                            <td class="text-right text-danger">{{record.profit|abs|floatformat:2}}</td>
                             {% endif %}
                         </tr>
                         {% endfor %}

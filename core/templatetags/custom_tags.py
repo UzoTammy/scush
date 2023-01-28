@@ -28,7 +28,12 @@ def add_sep(value):
 
 @register.filter(name='abs')
 def absolute(value):
-    return abs(value)
+    try:
+        return abs(value)
+    except (ValueError, TypeError):
+        return None
+
+    
 
 
 @register.filter(name='str')
