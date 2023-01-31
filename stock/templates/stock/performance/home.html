@@ -1,14 +1,11 @@
-{% extends 'users/base.html' %}
-{% load custom_tags %}
-
-{% block head %}
+{% extends 'users/base.html' %} {% load custom_tags %} {% block head %}
 <style>
     .text-lime {
         color: lime;
     }
 
     .text-lightgreen {
-        color: lightgreen
+        color: lightgreen;
     }
 
     .bg-lightblue {
@@ -57,11 +54,9 @@
         background-color: rgba(227, 233, 217);
         border-radius: 50%;
         padding: 0.3rem;
-
     }
 </style>
-{% endblock %}
-{% block content %}
+{% endblock %} {% block content %}
 <div class="container-fluid">
     <h3 class="text-center mt-3">Products Performance</h3>
     {% if record_exist %}
@@ -70,10 +65,9 @@
             <h5>As at {{current_date}}</h5>
         </div>
         <div class="col-sm-6">
-            <h6 class="ml-3 float-right">Products: Active
-                <span class="inactive-product-circle">
-                    #{{products.count}}
-                </span>
+            <h6 class="ml-3 float-right">
+                Products: Active
+                <span class="inactive-product-circle"> #{{products.count}} </span>
                 <span class="ml-3">Deactivated
                     <a href="#" data-toggle="modal" data-target="#inactiveProductsModal">
                         <span class="inactive-product-circle">
@@ -89,7 +83,7 @@
         <div class="col text-center mt-2 mb-1">
             <ul class="list-group circle">
                 <li class="list-group-item">
-                    <span class="text-danger">Products Sold</span><br>
+                    <span class="text-danger">Products Sold</span><br />
                     <h6 class="text-success">
                         <a class="product-circle" href="#" data-toggle="modal" data-target="#marginModal">
                             #{{sales.count}}
@@ -101,7 +95,7 @@
         <div class="col text-center mt-2 mb-1">
             <ul class="list-group circle">
                 <li class="list-group-item">
-                    <span class="text-danger">Sales Amount</span> <br>
+                    <span class="text-danger">Sales Amount</span> <br />
                     <span class="text-success">N{{sales_amount_total|floatformat:2}}</span>
                 </li>
             </ul>
@@ -109,7 +103,7 @@
         <div class="col text-center mt-2">
             <ul class="list-group circle">
                 <li class="list-group-item">
-                    <span class="text-danger">Sellout</span> <br>
+                    <span class="text-danger">Sellout</span> <br />
                     <span class="text-success">#{{sellout_total}}</span>
                 </li>
             </ul>
@@ -117,7 +111,7 @@
         <div class="col text-center mt-2">
             <ul class="list-group circle">
                 <li class="list-group-item">
-                    <span class="text-danger">Stock Value</span> <br>
+                    <span class="text-danger">Stock Value</span> <br />
                     <span class="text-success">N{{stock_value_total|floatformat:2}}</span>
                 </li>
             </ul>
@@ -127,11 +121,12 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 mt-3">
         <div class="col mt-2">
             <div class="card text-white bg-lightblue shadow-lg"
-                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px">
                 <div class="card-body">
                     <a class="btn btn-light btn-sm float-right" href="">
                         <i class="fa fa-edit text-danger"></i></a>
-                    <p class="card-title text-dark">Most Sold-Quantity
+                    <p class="card-title text-dark">
+                        Most Sold-Quantity
                         <span class="float-right mr-2">{{most_sellout_daily.product.date|date:'d-m-Y'}}</span>
                     </p>
                     <table class="table">
@@ -162,7 +157,8 @@
                     <span class="float-right mr-4">Daily</span>
                     <span class="float-right mr-3">Monthly</span>
                 </h6>
-                <li class="list-group-item">No Stock
+                <li class="list-group-item">
+                    No Stock
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#noStockModal">
                             <span class="no-stock-circle">#{{no_stock.count}}</span>
@@ -173,9 +169,9 @@
                             <span class="no-stock-circle">#{{no_stock_month|length}}</span>
                         </a>
                     </span> -->
-
                 </li>
-                <li class="list-group-item">Low Stock
+                <li class="list-group-item">
+                    Low Stock
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#lowStockModal">
                             <span class="low-stock-circle">#{{low_stock.count}}</span>
@@ -187,7 +183,8 @@
                         </a>
                     </span>
                 </li>
-                <li class="list-group-item">No Sellout
+                <li class="list-group-item">
+                    No Sellout
                     <span class="float-right"><a href="#" data-toggle="modal" data-target="#noSelloutModal">
                             <span class="no-sellout-circle">#{{no_sellout.count}}</span>
                         </a>
@@ -198,7 +195,8 @@
                         </a>
                     </span>
                 </li>
-                <li class="list-group-item">Low Sellout
+                <li class="list-group-item">
+                    Low Sellout
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#lowSelloutModal">
                             <span class="low-sellout-circle">#{{low_sellout.count}}</span>
@@ -214,7 +212,7 @@
         </div>
         <div class="col mt-2">
             <div class="card text-white bg-lightblue shadow-lg"
-                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px">
                 <div class="card-body">
                     <a class="btn btn-light btn-sm float-right" href=""><i class="fa fa-edit text-danger"></i></a>
                     <p class="card-title text-dark">Most Profitable</p>
@@ -242,7 +240,7 @@
         </div>
         <div class="col mt-2">
             <div class="card text-white bg-lightblue shadow-lg"
-                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px">
                 <div class="card-body">
                     <a class="btn btn-light btn-sm float-right" href=""><i class="fa fa-edit text-danger"></i></a>
                     <p class="card-title text-dark">Today's Margin</p>
@@ -256,7 +254,10 @@
                             <tr>
                                 <td>Worst Margin</td>
                                 <td>{{worst_margin_day|first}}</td>
-                                <td>{{worst_margin_day|last|floatformat:'2'}} <sup class="text-danger">**</sup></td>
+                                <td>
+                                    {{worst_margin_day|last|floatformat:'2'}}
+                                    <sup class="text-danger">**</sup>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Average Margin</td>
@@ -265,21 +266,23 @@
                             </tr>
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>
         <div class="col mt-2">
             <ul class="list-group curved-edge shadow-lg">
                 <h6 class="text-primary text-center">Performance Indicators</h6>
-                <li class="list-group-item">Availability
+                <li class="list-group-item">
+                    Availability
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#unreportedProductDayModal">
-                            <span class="no-stock-circle {{av_color|first}}">({{av_color|last}}) {{availability_ratio|floatformat:'2'}}%</span>
+                            <span class="no-stock-circle {{av_color|first}}">({{av_color|last}})
+                                {{availability_ratio|floatformat:'2'}}%</span>
                         </a>
                     </span>
                 </li>
-                <li class="list-group-item">Movement
+                <li class="list-group-item">
+                    Movement
                     <span class="float-right">
                         <a href="#" data-toggle="modal" data-target="#unreportedProductMonthModal">
                             <span class="low-stock-circle {{mv_color|first}}">
@@ -288,11 +291,20 @@
                         </a>
                     </span>
                 </li>
+                <li class="list-group-item">
+                    LDC<span class="text-muted" data-toggle="tooltip"
+                        title="Locked Down Capital is fund tied-down in stock not sold for a month">?</span>
+                    <span class="float-right">
+                        <a href="#">
+                            <span class="low-stock-circle">{{lcd|myriad}}</span>
+                        </a>
+                    </span>
+                </li>
             </ul>
         </div>
         <div class="col mt-2">
             <div class="card text-white bg-lightblue shadow-lg"
-                style="max-width: 32rem; border-radius: 50px 50px 50px 50px;">
+                style="max-width: 32rem; border-radius: 50px 50px 50px 50px">
                 <div class="card-body">
                     <a class="btn btn-light btn-sm float-right" href="">
                         <i class="fa fa-edit text-danger"></i></a>
@@ -316,7 +328,6 @@
                             </tr>
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>
@@ -339,7 +350,9 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="inactiveProductsModalLabel">List of Deactivated Products</h5>
+                <h5 class="modal-title" id="inactiveProductsModalLabel">
+                    List of Deactivated Products
+                </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -361,7 +374,9 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Close
+                </button>
             </div>
         </div>
     </div>
@@ -395,7 +410,9 @@
                             {% if record.profit >= 0 %}
                             <td class="text-right">{{record.profit|floatformat:2}}</td>
                             {% else %}
-                            <td class="text-right text-danger">{{record.profit|abs|floatformat:2}}</td>
+                            <td class="text-right text-danger">
+                                {{record.profit|abs|floatformat:2}}
+                            </td>
                             {% endif %}
                         </tr>
                         {% endfor %}
@@ -408,7 +425,9 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Close
+                </button>
             </div>
         </div>
     </div>
@@ -422,7 +441,9 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="noStockModalLabel">Products with Zero/Negative Balance - Daily</h5>
+                    <h5 class="modal-title" id="noStockModalLabel">
+                        Products with Zero/Negative Balance - Daily
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -444,7 +465,9 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
@@ -456,7 +479,9 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="lowStockModalLabel">Products with Low Balance - Daily</h5>
+                    <h5 class="modal-title" id="lowStockModalLabel">
+                        Products with Low Balance - Daily
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -482,7 +507,9 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
@@ -494,7 +521,9 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="noSelloutModalLabel">Products with No Sellout - Daily</h5>
+                    <h5 class="modal-title" id="noSelloutModalLabel">
+                        Products with No Sellout - Daily
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -520,7 +549,9 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
@@ -532,7 +563,9 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="lowSelloutModalLabel">Products with Low Sellout - Daily</h5>
+                    <h5 class="modal-title" id="lowSelloutModalLabel">
+                        Products with Low Sellout - Daily
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -558,7 +591,9 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
@@ -573,7 +608,9 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="noStockMonthModal">Products with Zero/Negative Balance - Monthly</h5>
+                    <h5 class="modal-title" id="noStockMonthModal">
+                        Products with Zero/Negative Balance - Monthly
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -589,21 +626,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for queryset in no_stock_month %}
-                            {% for object in queryset %}
+                            {% for queryset in no_stock_month %} {% for object in queryset %}
                             <tr>
                                 <td>{{object.product.nickname}}</td>
                                 <td class="text-right">{{object.stock_value}}</td>
                                 <td class="text-right">{{object.cost_price}}</td>
                                 <td class="text-right">{{object.selling_price}}</td>
                             </tr>
-                            {% endfor %}
-                            {% endfor %}
+                            {% endfor %} {% endfor %}
                         </tbody>
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
@@ -615,7 +652,9 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="lowStockMonthModalLabel">Products with Low Balance - Monthly</h5>
+                    <h5 class="modal-title" id="lowStockMonthModalLabel">
+                        Products with Low Balance - Monthly
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -629,19 +668,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for queryset in low_stock_month %}
-                            {% for object in queryset %}
+                            {% for object in low_stock_month %}
                             <tr>
                                 <td>{{object.product}}</td>
                                 <td class="text-right">{{object.stock_value}}</td>
                             </tr>
                             {% endfor %}
-                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
@@ -654,7 +693,9 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="noSelloutModalLabel">Products with No Sellout - Monthly</h5>
+                    <h5 class="modal-title" id="noSelloutModalLabel">
+                        Products with No Sellout - Monthly
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -668,19 +709,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for queryset in no_sellout_month %}
-                            {% for object in queryset %}
+                            {% for object in no_sellout_month %}
                             <tr>
                                 <td>{{object.product.nickname}}</td>
                                 <td class="text-right">{{object.stock_value}}</td>
                             </tr>
                             {% endfor %}
-                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
@@ -693,7 +734,9 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="lowSelloutMonthModalLabel">Products with Low Sellout - Monthly</h5>
+                    <h5 class="modal-title" id="lowSelloutMonthModalLabel">
+                        Products with Low Sellout - Monthly
+                    </h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -708,26 +751,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for queryset in low_sellout_month %}
-                            {% for object in queryset %}
+                            {% for object in low_sellout_month %}
                             <tr>
                                 <td>{{object.product.nickname}}</td>
                                 <td class="text-right">{{object.stock_value}}</td>
                                 <td class="text-right">{{object.sell_out}}</td>
                             </tr>
                             {% endfor %}
-                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
     </div>
     {% endif %}
 </section>
-
 
 {% endblock%}

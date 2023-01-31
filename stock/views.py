@@ -947,8 +947,8 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 if obj.exists():
                     N += 1
             if number_of_dates == N:
-                product_list.append(obj)
-        return product_list   
+                product_list.append(obj.get()) 
+        return product_list  # a list of object 
             
     def product_analyzer(self, ops, field, field_type, qs):
         """
@@ -1023,8 +1023,14 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
             context['no_stock_month'] = self.month_process(qs_month, qs_month.filter(stock_value__lte=0))
             context['low_stock_month'] = self.month_process(qs_month, qs_month.filter(stock_value__lt=10).exclude(stock_value__lte=0))
-            context['no_sellout_month'] = self.month_process(qs_month, qs_month.filter(stock_value__gt=0).filter(sell_out=0))
+            zero_sellout = self.month_process(qs_month, qs_month.filter(stock_value__gt=0).filter(sell_out=0))
             context['low_sellout_month'] = self.month_process(qs_month, qs_month.filter(sell_out__lt=10).exclude(sell_out=0))
+
+            context['no_sellout_month'] = zero_sellout
+            if zero_sellout:
+                """Locked down capital is the value in stock that have not sold even ones in the month"""
+                total = sum([obj.stock_value * obj.cost_price for obj in zero_sellout])
+                context['lcd'] = float(total.amount)
 
             context['availability_ratio'] = 100 * (1 - context['no_stock'].count()/context['products'].count())
             context['av_color'] = self.color(context['availability_ratio'])
@@ -1035,7 +1041,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if ProductExtension.objects.exists():
             latest_date = ProductExtension.objects.latest('date').date
             context['current_date'] = latest_date
-            product_extension = ProductExtension.objects.filter(sell_out__gt=0)
+            product_extension = ProductExtension.objects.filter(sell_out__gt=0).exclude(product__name__icontains='Empty')
             # Most sold out product of the day
             qs_data = product_extension.filter(date=latest_date)
             # get a tuple of the product and the sellout

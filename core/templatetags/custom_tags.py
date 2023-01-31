@@ -34,8 +34,6 @@ def absolute(value):
         return None
 
     
-
-
 @register.filter(name='str')
 @stringfilter
 def convert_to_string(value):
