@@ -1037,7 +1037,6 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['movement_ratio'] = 100 * (1 - context['no_sellout'].count()/(context['products'].count() - context['no_stock'].count()))
             context['mv_color'] = self.color(context['movement_ratio'])
             
-        
         if ProductExtension.objects.exists():
             latest_date = ProductExtension.objects.latest('date').date
             context['current_date'] = latest_date

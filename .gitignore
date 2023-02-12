@@ -21,6 +21,7 @@ xx/
 stock/status/
 /image
 *.csv
+/documentation
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

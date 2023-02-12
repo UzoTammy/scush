@@ -224,6 +224,7 @@ happiness of our staff is important, that is what we expect them to transfer to 
             'non_management': queryset.exclude(is_management=True).count(),
             'terminated': Employee.objects.filter(status=False).count(),
             'probation': queryset.filter(is_confirmed=False).count(),
+            'internal_probation': len(recordset),
 
             'staff_on_probation': self.confirm_staff(),
             'reassign_data': recordset,

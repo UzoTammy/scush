@@ -6,7 +6,6 @@ import decimal
 
 register = template.Library()
 
-
 @register.filter(name='zeropadding')
 @stringfilter
 def zero_padding(value, n):
@@ -16,7 +15,6 @@ def zero_padding(value, n):
     except:
         return None
 
-
 @register.filter(name='addsep')
 @stringfilter
 def add_sep(value):
@@ -25,21 +23,18 @@ def add_sep(value):
     part3 = value[7:]
     return f"{part1}-{part2}-{part3}"
 
-
 @register.filter(name='abs')
 def absolute(value):
     try:
         return abs(value)
     except (ValueError, TypeError):
         return None
-
     
 @register.filter(name='str')
 @stringfilter
 def convert_to_string(value):
     return str(value)
     
-
 @register.filter()
 def replace(value):
     arg = '*'
@@ -50,13 +45,11 @@ def replace(value):
         value1 = value1.replace(value1[int(len(value1)/2)], arg)
     return value1 + '@' + value.split('@')[1]
 
-
 @register.filter(name="last_month_payroll_period")
 def payroll_period_last(value):
     last_month = Month.last_month()
     year = date.today().year
     return f"{year}-{str(last_month).zfill(2)}"
-
 
 @register.filter(name="next_month_payroll_period")
 def payroll_period_next(value):
@@ -64,11 +57,9 @@ def payroll_period_next(value):
     year = date.today().year
     return f"{year}-{str(next_month).zfill(2)}"
 
-
 @register.filter
 def join(value, arg):
     return f'{arg}-{value}'
-
 
 @register.filter(name='div')
 def divide(value, arg):
@@ -77,11 +68,9 @@ def divide(value, arg):
     except (ValueError, ZeroDivisionError, decimal.InvalidOperation):
         return None
 
-
 @register.filter
 def minus(value, arg):
     return value - arg
-
 
 @register.filter
 def dividedby(value, arg):
@@ -97,14 +86,12 @@ def myriad(value):
         return f"{round(value/1e9, 1)}B"
     return round(value, 1)
 
-
 @register.filter
 def array(value, arg):
     try:
         return value[arg-1]
     except:
         return []
-
 
 @register.filter
 def multiply(value, arg):
