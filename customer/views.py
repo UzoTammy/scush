@@ -220,7 +220,6 @@ class CustomerProfileCSVView(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
         dirname = os.path.join(os.path.dirname(__file__), 'profile')
         filename = os.listdir(dirname)[0]
         file_path = os.path.join(dirname, filename)
-
         with open(file_path, 'r') as rf:
             content = csv.reader(rf)
             
@@ -232,7 +231,7 @@ class CustomerProfileCSVView(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
         context['file_path'] = file_path
         context['dataset'] = CustomerProfile.objects.all()
         return context
-
+    
     def post(self, request, **kwargs):
         data = self.get_context_data(**kwargs)['body']
         for record in data:

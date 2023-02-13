@@ -51,27 +51,10 @@
                 <ul class="nav flex-column mr-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'customer-create' %}">
-                            <i class="fa fa-plus text-dark"></i> Add
-                        </a>
-                    </li>
-                    {% if user.is_superuser %}
-                    <li class="nav-item">
-                        <a class="nav-link" 
-                            href="." 
-                            data-toggle="modal" 
-                            data-target="#fileUploadModal">
-                            <i class="fa fa-file-o text-dark"></i> Import Profile
+                            <i class="fa fa-plus text-dark"></i> Add Customer
                         </a>
                     </li>
                     
-                    <li class="nav-item">
-                        <a class="nav-link" 
-                            href="{% url 'csv-list-view' %}">
-                            <i class="fa fa-edit text-dark"></i>
-                            View Imported Profile
-                        </a>
-                    </li>
-                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'customer-credit-list' %}">
                             <i class="fa fa-credit-card text-dark"></i> Credit Record
