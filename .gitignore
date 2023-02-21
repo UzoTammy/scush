@@ -18,7 +18,7 @@ mail/sample
 mail/sample.html
 extrafiles/
 xx/
-stock/status/
+stock/status
 /image
 *.csv
 /documentation

@@ -741,22 +741,22 @@ class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
         context, msg = dict(), list()
         with open(filepath, 'r') as rf:
             content = csv.reader(rf)
-            heads = [next(content),next(content),next(content),next(content), next(content)]
-            qualifier = [True if len(heads[0]) == 7 else False]
+            headings = [next(content), next(content), next(content), next(content), next(content)]
+            qualifier = [True if len(headings[0]) == 7 else False]
             if qualifier[0] is False:
                 msg.append('Number of columns must be seven')
-            qualifier.append(heads[2][0].split()[1] == heads[2][0].split()[3])
+            qualifier.append(headings[2][0].split()[1] == headings[2][0].split()[3])
             if qualifier[1] is False:
                 msg.append("File's date is missing or date is more than one day")
-            qualifier.append(heads[3][0] == 'All Items' and heads[3][1] == 'All MC')
+            qualifier.append(headings[3][0] == 'All Items' and headings[3][1] == 'All MC')
             if qualifier[2] is False:
                 msg.append("File may not have taken all items or all MCs")
-            qualifier.append(all(heads[-1]) and heads[-1][-1]=='Cost Price' and heads[-1][0]=='Product code')
+            qualifier.append(all(headings[-1]) and headings[-1][-1]=='Cost Price' and headings[-1][0]=='Product code')
             if qualifier[3] is False:
                 msg.append("File columns may differ from what is expected")
 
             if all(qualifier):
-                date_string = heads[2][0].split()[1]
+                date_string = headings[2][0].split()[1]
                 date_obj = datetime.date(int(date_string.split('-')[2]), int(date_string.split('-')[1]), int(date_string.split('-')[0]))
                 
                 dataset = [{
