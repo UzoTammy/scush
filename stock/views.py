@@ -759,41 +759,44 @@ class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
                 date_string = headings[2][0].split()[1]
                 date_obj = datetime.date(int(date_string.split('-')[2]), int(date_string.split('-')[1]), int(date_string.split('-')[0]))
                 
-                dataset = [{
-                    'id': int(record[0]),
-                    'product': Product.objects.get(pk=int(record[0])) if Product.objects.filter(pk=int(record[0])).exists() else 'Product not found',
-                    'item': record[1],
-                    'sellout': int(string_float(record[2])),
-                    'selling_price': string_float(record[3]),
-                    'sales_amount': string_float(record[4]),
-                    'closing_balance': int(string_float(record[5])),
-                    'cost_price': string_float(record[6])
-                } for record in content if record[0] != '']  
-        
-                context = {
-                    'date': date_obj,
-                    'filename': filepath,
-                    "dataset": dataset,
-                }
-                
-                post_dataset = list()
-                lock_save = False
-                for data in dataset:
-                    X = data.copy()
-                    product = X.pop('product')
-                    del X['item']
-                    try:
-                        product.id
-                    except:
-                        messages.warning(request, "This dataset is not fit to go into database !!!")
-                        lock_save = True
-                        break
-                    else:
-                        X.update({'id': product.id})
-                        post_dataset.append(X)
-
-                context['post_dataset'] = post_dataset
-                context['lock_save'] = lock_save
+                try:
+                    dataset = [{
+                        'id': int(record[0]),
+                        'product': Product.objects.get(pk=int(record[0])) if Product.objects.filter(pk=int(record[0])).exists() else 'Product not found',
+                        'item': record[1],
+                        'sellout': int(string_float(record[2])),
+                        'selling_price': string_float(record[3]),
+                        'sales_amount': string_float(record[4]),
+                        'closing_balance': int(string_float(record[5])),
+                        'cost_price': string_float(record[6])
+                    } for record in content if record[0] != '']  
+                    
+                    context = {
+                        'date': date_obj,
+                        'filename': filepath,
+                        "dataset": dataset,
+                    }
+                    
+                    post_dataset = list()
+                    lock_save = False
+                    for data in dataset:
+                        X = data.copy()
+                        product = X.pop('product')
+                        del X['item']
+                        try:
+                            product.id
+                        except:
+                            messages.warning(request, "This dataset is not fit to go into database !!!")
+                            lock_save = True
+                            break
+                        else:
+                            X.update({'id': product.id})
+                            post_dataset.append(X)
+                    context['post_dataset'] = post_dataset
+                except:
+                    messages.warning(request, "CSV not well prepared for the database")
+                    lock_save = True
+        context['lock_save'] = lock_save
         context['qualifier'] = all(qualifier) #boolean 
         context['msg'] = msg #list
         return render(request, 'stock/packs/bulk_update.html', context=context)
