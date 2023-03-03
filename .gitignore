@@ -21,6 +21,7 @@ xx/
 /image
 *.csv
 /documentation
+/staff/data.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

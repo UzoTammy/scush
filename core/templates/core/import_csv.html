@@ -1,0 +1,207 @@
+{% extends 'core/base.html' %}
+{% load custom_tags %}
+
+{% block head %}
+    <style>
+        .prog {
+            width: {{stage|last}}%;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+<div class="container mt-3">
+    <form id="radio-form" action="{% url 'import-csv' %}" method="GET">
+        <div class="row">
+            <div class="col">
+                <h3 class="text-center">Import CSV file into Scush</h3>
+                <h5>Take note</h5>
+                <ul>
+                    <li>Get the file and its location</li>
+                    <li>Prepare the file for import</li>
+                    <li> 
+                        Select Type (<small class="text-danger">Required</small>)
+                        <div class="form-check ml-2">
+                            <input class="form-check-input" type="radio" onclick="submitForm()" name="selectedItem" id="stock-status" value="stock_status" {{status}}>
+                            <label class="form-check-label" for="stock-status">Stock Status</label>
+                        </div>
+                        <div class="form-check ml-2">
+                            <input class="form-check-input" onclick="submitForm()" 
+                            type="radio" name="selectedItem" id="standard" value="standard" {{standard}}>
+                            <label class="form-check-label" for="standard">Standard 
+                                <a href="#" data-toggle="tooltip" 
+                                    title="{{standard_message}}">
+                                <i class="fa fa-info-circle"></i>
+                                </a>
+                            </label>
+                                
+                        </div>
+                    </li>
+                </ul>
+                <button id="submitButtonCSVUpload" data-toggle="modal" 
+                data-target="#loadCSVModal" type="button" class="btn btn-sm btn-primary mt-3">Next</button>
+                <a class="btn btn-dark btn-sm float-right" href="{% url 'home' %}"> <i class="fa fa-reply"></i> </a>
+            </div>
+        </div>
+    </form>
+    <div class="row m-3">
+        <div class="col text-center">
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated prog" 
+                role="progressbar" 
+                aria-valuenow="{{stage|last}}" 
+                aria-valuemin="0" 
+                aria-valuemax="100">
+                {{stage|first}}
+            </div>
+            </div>
+        </div>
+    </div>
+    {% if switch == 2 %}
+    <section id="tableForMap" style="display: block;">
+        {% if title == 'Stock Status' %}
+        <h4 class="mt-3">Mapping the fields for {{title}}</h4>
+        <div class="row"> 
+            <div class="col">
+                <table class="table" data-toggle="table" data-pagination="true">
+                    <thead>
+                        <tr>
+                            <th>Database Field</th>
+                            <th>CSV heading</th>
+                            <th class="text-center">Mapped</th>
+                            <th class="text-center">Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for field in fieldset %}
+                        <tr>
+                            <td>{{field|array:1}}</td> 
+                            <td>{{field|array:2}}</td>
+                            {% if field|array:2 == 'Auto' %}
+                                <td class="text-muted text-center"></td>
+                            {% else %}
+                                <td class="text-muted text-center"><i class="fa fa-check"></i></td>
+                            {% endif %}
+                            {% if field|array:3 == 'Failed' %}
+                            <td class="text-center text-danger">{{field|array:3}}</td>
+                            {% elif field|array:3 == 'Passed' or field|array:3 == 'Auto' %}
+                            <td class="text-center text-muted">{{field|array:3}}</td>
+                            {% else %}
+                            <td class="text-center text-dark curved-edge">{{field|array:3}}</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>  
+        {% else %}
+        <h4 class="mt-3">Content of CSV file - {{title}}</h4>
+        <div class="row"> 
+            <div class="col">
+                <table class="table" data-toggle="table" data-pagination="true">
+                    <thead>
+                        <tr>
+                            {% for field in fieldset %}
+                            <th>{{field}}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in records %}
+                        <tr>
+                            {% for row in record %}
+                            <td>{{row}}</td> 
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+        <div class="row m-3">
+            <div class="col">
+                <a class="btn btn-primary" href="{% url 'save-csv' %}">Save</a>
+                <a class="btn btn-dark float-right" href="{% url 'home' %}">Cancel</a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    {% if switch == 3 %}
+    <section>
+        <p>{{date}}</p>
+    </section>
+    {% endif %}
+</div>
+
+<script>
+    const myButton = document.querySelector('#submitButtonCSVUpload');
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const firstKey = Array.from(urlParams.keys())[0];
+
+    if (queryString == '') {
+        window.onload = function() {
+            myButton.disabled = true;   
+        }
+        // document.getElementById('tableForMap').style.display = 'none';
+    }
+    if (firstKey == 'fileName') {
+        window.onload = function() {
+            myButton.disabled = true;   
+        }
+        document.getElementById('tableForMap').style.display = 'block';
+    }
+    
+    function submitForm() {  
+      // Get the button element
+        const myButton = document.querySelector('#submitButtonCSVUpload');  
+        document.getElementById("radio-form").submit();
+        myButton.removeAttribute("disabled")
+    }
+</script>
+
+<div class="modal fade" id="loadCSVModal" tabindex="-1" aria-labelledby="stockReportDateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loadCSVModalLabel">Upload CSV file - {{title}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form action="." method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+              <div class="row">
+                <div class="col">
+                    <span>Take note</span>
+                    <ul>
+                        <li>Your set date is {{user.profile.stock_report_date|date:'d-m-Y'}}</li>
+                        <li>File date is 20-02-2023</li>
+                        <li>Existing record in database can only be update</li>
+                        <li>Record not in database will be created <span class="text-danger">!!!</span></li>
+                    </ul>
+                </div>
+              </div>
+              <div class="row mt-3">
+                  <div class="col">
+                    <label for="">Select CSV File</label>
+                    <input id="fileInput" class="form-control" type="file" name="fileName" accept=".csv" required />
+                  </div>
+              </div>
+              
+              <div class="row mt-3">
+                <div class="col">
+                  <button type="button" class="btn btn-dark btn-sm float-right" data-dismiss="modal">Close</button>
+                  <input type="submit" class="float-right btn btn-primary btn-sm mr-2"  value="Upload File">
+              </div>
+            </form>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+{% endblock %}

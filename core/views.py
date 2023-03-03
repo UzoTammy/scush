@@ -21,29 +21,32 @@ Here are the list of all that is done here
 # all imports
 import datetime
 import calendar
+import csv
+import json
+import os
+from pathlib import Path
+
 from django.core.mail import EmailMessage
-from decimal import Decimal
-from django.http import HttpResponse
+from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import (View, TemplateView, ListView, CreateView, DetailView, UpdateView)
-from django.db.models import F, Sum, Avg 
+from django.views.generic import (TemplateView, ListView, CreateView, DetailView, UpdateView)
+from django.views import View
+from django.db.models import F, Sum 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from staff.models import Employee, Payroll, EmployeeBalance, RequestPermission, Permit
-from stock.models import Product
+from staff.models import Employee, Permit
+from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
-from survey.models import Question
 from apply.models import Applicant
 from trade.models import TradeDaily, TradeMonthly, BalanceSheet
 from warehouse.models import Stores, Renewal
-from ozone import mytools
 from .forms import JsonDatasetForm
 from .models import JsonDataset
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from mail import mailbox
 from django.template import loader
-from target.models import PositionKPIMonthly
-import itertools
+from django.urls import reverse
+
 
 def index(request):
     """
@@ -115,6 +118,14 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context = super(HomeView, self).get_context_data(**kwargs)
         context['title'] = 'Home'
         # context['trade'] = TradeDaily.objects.all()
+        
+        # Build paths inside the project like this: BASE_DIR / 'subdir'.
+        BASE_DIR = Path(__file__).resolve().parent.parent
+
+        # json file for CSV file upload
+        filepath = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
+        if os.path.exists(filepath):
+            os.remove(filepath)
         return context
 
 
@@ -458,4 +469,175 @@ class JsonCategoryKeyValueUpdateView(LoginRequiredMixin, View):
         return redirect('json-cat-key', kwargs['id'], kwargs['key'])
 
 
+class ImportCSVView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/import_csv.html'  
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Build paths inside the project like this: BASE_DIR / 'subdir'.
+        BASE_DIR = Path(__file__).resolve().parent.parent
+
+        filepath = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
+        """
+            There are two major considerations here
+            1. When CSV Type has been selected (stock status or standard) 
+            2. When json file exist or do not exist
+            These considerations decide the process and the stage we are in
+            and the documentations below details them.
+        """
+        if 'selectedItem' in self.request.GET:
+            selected_item = self.request.GET['selectedItem']
+            if selected_item == 'stock_status':
+                context['status'], context['standard'] = 'checked', ''
+                model_fields = ProductExtension._meta.get_fields()
+                fieldset = [field.name for field in model_fields]
+                # filepath = os.path.join('core', 'data.json')
+                data = {'fieldset': fieldset, 'title': 'Stock Status', 'switch': 1}
+                with open(filepath, 'w') as wf:
+                    json.dump(data, wf, indent=2)
+            else:
+                """Import into a json file using the username to create the file"""
+                data = {'title': 'Standard', 'switch': 1}
+                with open(filepath, 'w') as wf:
+                    json.dump(data, wf)
+                context['status'], context['standard'] = '', 'checked'
+            context['selectedItem'] = selected_item
+        
+        filepath = os.path.join('core', f'{self.request.user}.json')
+        if os.path.exists(filepath):
+            """
+                The page needs to load again when CSV Type is selected.
+                At this stage, the created json file will be opened just to
+                access the switch so that it can keep away from stage 3.
+            """
+            with open(filepath, 'r') as rf:
+                content = rf.read()
+                data = json.loads(content)
+            stage = ('Stage 2: Click Next to chose file', 50)
+            if data['switch'] == 2:
+                """The switch directed the process to follow this path
+                    because its value was defined in the post function which
+                    reversed its page using the reverse function. note: stage is defined.
+                    At this stage, the json file exists and the fields of the model object,
+                    the headings of the csv file has been mapped into a json object
+                    has been extracted into it and brought to the page.
+                """
+                context['title'] = data['title']
+                if 'date' in data:
+                    context['date'] = data['date']
+            
+                context['fieldset'] = data['fieldset']
+                stage = ('Stage 3: File Uploaded, Save if Satisfied? Select Type again if Not satisfied?', 75)
+                if 'records' in data:
+                    context['records'] = data['records']
+        else:
+            """The initial path of the process
+                Json file is created and switch is added to control process flow.
+                Stage is added to define position of the flow.
+
+                This process occurs when json file do not exist.
+                Which is the case when starting the upload process.
+                Note: Json file is deleted when leaving of the page.
+            """
+            with open(filepath, 'w') as wf:
+                data = {'switch': 0}
+                json.dump(data, wf)
+            stage = ('Stage 1: Select CSV file to upload', 25)
+        context['switch'] = data['switch']
+        context['stage'] = stage
+        context['standard_message'] = (
+            "Chose this if your CSV file is prepared with first row as the heading and the rest rows as the records."
+            )
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            # Build paths inside the project like this: BASE_DIR / 'subdir'.
+            BASE_DIR = Path(__file__).resolve().parent.parent
+
+            filepath = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
+            with open(filepath, 'r') as rf:
+                content = rf.read()
+                data = json.loads(content)
+            
+            if 'fileName' in self.request.FILES:
+                filename = self.request.FILES['fileName']
+                # Read the contents of the file into memory
+                csv_file = filename.read().decode('utf-8')
+                # Parse the CSV data using the csv module
+                reader = csv.reader(csv_file.splitlines(), delimiter=',')
+                if data['title'] == 'Stock Status':
+                    head_0, head_1, head_2, head_3, head_4 = next(reader), next(reader), next(reader), next(reader), next(reader)
+                    records = [content for content in reader]
+                
+                    head_4[6], head_4[2] = head_4[2], head_4[6]
+                    notes = ['Passed' if head_4[0].strip().lower() == 'product code' else 'Failed']
+                    notes.append('Passed' if head_4[1].strip().lower() == 'item name' else 'Failed')
+                    head_4.insert(2, '')
+                    notes.append('Auto')
+                    notes.append('Passed' if head_4[3].strip().lower() == 'cost price' else 'Failed')
+                    head_4.insert(4, '')
+                    notes.append('Auto')
+                    notes.append('Passed' if head_4[5].strip().lower() == 'selling price' else 'Failed')
+                    head_4[6], head_4[7] = head_4[7], head_4[6]
+                    notes.append('Passed' if head_4[6].strip().lower() == 'closing balance' else 'Failed')
+                    head_4[8], head_4[7] = head_4[7], head_4[8]
+                    head_4.insert(7, '')
+                    notes.append(head_2[0].split()[1])
+                    notes.append('Passed' if head_4[8].strip().lower() == 'sellout' else 'Failed')
+                    head_4.insert(9, '')
+                    notes.append('Auto')
+                    notes.append('Passed' if head_4[10].strip().lower() == 'sales amount' else 'Failed')
+                    
+                    fieldset = list((a, b, c) for a, b, c in zip(data['fieldset'], head_4, notes))
+                    data['fieldset'] = fieldset
+                    data['records'] = records
+                    data['date'] = head_2[0]
+                else:
+                    data['fieldset'] = next(reader)
+                    data['records'] = [content for content in reader]
+                    
+                data['switch'] = 2    
+                with open(filepath, 'w') as wf:
+                    json.dump(data, wf, indent=2)
+        except Exception as err:
+            messages.warning(request, f"{err} {err.with_traceback()} - **File not uploaded. Check file imported, something is not right**")
+        return redirect(reverse('import-csv')) #super().get(request, **kwargs) 
+
+class SaveCSVFile(LoginRequiredMixin, View):  
+    
+    def get(self, request, *args, **kwargs):
+        context = {}
+        # Build paths inside the project like this: BASE_DIR / 'subdir'.
+        BASE_DIR = Path(__file__).resolve().parent.parent
+
+        filepath = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
+        with open(filepath, 'r') as rf:
+            content = rf.read() 
+            json_data = json.loads(content) # this makes it a python object
+            with open(filepath, 'w') as wf:
+                json_data['switch'] = 3
+                json.dump(json_data, wf, indent=2) # taking a dictionary object into a json object
+            
+        if json_data['title'] == 'Stock Status':
+            context['date'] = json_data['date']
+            context['switch'] = json_data['switch']
+            # date = datetime.datetime.strptime(json_data['date'], '%d-%m-%Y') 
+            # if 'records' in json_data['records']:
+            #     for record in json_data['records']:
+            #         for item in record:
+            #             obj, created = ProductExtension.objects.update_or_create(
+            #                 product_id=int(item[0]),
+            #                 date=date,
+            #                 defaults={
+            #                     'cost_price': float(item[6]),
+            #                     'selling_price': float(item[3]),
+            #                     'stock_value': int(item[5]),
+            #                     'sell_out': int(item[2]),
+            #                     'sales_amount': float(item[4]),
+            #                 }
+            #         )
+                
+        context['stage'] = ('Stage 4: congrats process is complete', 100)
+        messages.success(request, "Uploaded file saved Successfully !!!")
+        return render(request, 'core/import_csv.html', context=context)

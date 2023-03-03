@@ -1,6 +1,9 @@
 import decimal
 import calendar
 import datetime
+import json
+import os
+from pathlib import Path
 
 from django.forms import ValidationError
 from survey.models import Question
@@ -1908,3 +1911,86 @@ class WelfareSupportListViewOneStaff(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return super().get_queryset().filter(staff__id=self.kwargs['pk'])
 
+# Payroll process developer code
+class PayrollView(LoginRequiredMixin, TemplateView):
+    template_name = 'staff/payroll/payroll.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Build paths inside the project like this: BASE_DIR / 'subdir'.
+        BASE_DIR = Path(__file__).resolve().parent.parent
+
+        filepath = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
+        if not os.path.exists(filepath):
+            # Point of entry
+            employees = Employee.objects.all()
+            context['employees'] = employees
+            employees = employees.annotate(salary=F('basic_salary') + F('allowance'))
+            context['totals'] = (employees.aggregate(Sum('salary'))['salary__sum'],
+                                 employees.aggregate(Sum('tax_amount'))['tax_amount__sum']
+                                )
+            # create a json file (switch: 1 and employee_update: True)
+            with open(filepath, 'w') as wf:
+                data = {'switch': 1}
+                json.dump(data, wf)
+            context['switch'] = 0
+        else:
+            # open a json file to bring in data
+            with open(filepath, 'r') as rf:
+                content = rf.read()
+                data = json.loads(content)
+            switch = data['switch']
+            
+            if switch == 1:
+                # adjust data going into json
+                data['switch'] = switch + 1 # step up switch
+                if 'employeeUpdate' in self.request.GET:
+                    data['employee_update'] = self.request.GET['employeeUpdate']
+            
+                # write data back into json
+                with open(filepath, 'w') as wf:
+                    json.dump(data, wf, indent=2)
+                # data to template
+                context['switch'] = switch
+                context['employee_update'] = data['employee_update']
+                context['employees'] = Employee.objects.all()
+                # return redirect('payroll-process-employee-update')
+            elif switch == 2:
+                # adjust data going into json
+                data['switch'] = switch + 1 # step up switch
+                # write data back into json
+                if 'employeeId' in self.request.GET:
+                    data['id'] = self.request.GET['employeeId']
+                    data['employee_action'] = self.request.GET['employeeAction']
+                with open(filepath, 'w') as wf:
+                    json.dump(data, wf, indent=2)
+                # data to template
+                context['switch'] = switch
+            # elif switch == 3:
+            #     context['switch'] = switch
+            # elif switch == 4:
+            #     context['switch'] = switch
+            # elif switch == 5:
+            #     context['switch'] = switch
+            # elif switch == 6:
+            #     context['switch'] = switch
+            # elif switch == 7:
+            #     context['switch'] = switch
+            # elif switch == 8:
+            #     context['switch'] = switch
+            else:
+                os.remove(filepath)    
+                context['switch'] = f'{switch} - process complete' 
+        return context
+    
+
+class ProcessEmployeeUpdateView(LoginRequiredMixin, TemplateView):
+    template_name = 'staff/payroll/employee_update.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+    
+    # def post(self, request, **kwargs):
+    #     return HttpResponse('yes')

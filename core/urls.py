@@ -26,7 +26,8 @@ urlpatterns = [
     path('reset/help/', TemplateView.as_view(template_name='core/resetting/settings_help.html'), name='reset-help'),
     path('mail/<str:target>/<str:kpi>/', KPIMailSend.as_view(), name='kpi_mail'),
     
-    # path('practice/', PracticeView.as_view(), name='practice'),
+    path('import/csv/', ImportCSVView.as_view(), name='import-csv'),
+    path('import/csv/save/', SaveCSVFile.as_view(), name='save-csv')
     
 ]
 

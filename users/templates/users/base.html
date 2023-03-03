@@ -65,6 +65,7 @@
         .curved-edge {
             max-width: 32rem; 
             border-radius: 50px 50px 50px 50px;
+            background-color: lightblue;
         }
         
         @media (min-width: 996px) {
@@ -205,6 +206,8 @@
                    aria-expanded="false">
                     <i class="fa fa-gears text-white"></i> Administration</a>
                 <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'import-csv'%}">Import CSV</a>
+                    <a class="dropdown-item" href="{% url 'payroll-process'%}">Create Payroll</a>
                     <a class="dropdown-item" href="{% url 'json-new' %}">Add to Settings</a>
                     <a class="dropdown-item" href="{% url 'email-sample' %}">Sampler</a>
                 </div>

@@ -52,6 +52,10 @@ urlpatterns += [
     path('payroll/update/tax/', UpdateTax.as_view(), name='update-tax'),
     path('payroll/<int:pk>/balance/', GratuityListViewOneStaff.as_view(), name='balance-view'),
     path('payroll/tax/list/', TaxList.as_view(), name='tax-list'),
+    
+    # payroll process 
+    path('payroll/process/', PayrollView.as_view(), name='payroll-process'),
+    path('payroll/process/employee/update/', ProcessEmployeeUpdateView.as_view(), name='payroll-process-employee-update')
 ]
 
 urlpatterns += [

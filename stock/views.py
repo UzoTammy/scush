@@ -804,7 +804,7 @@ class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def post(self, request, **kwargs):
         # fetch from post request the date and the list of data for update to the model
-        date = datetime.datetime.strptime(request.POST['date'], '%b. %d, %Y').date()
+        date = datetime.datetime.strptime(request.POST['date'], '%B %d, %Y').date()
         content = request.POST['content']
         list_data = eval(content)
 
@@ -1180,7 +1180,6 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['most_sales_year'] = highest_sales_year
         return context
 
-
 class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'stock/product_analysis.html'
 
@@ -1259,8 +1258,7 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
                     'sold': sold.last().sell_out,
                     'date': date
                 }
-            )
-            
+            )            
         context['no_sellout'] = no_sellout 
         
         return context

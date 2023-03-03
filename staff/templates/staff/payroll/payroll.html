@@ -1,0 +1,166 @@
+{% extends 'core/base.html' %}
+{% load custom_tags %}
+
+{% block head %}
+<style>
+    .prog {
+        width: {{switch|multiply:20}}%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row">
+        <div class="col">
+            <h3>Prepare Payroll</h3>
+            <div class="row m-3">
+                <div class="col text-center">
+                    <div class="progress">
+                        <div class="text-center progress-bar progress-bar-striped progress-bar-animated prog"
+                            role="progressbar" aria-valuenow="{{switch|multiply:20}}" aria-valuemin="0"
+                            aria-valuemax="100">
+                            Step {{switch}} of 5
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if switch == 0 %}
+            <div class="row">
+                <div class="col">
+                    {% if employees %}
+                    <h3>Present State of Employee Database</h3>
+                    <table class="table" data-toggle="table" data-pagination="true">
+                        <thead>
+                            <tr class="text-center text-white bg-secondary">
+                                <th>ID</th>
+                                <th>Employee</th>
+                                <th>Salary</th>
+                                <th>Tax</th>
+                                <th>Bank Details</th>
+                            </tr>
+                            <tr class="text-center bg-light">
+                                <th colspan="2">Total</th>
+                                <th class="text-right">NGN{{totals|first|floatformat:2}}</th>
+                                <th class="text-right">NGN{{totals|last|floatformat:2}}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for employee in employees %}
+                            <tr>
+                                <td style="width: 20px;">{{employee.pk|zeropadding:3}}</td>
+                                <td>{{employee.fullname}}</td>
+                                <td class="text-right">{{employee.salary}}</td>
+                                <td class="text-right">{{employee.tax_amount}}</td>
+                                <td class="text-center">{{employee.banker}} (#{{employee.account_number}})</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <h4>No record in database</h4>
+                    {% endif %}
+                </div>
+            </div>
+            {% elif switch == 1%}
+
+            {% endif %}
+        </div>
+    </div>
+
+    <form action="." method="GET">
+        {% if switch == 0 %}
+        <div class="row ml-3">
+            <div class="col">
+                <span>Do you require Employee Update?
+                    <div class="form-check form-check-inline ml-3">
+                        <input class="form-check-input" type="radio" name="employeeUpdate" id="inlineRadio1" value="Yes"
+                            checked>
+                        <label class="form-check-label" for="inlineRadio1">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="employeeUpdate" id="inlineRadio2" value="No">
+                        <label class="form-check-label" for="inlineRadio2">No</label>
+                    </div>
+                </span>
+            </div>
+        </div>
+        {% elif switch == 1 and employee_update == 'Yes' %}
+        <div class="row ml-3">
+            <div class="col-4">
+                <label class="" for="">Employee</label>
+                <select name="employeeId" class="form-control form-control-md">
+                    {% for employee in employees %}
+                    <option value="{{employee.pk}}">{{employee.pk|zeropadding:3}}-{{employee.fullname}}</option>
+                    {% endfor %}
+                </select>
+                <div class="form-check ml-3 mt-3">
+                    <input class="form-check-input" type="radio" name="employeeAction" id="inlineRadio1" value="bank">
+                    <label class="form-check-label" for="inlineRadio1">Change Bank Details</label>
+                  </div>
+                  <div class="form-check ml-3 mt-2">
+                    <input class="form-check-input" type="radio" name="employeeAction" id="inlineRadio2" value="salary" checked>
+                    <label class="form-check-label" for="inlineRadio2">Change Salary</label>
+                  </div>
+                  <div class="form-check ml-3 mt-2">
+                    <input class="form-check-input" type="radio" name="employeeAction" id="inlineRadio3" value="terminate">
+                    <label class="form-check-label" for="inlineRadio3">Terminate</label>
+                  </div>
+                  <div class="form-check ml-3 mt-2">
+                    <input class="form-check-input" type="radio" name="employeeAction" id="inlineRadio4" value="others">
+                    <label class="form-check-label" for="inlineRadio4">Others</label>
+                  </div>
+            </div>
+        </div>
+        {% elif switch == 1 and employee_update == 'No' %}
+        <!-- Code here -->
+        {% endif %}
+        <div class="row mt-3">
+            <div class="col">
+                {% if switch != 1 and update_status != 0 %}
+                <button class="btn btn-primary btn-sm" type="submit">Next</button>
+                {% endif %}
+            </div>
+            <div class="col">
+                {% if switch == 1 and employee_update == 'Yes' %}
+                <a class="btn btn-secondary btn-sm" href="">Update</a>
+                <a class="btn btn-secondary btn-sm float-right" href="">Done</a>
+                {% endif %}
+            </div>
+            <div class="col">
+                {% if switch == 1 and employee_update == 'Yes' %}
+                <button 
+                type="button" 
+                class="btn btn-dark btn-sm float-right" 
+                data-toggle="modal" data-target="#cancelModal"> Cancel</button>
+                {% else %}
+                <a class="btn btn-dark btn-sm float-right" href="{% url 'home' %}"> <i class="fa fa-reply"></i>Home</a>
+                {% endif %}
+            </div>
+        
+        </div>
+    </form>
+
+    <!-- Modal -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Abort the Payroll Process</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to abort the payroll process and return to home page?
+        </div>
+        <div class="modal-footer">
+          <a href="{% url 'home' %}" type="button" class="btn btn-danger">Yes</a>
+          <button type="button" class="btn btn-dark" data-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
+    </div>
+</div>
+{% endblock%}

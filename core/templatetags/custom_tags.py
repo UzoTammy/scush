@@ -91,7 +91,7 @@ def array(value, arg):
     try:
         return value[arg-1]
     except:
-        return []
+        return None
 
 @register.filter
 def multiply(value, arg):
