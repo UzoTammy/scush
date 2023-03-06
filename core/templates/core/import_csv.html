@@ -6,6 +6,12 @@
         .prog {
             width: {{stage|last}}%;
         }
+        .circle {
+            background-color: darkgrey;
+            border-radius: 50%;
+            max-width: 10rem;
+            padding: 10px;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -130,7 +136,8 @@
     {% endif %}
     {% if switch == 3 %}
     <section>
-        <p>{{date}}</p>
+        <h4>Number of record(s) Created: <span class="circle">{{obj_created_updated|first}}</span> 
+            and Updated: <span class="circle">{{obj_created_updated|last}}</span></h4>
     </section>
     {% endif %}
 </div>
@@ -176,11 +183,10 @@
                 {% csrf_token %}
               <div class="row">
                 <div class="col">
-                    <span>Take note</span>
+                    <span>Take Note:</span>
                     <ul>
                         <li>Your set date is {{user.profile.stock_report_date|date:'d-m-Y'}}</li>
-                        <li>File date is 20-02-2023</li>
-                        <li>Existing record in database can only be update</li>
+                        <li>Existing record in database can only be updated</li>
                         <li>Record not in database will be created <span class="text-danger">!!!</span></li>
                     </ul>
                 </div>

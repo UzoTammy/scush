@@ -522,6 +522,7 @@ class ImportCSVView(LoginRequiredMixin, TemplateView):
                     the headings of the csv file has been mapped into a json object
                     has been extracted into it and brought to the page.
                 """
+
                 context['title'] = data['title']
                 if 'date' in data:
                     context['date'] = data['date']
@@ -568,6 +569,8 @@ class ImportCSVView(LoginRequiredMixin, TemplateView):
                 reader = csv.reader(csv_file.splitlines(), delimiter=',')
                 if data['title'] == 'Stock Status':
                     head_0, head_1, head_2, head_3, head_4 = next(reader), next(reader), next(reader), next(reader), next(reader)
+                    # code to look into the file
+                    
                     records = [content for content in reader]
                 
                     head_4[6], head_4[2] = head_4[2], head_4[6]
@@ -592,7 +595,7 @@ class ImportCSVView(LoginRequiredMixin, TemplateView):
                     fieldset = list((a, b, c) for a, b, c in zip(data['fieldset'], head_4, notes))
                     data['fieldset'] = fieldset
                     data['records'] = records
-                    data['date'] = head_2[0]
+                    data['date'] = head_2[0].split()[1]
                 else:
                     data['fieldset'] = next(reader)
                     data['records'] = [content for content in reader]
@@ -617,27 +620,51 @@ class SaveCSVFile(LoginRequiredMixin, View):
             json_data = json.loads(content) # this makes it a python object
             with open(filepath, 'w') as wf:
                 json_data['switch'] = 3
+                json_data['queryset_before'] = ProductExtension.objects.count()
                 json.dump(json_data, wf, indent=2) # taking a dictionary object into a json object
             
         if json_data['title'] == 'Stock Status':
             context['date'] = json_data['date']
             context['switch'] = json_data['switch']
-            # date = datetime.datetime.strptime(json_data['date'], '%d-%m-%Y') 
-            # if 'records' in json_data['records']:
-            #     for record in json_data['records']:
-            #         for item in record:
-            #             obj, created = ProductExtension.objects.update_or_create(
-            #                 product_id=int(item[0]),
-            #                 date=date,
-            #                 defaults={
-            #                     'cost_price': float(item[6]),
-            #                     'selling_price': float(item[3]),
-            #                     'stock_value': int(item[5]),
-            #                     'sell_out': int(item[2]),
-            #                     'sales_amount': float(item[4]),
-            #                 }
-            #         )
-                
+            date = datetime.datetime.strptime(json_data['date'], '%d-%m-%Y').date() 
+            
+            if 'records' in json_data:
+                obj_created, obj_updated = 0, 0
+                product_list = Product.objects.filter(active=True).values_list('pk', flat=True)
+                for record in json_data['records']:
+                    
+                    try:
+                        if record[0] == '' or int(record[0]) not in product_list:
+                            continue
+                        product_id = int(record[0].strip())
+                        sellout = int(record[2].strip().replace(',', ''))
+                        selling_price = float(record[3].strip().replace(',', ''))
+                        sales_amount = float(record[4].strip().replace(',', ''))
+                        stock_value = int(record[5].strip().replace(',', ''))
+                        cost_price = float(record[6].strip().replace(',', ''))
+                    
+                        obj, created = ProductExtension.objects.update_or_create(
+                            product_id=product_id,
+                            date=date,
+                            defaults={
+                                'sell_out': sellout,
+                                'selling_price': selling_price,
+                                'sales_amount': sales_amount,
+                                'stock_value': stock_value,
+                                'cost_price': cost_price
+                                }
+                            )
+                        if created:
+                            obj_created += 1
+                        else:
+                            obj_updated += 1
+                    except Exception as err:
+                            context['stage'] = ('Stage 4: Process aborted due to error encountered', 100)
+                            messages.info(request, f"Error {err} @ {obj.product.id}!!!")
+                            context['obj_created_updated'] = (obj_created, obj_updated)
+                            return render(request, 'core/import_csv.html', context=context)
         context['stage'] = ('Stage 4: congrats process is complete', 100)
         messages.success(request, "Uploaded file saved Successfully !!!")
+        context['obj_created_updated'] = (obj_created, obj_updated)
         return render(request, 'core/import_csv.html', context=context)
+    
