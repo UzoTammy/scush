@@ -12,7 +12,9 @@
     <div class="row mt-3">
         <div class="col">
             <table class="table table-bordered" data-toggle="table" data-pagination="false">
-                <caption class="text-info">Product Velocity - Sellout</caption>
+                <caption class="text-info">Product Velocity - Sellout
+                    <span class="float-right">{{total_vel}}</span>
+                </caption>
                 <thead class="bg-dark text-white">
                     <tr class="text-center">
                         <th>Item</th>
@@ -33,12 +35,7 @@
                         {% endfor %}
                     </tr>
                     
-                    <tr>
-                        <td>Percent</td>
-                        {% for item in velocity %}
-                        <td class="text-right">{{item.amount|multiply:100|div:total_vel.amount|floatformat:2}}%</td>
-                        {% endfor %}
-                    </tr>
+                    
                 </tbody>
             </table>
             <small class="text-danger">ND - Not Designated</small>
