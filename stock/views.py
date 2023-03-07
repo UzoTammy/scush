@@ -1206,6 +1206,11 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
             active_products_list = Product.objects.filter(active=True)
             active_products = active_products_list.values_list('pk', flat=True).distinct().order_by('source')
 
+            """Sellout Velocity process starts here. Velocity type ranges from -1 to 5.
+            -1 - Not designated, 0 - No sellout, 1 - very low sellout, 2 - low sellout
+            3 - moderate, 4 - high sellout and 5 - very high sellout.
+            output: [(v1, qs1), (v2, qs2), (v3, qs3)]
+            """
             product_list_for_velocity = [(i, active_products_list.filter(velocity=i).values_list('pk', flat=True)) 
                                          for i in range(-1, 6)]
         else:
@@ -1215,17 +1220,20 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
             date2 = ProductExtension.objects.latest('date').date
             date1 = date2 - datetime.timedelta(days=4) if date2.weekday() == 0 or date2.weekday() == 1 else date2 - datetime.timedelta(days=3)
             
-            velocity = list()
+            velocity, velocity_count = list(), list()
             for qs in product_list_for_velocity:
                 lis = list()
+                velocity_count.append(qs[1].count())
                 for product in qs[1]:
                     obj = ProductExtension.objects.filter(date=date2).filter(product=product)
                     lis.append(obj.get().stock_value * obj.get().cost_price if obj.exists() else Money(0, 'NGN'))
                 
-                velocity.append(sum(lis))  
+                velocity.append(sum(lis) if lis else Money(0, 'NGN'))  
+            
             context['velocity'] = velocity
-            context['total_vel'] = sum(velocity)
-            # context['total_vel'] = (f'{round(100 * item/sum(velocity), 2)}%' for item in velocity)
+            context['total_stock_value'] = sum(velocity)
+            context['total_vel'] = (f'{round(100 * item/sum(velocity), 2)}%' for item in velocity)
+            context['velocity_qty'] = velocity_count
         else:
             return context
 

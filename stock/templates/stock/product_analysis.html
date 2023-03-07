@@ -13,7 +13,7 @@
         <div class="col">
             <table class="table table-bordered" data-toggle="table" data-pagination="false">
                 <caption class="text-info">Product Velocity - Sellout
-                    <span class="float-right">{{total_vel}}</span>
+                    <span class="float-right">{{total_stock_value}}</span>
                 </caption>
                 <thead class="bg-dark text-white">
                     <tr class="text-center">
@@ -34,8 +34,22 @@
                         <td class="text-right">{{item}}</td>
                         {% endfor %}
                     </tr>
-                    
-                    
+                    <tr>
+                        <td>Percent</td>
+                        {% for item in total_vel %}
+                        <td class="text-right">{{item}}</td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td>Qty</td>
+                        {% for item in velocity_qty %}
+                        {% if item > 0 %}
+                        <td class="text-right"><a href="#">{{item}}</a></td>
+                        {% else %}
+                        <td class="text-right">{{item}}</td>
+                        {% endif %}
+                        {% endfor %}
+                    </tr>
                 </tbody>
             </table>
             <small class="text-danger">ND - Not Designated</small>
