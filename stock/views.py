@@ -1224,7 +1224,8 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
                 
                 velocity.append(sum(lis))  
             context['velocity'] = velocity
-            context['total_vel'] = (f'{round(100 * item/sum(velocity), 2)}%' for item in velocity)
+            context['total_vel'] = sum(velocity)
+            # context['total_vel'] = (f'{round(100 * item/sum(velocity), 2)}%' for item in velocity)
         else:
             return context
 

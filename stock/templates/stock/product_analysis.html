@@ -35,8 +35,8 @@
                     
                     <tr>
                         <td>Percent</td>
-                        {% for item in total_vel %}
-                        <td class="text-right">{{item}}</td>
+                        {% for item in velocity %}
+                        <td class="text-right">{{item|multiply:100|div:total_vel|floatformat:2}}%</td>
                         {% endfor %}
                     </tr>
                 </tbody>
