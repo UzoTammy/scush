@@ -20,6 +20,7 @@ from django.views.generic import (
                             UpdateView, 
                             DeleteView
                         )
+from djmoney.money import Money
 from .forms import FormProduct
 from pdf.utils import render_to_pdf
 from pdf.views import Ozone
@@ -1202,13 +1203,28 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
         all_products_qs = list() # a list that will contain dictionary   
 
         if Product.objects.exclude(name__icontains='Empty').exists():
-            active_products = Product.objects.filter(active=True).values_list('pk', flat=True).distinct().order_by('source')
+            active_products_list = Product.objects.filter(active=True)
+            active_products = active_products_list.values_list('pk', flat=True).distinct().order_by('source')
+
+            product_list_for_velocity = [(i, active_products_list.filter(velocity=i).values_list('pk', flat=True)) 
+                                         for i in range(-1, 6)]
         else:
             return context
 
         if ProductExtension.objects.exists():
             date2 = ProductExtension.objects.latest('date').date
             date1 = date2 - datetime.timedelta(days=4) if date2.weekday() == 0 or date2.weekday() == 1 else date2 - datetime.timedelta(days=3)
+            
+            velocity = list()
+            for qs in product_list_for_velocity:
+                lis = list()
+                for product in qs[1]:
+                    obj = ProductExtension.objects.filter(date=date2).filter(product=product)
+                    lis.append(obj.get().stock_value * obj.get().cost_price if obj.exists() else Money(0, 'NGN'))
+                
+                velocity.append(sum(lis))  
+            context['velocity'] = velocity
+            context['total_vel'] = (f'{round(100 * item/sum(velocity), 2)}%' for item in velocity)
         else:
             return context
 

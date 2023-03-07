@@ -3,14 +3,45 @@
 
 {% block content %}
 <div class="container">
+    
     <div class="row mt-3">
         <div class="col">
             <h3 class="text-center">Product Analysis <br> <span class="float-right">As at {{current_date}}</span></h3>
         </div>
     </div>
-    <div class="row">
+    <div class="row mt-3">
         <div class="col">
-            
+            <table class="table table-bordered" data-toggle="table" data-pagination="false">
+                <caption class="text-info">Product Velocity - Sellout</caption>
+                <thead class="bg-dark text-white">
+                    <tr class="text-center">
+                        <th>Item</th>
+                        <th>ND</th>
+                        <th>No</th>
+                        <th>Very Low</th>
+                        <th>Low</th>
+                        <th>Moderate</th>
+                        <th>High</th>
+                        <th>Very High</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Value</td>
+                        {% for item in velocity %}
+                        <td class="text-right">{{item}}</td>
+                        {% endfor %}
+                    </tr>
+                    
+                    <tr>
+                        <td>Percent</td>
+                        {% for item in total_vel %}
+                        <td class="text-right">{{item}}</td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+            <small class="text-danger">ND - Not Designated</small>
         </div>
     </div>
     {% if all_products_qs %}

@@ -20,6 +20,14 @@ class FormProduct(forms.ModelForm):
     packs = forms.ChoiceField(choices=ChoiceOption.PACKS)
     product_state = forms.ChoiceField(choices=ChoiceOption.STATES, initial='Liquid')
     size_value_unit = forms.ChoiceField(choices=ChoiceOption.VOLUME_UNITS, initial='CL')
+    velocity = forms.ChoiceField(choices=[(-1, 'Not Determined'),
+                                          (0, 'No Sellout'),
+                                          (1, 'Very Low Sellout'),
+                                          (2, 'Low Sellout'),
+                                          (3, 'Moderate Sellout'),
+                                          (4, 'High Sellout'),
+                                          (5, 'Very High Sellout')
+                                        ])
     
     class Meta:
         model = Product

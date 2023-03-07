@@ -39,6 +39,7 @@ class Product(models.Model):
     date_modified = models.DateTimeField(default=timezone.now)
     is_stock_valued = models.BooleanField(default=False) #
     watchlist = models.BooleanField(default=False, verbose_name='watchlist')
+    velocity = models.IntegerField(default=-1)
     
     def __str__(self):
         if self.parameter == 'Standard':
