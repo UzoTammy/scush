@@ -702,132 +702,132 @@ class StockReportHome(LoginRequiredMixin, TemplateView):
 
     def post(self, request, **kwargs):
         
-        if request.FILES:
-            myfile = request.FILES['fileName']
-            # os.path.join(settings.STATIC_ROOT, 'stock')
-            dirname = os.path.dirname(__file__)
-            fs = FileSystemStorage(location=os.path.join(dirname, 'status'))
+        # if request.FILES:
+        #     myfile = request.FILES['fileName']
+        #     # os.path.join(settings.STATIC_ROOT, 'stock')
+        #     dirname = os.path.dirname(__file__)
+        #     fs = FileSystemStorage(location=os.path.join(dirname, 'status'))
             
-            for file in os.listdir(fs.location):
-                path = os.path.join(fs.location, file)
-                if os.path.exists(path):
-                    os.remove(path)
+        #     for file in os.listdir(fs.location):
+        #         path = os.path.join(fs.location, file)
+        #         if os.path.exists(path):
+        #             os.remove(path)
             
-            filename = fs.save(myfile.name, myfile)
-            messages.info(request, f'{filename} uploaded successfully')
-        else:
-            date = request.POST['date']
-            date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+        #     filename = fs.save(myfile.name, myfile)
+        #     messages.info(request, f'{filename} uploaded successfully')
+        # else:
+        date = request.POST['date']
+        date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
 
-            user = User.objects.get(username=kwargs['user'])
-            user.profile.stock_report_date = date_obj.date()
-            user.save()
-            messages.info(request, f'Date has been set to {date_obj.strftime("%d-%b-%Y")} successfully !!!')
-            
+        user = User.objects.get(username=kwargs['user'])
+        user.profile.stock_report_date = date_obj.date()
+        user.save()
+        messages.info(request, f'Date has been set to {date_obj.strftime("%d-%b-%Y")} successfully !!!')
+        
         return super().get(request, **kwargs)
 
-class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
+# class BulkUpdateStock(LoginRequiredMixin, UserPassesTestMixin, View):
 
-    def test_func(self):
-        """if user is a member of the group Sales then grant access to this view"""
-        if self.request.user.groups.filter(name=permitted_group_name).exists():
-            return True
-        return False
+#     def test_func(self):
+#         """if user is a member of the group Sales then grant access to this view"""
+#         if self.request.user.groups.filter(name=permitted_group_name).exists():
+#             return True
+#         return False
 
-    def get(self, request, **kwargs):
-        dirname = os.path.join(os.path.dirname(__file__), 'status')
-        filename = os.listdir(dirname)[0]
-        filepath = os.path.join(dirname, filename)
+#     def get(self, request, **kwargs):
+#         dirname = os.path.join(os.path.dirname(__file__), 'status')
+#         filename = os.listdir(dirname)[0]
+#         filepath = os.path.join(dirname, filename)
 
-        context, msg = dict(), list()
-        with open(filepath, 'r') as rf:
-            content = csv.reader(rf)
-            headings = [next(content), next(content), next(content), next(content), next(content)]
-            qualifier = [True if len(headings[0]) == 7 else False]
-            if qualifier[0] is False:
-                msg.append('Number of columns must be seven')
-            qualifier.append(headings[2][0].split()[1] == headings[2][0].split()[3])
-            if qualifier[1] is False:
-                msg.append("File's date is missing or date is more than one day")
-            qualifier.append(headings[3][0] == 'All Items' and headings[3][1] == 'All MC')
-            if qualifier[2] is False:
-                msg.append("File may not have taken all items or all MCs")
-            qualifier.append(all(headings[-1]) and headings[-1][-1]=='Cost Price' and headings[-1][0]=='Product code')
-            if qualifier[3] is False:
-                msg.append("File columns may differ from what is expected")
+#         context, msg = dict(), list()
+#         with open(filepath, 'r') as rf:
+#             content = csv.reader(rf)
+#             headings = [next(content), next(content), next(content), next(content), next(content)]
+#             qualifier = [True if len(headings[0]) == 7 else False]
+#             if qualifier[0] is False:
+#                 msg.append('Number of columns must be seven')
+#             qualifier.append(headings[2][0].split()[1] == headings[2][0].split()[3])
+#             if qualifier[1] is False:
+#                 msg.append("File's date is missing or date is more than one day")
+#             qualifier.append(headings[3][0] == 'All Items' and headings[3][1] == 'All MC')
+#             if qualifier[2] is False:
+#                 msg.append("File may not have taken all items or all MCs")
+#             qualifier.append(all(headings[-1]) and headings[-1][-1]=='Cost Price' and headings[-1][0]=='Product code')
+#             if qualifier[3] is False:
+#                 msg.append("File columns may differ from what is expected")
 
-            if all(qualifier):
-                date_string = headings[2][0].split()[1]
-                date_obj = datetime.date(int(date_string.split('-')[2]), int(date_string.split('-')[1]), int(date_string.split('-')[0]))
+#             if all(qualifier):
+#                 date_string = headings[2][0].split()[1]
+#                 date_obj = datetime.date(int(date_string.split('-')[2]), int(date_string.split('-')[1]), int(date_string.split('-')[0]))
                 
-                try:
-                    dataset = [{
-                        'id': int(record[0]),
-                        'product': Product.objects.get(pk=int(record[0])) if Product.objects.filter(pk=int(record[0])).exists() else 'Product not found',
-                        'item': record[1],
-                        'sellout': int(string_float(record[2])),
-                        'selling_price': string_float(record[3]),
-                        'sales_amount': string_float(record[4]),
-                        'closing_balance': int(string_float(record[5])),
-                        'cost_price': string_float(record[6])
-                    } for record in content if record[0] != '']  
+#                 try:
+#                     dataset = [{
+#                         'id': int(record[0]),
+#                         'product': Product.objects.get(pk=int(record[0])) if Product.objects.filter(pk=int(record[0])).exists() else 'Product not found',
+#                         'item': record[1],
+#                         'sellout': int(string_float(record[2])),
+#                         'selling_price': string_float(record[3]),
+#                         'sales_amount': string_float(record[4]),
+#                         'closing_balance': int(string_float(record[5])),
+#                         'cost_price': string_float(record[6])
+#                     } for record in content if record[0] != '']  
                     
-                    context = {
-                        'date': date_obj,
-                        'filename': filepath,
-                        "dataset": dataset,
-                    }
+#                     context = {
+#                         'date': date_obj,
+#                         'filename': filepath,
+#                         "dataset": dataset,
+#                     }
                     
-                    post_dataset = list()
-                    lock_save = False
-                    for data in dataset:
-                        X = data.copy()
-                        product = X.pop('product')
-                        del X['item']
-                        try:
-                            product.id
-                        except:
-                            messages.warning(request, "This dataset is not fit to go into database !!!")
-                            lock_save = True
-                            break
-                        else:
-                            X.update({'id': product.id})
-                            post_dataset.append(X)
-                    context['post_dataset'] = post_dataset
-                except:
-                    messages.warning(request, "CSV not well prepared for the database")
-                    lock_save = True
-        context['lock_save'] = lock_save
-        context['qualifier'] = all(qualifier) #boolean 
-        context['msg'] = msg #list
-        return render(request, 'stock/packs/bulk_update.html', context=context)
+#                     post_dataset = list()
+#                     lock_save = False
+#                     for data in dataset:
+#                         X = data.copy()
+#                         product = X.pop('product')
+#                         del X['item']
+#                         try:
+#                             product.id
+#                         except:
+#                             messages.warning(request, "This dataset is not fit to go into database !!!")
+#                             lock_save = True
+#                             break
+#                         else:
+#                             X.update({'id': product.id})
+#                             post_dataset.append(X)
+#                     context['post_dataset'] = post_dataset
+#                 except:
+#                     messages.warning(request, "CSV not well prepared for the database")
+#                     lock_save = True
+#         context['lock_save'] = lock_save
+#         context['qualifier'] = all(qualifier) #boolean 
+#         context['msg'] = msg #list
+#         return render(request, 'stock/packs/bulk_update.html', context=context)
         
 
-    def post(self, request, **kwargs):
-        # fetch from post request the date and the list of data for update to the model
-        date = datetime.datetime.strptime(request.POST['date'], '%B %d, %Y').date()
-        content = request.POST['content']
-        list_data = eval(content)
+#     def post(self, request, **kwargs):
+#         # fetch from post request the date and the list of data for update to the model
+#         date = datetime.datetime.strptime(request.POST['date'], '%B %d, %Y').date()
+#         content = request.POST['content']
+#         list_data = eval(content)
 
-        #note: check the record dictionary for adequacy
-        for record in list_data:
-            try:
-                obj, created = ProductExtension.objects.update_or_create(
-                    product_id=record['id'],
-                    date=date,
-                    defaults={
-                        'cost_price': record['cost_price'],
-                        'selling_price': record['selling_price'],
-                        'stock_value': record['closing_balance'],
-                        'sell_out': record['sellout'],
-                        'sales_amount': record['sales_amount'],
-                    }
-                )
-            except:
-                messages.warning(request, f"{obj} failed to join database!!!. Process is hereby aborted")
-                return self.get(request, **kwargs)
-        messages.success(request, f"All records updated or saved into database !!!")
-        return self.get(request, **kwargs)
+#         #note: check the record dictionary for adequacy
+#         for record in list_data:
+#             try:
+#                 obj, created = ProductExtension.objects.update_or_create(
+#                     product_id=record['id'],
+#                     date=date,
+#                     defaults={
+#                         'cost_price': record['cost_price'],
+#                         'selling_price': record['selling_price'],
+#                         'stock_value': record['closing_balance'],
+#                         'sell_out': record['sellout'],
+#                         'sales_amount': record['sales_amount'],
+#                     }
+#                 )
+#             except:
+#                 messages.warning(request, f"{obj} failed to join database!!!. Process is hereby aborted")
+#                 return self.get(request, **kwargs)
+#         messages.success(request, f"All records updated or saved into database !!!")
+#         return self.get(request, **kwargs)
 
 class StockReportNew(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = ProductExtension
@@ -1034,7 +1034,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             if zero_sellout:
                 """Locked down capital is the value in stock that have not sold even ones in the month"""
                 total = sum([obj.stock_value * obj.cost_price for obj in zero_sellout])
-                context['lcd'] = float(total.amount)
+                context['ldc'] = float(total.amount)
 
             context['availability_ratio'] = 100 * (1 - context['no_stock'].count()/context['products'].count())
             context['av_color'] = self.color(context['availability_ratio'])

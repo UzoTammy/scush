@@ -173,7 +173,7 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="loadCSVModalLabel">Upload CSV file - {{title}}</h5>
+          <h5 class="modal-title" id="loadCSVModalLabel">Upload CSV file</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -185,13 +185,15 @@
                 <div class="col">
                     <span>Take Note:</span>
                     <ul>
-                        <li>Your set date is {{user.profile.stock_report_date|date:'d-m-Y'}}</li>
                         <li>Existing record in database can only be updated</li>
-                        <li>Record not in database will be created <span class="text-danger">!!!</span></li>
+                        <li>Record not in database will be created</li>
+                        {% if status == 'checked' %}
+                        <li>Confirm date of the CSV file on the note column of the date row <span class="text-danger">!!!</span></li>
+                        {% endif %}
                     </ul>
                 </div>
               </div>
-              <div class="row mt-3">
+              <div class="row mt-2">
                   <div class="col">
                     <label for="">Select CSV File</label>
                     <input id="fileInput" class="form-control" type="file" name="fileName" accept=".csv" required />

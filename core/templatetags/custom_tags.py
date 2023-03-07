@@ -78,13 +78,16 @@ def dividedby(value, arg):
 
 @register.filter
 def myriad(value):
-    if 1e3 <= value < 1e6:
-        return f"{round(value/1e3, 1)}K"
-    elif 1e6 <= value < 1e9:
-        return f"{round(value/1e6, 1)}M"
-    elif value >= 1e9:
-        return f"{round(value/1e9, 1)}B"
-    return round(value, 1)
+    try:
+        if 1e3 <= value < 1e6:
+            return f"{round(value/1e3, 1)}K"
+        elif 1e6 <= value < 1e9:
+            return f"{round(value/1e6, 1)}M"
+        elif value >= 1e9:
+            return f"{round(value/1e9, 1)}B"
+        return round(value, 1)
+    except:
+        return None
 
 @register.filter
 def array(value, arg):
