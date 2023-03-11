@@ -87,15 +87,11 @@
             </div>
         </div>
         {% elif switch == 1 and employee_update == 'Yes' %}
+        <h4 class="mt-1 mb-2">Update Employee Database</h4>
         <div class="row ml-3">
-            <div class="col-4">
-                <label class="" for="">Employee</label>
-                <select name="employeeId" class="form-control form-control-md">
-                    {% for employee in employees %}
-                    <option value="{{employee.pk}}">{{employee.pk|zeropadding:3}}-{{employee.fullname}}</option>
-                    {% endfor %}
-                </select>
-                <div class="form-check ml-3 mt-3">
+            <div class="col-sm-4">
+                <span>What do you want to do?</span>
+                <div class="form-check ml-3 mt-1">
                     <input class="form-check-input" type="radio" name="employeeAction" id="inlineRadio1" value="bank">
                     <label class="form-check-label" for="inlineRadio1">Change Bank Details</label>
                   </div>
@@ -112,11 +108,20 @@
                     <label class="form-check-label" for="inlineRadio4">Others</label>
                   </div>
             </div>
+            <div class="col-sm-4">
+                <label class="" for="">Pick the Employee</label>
+                <select name="employeeId" class="form-control form-control-md">
+                    {% for employee in employees %}
+                    <option value="{{employee.pk}}">{{employee.pk|zeropadding:3}}-{{employee.fullname}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
         </div>
         {% elif switch == 1 and employee_update == 'No' %}
         <!-- Code here -->
         {% endif %}
-        <div class="row mt-3">
+        <div class="row mt-3 mb-3">
             <div class="col">
                 {% if switch != 1 and update_status != 0 %}
                 <button class="btn btn-primary btn-sm" type="submit">Next</button>
@@ -135,7 +140,7 @@
                 class="btn btn-dark btn-sm float-right" 
                 data-toggle="modal" data-target="#cancelModal"> Cancel</button>
                 {% else %}
-                <a class="btn btn-dark btn-sm float-right" href="{% url 'home' %}"> <i class="fa fa-reply"></i>Home</a>
+                <a class="btn btn-dark btn-sm float-right" href="{% url 'home' %}"> <i class="fa fa-reply"></i> Home</a>
                 {% endif %}
             </div>
         

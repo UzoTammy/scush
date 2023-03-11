@@ -1220,7 +1220,7 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
             date2 = ProductExtension.objects.latest('date').date
             date1 = date2 - datetime.timedelta(days=4) if date2.weekday() == 0 or date2.weekday() == 1 else date2 - datetime.timedelta(days=3)
             
-            velocity, velocity_count = list(), list()
+            velocity, velocity_count, data = list(), list(), list()
             for qs in product_list_for_velocity:
                 lis = list()
                 velocity_count.append(qs[1].count())
@@ -1229,11 +1229,13 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
                     lis.append(obj.get().stock_value * obj.get().cost_price if obj.exists() else Money(0, 'NGN'))
                 
                 velocity.append(sum(lis) if lis else Money(0, 'NGN'))  
-            
+                data.append(lis)
+                
             context['velocity'] = velocity
             context['total_stock_value'] = sum(velocity)
             context['total_vel'] = (f'{round(100 * item/sum(velocity), 2)}%' for item in velocity)
             context['velocity_qty'] = velocity_count
+            context['data'] = data
         else:
             return context
 
