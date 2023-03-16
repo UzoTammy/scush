@@ -195,10 +195,15 @@
     <div class="container">
         <div class="row mb-5 float-right">
             <div class="col">
+                {% if switch %}
+                <a class="btn btn-outline-dark" href="{% url 'payroll-process' %}"><i class="fa fa-reply"></i> Payroll</a>
+                {% else %}
                 <a type="button" class="btn btn-outline-dark"
                    href="{% url 'staff-home' %}">
                     <i class="fa fa-reply"></i>
                 </a>
+                {% endif %}
+                
             </div>
         </div>
     </div>

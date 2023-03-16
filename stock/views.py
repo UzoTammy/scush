@@ -1182,6 +1182,7 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return context
 
 class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    
     template_name = 'stock/product_analysis.html'
 
     def test_func(self):
@@ -1236,6 +1237,14 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
             context['total_vel'] = (f'{round(100 * item/sum(velocity), 2)}%' for item in velocity)
             context['velocity_qty'] = velocity_count
             context['data'] = data
+            # list of products that are active and whose velocity is -1
+            context['ND'] = Product.objects.filter(active=True).filter(velocity=-1)
+            context['NS'] = Product.objects.filter(active=True).filter(velocity=0)
+            context['VLS'] = Product.objects.filter(active=True).filter(velocity=1)
+            context['LS'] = Product.objects.filter(active=True).filter(velocity=2)
+            context['M'] = Product.objects.filter(active=True).filter(velocity=3)
+            context['HS'] = Product.objects.filter(active=True).filter(velocity=4)
+            context['VHS'] = Product.objects.filter(active=True).filter(velocity=5)
         else:
             return context
 

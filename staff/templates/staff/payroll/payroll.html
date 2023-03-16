@@ -6,6 +6,7 @@
     .prog {
         width: {{switch|multiply:20}}%;
     }
+    
 </style>
 {% endblock %}
 
@@ -63,7 +64,17 @@
                     {% endif %}
                 </div>
             </div>
-            {% elif switch == 1%}
+            {% elif switch == 1 %}
+            <h4 class="mt-1 mb-2">Update Employee Database</h4>
+            {% elif switch == 2 %}
+            <div class="row">
+                <div class="col-4">
+                    <h4>Employee Debit & Credit</h4>
+                    
+                    <a class="btn btn-outline-primary btn-sm" href="{% url 'credit-create' %}">Add Credit</a>
+                    <a class="btn btn-outline-primary btn-sm float-right" href="{% url 'debit-create' %}">Add Debit</a>
+                </div>
+            </div>
 
             {% endif %}
         </div>
@@ -87,50 +98,32 @@
             </div>
         </div>
         {% elif switch == 1 and employee_update == 'Yes' %}
-        <h4 class="mt-1 mb-2">Update Employee Database</h4>
         <div class="row ml-3">
             <div class="col-sm-4">
-                <span>What do you want to do?</span>
-                <div class="form-check ml-3 mt-1">
-                    <input class="form-check-input" type="radio" name="employeeAction" id="inlineRadio1" value="bank">
-                    <label class="form-check-label" for="inlineRadio1">Change Bank Details</label>
-                  </div>
-                  <div class="form-check ml-3 mt-2">
-                    <input class="form-check-input" type="radio" name="employeeAction" id="inlineRadio2" value="salary" checked>
-                    <label class="form-check-label" for="inlineRadio2">Change Salary</label>
-                  </div>
-                  <div class="form-check ml-3 mt-2">
-                    <input class="form-check-input" type="radio" name="employeeAction" id="inlineRadio3" value="terminate">
-                    <label class="form-check-label" for="inlineRadio3">Terminate</label>
-                  </div>
-                  <div class="form-check ml-3 mt-2">
-                    <input class="form-check-input" type="radio" name="employeeAction" id="inlineRadio4" value="others">
-                    <label class="form-check-label" for="inlineRadio4">Others</label>
-                  </div>
-            </div>
+                <p>To prepare payroll, you have chosen to update employee database. 
+                    Click Employee link below to view employee's list</p>
+                <a class="btn btn-primary btn-sm"  href="{% url 'staff-list' %}">Employees</a>
+            </div>  
             <div class="col-sm-4">
-                <label class="" for="">Pick the Employee</label>
-                <select name="employeeId" class="form-control form-control-md">
-                    {% for employee in employees %}
-                    <option value="{{employee.pk}}">{{employee.pk|zeropadding:3}}-{{employee.fullname}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
+                <p>This Link will take you to the list of all employees, there you will chose the staff
+                    and get to its data page where you can make the required change. Do use the back to payroll
+                    link to return to this process and continue
+                </p>
+            </div>      
         </div>
         {% elif switch == 1 and employee_update == 'No' %}
         <!-- Code here -->
         {% endif %}
         <div class="row mt-3 mb-3">
             <div class="col">
-                {% if switch != 1 and update_status != 0 %}
-                <button class="btn btn-primary btn-sm" type="submit">Next</button>
+                {% if switch != 1 %}
+                <button class="btn btn-secondary btn-sm" type="submit">Next</button>
                 {% endif %}
             </div>
             <div class="col">
                 {% if switch == 1 and employee_update == 'Yes' %}
-                <a class="btn btn-secondary btn-sm" href="">Update</a>
-                <a class="btn btn-secondary btn-sm float-right" href="">Done</a>
+                <a href="{% url 'payroll-back' %}" class="btn btn-secondary btn-sm">Back</a>
+                <a class="btn btn-secondary btn-sm float-right" href="{% url 'payroll-next' %}">Next</a>
                 {% endif %}
             </div>
             <div class="col">
@@ -143,7 +136,6 @@
                 <a class="btn btn-dark btn-sm float-right" href="{% url 'home' %}"> <i class="fa fa-reply"></i> Home</a>
                 {% endif %}
             </div>
-        
         </div>
     </form>
 

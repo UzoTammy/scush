@@ -55,7 +55,9 @@ urlpatterns += [
     
     # payroll process 
     path('payroll/process/', PayrollView.as_view(), name='payroll-process'),
-    path('payroll/process/employee/update/', ProcessEmployeeUpdateView.as_view(), name='payroll-process-employee-update')
+    path('payroll/process/employee/update/', ProcessEmployeeUpdateView.as_view(), name='payroll-process-employee-update'),
+    path('payroll/back/', BackView.as_view(), name='payroll-back'),
+    path('payroll/next/', NextView.as_view(), name='payroll-next')
 ]
 
 urlpatterns += [

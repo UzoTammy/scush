@@ -3,6 +3,7 @@ import calendar
 import datetime
 import json
 import os
+import time
 from pathlib import Path
 
 from django.forms import ValidationError
@@ -251,6 +252,14 @@ class StaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        BASE_DIR = Path(__file__).resolve().parent.parent
+
+        filepath = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
+        if os.path.exists(filepath):
+            with open(filepath, 'r') as rf:
+                content = json.load(rf)
+                context['switch'] = content['switch']
+        
 
         if self.queryset:
             employees = self.queryset.exclude(staff__last_name='Nwokoro')
@@ -1077,13 +1086,34 @@ class CreditUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class CreditNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = CreditForm
     template_name = 'staff/payroll/creditnote_form.html'
-    success_url = reverse_lazy('salary')
-
+    
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
+    
+    def get_success_url(self):
+        if self.request.POST['action'] == '1':
+            time.sleep(3)
+            return reverse_lazy('credit-create')
+        return reverse_lazy('salary')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        BASE_DIR = Path(__file__).resolve().parent.parent
+        file_path = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
+        
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as rf:
+                json_data = json.load(rf)
+            if json_data['switch'] == 2:
+                context['switch'] = 2
+                context['payroll_url'] = reverse('payroll-process')
+        return context
+
+        
     
 class DebitNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = DebitNote
@@ -1126,7 +1156,7 @@ class DebitUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class DebitNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = DebitForm
     template_name = 'staff/payroll/debitnote_form.html'
-    success_url = reverse_lazy('salary')
+    # success_url = reverse_lazy('salary')
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -1134,6 +1164,26 @@ class DebitNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             return True
         return False
 
+    def get_success_url(self):
+        if self.request.POST['action'] == '1':
+            time.sleep(3)
+            return reverse_lazy('debit-create')
+        return reverse_lazy('salary')
+    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        BASE_DIR = Path(__file__).resolve().parent.parent
+        file_path = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
+        
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as rf:
+                json_data = json.load(rf)
+            if json_data['switch'] == 2:
+                context['switch'] = 2
+                context['payroll_url'] = reverse('payroll-process')
+        return context
 
 class DebitNoteDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = DebitNote
@@ -1938,13 +1988,10 @@ class PayrollView(LoginRequiredMixin, TemplateView):
         else:
             # open a json file to bring in data
             with open(filepath, 'r') as rf:
-                content = rf.read()
-                data = json.loads(content)
+                data = json.load(rf)
             switch = data['switch']
             
             if switch == 1:
-                # adjust data going into json
-                data['switch'] = switch + 1 # step up switch
                 if 'employeeUpdate' in self.request.GET:
                     data['employee_update'] = self.request.GET['employeeUpdate']
             
@@ -1954,43 +2001,46 @@ class PayrollView(LoginRequiredMixin, TemplateView):
                 # data to template
                 context['switch'] = switch
                 context['employee_update'] = data['employee_update']
-                context['employees'] = Employee.objects.all()
-                # return redirect('payroll-process-employee-update')
             elif switch == 2:
-                # adjust data going into json
-                data['switch'] = switch + 1 # step up switch
-                # write data back into json
-                if 'employeeId' in self.request.GET:
-                    data['id'] = self.request.GET['employeeId']
-                    data['employee_action'] = self.request.GET['employeeAction']
-                with open(filepath, 'w') as wf:
-                    json.dump(data, wf, indent=2)
-                # data to template
-                context['switch'] = switch
-            # elif switch == 3:
-            #     context['switch'] = switch
-            # elif switch == 4:
-            #     context['switch'] = switch
-            # elif switch == 5:
-            #     context['switch'] = switch
-            # elif switch == 6:
-            #     context['switch'] = switch
-            # elif switch == 7:
-            #     context['switch'] = switch
-            # elif switch == 8:
-            #     context['switch'] = switch
+                # with open(filepath, 'r') as rf:
+                #     json_data = json.load(rf)
+                context['switch'] = 2
+            elif switch == 3:
+                context['switch'] = switch + 1
+                with open(filepath, 'r') as rf:
+                    content = json.load(rf)
+                    
             else:
                 os.remove(filepath)    
                 context['switch'] = f'{switch} - process complete' 
         return context
     
 
+class BackView(LoginRequiredMixin, View):
+    def get(self, request):
+        BASE_DIR = Path(__file__).resolve().parent.parent
+        filepath = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
+        if os.path.exists(filepath):
+            os.remove(filepath)    
+        return redirect('payroll-process')
+
+class NextView(LoginRequiredMixin, View):
+    def get(self, request):
+        BASE_DIR = Path(__file__).resolve().parent.parent
+        filepath = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
+        if os.path.exists(filepath):
+            with open(filepath, 'r') as rf:
+                json_data = json.load(rf)
+                json_data['switch'] = 2
+            with open(filepath, 'w') as wf:
+                json.dump(json_data, wf, indent=2)
+            
+        return redirect('payroll-process')    
 class ProcessEmployeeUpdateView(LoginRequiredMixin, TemplateView):
     template_name = 'staff/payroll/employee_update.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
         return context
     
-    # def post(self, request, **kwargs):
-    #     return HttpResponse('yes')

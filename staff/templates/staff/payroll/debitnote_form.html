@@ -9,15 +9,18 @@
                     <legend class="text-danger mt-3">New Debit Note</legend>
                     {{ form|crispy }}
                     <div class="form-group">
-                        <button type="submit"
-                                class="btn btn-info">
-                            Save
-                        </button>
-                        <a type="button"
-                               href="{% url 'salary' %}"
-                                class="btn btn-secondary float-right">
+                        <button type="submit" name="action" value="1" class="btn btn-info btn-save">Save & New</button>
+                        
+                        <button type="submit" name="action" value="2" class="btn btn-info">Save</button>
+                        {% if switch == 2 %}
+                        <a type="button" href="{{ payroll_url }}" class="btn btn-secondary float-right">
                             Cancel
                         </a>
+                        {% else %}
+                        <a type="button" href="{% url 'salary' %}" class="btn btn-secondary float-right">
+                            Cancel
+                        </a>
+                        {% endif %}
                     </div>
                 </form>
             </div>
