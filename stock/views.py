@@ -1,7 +1,9 @@
 import os
 import csv
+import logging
 import calendar
 import datetime
+# from pathlib import Path
 from decimal import Decimal
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -32,6 +34,17 @@ from django.db.models import Sum, F, Avg
 from ozone import mytools
 from core.utils import string_float
 
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+file_handler = logging.FileHandler(filename=os.path.join(settings.BASE_DIR, 'logs', 'stock', 'views.log'), mode='w')
+formatter = logging.Formatter('%(name)s:%(levelname)s:%(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+# logging.basicConfig(filename=os.path.join(BASE_DIR, 'logs', 'stock', 'views.log'), level=logging.INFO,
+                    # format='%(name)s:%(levelname)s:%(message)s')
 
 permitted_group_name = 'Sales'
 
@@ -1238,13 +1251,20 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
             context['velocity_qty'] = velocity_count
             context['data'] = data
             # list of products that are active and whose velocity is -1
-            context['ND'] = Product.objects.filter(active=True).filter(velocity=-1)
-            context['NS'] = Product.objects.filter(active=True).filter(velocity=0)
-            context['VLS'] = Product.objects.filter(active=True).filter(velocity=1)
-            context['LS'] = Product.objects.filter(active=True).filter(velocity=2)
-            context['M'] = Product.objects.filter(active=True).filter(velocity=3)
-            context['HS'] = Product.objects.filter(active=True).filter(velocity=4)
-            context['VHS'] = Product.objects.filter(active=True).filter(velocity=5)
+            product = Product.objects.filter(active=True)
+            list_product_and_stock = list()
+            for i in range(-1, 6):
+                pp = product.filter(velocity=i)
+                lis = list()
+                if pp.exists():
+                    for p in pp:
+                        x = ProductExtension.objects.filter(product=p).filter(date=date2)
+                        sv = x.last().stock_value if x.exists() else 0
+                        lis.append((p, sv))
+                y = '_1' if i == -1 else i
+                list_product_and_stock.append(lis)
+            context['product_and_stock'] = list_product_and_stock
+            logger.info(f'Product Velocity @ modal: {list_product_and_stock}')
         else:
             return context
 

@@ -73,49 +73,53 @@
                                     </button>
                                     </div>
                                     <div class="modal-body">
+                                        
                                         {% if forloop.counter0 == 0 %} 
                                         <ul class="list-group">
-                                            {% for product in ND %}
-                                            <li class="list-group-item">{{product}}</li>
+                                            {% for product in product_and_stock|array:1 %}
+                                            <li class="list-group-item">{{product|first}} 
+                                                <span class="float-right">{{product|last}}</span>
+                                            </li>
                                             {% endfor %}
                                         </ul>
                                         {% elif forloop.counter0 == 1 %}
                                         <ul class="list-group">
-                                            {% for product in NS %}
-                                            <li class="list-group-item">{{product}}</li>
+                                            {% for product in product_and_stock|array:2 %}
+                                            <li class="list-group-item">{{product|first}} <span class="float-right">{{product|last}}</span></li>
                                             {% endfor %}
                                         </ul>
                                         {% elif forloop.counter0 == 2 %} 
                                         <ul class="list-group">
-                                            {% for product in VLS %}
-                                            <li class="list-group-item">{{product}}</li>
+                                            {% for product in product_and_stock|array:3 %}
+                                            <li class="list-group-item">{{product|first}} <span class="float-right">{{product|last}}</span></li>
                                             {% endfor %}
                                         </ul>
                                         {% elif forloop.counter0 == 3 %}
                                         <ul class="list-group">
-                                            {% for product in LS %}
-                                            <li class="list-group-item">{{product}}</li>
+                                            {% for product in product_and_stock|array:4 %}
+                                            <li class="list-group-item">{{product|first}} <span class="float-right">{{product|last}}</span></li>
                                             {% endfor %}
                                         </ul>
                                         {% elif forloop.counter0 == 4 %} 
                                         <ul class="list-group">
-                                            {% for product in M %}
-                                            <li class="list-group-item">{{product}}</li>
+                                            {% for product in product_and_stock|array:5 %}
+                                            <li class="list-group-item">{{product|first}} <span class="float-right">{{product|last}}</span></li>
                                             {% endfor %}
                                         </ul>
                                         {% elif forloop.counter0 == 5 %} 
                                         <ul class="list-group">
-                                            {% for product in HS %}
-                                            <li class="list-group-item">{{product}}</li>
+                                            {% for product in product_and_stock|array:6 %}
+                                            <li class="list-group-item">{{product|first}} <span class="float-right">{{product|last}}</span></li>
                                             {% endfor %}
                                         </ul>
                                         {% elif forloop.counter0 == 6 %} 
                                         <ul class="list-group">
-                                            {% for product in VHS %}
-                                            <li class="list-group-item">{{product}}</li>
+                                            {% for product in product_and_stock|array:7 %}
+                                            <li class="list-group-item">{{product|first}} <span class="float-right">{{product|last}}</span></li>
                                             {% endfor %}
                                         </ul>
                                         {% endif %}
+                                        
                                     </div>
                                     <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

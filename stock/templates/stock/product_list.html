@@ -23,9 +23,8 @@
                             <a href="{% url 'product-create' %}"
                                 class="btn btn-dark btn-sm text-right">
                                 <i class="fa fa-plus text-success"></i>
-                                New Product
+                                Product
                             </a>
-                    
                         </div>
                     </div>
                 </caption>
@@ -34,9 +33,11 @@
                     <th scope="col">ID</th>
                     <th scope="col">Image</th>
                     <th scope="col">Product Description</th>
+                    <th scope="col">Velocity</th>
                     {% if view.kwargs.source == 'All' %}
                     <th scope="col">Source</th>
                     {% endif %}
+
                     <th scope="col">Category</th>
                     <th scope="col">Cost Price</th>
                     <th scope="col">Sales Price</th>
@@ -59,20 +60,33 @@
                     {% else %}
                     <td><a href="{% url 'product-detail' product.pk %}">{{product}}</a> <sup><i class="fa fa-times-circle-o text-danger"></i></sup></td>
                     {% endif %}
-                    {% if view.kwargs.source == 'All' %}
-                    <td>{{product.source}}</td>
+                    {% if product.velocity == -1 %}
+                    <td class="text-center">ND</td>
+                    {% elif product.velocity == 0 %}
+                    <td class="text-center">NS</td>
+                    {% elif product.velocity == 1 %}
+                    <td class="text-center">VL</td>
+                    {% elif product.velocity == 2 %}
+                    <td class="text-center">L</td>
+                    {% elif product.velocity == 3 %}
+                    <td class="text-center">M</td>
+                    {% elif product.velocity == 4 %}
+                    <td class="text-center">H</td>
+                    {% elif product.velocity == 5 %}
+                    <td class="text-center">VH</td>
                     {% endif %}
-                    <td>{{product.category}}</td>
-                    <td>{{product.cost_price}}</td>
-                    <td>{{product.unit_price}}</td>
-                    <th>{{product.margin}}</th>
+                    {% if view.kwargs.source == 'All' %}
+                    <td class="text-center">{{product.source}}</td>
+                    {% endif %}
+                    <td class="text-center">{{product.category}}</td>
+                    <td class="text-right">{{product.cost_price}}</td>
+                    <td class="text-right">{{product.unit_price}}</td>
+                    <th class="text-right">{{product.margin}}</th>
                 </tr>
                 {% endfor %}
                 </tbody>
-                <tfoot>
-
-                </tfoot>
             </table>
+            <p class="text-danger">ND-Not Determined, VL-Very Low, L-Low, M-Moderate, H-High, VH-Very High</p>
             <div class="row">
                 <div class="col">
                     <a class="btn btn-outline-dark float-right" href="{% url 'product-home' %}"><i class="fa fa-reply"></i></a>
