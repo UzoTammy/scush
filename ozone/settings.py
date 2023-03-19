@@ -18,12 +18,12 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler(os.path.join(BASE_DIR, 'logs', 'settings.log'))
-formatter = logging.Formatter('%(asctime)s-%(name)s:%(levelname)s:%(message)s')
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+# logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
+# file_handler = logging.FileHandler(os.path.join(BASE_DIR, 'logs', 'settings.log'))
+# formatter = logging.Formatter('%(asctime)s-%(name)s:%(levelname)s:%(message)s')
+# file_handler.setFormatter(formatter)
+# logger.addHandler(file_handler)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
@@ -202,4 +202,4 @@ django_on_heroku.settings(locals())
 
 del STATICFILES_STORAGE
 
-logger.info(f'Apps running: {len(INSTALLED_APPS)}')
+# logger.info(f'Apps running: {len(INSTALLED_APPS)}')

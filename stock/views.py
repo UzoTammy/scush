@@ -35,16 +35,13 @@ from ozone import mytools
 from core.utils import string_float
 
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+# logger = logging.getLogger(__name__)
+# logger.setLevel(logging.INFO)
 
-file_handler = logging.FileHandler(filename=os.path.join(settings.BASE_DIR, 'logs', 'stock', 'views.log'), mode='w')
-formatter = logging.Formatter('%(name)s:%(levelname)s:%(message)s')
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
-
-# logging.basicConfig(filename=os.path.join(BASE_DIR, 'logs', 'stock', 'views.log'), level=logging.INFO,
-                    # format='%(name)s:%(levelname)s:%(message)s')
+# file_handler = logging.FileHandler(filename=os.path.join(settings.BASE_DIR, 'logs', 'stock', 'views.log'), mode='w')
+# formatter = logging.Formatter('%(name)s:%(levelname)s:%(message)s')
+# file_handler.setFormatter(formatter)
+# logger.addHandler(file_handler)
 
 permitted_group_name = 'Sales'
 
