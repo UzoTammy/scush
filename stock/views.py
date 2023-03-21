@@ -1261,7 +1261,7 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
                 y = '_1' if i == -1 else i
                 list_product_and_stock.append(lis)
             context['product_and_stock'] = list_product_and_stock
-            logger.info(f'Product Velocity @ modal: {list_product_and_stock}')
+            # logger.info(f'Product Velocity @ modal: {list_product_and_stock}')
         else:
             return context
 
