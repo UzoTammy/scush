@@ -7,7 +7,6 @@
     <div class="row">
         <div class="col">
             <h3 class="text-center">Bank Account Home Page</h3>
-            
         </div>
     </div>
     <div class="row">
@@ -54,7 +53,7 @@
                     <hr class="dropdown-divider">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a data-toggle="modal" data-target="#exampleModal" class="nav-link">
                             <i class="fa fa-question text-warning"></i> Help
                         </a>
                     </li>
@@ -80,7 +79,7 @@
                         <th>Banker</th>
                         <th>Bank Balance</th>
                         <th>AP Balance</th>
-                        <th>(BB - AP)</th>
+                        <th>(AP - BB)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -91,19 +90,80 @@
                         <td>{{object.bank.bank}}</td>
                         <td class="text-right">{{object.bank_balance}}</td>
                         <td class="text-right">{{object.account_package_balance}}</td>
-                        {% if object.delta >= 0 %}
+                        {% if object.delta.amount >= 0 %}
                         <td class="text-right">{{object.delta}}</td>
                         {% else %}
                         <td class="text-right text-danger">{{object.delta|abs}}</td>
                         {% endif %}
                     </tr>
                     {% endfor %}
-                    
+                    <tr class="font-weight-bold bg-dark text-white">
+                        <td colspan="3" class="text-center">Total</td>
+                        <td class="text-right">NGN{{total_balance|floatformat:2}}</td>
+                        <td class="text-right">NGN{{total_package|floatformat:2}}</td>
+                        {% with total_package|minus:total_balance as total %}
+                        {% if total >= 0 %}
+                        <td class="text-right">NGN{{total|floatformat:2}}</td>
+                        {% else %}
+                        <td class="text-right text-danger">NGN{{total|abs|floatformat:2}}</td>
+                        {% endif %}
+                        {% endwith %}
+                    </tr>
                 </tbody>
             </table>
+            <p class="mt-3 mr-2 text-danger float-right">AP - Account Package, BB - Bank balance</p>
             {% endif %}
         </div>
         
     </div>
 </div>
+
+<!-- Modal -->
+<section>
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-question text-success"></i>  Help with this Page</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col">
+                <h6>This page is the Bank Account Home page</h6>
+                <p class="ml-3">It displays the bank balance for the date at the table's title. 
+                    The Bank Account information is divided into two sections. The bank account section 
+                    and the bank balance section. The bank account section is used to capture all bank account
+                    details while bank balance is used to capture only the balance of the account both at the Bank
+                    and in the accounting package.
+                </p>
+                <h6>To view and update bank account</h6>
+                <p class="ml-3">By the left-side of this page, on the menu in black,
+                    click the view & update link to view the list of all bank accounts stored
+                    from that page you can update any of the acount listed.
+                </p>
+                <h6>To add bank account and balance</h6>
+                <p class="ml-3">By the left-side of this page, on the menu in black,
+                    click the <i class="text-danger fa fa-plus"> add</i> link access the form for bank
+                    balance details and at the top of the form is <i class="text-danger fa fa-plus"> add</i>
+                    link for the bank account form.
+                </p>
+                <h6>To view and update bank balance</h6>
+                <p class="ml-3">By the left-side of this page, on the menu in black,
+                    click the view & update link to view the list of all bank balance stored
+                    from that page you can update any of the balance listed.
+                </p>
+                <h6 class="text-danger">Contact the admin to delete a record. If neccesary</h6>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock%}

@@ -862,8 +862,11 @@ class BankAccountHomeView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         if BankBalance.objects.exists():
             latest_date = BankBalance.objects.latest('date').date
-            context['object_list'] = BankBalance.objects.filter(date=latest_date)
+            qs = BankBalance.objects.filter(date=latest_date)
+            context['object_list'] = qs
             context['current_date'] = latest_date
+            context['total_balance'] = qs.aggregate(Sum('bank_balance'))['bank_balance__sum']
+            context['total_package'] = qs.aggregate(Sum('account_package_balance'))['account_package_balance__sum']
         else:
             context['no_object'] = True
         return context

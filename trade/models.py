@@ -155,7 +155,7 @@ class BankBalance(models.Model):
         return f'{self.bank.nickname}-{self.date}'
     
     def get_absolute_url(self):
-        return reverse('bank-account-detail', kwargs={'pk': self.pk})
+        return reverse('bank-balance-detail', kwargs={'pk': self.pk})
 
     def delta(self):
-        return self.bank_balance - self.account_package_balance
+        return self.account_package_balance - self.bank_balance
