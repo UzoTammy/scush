@@ -853,3 +853,53 @@ class AuditorView(LoginRequiredMixin, TemplateView):
         context['trade_date'] = trade_date
         
         return context
+
+
+class BankAccountHomeView(LoginRequiredMixin, TemplateView):
+    template_name = 'trade/bank_account/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if BankBalance.objects.none():
+            context['no_object'] = True
+            return context
+        latest_date = BankBalance.objects.latest('date').date
+        context['object_list'] = BankBalance.objects.filter(date=latest_date)
+        context['current_date'] = latest_date
+        return context
+
+class BankAccountDetailView(LoginRequiredMixin, DetailView):
+    model = BankAccount
+    template_name = 'trade/bank_account/bank_account_detail.html'
+
+class BankAccountListView(LoginRequiredMixin, ListView):
+    model = BankAccount
+    template_name = 'trade/bank_account/bank_account_list.html'
+
+class BankAccountUpdateView(LoginRequiredMixin, UpdateView):
+    model = BankAccount
+    template_name = 'trade/bank_account/bank_account_form.html'
+    fields = '__all__'
+
+class BankAccountCreateView(LoginRequiredMixin, CreateView):
+    model = BankAccount
+    fields = '__all__'
+    template_name = 'trade/bank_account/bank_account_form.html'
+
+class BankBalanceCreateView(LoginRequiredMixin, CreateView):
+    model = BankBalance
+    fields = '__all__'
+    template_name = 'trade/bank_account/bank_balance_form.html'
+
+class BankBalanceDetailView(LoginRequiredMixin, DetailView):
+    model = BankBalance
+    template_name = 'trade/bank_account/bank_balance_detail.html'
+
+class BankBalanceUpdateView(LoginRequiredMixin, UpdateView):
+    model = BankBalance
+    template_name = 'trade/bank_account/bank_balance_form.html'
+    fields = '__all__'
+
+class BankBalanceListView(LoginRequiredMixin, ListView):
+    model = BankBalance
+    template_name = 'trade/bank_account/bank_balance_list.html'

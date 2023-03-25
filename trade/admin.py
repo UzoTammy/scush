@@ -5,3 +5,4 @@ from .models import *
 admin.site.register(TradeDaily)
 admin.site.register(TradeMonthly)
 admin.site.register(BalanceSheet)
+admin.site.register(BankAccount)

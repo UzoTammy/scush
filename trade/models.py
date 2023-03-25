@@ -3,6 +3,7 @@ from django.db import models
 from djmoney.models.fields import MoneyField, Money
 from django.urls.base import reverse
 from datetime import date
+from django.utils import timezone
 
 
 class TradeMonthly(models.Model):
@@ -123,3 +124,38 @@ class BalanceSheet(models.Model):
             inventory = obj.get().closing_value if obj.exists() else Money(0, 'NGN')
             return round((self.current_asset - self.sundry_debtor - inventory)/self.liability, 3)
         return None
+
+
+
+class BankAccount(models.Model):
+    account_name = models.CharField(max_length=100)
+    nickname = models.CharField(max_length=50)
+    account_number = models.CharField(max_length=12)
+    bank = models.CharField(max_length=30)
+    lien_amount = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
+    account_group = models.CharField(max_length=20, default='Business')
+    status = models.BooleanField(default=True)
+
+
+    def __str__(self) -> str:
+        return self.nickname
+    
+    def get_absolute_url(self):
+        return reverse('bank-balance-create')
+
+
+class BankBalance(models.Model):
+    bank = models.ForeignKey(BankAccount, on_delete=models.CASCADE)
+    date = models.DateField(default=date.today)
+    bank_balance = MoneyField(max_digits=12, decimal_places=2)
+    account_package_balance = MoneyField(max_digits=12, decimal_places=2)
+    
+
+    def __str__(self) -> str:
+        return f'{self.bank.nickname}-{self.date}'
+    
+    def get_absolute_url(self):
+        return reverse('bank-account-detail', kwargs={'pk': self.pk})
+
+    def delta(self):
+        return self.bank_balance - self.account_package_balance

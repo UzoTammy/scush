@@ -1,0 +1,45 @@
+{% extends 'users/base.html' %}
+{% load static %}
+
+{% block head %}
+<style>
+    .circle {
+        max-width: 20rem; 
+        border-radius: 100px 50px 100px 50px;
+        background-color:rgb(209, 231, 239);
+    }
+    
+    /* body {
+        background-color: rgb(209, 231, 239);
+    } */
+    
+</style>
+{% endblock %}
+{% block content %}
+<div class="container mt-3">
+    <div class="row mb-3">
+        <div class="col">
+            <h3 class="text-center">Detail Page</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4 mb-2 circle">
+            <!-- <img width="80%" height="80%" class="rounded-circle" src="{% static 'customer/background/business.jpeg' %}" alt=""> -->
+        </div>
+        <div class="col-sm-8">
+            <ul class="list-group">
+                <li class="list-group-item">Bank Account Name <span class="float-right">{{object.account_name}}</span></li>
+                <li class="list-group-item">Nickname <span class="float-right">{{object.nickname}}</span></li>
+                <li class="list-group-item">Account Number <span class="float-right">{{object.account_number}}</span></li>
+                <li class="list-group-item">Bank<span class="float-right">{{object.bank}}</span></li>
+                <li class="list-group-item">Lien Amount <span class="float-right">{{object.lien_amount}}</span></li>
+                <li class="list-group-item">Account Type <span class="float-right">{{object.account_group}}</span></li>
+            </ul>
+
+            <a class="btn btn-primary btn-sm mt-2 ml-2" href="{% url 'bank-account-update' object.pk %}">Update</a>
+            <a class="btn btn-dark btn-sm float-right mt-2 mr-2" href="{% url 'bank-account-home' %}">
+                <i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock %}

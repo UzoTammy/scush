@@ -1,0 +1,22 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-3">
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-10">
+                <h3>{% if view.kwargs %} Update {% else %} Add {% endif %} Bank Balance </h3>
+                <a href="{% url 'bank-account-create' %}">
+                    <i class="fa fa-plus float-right mr-3"> Bank Account</i> </a>
+                    
+                {{form|crispy}}
+                <button type="submit" class="btn btn-primary mt-3 ml-2">Save</button>
+                <a class="btn btn-dark float-right mt-3 mr-2" href="{% url 'bank-account-home' %}"><i class="fa fa-reply"></i></a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

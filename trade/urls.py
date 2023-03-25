@@ -31,6 +31,16 @@ urlpatterns += [
 urlpatterns += [
         path('weekly/report', TradeWeekly.as_view(), name='trade-weeekly'),
         path('audit/', AuditorView.as_view(), name='audit'),
-        
+]
 
+urlpatterns += [
+    path('bank-account/', BankAccountHomeView.as_view(), name='bank-account-home'),
+    path('bank-account/<int:pk>/detail/', BankAccountDetailView.as_view(), name='bank-account-detail'),
+    path('bank-account/list/', BankAccountListView.as_view(), name='bank-account-list'),
+    path('bank-account/<int:pk>/update/', BankAccountUpdateView.as_view(), name='bank-account-update'),
+    path('bank-account/add/', BankAccountCreateView.as_view(), name='bank-account-create'),
+    path('bank-balance/add/', BankBalanceCreateView.as_view(), name='bank-balance-create'),
+    path('bank-balance/<int:pk>/detail/', BankBalanceDetailView.as_view(), name='bank-balance-detail'),
+    path('bank-balance/<int:pk>', BankBalanceUpdateView.as_view(), name='bank-balance-update'),    
+    path('bank-balance/list/', BankBalanceListView.as_view(), name='bank-balance-list'),
 ]

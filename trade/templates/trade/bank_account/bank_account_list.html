@@ -1,0 +1,53 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-center">Bank Account List View</h3>
+        </div>
+    </div>
+    <div class="row mt-3 mr-2">
+        <div class="col">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table table-striped table-bordered" data-toggle="table" data-pagination="true">
+                <caption>All <span>
+                    <a class="btn btn-dark float-right mr-3" href="{% url 'bank-account-home' %}"><i class="fa fa-reply"></i></a>
+                </span></caption>
+                <thead class="">
+                    <tr class="bg-dark text-white">
+                        <th>Account Name</th>
+                        <th>Account Number</th>
+                        <th>Banker</th>
+                        <th>Lien Amount</th>
+                        <th>Category</th>
+                        <th>Active?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                    <tr>
+                        <td><a href="{% url 'bank-account-detail' object.pk %}">{{object.nickname}}</a></td>
+                        <td>{{object.account_number}}</td>
+                        <td>{{object.bank}}</td>
+                        <td>{{object.lien_amount}}</td>
+                        <td>{{object.account_group}}</td>
+                        <td>{{object.status|yesno:'Yes,No'}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row mt-3 mr-2">
+        <div class="col">
+            <a class="btn btn-dark float-right" href="{% url 'bank-account-home' %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock%}

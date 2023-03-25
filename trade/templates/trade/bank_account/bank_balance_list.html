@@ -1,0 +1,49 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-center">Bank Balance List View</h3>
+        </div>
+    </div>
+    <div class="row mt-3 mr-2">
+        <div class="col">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table table-striped table-bordered" data-toggle="table" data-pagination="true">
+                <caption>All <span>
+                    <a class="btn btn-dark float-right mr-3" href="{% url 'bank-account-home' %}"><i class="fa fa-reply"></i></a>
+                </span></caption>
+                <thead class="">
+                    <tr class="bg-dark text-white">
+                        <th>Bank</th>
+                        <th>Date</th>
+                        <th>Bank Balance</th>
+                        <th>AP Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                    <tr>
+                        <td><a href="{% url 'bank-balance-detail' object.pk %}">{{object.bank}}</a></td>
+                        <td>{{object.date}}</td>
+                        <td class="text-right">{{object.bank_balance}}</td>
+                        <td class="text-right">{{object.account_package_balance}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row mt-3 mr-2">
+        <div class="col">
+            <a class="btn btn-dark float-right" href="{% url 'bank-account-home' %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock%}

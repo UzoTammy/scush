@@ -107,6 +107,7 @@ class ApplyListViewPending(LoginRequiredMixin, UserPassesTestMixin, ListView):
 class ApplyListViewEmployed(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Applicant
     template_name = 'apply/applicant_list_employed.html'
+    context_object_name = 'objects'
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -114,6 +115,9 @@ class ApplyListViewEmployed(LoginRequiredMixin, UserPassesTestMixin, ListView):
             return True
         return False
 
+    # def get_queryset(self):
+    #     return super().get_queryset()
+    
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Applicants-employed'

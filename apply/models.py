@@ -53,13 +53,14 @@ class Applicant(models.Model):
     status = models.BooleanField(choices=[(True, 'Employed'), (None, 'Pending'),
                                           (False, 'Rejected')],
                                  null=True, blank=True)
-
+    
     this_year = ThisYearApplicantManager()
     employed = EmployedManager()
     pending = PendingManager()
     rejected = RejectedManager()
     objects = ApplicantManager()
 
+    
     def __str__(self):
         return f'{self.last_name}, {self.first_name} {self.second_name}'
 
