@@ -860,12 +860,12 @@ class BankAccountHomeView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if BankBalance.objects.none():
+        if BankBalance.objects.exists():
+            latest_date = BankBalance.objects.latest('date').date
+            context['object_list'] = BankBalance.objects.filter(date=latest_date)
+            context['current_date'] = latest_date
+        else:
             context['no_object'] = True
-            return context
-        latest_date = BankBalance.objects.latest('date').date
-        context['object_list'] = BankBalance.objects.filter(date=latest_date)
-        context['current_date'] = latest_date
         return context
 
 class BankAccountDetailView(LoginRequiredMixin, DetailView):
