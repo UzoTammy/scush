@@ -1,0 +1,99 @@
+{% extends "pdf/base.html" %} {% load custom_tags %} {% load static %}
+
+{% block head %}
+
+{% endblock %}
+<body>
+  {% block content %}
+  <div class="wrapper">
+    <div class="header">
+      <p class="title">Bank Balance as at {{current_date}}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="details">
+        <table>
+            <thead class="">
+                <tr>
+                    <th>Account Name</th>
+                    <th>Account Number</th>
+                    <th>Bank Balance</th>
+                    <th>AP Balance</th>
+                    <th>(BB - AP)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr>
+                    <td>{{object.bank.nickname}}</td>
+                    <td>{{object.bank.account_number}}</td>
+                    <td style="text-align: right;">{{object.bank_balance}}</td>
+                    <td style="text-align: right;">{{object.account_package_balance}}</td>
+                    {% if object.delta.amount >= 0 %}
+                    <td style="text-align: right;">{{object.delta}}</td>
+                    {% else %}
+                    <td style="text-align: right; color: red;">{{object.delta|abs}}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                <tr class="font-weight-bold bg-dark text-white">
+                    <th colspan="2" style="text-align: center;">Total</th>
+                    <th style="text-align: right;">NGN{{total_balance|floatformat:2}}</th>
+                    <th style="text-align: right;">NGN{{total_package|floatformat:2}}</th>
+                    {% with total_package|minus:total_balance as total %}
+                    {% if total >= 0 %}
+                    <th style="text-align: right;">NGN{{total|floatformat:2}}</th>
+                    {% else %}
+                    <th style="text-align: right; color: red;">NGN{{total|abs|floatformat:2}}</th>
+                    {% endif %}
+                    {% endwith %}
+                </tr>
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="col">
+      <div class="details">
+        <table>
+            <thead class="">
+                <tr>
+                    <th colspan="5" style="color: rgb(71, 143, 174); text-align: center;">Admin Account</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list_admin %}
+                <tr>
+                    <td>{{object.bank.nickname}}</td>
+                    <td>{{object.bank.account_number}}</td>
+                    <td style="text-align: right;">{{object.bank_balance}}</td>
+                    <td style="text-align: right;">{{object.account_package_balance}}</td>
+                    {% if object.delta.amount >= 0 %}
+                    <td style="text-align: right;">{{object.delta}}</td>
+                    {% else %}
+                    <td style="text-align: right; color: red;">{{object.delta|abs}}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                <tr class="font-weight-bold bg-dark text-white">
+                    <th colspan="2" style="text-align: center;">Total</th>
+                    <th style="text-align: right;">NGN{{total_balance_admin|floatformat:2}}</th>
+                    <th style="text-align: right;">NGN{{total_package_admin|floatformat:2}}</th>
+                    {% with total_balance_admin|minus:total_package_admin as total %}
+                    {% if total >= 0 %}
+                    <th style="text-align: right;">NGN{{total|floatformat:2}}</th>
+                    {% else %}
+                    <th style="text-align: right; color: red;">NGN{{total|abs|floatformat:2}}</th>
+                    {% endif %}
+                    {% endwith %}
+                </tr>
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endblock%}
+</body>

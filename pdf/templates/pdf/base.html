@@ -77,23 +77,25 @@
             width: 100px;
         }
         .img-1 {
+            height: 80px;
             border-radius: 50%;
+            border: none;
         }
 
         ul {
-            list-style-type: lower-alpha;
-            
+            list-style-type: lower-alpha;   
         }
+        
         
     </style>
     
   </head>
   <body>
-    <img src="data:image/png;base64,{{logo_image}}"
-    class="img-1"
-    height="80px" 
-    alt="logo"> <i style="font-size: large; color:red">&#160 F & L Trading Co. Ltd.</i>  
-    <p>GOB 1-4 Zamfara Plaza, <br> Trade Fair, Lagos. <br> <small>https://www.ozonefl.com</small></p>
+    <div class="img-1">
+        <img src="data:image/png;base64,{{logo_image}}"
+        alt="logo"> <i style="font-size: large; color:red">&#160 F & L Trading Co. Ltd.</i>  
+        <p>GOB 1-4 Zamfara Plaza, <br> Trade Fair, Lagos. <br> <small>https://www.ozonefl.com</small></p>
+    </div>
     
   {% block content %}{% endblock%}
 

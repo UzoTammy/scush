@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
-from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm)
+from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm)
 from django.shortcuts import render
 from .models import *
 from stock.models import ProductExtension
@@ -862,15 +862,34 @@ class BankAccountHomeView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         if BankBalance.objects.exists():
             latest_date = BankBalance.objects.latest('date').date
-            qs = BankBalance.objects.filter(date=latest_date)
+            qs = BankBalance.objects.filter(date=latest_date).filter(bank__account_group='Business')
             context['object_list'] = qs
             context['current_date'] = latest_date
             context['total_balance'] = qs.aggregate(Sum('bank_balance'))['bank_balance__sum']
             context['total_package'] = qs.aggregate(Sum('account_package_balance'))['account_package_balance__sum']
+            
         else:
             context['no_object'] = True
         return context
 
+
+class BankBalanceListViewAdmin(LoginRequiredMixin, ListView):
+    model = BankBalance
+    template_name = 'trade/bank_account/admin_account.html'
+
+    def get_queryset(self):
+        # this is the admin group
+        latest_date = super().get_queryset().latest('date').date
+        qs_admin = super().get_queryset().filter(date=latest_date).filter(bank__account_group='Admin')
+        return qs_admin
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_date'] = self.get_queryset().first().date
+        context['total_balance'] = self.get_queryset().aggregate(Sum('bank_balance'))['bank_balance__sum']
+        context['total_package'] = self.get_queryset().aggregate(Sum('account_package_balance'))['account_package_balance__sum']
+        return context
+    
 class BankAccountDetailView(LoginRequiredMixin, DetailView):
     model = BankAccount
     template_name = 'trade/bank_account/bank_account_detail.html'
@@ -886,12 +905,12 @@ class BankAccountUpdateView(LoginRequiredMixin, UpdateView):
 
 class BankAccountCreateView(LoginRequiredMixin, CreateView):
     model = BankAccount
-    fields = '__all__'
+    form_class = BankAccountForm
     template_name = 'trade/bank_account/bank_account_form.html'
 
 class BankBalanceCreateView(LoginRequiredMixin, CreateView):
     model = BankBalance
-    fields = '__all__'
+    form_class = BankBalanceForm
     template_name = 'trade/bank_account/bank_balance_form.html'
 
 class BankBalanceDetailView(LoginRequiredMixin, DetailView):

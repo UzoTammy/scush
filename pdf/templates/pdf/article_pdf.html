@@ -1,47 +1,44 @@
-{% extends "pdf/base.html" %}
-{% load custom_tags %}
-{% load static %}
+{% extends "pdf/base.html" %} {% load custom_tags %} {% load static %}
 <body>
-{% block content %}
-    <div class='wrapper'>
-        <div class='header'>
-            <p class='title'>Available Articles</p>
-        </div>
+  {% block content %}
+  <div class="wrapper">
+    <div class="header">
+      <p class="title">Available Articles</p>
     </div>
-    <div class="row">
-        <div class="col">
-            <div class='details'>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Item #</th>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Value</th>
-                            <th>Quantity</th>
-                            <th>Source</th>
-                            <th>Status</th>
-                            <th>Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for object in articles %}
-                        <tr>
-                            <td>{{object.pk|zeropadding:3}}</td>
-                            <td>{{object.name}}</td>
-                            <td>{{object.description}}</td>
-                            <td>{{object.value.amount|floatformat:'2g'}}</td>
-                            <td>{{object.quantity_in}}</td>
-                            <td>{{object.source}}</td>
-                            <td>{{object.status|yesno:'A, NA'}}</td>
-                            <td>{{object.quantity_balance}}</td>
-                        </tr>          
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="details">
+        <table>
+          <thead>
+            <tr>
+              <th>Item #</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Value</th>
+              <th>Quantity</th>
+              <th>Source</th>
+              <th>Status</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for object in articles %}
+            <tr>
+              <td>{{object.pk|zeropadding:3}}</td>
+              <td>{{object.name}}</td>
+              <td>{{object.description}}</td>
+              <td>{{object.value.amount|floatformat:'2g'}}</td>
+              <td>{{object.quantity_in}}</td>
+              <td>{{object.source}}</td>
+              <td>{{object.status|yesno:'A, NA'}}</td>
+              <td>{{object.quantity_balance}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
-{% endblock%}
+  </div>
+  {% endblock%}
 </body>
-

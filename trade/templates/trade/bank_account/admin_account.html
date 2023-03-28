@@ -1,0 +1,72 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-center">Admin Bank Account Page</h3>
+        </div>
+    </div>
+    <div class="row">
+        
+        <div class="col-sm">
+            {% if not object_list %}
+            <table class="table table-bordered" data-toggle="table">
+                <caption>Admin Account Balance as at {{current_date}}</caption>
+                <thead class="">
+                    <tr class="bg-dark text-white text-center">
+                        <th>Account Name</th>
+                        <th>Account Number</th>
+                        <th>Banker</th>
+                        <th>Bank Balance</th>
+                        <th>AP Balance</th>
+                        <th>(BB - AP)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for object in object_list %}
+                    <tr>
+                        <td>{{object.bank.nickname}}</td>
+                        <td>{{object.bank.account_number}}</td>
+                        <td>{{object.bank.bank}}</td>
+                        <td class="text-right">{{object.bank_balance}}</td>
+                        <td class="text-right">{{object.account_package_balance}}</td>
+                        {% if object.delta.amount >= 0 %}
+                        <td class="text-right">{{object.delta}}</td>
+                        {% else %}
+                        <td class="text-right text-danger">{{object.delta|abs}}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                    <tr class="font-weight-bold bg-dark text-white">
+                        <td colspan="3" class="text-center">Total</td>
+                        <td class="text-right">NGN{{total_balance|floatformat:2}}</td>
+                        <td class="text-right">NGN{{total_package|floatformat:2}}</td>
+                        {% with total_balance|minus:total_package as total %}
+                        {% if total >= 0 %}
+                        <td class="text-right">NGN{{total|floatformat:2}}</td>
+                        {% else %}
+                        <td class="text-right text-danger">NGN{{total|abs|floatformat:2}}</td>
+                        {% endif %}
+                        {% endwith %}
+                    </tr>
+                </tbody>
+            </table>
+            <p class="mt-3 mr-2 text-danger float-right">AP - Account Package, BB - Bank balance</p>
+            {% else %}
+            <h3 class="ml-3">No Database Record</h3>
+            {% endif %}
+        </div>
+        
+    </div>
+    <div class="row mr-3">
+        <div class="col">
+            <a class="btn btn-dark float-right" href="{% url 'bank-account-home' %}"><i class="fa fa-reply"></i></a>
+        </div>
+    </div>
+</div>
+
+
+{% endblock%}

@@ -1,11 +1,9 @@
-import calendar
 import datetime
 import decimal
 import os
 import base64
 import random
 from io import BytesIO
-import time
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from pdf.utils import render_to_pdf
@@ -14,7 +12,7 @@ from apply.models import Applicant
 from django.contrib.auth.models import User
 from django.views.generic import (View, ListView, DetailView, TemplateView)
 from staff.models import Employee, Payroll, EmployeeBalance
-from trade.models import TradeMonthly
+from trade.models import TradeMonthly, BankBalance
 from stock.models import Product
 from brief.models import Post
 from material.models import Article
@@ -388,7 +386,7 @@ class PriceUpdateFootNote(View):
 
 class ArticlesPdf(LoginRequiredMixin, TemplateView):
     template_name = 'pdf/article_pdf.html'
-
+    
     def get(self, request, *args, **kwargs):
         articles = Article.available.all()
         context = {
@@ -404,3 +402,41 @@ class ArticlesPdf(LoginRequiredMixin, TemplateView):
             response['Content-Disposition'] = f'filename="articles-{today}.pdf"'
             return response
         return HttpResponse('Error')
+
+    
+
+class BankAccountPdf(LoginRequiredMixin, TemplateView):
+    template_name = 'pdf/bank_account/daily_balance.html'
+
+    def get(self, request, *args, **kwargs):
+        # Create a pdf file
+
+        # create the object and add into the context dictionary
+        current_date = BankBalance.objects.latest('date').date
+        qs = BankBalance.objects.filter(date=current_date).filter(bank__account_group='Business')
+        context = {
+            'object_list': qs.order_by('bank__nickname'),
+            'logo_image': Ozone.logo(),
+            'title': 'Daily Bank Balance',
+            'current_date': current_date
+        }
+        context['total_balance'] = qs.aggregate(Sum('bank_balance'))['bank_balance__sum']
+        context['total_package'] = qs.aggregate(Sum('account_package_balance'))['account_package_balance__sum']
+
+        # Admin accounts
+        qs = BankBalance.objects.filter(date=current_date).filter(bank__account_group='Admin')
+        context['object_list_admin'] = qs.order_by('bank__nickname')
+        context['total_balance_admin'] = qs.aggregate(Sum('bank_balance'))['bank_balance__sum']
+        context['total_package_admin'] = qs.aggregate(Sum('account_package_balance'))['account_package_balance__sum']
+
+        # call the pdf function and return the html response
+        pdf = render_to_pdf(self.template_name, context_dict=context)
+        
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            today = datetime.date.today().strftime('%d%m%Y')
+            response['Content-Disposition'] = f'filename="bank_balance-{today}.pdf"'
+            return response
+        return HttpResponse('Error')
+
+    

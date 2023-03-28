@@ -158,4 +158,4 @@ class BankBalance(models.Model):
         return reverse('bank-balance-detail', kwargs={'pk': self.pk})
 
     def delta(self):
-        return self.account_package_balance - self.bank_balance
+        return self.bank_balance - self.account_package_balance

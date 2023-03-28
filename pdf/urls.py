@@ -29,3 +29,7 @@ urlpatterns += [
 urlpatterns += [
     path('artcles/', ArticlesPdf.as_view(), name='articles-pdf')
 ]
+
+urlpatterns += [
+    path('bank-balance-daily/', BankAccountPdf.as_view(), name='pdf-daily-bank-balance')
+]
