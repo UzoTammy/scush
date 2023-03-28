@@ -901,7 +901,7 @@ class BankAccountListView(LoginRequiredMixin, ListView):
 class BankAccountUpdateView(LoginRequiredMixin, UpdateView):
     model = BankAccount
     template_name = 'trade/bank_account/bank_account_form.html'
-    fields = '__all__'
+    form_class = BankAccountForm
 
 class BankAccountCreateView(LoginRequiredMixin, CreateView):
     model = BankAccount
@@ -920,7 +920,7 @@ class BankBalanceDetailView(LoginRequiredMixin, DetailView):
 class BankBalanceUpdateView(LoginRequiredMixin, UpdateView):
     model = BankBalance
     template_name = 'trade/bank_account/bank_balance_form.html'
-    fields = '__all__'
+    form_class = BankBalanceForm
 
 class BankBalanceListView(LoginRequiredMixin, ListView):
     model = BankBalance
