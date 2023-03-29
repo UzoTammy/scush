@@ -41,7 +41,7 @@
                     <th colspan="2" style="text-align: center;">Total</th>
                     <th style="text-align: right;">NGN{{total_balance|floatformat:2}}</th>
                     <th style="text-align: right;">NGN{{total_package|floatformat:2}}</th>
-                    {% with total_package|minus:total_balance as total %}
+                    {% with total_balance|minus:total_package as total %}
                     {% if total >= 0 %}
                     <th style="text-align: right;">NGN{{total|floatformat:2}}</th>
                     {% else %}

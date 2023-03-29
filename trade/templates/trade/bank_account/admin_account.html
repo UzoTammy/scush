@@ -28,7 +28,7 @@
                 <tbody>
                     {% for object in object_list %}
                     <tr>
-                        <td>{{object.bank.nickname}}</td>
+                        <td><a href="{% url 'bank-balance-detail' object.pk %}">{{object.bank.nickname}}</a></td>
                         <td>{{object.bank.account_number}}</td>
                         <td>{{object.bank.bank}}</td>
                         <td class="text-right">{{object.bank_balance}}</td>

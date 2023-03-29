@@ -150,6 +150,8 @@ class BankBalance(models.Model):
     bank_balance = MoneyField(max_digits=12, decimal_places=2)
     account_package_balance = MoneyField(max_digits=12, decimal_places=2)
     
+    class Meta:
+        unique_together = (("bank", "date"),)
 
     def __str__(self) -> str:
         return f'{self.bank.nickname}-{self.date}'
