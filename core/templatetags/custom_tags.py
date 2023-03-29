@@ -70,7 +70,10 @@ def divide(value, arg):
 
 @register.filter
 def minus(value, arg):
-    return value - arg
+    try:
+        return value - arg
+    except:
+        return None
 
 @register.filter
 def dividedby(value, arg):
