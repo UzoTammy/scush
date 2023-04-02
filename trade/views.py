@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
-from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm)
+from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm, BankBalanceCopyForm)
 from django.shortcuts import render
 from .models import *
 from stock.models import ProductExtension
@@ -879,15 +879,18 @@ class BankBalanceListViewAdmin(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         # this is the admin group
-        latest_date = super().get_queryset().latest('date').date
-        qs_admin = super().get_queryset().filter(date=latest_date).filter(bank__account_group='Admin')
-        return qs_admin
+        if super().get_queryset().exists():
+            latest_date = super().get_queryset().latest('date').date
+            qs_admin = super().get_queryset().filter(date=latest_date).filter(bank__account_group='Admin')
+            return qs_admin
+        return None
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['current_date'] = self.get_queryset().first().date
-        context['total_balance'] = self.get_queryset().aggregate(Sum('bank_balance'))['bank_balance__sum']
-        context['total_package'] = self.get_queryset().aggregate(Sum('account_package_balance'))['account_package_balance__sum']
+        if self.get_queryset().exists():
+            context['current_date'] = self.get_queryset().first().date
+            context['total_balance'] = self.get_queryset().aggregate(Sum('bank_balance'))['bank_balance__sum']
+            context['total_package'] = self.get_queryset().aggregate(Sum('account_package_balance'))['account_package_balance__sum']
         return context
     
 class BankAccountDetailView(LoginRequiredMixin, DetailView):
@@ -913,6 +916,12 @@ class BankBalanceCreateView(LoginRequiredMixin, CreateView):
     form_class = BankBalanceForm
     template_name = 'trade/bank_account/bank_balance_form.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        date = self.get_queryset().latest('date').date
+        context['records'] = self.get_queryset().filter(date=date)
+        return context
+
 class BankBalanceDetailView(LoginRequiredMixin, DetailView):
     model = BankBalance
     template_name = 'trade/bank_account/bank_balance_detail.html'
@@ -925,3 +934,16 @@ class BankBalanceUpdateView(LoginRequiredMixin, UpdateView):
 class BankBalanceListView(LoginRequiredMixin, ListView):
     model = BankBalance
     template_name = 'trade/bank_account/bank_balance_list.html'
+
+class BankBalanceCopyView(LoginRequiredMixin, TemplateView):
+    template_name = 'trade/bank_account/bank_balance_copy.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        obj = BankBalance.objects.get(pk=kwargs['pk'])
+        context['form'] = BankBalanceCopyForm(instance=obj)
+        return context
+    
+    def post(self, request):
+        print(request.POST)
+        return render(reverse())

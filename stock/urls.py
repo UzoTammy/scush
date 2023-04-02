@@ -34,7 +34,6 @@ urlpatterns += [
     path('performance/home/', PerformanceHome.as_view(), name='performance-home'),
 
 ]
-
 urlpatterns += [
     path('<str:user>/home/', StockReportHome.as_view(), name='stock-report-home'),
     path('<str:date>/<int:pk>/new/', StockReportNew.as_view(), name='stock-report-new'),

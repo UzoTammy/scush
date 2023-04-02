@@ -50,3 +50,11 @@ class BankBalanceForm(forms.ModelForm):
     class Meta:
         model = BankBalance
         fields = '__all__'
+
+class BankBalanceCopyForm(forms.ModelForm):
+
+    date = forms.DateField(widget=DateInput(attrs={'type':'date'}))
+    
+    class Meta:
+        model = BankBalance
+        fields = '__all__'

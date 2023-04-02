@@ -30,26 +30,28 @@
                 <tbody>
                     <tr>
                         <td>Value</td>
-                        {% for item in velocity %}
-                        <td class="text-right">{{item}}</td>
+                        {% for item in stack %}
+                        <td class="text-right">{{item|array:2}}</td>
                         {% endfor %}
                     </tr>
                     <tr>
                         <td>Percent</td>
-                        {% for item in total_vel %}
-                        <td class="text-right">{{item}}</td>
+                        {% for item in percent_stack %}
+                        <td class="text-right">{{item|floatformat:2}}%</td>
                         {% endfor %}
                     </tr>
                     <tr>
                         <td>Qty</td>
-                        {% for item in velocity_qty %}
-                        {% if item > 0 %}
+                        {% for item in stack %}
+                        {% with item|last as x %}
+                        {% if x.count > 0 %}
+                    
                         <td class="text-right"><a 
                             data-toggle="modal" 
                             data-target="#qsByVelocity{{forloop.counter0}}"
-                            href="">{{item}}</a></td>
+                            href="">{{x.count}}</a></td>
                         {% else %}
-                        <td class="text-right">{{item}}</td>
+                        <td class="text-right">{{x.count}}</td>
                         {% endif %}
                         <section>
                             <!-- Modal -->
@@ -60,7 +62,6 @@
                                     <div class="modal-header">
                                     <h5 class="modal-title" id="qsByVelocityTitle">Product List - 
                                         {% if forloop.counter0 == 0 %} Not Designated 
-                                        
                                         {% elif forloop.counter0 == 1 %} Not Selling
                                         {% elif forloop.counter0 == 2 %} Very Low Sellout
                                         {% elif forloop.counter0 == 3 %} Low Sellout
@@ -76,46 +77,54 @@
                                         
                                         {% if forloop.counter0 == 0 %} 
                                         <ul class="list-group">
-                                            {% for product in product_and_stock|array:1 %}
-                                            <li class="list-group-item">{{product|first}} 
-                                                <span class="float-right">{{product|last}}</span>
+                                            {% for product in stack|array:1|array:3 %}
+                                            <li class="list-group-item">{{product}} 
+                                                <span class="float-right">{{product.stock_value}}</span>
                                             </li>
                                             {% endfor %}
                                         </ul>
                                         {% elif forloop.counter0 == 1 %}
                                         <ul class="list-group">
-                                            {% for product in product_and_stock|array:2 %}
-                                            <li class="list-group-item">{{product|first}} <span class="float-right">{{product|last}}</span></li>
+                                            {% for product in stack|array:2|array:3 %}
+                                            <li class="list-group-item">{{product}} 
+                                                <span class="float-right">{{product.stock_value}}</span></li>
                                             {% endfor %}
                                         </ul>
                                         {% elif forloop.counter0 == 2 %} 
                                         <ul class="list-group">
-                                            {% for product in product_and_stock|array:3 %}
-                                            <li class="list-group-item">{{product|first}} <span class="float-right">{{product|last}}</span></li>
+                                            {% for product in stack|array:3|array:3 %}
+                                            <li class="list-group-item">{{product}} 
+                                                <span class="float-right">{{product.stock_value}}</span></li>
                                             {% endfor %}
                                         </ul>
                                         {% elif forloop.counter0 == 3 %}
                                         <ul class="list-group">
-                                            {% for product in product_and_stock|array:4 %}
-                                            <li class="list-group-item">{{product|first}} <span class="float-right">{{product|last}}</span></li>
+                                            {% for product in stack|array:4|array:3 %}
+                                            <li class="list-group-item">{{product}} <span class="float-right">{{product.stock_value}}</span></li>
                                             {% endfor %}
                                         </ul>
                                         {% elif forloop.counter0 == 4 %} 
                                         <ul class="list-group">
-                                            {% for product in product_and_stock|array:5 %}
-                                            <li class="list-group-item">{{product|first}} <span class="float-right">{{product|last}}</span></li>
+                                            {% for product in stack|array:5|array:3 %}
+                                            <li class="list-group-item">{{product}} 
+                                                <span class="float-right">{{product.stock_value}}</span>
+                                            </li>
                                             {% endfor %}
                                         </ul>
                                         {% elif forloop.counter0 == 5 %} 
                                         <ul class="list-group">
-                                            {% for product in product_and_stock|array:6 %}
-                                            <li class="list-group-item">{{product|first}} <span class="float-right">{{product|last}}</span></li>
+                                            {% for product in stack|array:6|array:3 %}
+                                            <li class="list-group-item">{{product}} 
+                                                <span class="float-right">{{product.stock_value}}</span>
+                                            </li>
                                             {% endfor %}
                                         </ul>
                                         {% elif forloop.counter0 == 6 %} 
                                         <ul class="list-group">
-                                            {% for product in product_and_stock|array:7 %}
-                                            <li class="list-group-item">{{product|first}} <span class="float-right">{{product|last}}</span></li>
+                                            {% for product in stack|array:7|array:3 %}
+                                            <li class="list-group-item">{{product}} 
+                                                <span class="float-right">{{product.stock_value}}</span>
+                                            </li>
                                             {% endfor %}
                                         </ul>
                                         {% endif %}
@@ -128,7 +137,17 @@
                                 </div>
                             </div>
                         </section>
+                        {% endwith %}
                         {% endfor %}
+                    </tr>
+                    <tr>
+                        <th class="text-center bg-dark text-white" colspan="2">Summary</th>
+                        <th class="text-center bg-danger text-white" colspan="3">{{haystack|array:2}} 
+                            ({{haystack|array:2|div:total_stock_value|multiply:100|floatformat:2}}%)</th>
+                        <th class="bg-warning"></th>
+                        <th class="text-center bg-success text-white" colspan="2">{{haystack|array:4}}
+                            ({{haystack|array:4|div:total_stock_value|multiply:100|floatformat:2}}%)
+                        </th>
                     </tr>
                 </tbody>
             </table>
@@ -226,13 +245,10 @@
         </div>
     </div>
     {% endif %}
-
     <div class="row mt-3">    
         <div class="col">
             <a class="float-right" href="{% url 'product-home' %}"><i class="fa fa-reply fa-2x"></i></a>
         </div>
     </div>
 </div>
-
-
 {% endblock %}

@@ -44,4 +44,5 @@ urlpatterns += [
     path('bank-balance/<int:pk>', BankBalanceUpdateView.as_view(), name='bank-balance-update'),    
     path('bank-balance/list/', BankBalanceListView.as_view(), name='bank-balance-list'),
     path('bank-account/list/admin/', BankBalanceListViewAdmin.as_view(), name='bank-balance-list-admin'),
+    path('bank-balance/<int:pk>/copy/', BankBalanceCopyView.as_view(), name='bank-balance-copy'),
 ]

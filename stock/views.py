@@ -1,6 +1,6 @@
-import os
-import csv
-import logging
+# import os
+# import csv
+# import logging
 import calendar
 import datetime
 # from pathlib import Path
@@ -1222,6 +1222,7 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
             3 - moderate, 4 - high sellout and 5 - very high sellout.
             output: [(v1, qs1), (v2, qs2), (v3, qs3)]
             """
+            
             product_list_for_velocity = [(i, active_products_list.filter(velocity=i).values_list('pk', flat=True)) 
                                          for i in range(-1, 6)]
         else:
@@ -1230,38 +1231,42 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
         if ProductExtension.objects.exists():
             date2 = ProductExtension.objects.latest('date').date
             date1 = date2 - datetime.timedelta(days=4) if date2.weekday() == 0 or date2.weekday() == 1 else date2 - datetime.timedelta(days=3)
+            qs_list = list((i, ProductExtension.objects.filter(date=date2).filter(product__velocity=i)) for i in range(-1, 6))    
+            stack = list()
+            for item in qs_list:
+                if item[1].exists():
+                    qs = item[1].annotate(sv=F('cost_price')*F('stock_value'))
+                    value = (qs.aggregate(Sum('sv'))['sv__sum'], qs)
+                else:
+                    value = (Decimal('0'), qs.none())
+                stack.append((item[0], Money(value[0], 'NGN'), value[1]))
+            stack.sort(key=lambda x:x[0])  
             
-            velocity, velocity_count, data = list(), list(), list()
-            for qs in product_list_for_velocity:
-                lis = list()
-                velocity_count.append(qs[1].count())
-                for product in qs[1]:
-                    obj = ProductExtension.objects.filter(date=date2).filter(product=product)
-                    lis.append(obj.get().stock_value * obj.get().cost_price if obj.exists() else Money(0, 'NGN'))
-                
-                velocity.append(sum(lis) if lis else Money(0, 'NGN'))  
-                data.append(lis)
-                
-            context['velocity'] = velocity
-            context['total_stock_value'] = sum(velocity)
-            context['total_vel'] = (f'{round(100 * item/sum(velocity), 2)}%' for item in velocity)
-            context['velocity_qty'] = velocity_count
-            context['data'] = data
-            # list of products that are active and whose velocity is -1
-            product = Product.objects.filter(active=True)
-            list_product_and_stock = list()
-            for i in range(-1, 6):
-                pp = product.filter(velocity=i)
-                lis = list()
-                if pp.exists():
-                    for p in pp:
-                        x = ProductExtension.objects.filter(product=p).filter(date=date2)
-                        sv = x.last().stock_value if x.exists() else 0
-                        lis.append((p, sv))
-                y = '_1' if i == -1 else i
-                list_product_and_stock.append(lis)
-            context['product_and_stock'] = list_product_and_stock
-            # logger.info(f'Product Velocity @ modal: {list_product_and_stock}')
+            percent_stack = list()
+            total = sum(i[1] for i in stack)
+            for item in stack:
+                percent_stack.append(100*item[1]/total)
+            
+            haystack = list()
+            for item in stack:
+                if item[0] == -1:
+                    haystack.append(item[1])
+                    sums = Money(0, "NGN")
+                elif item[0] == 0 or item[0] == 1 or item[0] == 2:
+                    sums += item[1]
+                elif item[0] == 3:
+                    haystack.append(sums)
+                    haystack.append(item[1])
+                    sums = Money(0, "NGN")
+                else:
+                    sums += item[1]
+            haystack.append(sums)
+            
+            context['total_stock_value'] = sum(i[1] for i in stack)
+            context['stack'] = stack
+            context['percent_stack'] = percent_stack
+            context['haystack'] = haystack
+            
         else:
             return context
 
