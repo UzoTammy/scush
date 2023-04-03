@@ -1,5 +1,6 @@
 {% extends 'users/base.html' %}
 {% load static %}
+{% load custom_tags %}
 
 {% block head %}
 <style>
@@ -37,6 +38,37 @@
             </ul>
 
             <a class="btn btn-primary btn-sm mt-2 ml-2" href="{% url 'bank-account-update' object.pk %}">Update</a>
+            <a class="btn btn-dark btn-sm float-right mt-2 mr-2" href="{% url 'bank-account-home' %}">
+                <i class="fa fa-reply"></i></a>
+        </div>
+        
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <table class="table" data-toggle="table">
+                <thead class="bg-secondary text-white">
+                    <tr class="text-right">
+                        <th class="text-center">Date</th>
+                        <th>Bank Balance</th>
+                        <th>Accounts Balance</th>
+                        <th>Deviation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for obj in bank %}
+                    <tr class="text-right">
+                        <th class="text-center">{{obj.date}}</th>
+                        <th>{{obj.bank_balance}}</th>
+                        <th>{{obj.account_package_balance}}</th>
+                        {% if obj.delta.amount >= 0 %}
+                        <th>{{obj.delta}}</th>
+                        {% else %}
+                        <th class="text-danger">{{obj.delta|abs}}</th>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             <a class="btn btn-dark btn-sm float-right mt-2 mr-2" href="{% url 'bank-account-home' %}">
                 <i class="fa fa-reply"></i></a>
         </div>

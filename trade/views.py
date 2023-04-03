@@ -867,7 +867,8 @@ class BankAccountHomeView(LoginRequiredMixin, TemplateView):
             context['current_date'] = latest_date
             context['total_balance'] = qs.aggregate(Sum('bank_balance'))['bank_balance__sum']
             context['total_package'] = qs.aggregate(Sum('account_package_balance'))['account_package_balance__sum']
-            
+            context['bank_accounts_business'] = BankAccount.objects.filter(account_group='Business')
+            context['bank_accounts_admin'] = BankAccount.objects.filter(account_group='Admin')
         else:
             context['no_object'] = True
         return context
@@ -896,6 +897,11 @@ class BankBalanceListViewAdmin(LoginRequiredMixin, ListView):
 class BankAccountDetailView(LoginRequiredMixin, DetailView):
     model = BankAccount
     template_name = 'trade/bank_account/bank_account_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['bank'] = BankBalance.objects.filter(bank=kwargs['object']).order_by('-pk')[:10]
+        return context
 
 class BankAccountListView(LoginRequiredMixin, ListView):
     model = BankAccount
@@ -945,5 +951,5 @@ class BankBalanceCopyView(LoginRequiredMixin, TemplateView):
         return context
     
     def post(self, request):
-        print(request.POST)
+        # print(request.POST)
         return render(reverse())

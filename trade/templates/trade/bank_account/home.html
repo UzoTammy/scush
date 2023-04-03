@@ -24,19 +24,30 @@
             <div class="collapse collapse-sm" id="Dropdown2">
                 <ul class="nav flex-column mt-3">
                     <li class="text-white"><i class="fa fa-minus text-warning"></i>Bank Account</li>
-                    <!-- <li class="nav-item">
-                        <a href="{% url 'bank-account-create' %}" class="nav-link">
-                            <i class="fa fa-plus text-warning"></i>
-                            Add
-                        </a>
-                    </li> -->
+                    
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'bank-account-list' %}">
                             <i class="fa fa-edit text-warning"></i>
                             View & Update
                         </a>
                     </li>
-                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" 
+                        data-toggle="dropdown" href="#" 
+                        role="button" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-navicon text-warning"></i> View One</a>
+                        <div class="dropdown-menu">
+                            {% for obj in bank_accounts_business %}
+                                <a class="dropdown-item" href="{% url 'bank-account-detail' obj.pk %}">{{obj}}</a>
+                            {% endfor %}
+                            <hr class="dropdown-divider">
+                            {% for obj in bank_accounts_admin %}
+                                <a class="dropdown-item" href="{% url 'bank-account-detail' obj.pk %}">{{obj}}</a>
+                            {% endfor %}
+                            
+                          
+                        </div>
+                      </li>
                     <hr class="dropdown-divider">
                     <li class="text-white"><i class="fa fa-minus text-warning"></i>Bank Balance</li>
                     <li class="nav-item">
