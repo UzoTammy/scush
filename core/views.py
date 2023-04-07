@@ -31,13 +31,13 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import (TemplateView, ListView, CreateView, DetailView, UpdateView)
 from django.views import View
-from django.db.models import F, Sum 
+from django.db.models import F, Sum, Q
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from staff.models import Employee, Permit
 from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
 from apply.models import Applicant
-from trade.models import TradeDaily, TradeMonthly, BalanceSheet
+from trade.models import TradeDaily, TradeMonthly, BalanceSheet, BankBalance
 from warehouse.models import Stores, Renewal
 from .forms import JsonDatasetForm
 from .models import JsonDataset
@@ -208,11 +208,11 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         sales = float(qs.aggregate(Sum('sales'))['sales__sum']) if qs.exists() else 0.0
         purchase = float(qs.aggregate(Sum('purchase'))['purchase__sum']) if qs.exists() else 0.0
         
-        qs = Applicant.this_year.all()
+        qs = Applicant.pending.all()
         application = qs.count() if qs.exists() else 0
 
         store_count = Stores.active.count()
-        qs = Stores.active.filter(status=True)
+        qs = Renewal.objects.filter(date__year=datetime.date.today().year)
         rent_paid = float(qs.aggregate(Sum('rent_amount'))['rent_amount__sum']) if qs.exists() else 0.0
         
         # growth is the ratio of money made over the financial year to the capital invested
@@ -354,18 +354,40 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         
         qs = CustomerCredit.objects.all()
         credit_balance = float(qs.aggregate(Sum('current_credit'))['current_credit__sum']) if qs.exists() else 0.0
+        bank_balance_qs = BankBalance.objects.filter(bank__account_group='Business')
+        obj_date = bank_balance_qs.latest('date').date
+        bank_balance_qs = bank_balance_qs.filter(date=obj_date)
+        bank_balance = float(bank_balance_qs.aggregate(Sum('account_package_balance'))['account_package_balance__sum']) if bank_balance_qs.exists() else 0.0
         
         context['date_of_record'] = latest_date
         context['color'] = ['success', 'info', 'warning']
-        context['basics'] = [('Product Count', product_count), ('Customer Base', customer_base), ('Workforce', workforce)]
-        context['trades'] = [('Sales', sales), ("Purchase", purchase), ("Credits", credit_balance),('Rent Paid', rent_paid)]
-        context['points'] = [
-                ('Growth', growth), 
-                ('Margin', margin), 
-                ('Expenses', expenses), 
-                ('Man-Hour', man_hour_kpi), 
-                ('WFP', wf_prod)]
-        context['extras'] = [('Stores', store_count), ("Application", application)]
+        context['basics'] = (product_count, customer_base, workforce, application)
+        context['ytd'] = (sales, purchase, credit_balance, rent_paid)
+        context['monthly_kpi'] = (growth,margin,expenses,man_hour_kpi)
+                
+        context['extras'] = (bank_balance, store_count, wf_prod)
+
+        # stock performance section
+        qs = ProductExtension.objects.all()
+        # get products whose velocity is No stock, low-stock & very low-stock
+        qs_low_velocity = qs.filter(Q(product__velocity=0) | Q(product__velocity=1) | Q(product__velocity=2))
+        dates = qs.values_list('date', flat=True).distinct()
+        total_count = dates.count()
+        # take the last ten records
+        if total_count >= 10:
+            dates = dates.order_by('date').all()[total_count-10:]
+        
+        # queryset of each velocity in iterator
+        qs_of_each_velocity = (qs_low_velocity.filter(date=date) for date in dates)
+        qs_of_each_velocity = (qs.annotate(value_of_stock=F('stock_value')*F('cost_price')) for qs in qs_of_each_velocity)
+        stock_values = (qs.aggregate(Sum('value_of_stock'))['value_of_stock__sum'] for qs in qs_of_each_velocity)
+        # for value of stock is none change to zero
+        stock_values = list(0.0 if value is None else float(value) for value in stock_values)
+        # Get stock values for the last 2 days
+        stock_values_2days = stock_values[-2:]
+        if stock_values_2days[1] != 0.0:
+            stock_values_2days = round(100*(stock_values_2days[1]-stock_values_2days[0])/stock_values_2days[0], 2)
+        context['stock_value_ratio'] = stock_values_2days
         return context
 
 class KPIMailSend(LoginRequiredMixin, View):

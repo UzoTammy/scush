@@ -4,8 +4,10 @@
 {% block head %}
 <style>
     .oval {
-        max-width: 12rem;
+        max-width: 5rem;
         border-radius: 50px 50px 50px 50px;
+        background-color: rgb(133, 186, 239);
+        padding: 5px;
     }
     .circle {
         max-width: 7rem; 
@@ -35,63 +37,95 @@
 {% else %}
 <div class="container text-center mt-3">
     <h5 class="text-danger text-left">As at {{date_of_record}}</h5>
-    <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 mt-3">
-        {% for basic in basics %}
-        <div class="col mt-2">
-            <div class="card bg-{{color|array:forloop.counter0}} oval">
-                <div class="card-body text-white">
-                    <p class="card-title">{{basic|first}}</p>
-                    <p class="card-text float-right">{{basic|last}}</p>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-header">
+                  General
                 </div>
+                <ul class="list-group list-group-flush text-left">
+                    <li class="list-group-item">Products <span class="float-right oval">#{{basics|array:1}}</span></li>
+                    <li class="list-group-item">Customers <span class="float-right oval">#{{basics|array:2}}</span></li>
+                    <li class="list-group-item">Workforce <span class="float-right oval">#{{basics|array:3}}</span></li>
+                    <li class="list-group-item">Pending Application <span class="float-right oval">#{{basics|array:4}}</span></li>
+                    
+                </ul>
             </div>
         </div>
-        {% endfor %}
         
-    </div>
-    <h3 class="text-left mt-4"><i>YTD</i></h3>
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 mt-3">
-        {% for trade in trades %}
-        <div class="col mt-2">
-            <div class="card bg-secondary circle">
-                <div class="card-body text-white">
-                    <p class="card-title text-center">{{trade|first}}</p>
-                    <p class="card-text float-right">{{trade|last|myriad}}</p>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-header">
+                  YTD
                 </div>
+                <ul class="list-group list-group-flush text-left">
+                    
+                    <li class="list-group-item">Sales <span class="float-right oval">N{{ytd|array:1|myriad}}</span></li>
+                    
+                    <li class="list-group-item">Purchase <span class="float-right oval">N{{ytd|array:2|myriad}}</span></li>
+
+                    <li class="list-group-item">Credits <span class="float-right oval">N{{ytd|array:3|myriad}}</span></li>
+
+                    <li class="list-group-item">Rent Paid <span class="float-right oval">N{{ytd|array:4|myriad}}</span></li>
+                </ul>
             </div>
         </div>
-        {% endfor %}
-    </div>
-    <hr>
-    <h3 class="text-left mt-4"><i>Monthly KPI</i></h3>
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 mt-3">
-        
-        {% for point in points %}
-        <div class="col mt-2">
-            <div class="card bg-dark curved-rectangle">
-                <div class="card-body text-white">
-                    <p class="card-title text-center">{{point|first}}</p>
-                    <p class="card-text float-right">{{point|last}} <sup class="text-danger">Pts</sup> </p>
+         
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-header">
+                  Monthly KPI
                 </div>
+                <ul class="list-group list-group-flush text-left">
+                    <li class="list-group-item">Growth
+                        <small class="float-right text-danger">Pts</small>
+                        <span class="float-right oval">{{monthly_kpi|array:1}}</span>
+                    </li>
+                    <li class="list-group-item">Margin
+                        <small class="float-right text-danger">Pts</small>
+                        <span class="float-right oval">{{monthly_kpi|array:2}}</span>
+                    </li>
+                    <li class="list-group-item">Expenses
+                        <small class="float-right text-danger">Pts</small>
+                        <span class="float-right oval">{{monthly_kpi|array:3}}</span>
+                    </li>
+                    <li class="list-group-item">Man-hour
+                        <small class="float-right text-danger">Pts</small>
+                        <span class="float-right oval">{{monthly_kpi|array:4}}</span>
+                    </li>
+                </ul>
             </div>
         </div>
-        {% endfor %}
-    </div>
-    <hr>
-    <h3 class="text-left mt-4"><i></i>More info</h3>
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-2 mt-3">
-        {% for extra in extras %}
-        <div class="col mt-2">
-            <div class="card bg-secondary circle">
-                <div class="card-body text-white">
-                    <p class="card-title text-center">{{extra|first}}</p>
-                    <p class="card-text float-right">{{extra|last|myriad}}</p>
+         
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-header">
+                  Others
                 </div>
+                <ul class="list-group list-group-flush text-left">
+                    <li class="list-group-item">Bank Balance 
+                        <span class="float-right oval">{{extras|array:1|myriad}}</span></li>  
+                  <li class="list-group-item">Stores<span class="float-right oval">{{extras|array:2}}</span></li>
+                  <li class="list-group-item">WFP
+                    <small class="float-right text-danger">Pts</small>
+                    <span class="float-right oval">{{extras|array:3}}</span>
+                </li>
+                  <li class="list-group-item">Low-Stock Velocity 
+                    {% if stock_value_ratio > 0 %}
+                    <span class="float-right"><i class="fa fa-arrow-up text-danger"></i></span>
+                    <span class="float-right oval">{{stock_value_ratio}}%</span>
+                    {% elif stock_value_ratio < 0 %}
+                    <span class="float-right"><i class="fa fa-arrow-down text-success"></i></span>
+                    <span class="float-right oval">{{stock_value_ratio|abs}}%</span>
+                    {% else %}
+                    <span class="float-right oval">NA</span>
+                    {% endif %}
+                </li>
+                </ul>
             </div>
         </div>
-        {% endfor %}
     </div>
-    <hr>
-    <div class="row mb-3">
+    <div class="row mb-3 mt-3">
         <div class="col">
             <a class="float-right" href="{% url 'home' %}"><i class="fa fa-reply fa-2x"></i> Home</a>
         </div>

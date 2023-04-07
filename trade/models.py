@@ -126,7 +126,6 @@ class BalanceSheet(models.Model):
         return None
 
 
-
 class BankAccount(models.Model):
     account_name = models.CharField(max_length=100)
     nickname = models.CharField(max_length=50)
@@ -148,7 +147,7 @@ class BankBalance(models.Model):
     bank = models.ForeignKey(BankAccount, on_delete=models.CASCADE)
     date = models.DateField(default=date.today)
     bank_balance = MoneyField(max_digits=12, decimal_places=2)
-    account_package_balance = MoneyField(max_digits=12, decimal_places=2)
+    account_package_balance = MoneyField(max_digits=12, decimal_places=2) #busy balance
     
     class Meta:
         unique_together = (("bank", "date"),)

@@ -1297,7 +1297,7 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
             sort_qs_by_sellout = sorted(all_products_qs, key=lambda x:x['sellout'], reverse=True)[:10]
             context['sort_qs_by_sellout'] = sort_qs_by_sellout
         
-        context['current_date'] = date1 
+        context['current_date'] = date2 
         context['all_products_qs'] = all_products_qs
     
         # products that have not sold out in the last 7 days even though they are available        
