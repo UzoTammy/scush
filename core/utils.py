@@ -53,3 +53,16 @@ def string_float(text):
     for t in text:
         digit += t if t.isdigit() or t == '.' else ""
     return float(digit) * factor
+
+
+def line_plot(x, y, title, y_axis, x_axis):
+    plt.switch_backend('AGG')
+    plt.figure(figsize=(4, 3))
+    plt.title(title)
+    plt.plot(x, y)
+    plt.ylabel(y_axis)
+    plt.xlabel(x_axis)
+    plt.tight_layout()
+    graph = get_graph()
+    return graph
+    

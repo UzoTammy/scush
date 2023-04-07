@@ -46,6 +46,8 @@ from django.contrib.auth import authenticate, login
 from mail import mailbox
 from django.template import loader
 from django.urls import reverse
+from core import utils as plotter
+
 
 
 def index(request):
@@ -388,6 +390,8 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if stock_values_2days[1] != 0.0:
             stock_values_2days = round(100*(stock_values_2days[1]-stock_values_2days[0])/stock_values_2days[0], 2)
         context['stock_value_ratio'] = stock_values_2days
+        context['plotter'] = plotter.line_plot(range(10), stock_values, 'Low-Stock Velocity Trend', 'Stock Value', 
+                                               f'from {dates[0].strftime("%d-%m-%Y")} to {dates[9].strftime("%d-%m-%Y")}')
         return context
 
 class KPIMailSend(LoginRequiredMixin, View):
