@@ -213,7 +213,7 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
         store_count = Stores.active.count()
         qs = Renewal.objects.filter(date__year=datetime.date.today().year)
-        rent_paid = float(qs.aggregate(Sum('rent_amount'))['rent_amount__sum']) if qs.exists() else 0.0
+        rent_paid = float(qs.aggregate(Sum('amount_paid'))['amount_paid__sum']) if qs.exists() else 0.0
         
         # growth is the ratio of money made over the financial year to the capital invested
         obj = BalanceSheet.objects.latest('date')
