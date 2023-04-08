@@ -392,6 +392,21 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['stock_value_ratio'] = stock_values_2days
         context['plotter'] = plotter.line_plot(range(10), stock_values, 'Low-Stock Velocity Trend', 'Stock Value', 
                                                f'from {dates[0].strftime("%d-%m-%Y")} to {dates[9].strftime("%d-%m-%Y")}')
+        # Categorized inventory sellout velocity plot
+        items, values, legends = list(), list(), list()
+        date = ProductExtension.objects.latest('date').date
+        possible_items = ('NS', 'VLS', 'LS', 'MS', 'HS', 'VHS')
+        possible_legends = ('No', 'Very Low', 'Low', 'Moderate', 'High', 'Very High')
+        for i in range(6):
+            qs_no_velocity = ProductExtension.objects.filter(product__velocity=i).filter(date=date)
+            if qs_no_velocity.exists():
+                qs_no_velocity = qs_no_velocity.annotate(value_of_stock=F('stock_value')*F('cost_price'))
+                value = float(qs_no_velocity.aggregate(Sum('value_of_stock'))['value_of_stock__sum'])
+                values.append(value)
+                items.append(possible_items[i])
+                legends.append(possible_legends[i])  
+        
+        context['donut'] = plotter.donut(items, values, f'Categorized Inventory Sellout', 1, legends, f'Total Value - {sum(values):,.2f}') if values else None
         return context
 
 class KPIMailSend(LoginRequiredMixin, View):

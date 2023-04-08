@@ -64,5 +64,22 @@ def line_plot(x, y, title, y_axis, x_axis):
     plt.xlabel(x_axis)
     plt.tight_layout()
     graph = get_graph()
-    return graph
-    
+    return graph 
+
+def donut(items, values, title, legend=0, legends=None, text=""):
+    plt.switch_backend('AGG')
+    n = len(items)
+    if n != len(values):
+        return None
+    colors = ('#FF0000', '#ADD8E6', '#FFFF00', '#ADFF2F', '#FFA500', '#90EE90')
+    explode = list(0.05 for _ in range(0, n))
+    plt.pie(values, colors=colors, labels=items, autopct='%1.1f%%', pctdistance=0.85, explode=explode)
+    centre_circle = plt.Circle((0, 0), 0.70, fc='white')
+    fig = plt.gcf()
+    fig.gca().add_artist(centre_circle)
+    plt.title(title)
+    plt.text(-1.5, -1.5, text, ha='left', va='bottom', fontsize=16, fontweight='bold')
+    if legend == 1:
+        plt.legend(legends, loc='center')
+    graph = get_graph()
+    return graph 
