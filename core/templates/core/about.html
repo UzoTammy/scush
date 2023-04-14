@@ -11,46 +11,89 @@
 
 
 {% block content %}
-<div class="container p-4">
+<div class="container">
     <div class="row">
-        <img src="{% static 'customer/background/aboutus.jpg' %}"
-             class="card-img-top"
-             style="max-width:300px"
+        <img src="{% static 'customer/logo.png' %}"
+             class="card-img-top rounded-circle shadow"
+             style="max-width:200px"
              alt="...">
     </div>
-    <div class="row">
+    <div class="row mt-3">
+      <div class="col">
+        <h3>Welcome to Ozone F & L</h3>
+        <hr>
+        <h4>Our Mission & Values:</h4>
         <p>
-            Ozone F & L is mainly a B2B trading company in Lagos. Registered in Nigeria as Ozone F & L Trading Company LTD with RC 852379.
-            As a trading company, we are focused as major Trading Partner to the biggest brewing companies in Nigeria.
+          At Ozone, we have worked hard to become the most reliable and relevant one-way pack 
+          distribution company in Lagos. Going forward, we remain committed to maintaining this status 
+          by continuing to prioritize transparency and support for our business partners. Our goal is to 
+          build on our reputation and further enhance our position as the trusted partner of choice 
+          for businesses in need to partner with a distributor in Lagos.
         </p>
+        <h4>Our Story</h4>
         <p>
-            <ul>
-                <li>Nigerian Brewery Plc (subsidiary of Heineken)</li>
-                <li>Guinness Nigeria Plc (subsidiary of Diageo)</li>
-                <li>International Brewery Plc (subsidiary of AB-Inbev)</li>
-            </ul>
+          In 2009, We set out on a mission to provide to Nigerians the more convinient made-in-Nigeria canned 
+          beer and malt products, this resulted to a unique partnership with first Nigerian Breweries
+          and later with Guinness Nigeria and finally International Breweries. These three gaints control
+          more than 95% of the market and our role in the one-way pack is so significant to them that we share a 
+          special relationship which we have extended to our customers. Our initial effort and passion
+          to distribute beer and malt in this format resulted to all three investing heavily in scale-up. The volume
+          we push to the market today has resulted in billions of naira turnover and has made us a house hold name. 
+          Leveraging on the good name, we seek to pursue our ultimate goal of spreading to other parts of the country
+          through our online platform and physical expansion beyond Lagos. Our trust in our relationship with you, gives
+          us the confidence to keep moving.
         </p>
-        
-        <p>
-            Our staff strength hovers between 30 and 40, with customer base of about 1200. 
-            We are committed to developing
-            wholesale businesses in Lagos and beyond. 
-            We operate from four outlets located in
-            <ul>
-                <li>International Trade Fair</li>
-                <li>Okin Arin, Lagos Island (<small class="text-muted">temporarily closed</small>)</li>
-                <li>Iju, Agege</li>
-                <li>Badagry</li>
-            </ul>
-        </p>
+        <h4>Our Team</h4>
+        <div class="row">
+          <div class="col-2">
+            {% for obj in objects_one %}
+          <img src="{{obj.image.url }}" class="rounded-circle ml-2" width="70px">
+          <p><span>{{obj.staff.first_name}}</span></p>
+          {% endfor %}
+          </div>
+          <div class="col-10">
+              <p>Building a successful team requires a combination of talent, hard work, and a shared sense 
+                of purpose. At our company, we are proud of our team's ability to come together, collaborate, 
+                and achieve our goals.
+              </p>
+              <p>Our team is made up of individuals from diverse backgrounds and with different skill sets, 
+                but we are united in our dedication to our work. Each team member brings their unique strengths 
+                and perspectives to the table, and we are all committed to working together to achieve success.
+              </p>
+              <p>From our early days as a small team, we have always believed in the power of collaboration. 
+                We make a point to listen to each other's ideas, and we work together to find solutions to the 
+                challenges we face. Our team culture is built on mutual respect, trust, and a commitment to 
+                continuous improvement. As we have grown, our team has faced new challenges and opportunities, 
+                but we have always remained focused on our shared mission. We celebrate our successes together, 
+                and we learn from our failures as a team.
+              </p>
+              <p>We are proud of the work we have accomplished as a team, and we are excited about the future. 
+                We know that the road ahead will not always be easy, but we are confident that with our shared 
+                sense of purpose and our commitment to each other, we can overcome any obstacle.At the end of 
+                the day, our success as a team is not measured by individual achievements, but by the collective 
+                impact we have on our organization and our customers. We are honored to be structured in this form 
+                and it has given us the strength to meet the needs of our customers.
+              </p>
+              <div class="row">
+                {% for obj in objects_two%}
+                <div class="col text-center">
+                  <img src="{{obj.image.url }}" class="rounded-circle ml-2" width="70px">
+                  <p><span>{{obj.staff.first_name}}</span></p>
+                </div>
+                {% endfor %}
+              </div>
+          </div>
+          <h4>Our Achievements:</h4>
+          <p>
+            We have not done this business without some recognitions, with our focus on one format, we have competed 
+            with other who does all the formats and was able to win both national and regional awards
 
-        <p>
-            Operating in a harsh and unpredictable environment, we still seek to transform into
-            a cooperate, online company with the hope of trading evenly across Nigeria and beyond. 
-            With passionate and committed staff we hope to become the biggest and most relevant player in this sector. 
-            See our <a href="{% url 'company' %}">Team</a>.
-        </p>
+          </p>
+          <p>As a business, we have recording some remarkable sales figure</p>
+        </div> 
+      </div>
     </div>
+    <hr>
     <div class="row">
         <div class="col">
             <a href="{% url 'index' %}">

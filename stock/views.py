@@ -293,6 +293,14 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             context['obj_ext'] = obj_ext
         
         context['is_qs'] = qs.exists()
+
+        """Product velocity displayed in a modal"""
+        velocities = {'-1': 'Not Assigned', '0': 'Not Selling', '1': 'Very Low', '2': 'Low',
+                                 '3': 'Moderate', '4': "High", '5': 'Very High'}
+        key = str(kwargs['object'].velocity) # the value of this object which is the key in the above dictionary
+        context['velocity_value'] = velocities[key]
+        velocities.pop(key) # remove this key from dictionary to reduce the options
+        context['velocities'] = velocities
         return context
 
     def post(self, request, **kwargs):
@@ -300,6 +308,7 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         content_dict = JsonDataset.objects.get(pk=2).dataset
         date_string = content_dict['closing-stock-date'][0]
         date_object = datetime.datetime.strptime(date_string, "%Y-%m-%d").date()
+        
         if 'quantity' in request.POST:
             quantity = request.POST['quantity']    
             ProductExtension.objects.create(
@@ -309,6 +318,11 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
                 cost_price=obj.cost_price,
                 selling_price=obj.unit_price
                 )
+        elif 'selectVelocity' in request.POST:
+            product = get_object_or_404(Product, pk=kwargs['pk'])
+            product.velocity = int(request.POST['selectVelocity'])
+            product.save()
+            messages.info(request, f"Velocity successfully changed in database")
         else:
             qs = ProductExtension.objects.filter(product=obj).filter(date=date_object)
             if qs.exists():
@@ -319,6 +333,7 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
                 stock_obj.save()
             else:
                 messages.info(request, "This product's stock does not exist")
+        
         return redirect(obj)
 
 class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):

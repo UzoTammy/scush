@@ -1,10 +1,25 @@
 {% extends 'users/base.html' %} 
+{% load crispy_forms_tags %}
 
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col">
-            <h3>{{form}}</h3>
+        
+        <div class="col-xl-12 d-flex justify-content-center align-items-center vh-100">
+            <form action="{% url 'bank-balance-create' %}" method="POST">
+                {% csrf_token %} 
+                <h3>Create New Record with Previous record</h3>
+                <div class="form-group">
+                    {{form|crispy}}
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-primary ml-3" type="submit">Create</button>
+                        <a class="btn btn-dark float-right" href="{% url 'bank-balance-create' %}"><i class="fa fa-reply"></i></a>
+                    </div>
+                </div>
+            </form>
+            
         </div>
     </div>    
 </div>

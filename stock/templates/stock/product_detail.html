@@ -4,69 +4,98 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container-fluid mt-3">
-    <h2 class="text-secondary text-center">{{object}}</h2>
+<div class="container-fluid">
     <div class="row">
-        <div class="col-sm-4">
-            <!--Side menu-->
-            <div class="row mb-5 mt-3">
-                <div class="col bg-light">
-                    <ul class="list-group list-group-flush">
-                      {% if not object.active %}
-                      <li class="list-group-item">
-                        <a href="" data-toggle="modal" data-target="#productStatus"><i class="fa fa-check-square-o text-success"></i> Activate</a> </li>
-                      {% else %}
-                      <li class="list-group-item"><a href="" data-toggle="modal" data-target="#productStatus"><i class="fa fa-times text-danger"></i> Disable</a></li>
-                      {% endif %}
-                        <li class="list-group-item"><a href="{% url 'stock-report-new' theDate object.pk %}"><i class="fa fa-plus"></i> Sellout & Balance</a> </li>
-                        <li class="list-group-item">
-                            <a href="#" 
-                            data-toggle="modal" 
-                            data-target="#priceReview">Update Selling Price</a>
-                        </li>
-                        
-                        <li class="list-group-item"><a href="{% url 'product-update' object.pk %}">Update</a></li>
-                        {% if user.is_superuser %}
-                        <li class="list-group-item"><a href="{% url 'product-delete' object.pk %}">Delete</a></li>
-                        {% endif %}
-                        <li class="list-group-item">Closing Stock
-                          <ul>
-                            {% if is_qs %}
-                             
-                            <li><a href="." data-toggle="modal" data-target="#addStockExist">Add</a></li> 
-                            {% else %}
-                            <li><a href="." data-toggle="modal" data-target="#addStock">Add</a></li>
-                            
-                            {% endif %}
-                            <li><a href="." data-toggle="modal" data-target="#editStock">Edit</a></li>
-                            <!-- <li><a href="{% url 'product-ext-update' object.pk %}">Edit</a></li> -->
-                            <li><a href="." data-toggle="modal" data-target="#costPriceReview">Update Cost Price</a></li>
-                            </ul>
-                        </li>
-                        <li class="list-group-item"><a href="{% url 'stock-report-source' 'All' %}"><i class="fa fa-reply"></i> Return</a></li>
-                    </ul>
-                </div>
+        <nav class="col-sm-2 bg-dark">
+          <button
+              class="navbar-toggler bg-light mt-1 mb-1 float-right myBtn"
+              type="button"
+              data-toggle="collapse"
+              data-target="#Dropdown2"
+              aria-controls="Dropdown2"
+              aria-expanded="true"
+              aria-label="toggle navigation">
+              <i class="fa fa-navicon fa-1x text-primary"></i>
+          </button>
+          <div class="collapse collapse-sm" id="Dropdown2">
+              <ul class="nav flex-column mt-3">
+                  <li class="text-white"><i class="fa fa-minus text-warning"></i> Quick Update</li>
+                    {% if not object.active %}
+                      <li class="nav-item">
+                        <a class="nav-link" data-toggle="modal" data-target="#productStatus">
+                          <i class="fa fa-check-square-o text-warning"></i> Activate</a> </li>
+                    {% else %}
+                      <li class="nav-item">
+                        <a class="nav-link" data-toggle="modal" data-target="#productStatus">
+                          <i class="fa fa-times text-warning"></i> Disable</a>
+                      </li>
+                    {% endif %}
+                    <li class="nav-item ml-3">
+                      <a href="{% url 'stock-report-new' theDate object.pk %}">
+                        <i class="fa fa-plus text-warning"></i> Sellout & Balance</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" 
+                      data-toggle="modal" 
+                      data-target="#priceReview">
+                      <i class="fa fa-plus text-warning"></i> Selling Price
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="." 
+                    class="nav-link" 
+                    data-toggle="modal" 
+                    data-target="#productVelocity">
+                    <i class="fa fa-plus text-warning"></i> Velocity
+                  </a>
+                </li> 
+                  <hr class="dropdown-divider">
+                  <li class="text-white"><i class="fa fa-minus text-warning"></i> Complete Update</li>
+                  
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'product-update' object.pk %}">
+                      <i class="fa fa-plus text-warning"></i> Update</a>
+                  </li>
+                  {% if user.is_superuser %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'product-delete' object.pk %}">
+                      <i class="fa fa-times text-warning"></i> Delete</a>
+                  </li>
+                  {% endif %}
 
-            </div>
-            <!--derived data-->
-            {% if is_qs %}
-            <div class="row mb-3">
-                <div class="col">
-                    <button type="button"
-                    class="list-group-item list-group-item-action bg-light text-center"
-                    aria-current="true">
-                    <b>Stock Report as at {{theDate}}</b>
-                    </button>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">Quantity: {{obj_ext.stock_value}} 
-                          <span class="float-right">Value: {{obj_ext.value_of_stock}}</span> </li>
-                        <!-- <li class="list-group-item text-success">Sales: Quantity: Value:</li> -->
-                    </ul>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-        <div class="col-sm-8">
+                  <hr class="dropdown-divider">
+                  <li class="text-white"><i class="fa fa-minus text-warning"></i> Closing Stock</li>
+                    
+                    {% if is_qs %}
+                    <li class="nav-item">
+                      <a class="nav-link" data-toggle="modal" data-target="#addStockExist">
+                        <i class="fa fa-plus text-warning"></i> Add
+                      </a>
+                    </li> 
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#addStock">
+                      <i class="fa fa-plus text-warning"></i> Add</a>
+                    </li>
+                    
+                    {% endif %}
+                    <li class="nav-item">
+                      <a class="nav-link" href="." data-toggle="modal" data-target="#editStock">
+                        <i class="fa fa-edit text-warning"></i> Edit</a>
+                    </li>
+                    <!-- <li><a href="{% url 'product-ext-update' object.pk %}">Edit</a></li> -->
+                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#costPriceReview">
+                      <i class="fa fa-list text-warning"></i> Update Cost Price</a></li>
+                  <hr class="dropdown-divider">
+                  <li class="nav-item"><a class="nav-link" href="{% url 'stock-report-source' 'All' %}">
+                    <i class="fa fa-reply text-warning"></i> Return
+                  </a>
+                </li>
+              </ul>  
+          </div>
+        </nav>
+        
+        <div class="col-sm-10">
+          <h2 class="text-secondary text-center mt-3">{{object}}</h2>
             <div class="media">
               <img src="{{object.image.url}}"
                    width="150px"
@@ -103,7 +132,23 @@
                 </div>
                 <div class="col-sm-6"> 
                       <ul class="list-group list-group-flush">     
-                        <li class="list-group-item">Product State: <span class="float-right">{{object.product_state }}</span> </li>
+                        <li class="list-group-item">Product Velocity: 
+                          {% if object.velocity == -1 %}
+                          <span class="float-right">Not Assigned</span> 
+                          {% elif object.velocity == 0 %}
+                          <span class="float-right">No Sellout</span> 
+                          {% elif object.velocity == 1 %}
+                          <span class="float-right">Very Low</span> 
+                          {% elif object.velocity == 2 %}
+                          <span class="float-right">Low</span> 
+                          {% elif object.velocity == 3 %}
+                          <span class="float-right">Moderate</span> 
+                          {% elif object.velocity == 4 %}
+                          <span class="float-right">High</span> 
+                          {% elif object.velocity == 0 %}
+                          <span class="float-right">Very High</span>
+                          {% endif %}
+                        </li>
                         <li class="list-group-item">Size Value: <span class="float-right">{{object.size_value}}{{object.size_value_unit}}</span></li>
                         <li class="list-group-item">Alcoholic Content: <span class="float-right">{{object.alcohol_content}}</span></li>
                         <li class="list-group-item">VAT (in %): <span class="float-right">{{object.vat}}</span></li>
@@ -113,8 +158,26 @@
                         <li class="list-group-item">Discount Type: <span class="float-right">{{object.discount_type}}</span> </li>
                         <li class="list-group-item">Product Description: <span class="float-right">{{object}}</span> </li>
                     </ul>
+                </div>
             </div>
+            <div class="row p-2">
+              <button type="button"
+                class="list-group-item list-group-item-action bg-light"
+                aria-current="true">
+                <b class="text-center">Derivatives</b>
+              </button>
+            <div class="col-sm-6">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">Name: <span class="float-right">{{object.name}}</span> </li>
+                </ul>
             </div>
+            <div class="col-sm-6"> 
+                  <ul class="list-group list-group-flush">     
+                    <li class="list-group-item">Product State: <span class="float-right">{{object.product_state }}</span> </li>
+                    
+                </ul>
+            </div>
+        </div>
         </div>
         
     </div>
@@ -399,6 +462,64 @@ tabindex="-1">
         <div class="modal-footer">
           <button type="submit" class="btn btn-danger">Yes</button>  
           <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        </div>
+      </div>
+    </div>
+    </form>
+</div>
+
+<!--Product Volocity Modal -->
+<div class="modal fade" 
+id="productVelocity" 
+data-backdrop="static"
+role="dialog" 
+tabindex="-1">
+  
+    <form action="." method="post">{% csrf_token %}
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{object}}</h5>
+          <button type="button" 
+          class="close" 
+          data-dismiss="modal" 
+          aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <fieldset>
+              <div class="row">
+                <div class="col">
+                    <p>Velocity is currently at:
+                      <span class="text-primary">{{velocity_value}}</span>
+                    </p>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="row">
+                  <div class="col">
+                    <div class="form-group">
+                      <label for="inputVelocity">New Velocity</label>
+                      <select name="selectVelocity" id="inputVelocity" class="form-control">
+                        <option selected>Choose....</option>
+                        {% for key, value in velocities.items %}
+                        <option value="{{key}}">{{value}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    
+                  </div>
+                  
+                </div>
+                
+              </div>
+          </fieldset>
+        </div>
+        <div class="modal-footer">
+
+          <button id="btnCostPrice" type="submit" class="btn btn-primary">Update</button>  
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>

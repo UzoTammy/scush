@@ -40,6 +40,6 @@ urlpatterns += [
     path('<str:date>/<int:code>/update/', StockReportUpdate.as_view(), name='stock-report-update'),
     path('<str:date>/<int:code>/detail/', StockReportDetail.as_view(), name='stock-report-detail'),
     path('<int:pk>/status/', ProductStatusUpdate.as_view(), name='product-status'),
-    # path('csv-view/', BulkUpdateStock.as_view(), name='bulk-update-stock'),
+    # path('<int:pk>/velocity/', ProductVelocity.as_view(), name='product-velocity'),
     path('analysis/', ProductAnalysisView.as_view(), name='product-analysis')
 ]

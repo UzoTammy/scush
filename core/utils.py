@@ -59,7 +59,7 @@ def line_plot(x, y, title, y_axis, x_axis):
     plt.switch_backend('AGG')
     plt.figure(figsize=(4, 3))
     plt.title(title)
-    plt.plot(x, y)
+    plt.plot(x, y, marker='o', color='red', linestyle='dashed', markerfacecolor='blue', markersize=2, linewidth=1)
     plt.ylabel(y_axis)
     plt.xlabel(x_axis)
     plt.tight_layout()
@@ -73,7 +73,7 @@ def donut(items, values, title, legend=0, legends=None, text=""):
         return None
     colors = ('#FF0000', '#ADD8E6', '#FFFF00', '#ADFF2F', '#FFA500', '#90EE90')
     explode = list(0.05 for _ in range(0, n))
-    plt.pie(values, colors=colors, labels=items, autopct='%1.1f%%', pctdistance=0.85, explode=explode)
+    plt.pie(values, colors=colors, labels=items, autopct='%1.2f%%', pctdistance=0.85, explode=explode)
     centre_circle = plt.Circle((0, 0), 0.70, fc='white')
     fig = plt.gcf()
     fig.gca().add_artist(centre_circle)

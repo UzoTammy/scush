@@ -142,6 +142,9 @@ class AboutView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(AboutView, self).get_context_data(**kwargs)
         context['title'] = 'About'
+        context['objects_one'] = Employee.active.all()[:3]
+
+        context['objects_two'] = Employee.active.all()[4:6]
         return context    
 
 
@@ -389,6 +392,8 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         stock_values_2days = stock_values[-2:]
         if stock_values_2days[1] != 0.0:
             stock_values_2days = round(100*(stock_values_2days[1]-stock_values_2days[0])/stock_values_2days[0], 2)
+        else:
+            stock_values_2days = 0.0
         context['stock_value_ratio'] = stock_values_2days
         context['plotter'] = plotter.line_plot(range(10), stock_values, 'Low-Stock Velocity Trend', 'Stock Value', 
                                                f'from {dates[0].strftime("%d-%m-%Y")} to {dates[9].strftime("%d-%m-%Y")}')

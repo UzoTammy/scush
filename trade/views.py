@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
 from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm, BankBalanceCopyForm)
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import *
 from stock.models import ProductExtension
 from django.urls.base import reverse_lazy
@@ -947,9 +947,6 @@ class BankBalanceCopyView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         obj = BankBalance.objects.get(pk=kwargs['pk'])
+        obj.date = obj.date + datetime.timedelta(days=2 if obj.date.weekday()==calendar.SATURDAY else 1)
         context['form'] = BankBalanceCopyForm(instance=obj)
         return context
-    
-    def post(self, request):
-        # print(request.POST)
-        return render(reverse())

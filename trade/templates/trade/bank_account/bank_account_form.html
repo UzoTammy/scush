@@ -7,10 +7,8 @@
         {% csrf_token %}
         <div class="row">
             <div class="col-sm-2"></div>
-            <div class="col-sm-10">
-                
+            <div class="col-sm-10">  
                 <h3>{% if view.kwargs.pk %} Update {% else %} Add {% endif %} Bank Account</h3>
-                
                 {{form|crispy}}
                 <button type="submit" class="btn btn-primary mt-3 ml-2">Save</button>
                 <a class="btn btn-dark float-right mt-3 mr-2" href="{% url 'bank-balance-create' %}"><i class="fa fa-reply"></i></a>
