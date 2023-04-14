@@ -46,9 +46,9 @@
         <h4>Our Team</h4>
         <div class="row">
           <div class="col-2">
-            {% for obj in objects_one %}
+            {% for obj in objects|slice:':3' %}
           <img src="{{obj.image.url }}" class="rounded-circle ml-2" width="70px">
-          <p><span>{{obj.staff.first_name}}</span></p>
+          <p><span>{{obj.staff.first_name}}-{{obj.staff.id}}</span></p>
           {% endfor %}
           </div>
           <div class="col-10">
@@ -75,23 +75,33 @@
                 and it has given us the strength to meet the needs of our customers.
               </p>
               <div class="row">
-                {% for obj in objects_two%}
+                {% for obj in objects|slice:'3:6'%}
                 <div class="col text-center">
                   <img src="{{obj.image.url }}" class="rounded-circle ml-2" width="70px">
-                  <p><span>{{obj.staff.first_name}}</span></p>
+                  <p><span>{{obj.staff.first_name}}-{{obj.staff.id}}</span></p>
                 </div>
                 {% endfor %}
               </div>
           </div>
-          <h4>Our Achievements:</h4>
-          <p>
-            We have not done this business without some recognitions, with our focus on one format, we have competed 
-            with other who does all the formats and was able to win both national and regional awards
-
-          </p>
-          <p>As a business, we have recording some remarkable sales figure</p>
-        </div> 
-      </div>
+          <div class="row">
+            <div class="col-8">
+              <h4>Our Achievements:</h4>
+              <p>We are proud of our achievements and the recognition we have received for our work.</p>
+                <ul> Some of our accomplishments include: 
+                  <li>Guinness 2015 Distributors Award: Highest Volume on MSS (National)</li>
+                  <li>Nigerian Breweries 2020 distributors award: Funding Performance Award</li>
+                </ul>
+            </div>
+            <div class="col-4">
+              <h4>Contact Us:</h4>
+              <p>
+                  Mobile: +234(803)375-9440<br> Email: <span class="text-primary">contact@ozonefl.com</span> <br>
+                  Website: <a href="https://www.ozonefl.com">https://www.ozonefl.com</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div> 
     </div>
     <hr>
     <div class="row">

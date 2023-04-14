@@ -142,9 +142,8 @@ class AboutView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(AboutView, self).get_context_data(**kwargs)
         context['title'] = 'About'
-        context['objects_one'] = Employee.active.all()[:3]
-
-        context['objects_two'] = Employee.active.all()[4:6]
+        pks = Employee.active.values_list('pk', flat=True).distinct().order_by('?')
+        context['objects'] = [Employee.objects.get(pk=pk) for pk in pks]
         return context    
 
 
