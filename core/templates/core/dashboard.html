@@ -36,7 +36,7 @@
 </div>
 {% else %}
 <div class="container text-center mt-3">
-    <h5 class="text-danger text-left">As at {{date_of_record}}</h5>
+    <h5 class="text-danger text-left">Trends as at {{date_of_record}}</h5>
     <div class="row mt-3">
         <div class="col-sm-3">
             <div class="card">
@@ -50,12 +50,12 @@
         </div>
         <div class="col-sm-3">
             <div class="card">
-                <img src="data:image/png;base64, {{plotter|safe}}" class="card-img-top" alt="">
+                <img src="data:image/png;base64, {{margin_plot|safe}}" class="card-img-top" alt="">
             </div>
         </div>
         <div class="col-sm-3">
             <div class="card">
-                <img src="data:image/png;base64, {{donut|safe}}" class="card-img-top" alt="">
+                <img src="data:image/png;base64, {{plotter|safe}}" class="card-img-top" alt="">
             </div>
         </div>
     </div>
@@ -147,7 +147,7 @@
             </div>
         </div>
     </div>
-    <div class="row mt-3">
+    <!-- <div class="row mt-3">
         <div class="col-sm-3">
             <div class="card">
                 <img src="data:image/png;base64, {{plotter|safe}}" class="card-img-top" alt="">
@@ -168,7 +168,7 @@
                 <img src="data:image/png;base64, {{donut|safe}}" class="card-img-top" alt="">
             </div>
         </div>
-    </div>
+    </div> -->
     
     <div class="row mb-3 mt-3">
         <div class="col">

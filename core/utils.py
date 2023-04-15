@@ -66,6 +66,17 @@ def line_plot(x, y, title, y_axis, x_axis):
     graph = get_graph()
     return graph 
 
+def bar_plot(x, y, title, y_axis, x_axis):
+    plt.switch_backend('AGG')
+    plt.figure(figsize=(4, 3))
+    plt.title(title)
+    plt.bar(x, y, color='lightblue')
+    plt.ylabel(y_axis)
+    plt.xlabel(x_axis)
+    plt.tight_layout()
+    graph = get_graph()
+    return graph
+
 def donut(items, values, title, legend=0, legends=None, text=""):
     plt.switch_backend('AGG')
     n = len(items)

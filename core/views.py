@@ -425,6 +425,14 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['growth_plot'] = plotter.line_plot([str(record.date.day) for record in qs if qs.exists()], 
                                                    profits, title='Growth Ratio', y_axis='Ratio', 
                                                    x_axis=f'{dates[0]} to {dates[-1]}')
+        """Margin trend in the last 10 days"""
+        qs = TradeDaily.objects.all().order_by('date')
+        qs = qs[qs.count()-10:] if qs.count() >= 10 else qs
+        margins = [record.margin_ratio() for record in qs if qs.exists()]
+        # dates = [record.date.strftime('%d-%b-%y') for record in qs if qs.exists()]
+        context['margin_plot'] = plotter.bar_plot([str(record.date.day) for record in qs if qs.exists()], 
+                                                   margins, title='Margin Ratio', y_axis='Ratio', 
+                                                   x_axis=f'{dates[0]} to {dates[-1]}')
         return context
 
 class KPIMailSend(LoginRequiredMixin, View):
