@@ -3,7 +3,6 @@ from django.db import models
 from djmoney.models.fields import MoneyField, Money
 from django.urls.base import reverse
 from datetime import date
-from django.utils import timezone
 
 
 class TradeMonthly(models.Model):

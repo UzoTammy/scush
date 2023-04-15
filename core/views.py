@@ -390,12 +390,15 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         # Get stock values for the last 2 days
         stock_values_2days = stock_values[-2:]
         if stock_values_2days[1] != 0.0:
-            stock_values_2days = round(100*(stock_values_2days[1]-stock_values_2days[0])/stock_values_2days[0], 2)
+            try:
+                stock_values_2days = round(100*(stock_values_2days[1]-stock_values_2days[0])/stock_values_2days[0], 2)
+            except ZeroDivisionError:
+                stock_values_2days = None
         else:
             stock_values_2days = 0.0
         context['stock_value_ratio'] = stock_values_2days
-        context['plotter'] = plotter.line_plot(range(10), stock_values, 'Low-Stock Velocity Trend', 'Stock Value', 
-                                               f'from {dates[0].strftime("%d-%m-%Y")} to {dates[9].strftime("%d-%m-%Y")}')
+        context['plotter'] = plotter.line_plot([str(date.day) for date in dates], stock_values, 'Low-Stock Velocity', 'Stock Value', 
+                                               f'{dates[0].strftime("%d-%b-%y")} to {dates[9].strftime("%d-%b-%y")}')
         # Categorized inventory sellout velocity plot
         items, values, legends = list(), list(), list()
         date = ProductExtension.objects.latest('date').date
@@ -411,6 +414,17 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 legends.append(possible_legends[i])  
         
         context['donut'] = plotter.donut(items, values, f'Categorized Inventory Sellout', 1, legends, f'Total Value - {sum(values):,.2f}') if values else None
+        
+        """Business Growth trend in the last 10 days"""
+        qs = BalanceSheet.objects.all().order_by('date')
+        # take the last 10 records if they are upto 10 otherwise no change
+        qs = qs[qs.count()-10:] if qs.count() >= 10 else qs
+        # extract the profit for y-axis, days of the date for x-axis from each record
+        profits = [record.growth_ratio() for record in qs if qs.exists()]
+        dates = [record.date.strftime('%d-%b-%y') for record in qs if qs.exists()]
+        context['growth_plot'] = plotter.line_plot([str(record.date.day) for record in qs if qs.exists()], 
+                                                   profits, title='Growth Ratio', y_axis='Ratio', 
+                                                   x_axis=f'{dates[0]} to {dates[-1]}')
         return context
 
 class KPIMailSend(LoginRequiredMixin, View):

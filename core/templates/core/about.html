@@ -48,7 +48,7 @@
           <div class="col-2">
             {% for obj in objects|slice:':3' %}
           <img src="{{obj.image.url }}" class="rounded-circle ml-2" width="70px">
-          <p><span>{{obj.staff.first_name}}-{{obj.staff.id}}</span></p>
+          <p><span>{{obj.staff.first_name}}</span></p>
           {% endfor %}
           </div>
           <div class="col-10">
@@ -78,7 +78,7 @@
                 {% for obj in objects|slice:'3:6'%}
                 <div class="col text-center">
                   <img src="{{obj.image.url }}" class="rounded-circle ml-2" width="70px">
-                  <p><span>{{obj.staff.first_name}}-{{obj.staff.id}}</span></p>
+                  <p><span>{{obj.staff.first_name}}</span></p>
                 </div>
                 {% endfor %}
               </div>
@@ -86,8 +86,10 @@
           <div class="row">
             <div class="col-8">
               <h4>Our Achievements:</h4>
-              <p>We are proud of our achievements and the recognition we have received for our work.</p>
-                <ul> Some of our accomplishments include: 
+              <p>We are proud of our achievements and the recognition we have received for our work.
+                Some of our accomplishments include:
+              </p>
+                <ul>  
                   <li>Guinness 2015 Distributors Award: Highest Volume on MSS (National)</li>
                   <li>Nigerian Breweries 2020 distributors award: Funding Performance Award</li>
                 </ul>
