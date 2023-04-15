@@ -428,11 +428,26 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         """Margin trend in the last 10 days"""
         qs = TradeDaily.objects.all().order_by('date')
         qs = qs[qs.count()-10:] if qs.count() >= 10 else qs
-        margins = [record.margin_ratio() for record in qs if qs.exists()]
-        # dates = [record.date.strftime('%d-%b-%y') for record in qs if qs.exists()]
         context['margin_plot'] = plotter.bar_plot([str(record.date.day) for record in qs if qs.exists()], 
-                                                   margins, title='Margin Ratio', y_axis='Ratio', 
-                                                   x_axis=f'{dates[0]} to {dates[-1]}')
+                                                   [record.margin_ratio() for record in qs if qs.exists()],
+                                                    title='Margin Ratio', y_axis='Ratio', 
+                                                   x_axis=f'{dates[0]} to {dates[-1]}'
+                                                )
+        context['expenses_plot'] = plotter.bar_plot_two([str(record.date.day) for record in qs if qs.exists()], 
+                                                        [record.delivery_expense_ratio() for record in qs if qs.exists()],
+                                                        [record.admin_expense_ratio() for record in qs if qs.exists()],
+                                                        title='Expenses Ratio', y_axis='Direct & Admin', 
+                                                        x_axis=f'{dates[0]} to {dates[-1]}'
+                                                    )
+        #tye
+        sales = TradeDaily.objects.latest('date').sales
+        debit = BalanceSheet.objects.latest('date').sundry_debtor
+        credit = BalanceSheet.objects.latest('date').liability
+        latest_date = BankBalance.objects.latest('date').date
+        bank_balance = BankBalance.objects.filter(date=latest_date).aggregate(Sum('bank_balance'))['bank_balance__sum']
+        context['trade_donut'] = plotter.donut(['Sales', 'Debits', 'Credits', 'Cash'], 
+                                               [sales.amount, debit.amount, credit.amount, bank_balance],
+                                               'Trade Figures')
         return context
 
 class KPIMailSend(LoginRequiredMixin, View):

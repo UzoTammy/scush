@@ -77,6 +77,18 @@ def bar_plot(x, y, title, y_axis, x_axis):
     graph = get_graph()
     return graph
 
+def bar_plot_two(x, y1, y2, title, y_axis, x_axis):
+    plt.switch_backend('AGG')
+    plt.figure(figsize=(4, 3))
+    plt.title(title)
+    plt.bar(x, y1, color='red')
+    plt.bar(x, y2, color='#ADFF2F', bottom=y1)
+    plt.ylabel(y_axis)
+    plt.xlabel(x_axis)
+    plt.tight_layout()
+    graph = get_graph()
+    return graph
+
 def donut(items, values, title, legend=0, legends=None, text=""):
     plt.switch_backend('AGG')
     n = len(items)
