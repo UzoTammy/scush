@@ -91,29 +91,24 @@
     </div>
 
     <!-- The companies logo -->
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-6 mt-3 p-2">
-        <div class="col">
+    <div class="row">
+        <div class="col-sm-4">
             <img class="rounded-circle mt-3" src="{% static 'customer/logo.png' %}" alt="">
-        </div>
-        <div class="col">
-            <a href="#">
-                <img class="nb" src="{% static 'customer/photo/NB.jpeg'%}">
+            <a href="#" class="float-right">
+                <img src="{% static 'customer/photo/GN.png'%}" class="rounded-circle gn">
+                
             </a>
         </div>
-        <div class="col">
-            <a href=""><img src="{% static 'customer/photo/GN.png'%}" class="rounded-circle gn"></a>
+        <div class="col-sm-4">
+            <a href=""><img class="nb" src="{% static 'customer/photo/NB.jpeg'%}"></a>
+            <a href="#" class="float-right">
+                <img class="redbull" src="{% static 'customer/photo/redbull.jpeg'%}">
+            </a>
         </div>
-
-        <div class="col">
+        <div class="col-sm-4">
             <a href="#"><img class="ab" src="{% static 'customer/photo/AB.jpeg'%}"></a>
+            <a href="#" class="float-right"><img class="cousin" src="{% static 'customer/photo/4cousins.jpeg'%}"></a>
         </div>
-        <div class="col mt-3">
-            <a href="#"><img class="cousin" src="{% static 'customer/photo/4cousins.jpeg'%}"></a>
-        </div>
-        <div class="col mt-3">
-            <a href="#"><img class="redbull" src="{% static 'customer/photo/redbull.jpeg'%}"></a>
-        </div>
-
     </div>
 
     <!--    Social Media and key partners-->
