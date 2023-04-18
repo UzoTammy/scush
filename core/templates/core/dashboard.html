@@ -45,7 +45,7 @@
         </div>
         <div class="col-sm-3">
             <div class="card">
-                <img src="data:image/png;base64, {{trade_donut|safe}}" class="card-img-top" alt="">
+                <a data-target="#tradeDonut" data-toggle="modal"><img src="data:image/png;base64, {{trade_donut|safe}}" class="card-img-top" alt=""></a>
             </div>
         </div>
         <div class="col-sm-3">
@@ -155,7 +155,7 @@
         </div>
         <div class="col-sm-3">
             <div class="card">
-                <img src="data:image/png;base64, {{donut|safe}}" class="card-img-top" alt="">
+                <a href="#"><img src="data:image/png;base64, {{donut|safe}}" class="card-img-top" alt=""></a> 
             </div>
         </div>
         <div class="col-sm-3">
@@ -177,4 +177,24 @@
     </div>
 </div>
 {% endif %}
+
+<!-- Modal -->
+<div class="modal fade" id="tradeDonut" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="tradeDonut">Trade Donut</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <img src="data:image/png;base64, {{trade_donut|safe}}" class="card-img-top" alt="">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+</div>
 {% endblock content %}

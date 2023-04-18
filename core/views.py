@@ -413,7 +413,8 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 items.append(possible_items[i])
                 legends.append(possible_legends[i])  
         
-        context['donut'] = plotter.donut(items, values, f'Categorized Inventory Sellout', 1, legends, f'Total Value - {sum(values):,.2f}') if values else None
+        context['donut'] = plotter.donut(items, values, f'Categorized Inventory Sellout', 1, 
+                                        legends, f'Total Value - {sum(values):,.2f}') if values else None
         
         """Business Growth trend in the last 10 days"""
         qs = BalanceSheet.objects.all().order_by('date')
@@ -446,8 +447,8 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         credit = BalanceSheet.objects.latest('date').liability
         latest_date = BankBalance.objects.latest('date').date
         bank_balance = BankBalance.objects.filter(date=latest_date).aggregate(Sum('bank_balance'))['bank_balance__sum']
-        context['trade_donut'] = plotter.donut(['Sales', 'Debits', 'Credits', 'Cash'], 
-                                               [sales.amount, debit.amount, credit.amount, bank_balance],
+        context['trade_donut'] = plotter.donut(['Debits',  'Credits', 'Stock', 'Cash'], 
+                                               [debit.amount, credit.amount, sum(values),  bank_balance],
                                                'Trade Figures')
         return context
 
