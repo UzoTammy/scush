@@ -215,14 +215,27 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         qs = Applicant.pending.all()
         application = qs.count() if qs.exists() else 0
 
-        store_count = Stores.active.count()
+        # store_count = Stores.active.count()
         qs = Renewal.objects.filter(date__year=datetime.date.today().year)
         rent_paid = float(qs.aggregate(Sum('amount_paid'))['amount_paid__sum']) if qs.exists() else 0.0
         
         # growth is the ratio of money made over the financial year to the capital invested
         obj = BalanceSheet.objects.latest('date')
         growth = int(100*100*obj.profit/obj.capital) # 
-            
+
+        """ROI is calculated by dividing net income by total equity. 
+            This ratio indicates how efficiently a company is using its equity to generate profits.
+            Working Capital: This is calculated by subtracting current liabilities from current assets.
+            A positive working capital indicates that the company has enough short-term assets to cover 
+            its short-term liabilities.
+        """
+        qs = BalanceSheet.objects.filter(date__year=obj.date.year)
+        if qs.exists():
+            profit = qs.aggregate(Sum('profit'))['profit__sum']
+            roi = round(profit/obj.capital.amount, 2)
+            wc = round(obj.current_asset.amount - obj.liability.amount)
+
+               
         # From Profit & Loss for the month
         latest_date = TradeDaily.objects.latest('date').date
         qs = TradeDaily.objects.filter(date__year=latest_date.year)
@@ -259,10 +272,10 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         # add 20% to the salary due to incentive we pay
         salary_payable = 1.2 * float(salary_payable)
         
-        try:
-            wf_prod = int(100*salary_payable/float(net_profit))
-        except Exception:
-            wf_prod = 0
+        # try:
+        #     wf_prod = int(100*salary_payable/float(net_profit))
+        # except Exception:
+        #     wf_prod = 0
             
         number_of_employees = employees.count()
         today = datetime.date.today()
@@ -368,8 +381,8 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['basics'] = (product_count, customer_base, workforce, application)
         context['ytd'] = (sales, purchase, credit_balance, rent_paid)
         context['monthly_kpi'] = (growth,margin,expenses,man_hour_kpi)
-                
-        context['extras'] = (bank_balance, store_count, wf_prod)
+               
+        context['extras'] = (bank_balance, roi, wc)
 
         # stock performance section
         qs = ProductExtension.objects.all()

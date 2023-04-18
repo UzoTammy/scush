@@ -126,11 +126,16 @@
                 </div>
                 <ul class="list-group list-group-flush text-left">
                     <li class="list-group-item">Bank Balance 
-                        <span class="float-right oval">{{extras|array:1|myriad}}</span></li>  
-                  <li class="list-group-item">Stores<span class="float-right oval">{{extras|array:2}}</span></li>
-                  <li class="list-group-item">WFP
-                    <small class="float-right text-danger">Pts</small>
-                    <span class="float-right oval">{{extras|array:3}}</span>
+                        <a href="{% url 'bank-account-home' %}">
+                            <span class="float-right oval">{{extras|array:1|myriad}}</span>
+                        </a>
+                    </li>  
+                  <li class="list-group-item">ROI
+                    <span class="float-right oval">{{extras|array:2}}</span>
+                </li>
+                  <li class="list-group-item">WC
+                    <!-- <small class="float-right text-danger">Pts</small> -->
+                    <span class="float-right oval">{{extras|array:3|myriad}}</span>
                 </li>
                   <li class="list-group-item">Low-Stock Velocity 
                     {% if stock_value_ratio > 0 %}
