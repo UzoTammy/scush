@@ -1,0 +1,135 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-sm-2 bg-dark">
+            <button class="navbar-toggler bg-light mt-1 mb-1 float-right myBtn" type="button" data-toggle="collapse"
+                data-target="#Dropdown2" aria-controls="Dropdown2" aria-expanded="true" aria-label="toggle navigation">
+                <i class="fa fa-navicon fa-1x text-primary"></i>
+            </button>
+            <div class="collapse collapse-sm" id="Dropdown2">
+                <ul class="nav flex-column mt-3">
+                    <li class="text-white"><i class="fa fa-minus text-warning"></i> Partners</li>
+                    <li class="nav-item">
+                        <a href="{% url 'creditor-create' %}" class="nav-link"><i
+                                class="fa fa-plus text-warning"></i>
+                            Add
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'bank-balance-list' %}">
+                            <i class="fa fa-edit text-warning"></i>
+                            View & Update
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                            aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-navicon text-warning"></i> Archive</a>
+                        <div class="dropdown-menu">
+                            {% for obj in bank_accounts_business %}
+                            <a class="dropdown-item" href="{% url 'bank-account-detail' obj.pk %}">{{obj}}</a>
+                            {% endfor %}
+                            <hr class="dropdown-divider">
+                            {% for obj in bank_accounts_admin %}
+                            <a class="dropdown-item" href="{% url 'bank-account-detail' obj.pk %}">{{obj}}</a>
+                            {% endfor %}
+
+
+                        </div>
+                    </li>
+
+
+                    <hr class="dropdown-divider">
+                    <li class="nav-item">
+                        <a href="{% url 'bank-balance-list-admin' %}" class="nav-link">
+                            <i class="fa fa-bank text-warning"></i> Internal Account
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'pdf-daily-bank-balance' %}" class="nav-link">
+                            <i class="fa fa-file-pdf-o text-warning"></i> PDF
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a data-toggle="modal" data-target="#exampleModal" class="nav-link">
+                            <i class="fa fa-question text-warning"></i> Help
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="fa fa-reply text-warning"></i> Return</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div class="col mt-3">
+            <h3 class="text-center">Creditors Home Page</h3>
+            {% if partners %}
+            <p>Coming soon !!!</p>
+            {% else %}
+            <h4>No Record in Database</h4>
+            <p class="ml-3">You can click <a href="#">here</a> to add creditor's record</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- Modal -->
+<section>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-question text-success"></i> Help with
+                        this Page</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <h6>This page is the Bank Account Home page</h6>
+                            <p class="ml-3">It displays the bank balance for the date at the table's title.
+                                The Bank Account information is divided into two sections. The bank account section
+                                and the bank balance section. The bank account section is used to capture all bank
+                                account
+                                details while bank balance is used to capture only the balance of the account both at
+                                the Bank
+                                and in the accounting package.
+                            </p>
+                            <h6>To view and update bank account</h6>
+                            <p class="ml-3">By the left-side of this page, on the menu in black,
+                                click the view & update link to view the list of all bank accounts stored
+                                from that page you can update any of the acount listed.
+                            </p>
+                            <h6>To add bank account and balance</h6>
+                            <p class="ml-3">By the left-side of this page, on the menu in black,
+                                click the <i class="text-danger fa fa-plus"> add</i> link access the form for bank
+                                balance details and at the top of the form is <i class="text-danger fa fa-plus"> add</i>
+                                link for the bank account form.
+                            </p>
+                            <h6>To view and update bank balance</h6>
+                            <p class="ml-3">By the left-side of this page, on the menu in black,
+                                click the view & update link to view the list of all bank balance stored
+                                from that page you can update any of the balance listed.
+                            </p>
+                            <h6 class="text-danger">Contact the admin to delete a record. If neccesary</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock%}

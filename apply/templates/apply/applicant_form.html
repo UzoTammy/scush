@@ -15,9 +15,9 @@
 <div class="container">
     <div class="row p-3 d-flex justify-content-center">
 
-        <div class="col-sm p-3 shadow-lg">
+        <div class="col-sm-8 shadow-lg">
             <img src="{% static 'customer/logo.png' %}" class="rounded-circle shadow" width="80px" alt=""> 
-            <i class="text-danger display-big">F & L Trading Co Ltd, A Distribution Company</i><br><br>
+            <i class="text-danger display-big">F & L Trading Co Ltd <small class="text-info">(A Distribution Company)</small></i><br><br>
             <i class="fa fa-info-circle text-info"></i>
             <i class="text-primary">
                 You will receive a confirmation email with the email address
@@ -33,18 +33,18 @@
                     </legend>
                     <div class="form-row">
                         <div class="col-sm-4">
-                            <span class="form-label text-info">First Name </span>
-                            <span class="text-danger">*</span>
+                            <span class="form-label text-info">First Name</span><span class="text-danger">*</span>
+                            
                             {{form.first_name}}
                         </div>
                         <div class="col-sm-4">
-                            <span class="form-label text-info">Second Name </span>
+                            <span class="form-label text-info">Second Name</span>
                             <span class="text-muted">(optional)</span>
                             {{form.second_name}}
                         </div>
                         <div class="col-sm-4">
-                            <span class="form-label text-info">Last Name</span>
-                            <span class="text-danger">*</span>
+                            <span class="form-label text-info">Last Name<span class="text-danger">*</span></span>
+                            
                             {{form.last_name}}
                         </div>
                     </div>
@@ -53,9 +53,7 @@
                         <div class="col-sm-4">
                             <div class="row">
                                 <div class="col">
-                                    <div class="form-label text-info">Gender
-                                        <span class="text-danger">*</span>
-                                    </div>
+                                    <div class="form-label text-info">Gender<span class="text-danger">*</span></div>
                                     <div class="form-check">{{form.gender}}</div>
                                 </div>
                                 <div class="col text-right mr-2">
@@ -79,7 +77,7 @@
                                 Date of Birth<span class="text-danger">*</span>
                             </div>
                             <div>{{ form.birth_date }}
-                                <small class="text-danger">Applicant must be older than 18 and younger than 50</small>
+                                <small class="text-danger">Older than 18 and younger than 50</small>
                             </div>
                         </div>
                     </div>
@@ -139,7 +137,7 @@
                                     {% if title == 'Update' %}
                                     {{ title }}
                                     {% else %}
-                                    Apply Now
+                                    Submit
                                     {% endif %}
                                 </small>
                             </button>

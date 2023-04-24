@@ -27,14 +27,14 @@ class ApplicantForm(forms.ModelForm):
 
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control mb-2',
-                                                 'placeholder': 'enter first name',
+                                                 'placeholder': 'Enter first name',
                                                  'error_messages': {'required': 'Enter name'},
                                                  },
                                           ),
             'second_name': forms.TextInput(attrs={'class': 'form-control mb-2',
-                                                  'placeholder': 'enter middle name'}),
+                                                  'placeholder': 'Enter middle name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control mb-2',
-                                                'placeholder': 'enter surname'}),
+                                                'placeholder': 'Enter last name'}),
             'gender': forms.RadioSelect(),
             'marital_status': forms.RadioSelect(),
             'qualification': forms.Select(attrs={'class': 'form-control'},

@@ -47,3 +47,9 @@ urlpatterns += [
     path('bank-balance/<int:pk>/copy/', BankBalanceCopyView.as_view(), name='bank-balance-copy'),
     
 ]
+
+urlpatterns += [
+    path('creditors/', CreditorHomeView.as_view(), name='creditor-home'),
+    path('creditors/create/', CreditorCreateView.as_view(), name='creditor-create'),
+    
+]

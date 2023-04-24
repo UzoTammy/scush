@@ -3,7 +3,8 @@ import datetime
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
-from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm, BankBalanceCopyForm)
+from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm, 
+                    BankBalanceCopyForm, CreditorAccountForm)
 from django.shortcuts import render, redirect
 from .models import *
 from stock.models import ProductExtension
@@ -950,3 +951,20 @@ class BankBalanceCopyView(LoginRequiredMixin, TemplateView):
         obj.date = obj.date + datetime.timedelta(days=2 if obj.date.weekday()==calendar.SATURDAY else 1)
         context['form'] = BankBalanceCopyForm(instance=obj)
         return context
+
+
+class CreditorHomeView(LoginRequiredMixin,TemplateView ):
+    template_name = 'trade/creditors/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['partners'] = Creditor.objects.filter(account_type='Ext')
+        
+        return context
+    
+class CreditorCreateView(LoginRequiredMixin, CreateView):
+    model = Creditor
+    form_class = CreditorAccountForm
+    template_name = 'trade/creditors/creditor_form.html'
+
+    

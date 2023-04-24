@@ -45,7 +45,7 @@
         </div>
         <div class="col-sm-3">
             <div class="card">
-                <a data-target="#tradeDonut" data-toggle="modal"><img src="data:image/png;base64, {{trade_donut|safe}}" class="card-img-top" alt=""></a>
+                <a href="#" data-target="#tradeDonut" data-toggle="modal"><img src="data:image/png;base64, {{trade_donut|safe}}" class="card-img-top" alt=""></a>
             </div>
         </div>
         <div class="col-sm-3">
@@ -99,7 +99,7 @@
                   Monthly KPI
                 </div>
                 <ul class="list-group list-group-flush text-left">
-                    <li class="list-group-item">Growth
+                    <li class="list-group-item">ROI
                         <small class="float-right text-danger">Pts</small>
                         <span class="float-right oval">{{monthly_kpi|array:1}}</span>
                     </li>
@@ -130,7 +130,7 @@
                             <span class="float-right oval">{{extras|array:1|myriad}}</span>
                         </a>
                     </li>  
-                  <li class="list-group-item">ROI
+                  <li class="list-group-item">ITR
                     <span class="float-right oval">{{extras|array:2}}</span>
                 </li>
                   <li class="list-group-item">WC
@@ -160,12 +160,12 @@
         </div>
         <div class="col-sm-3">
             <div class="card">
-                <a href="#"><img src="data:image/png;base64, {{donut|safe}}" class="card-img-top" alt=""></a> 
+                <a data-target="#donut" data-toggle="modal" href="#"><img src="data:image/png;base64, {{donut|safe}}" class="card-img-top" alt=""></a> 
             </div>
         </div>
         <div class="col-sm-3">
             <div class="card">
-                <img src="data:image/png;base64, {{plotter|safe}}" class="card-img-top" alt="">
+                <img src="data:image/png;base64, {{sales_bar|safe}}" class="card-img-top" alt="">
             </div>
         </div>
         <div class="col-sm-3">
@@ -173,8 +173,8 @@
                 <img src="data:image/png;base64, {{donut|safe}}" class="card-img-top" alt="">
             </div>
         </div>
-    </div> -->
-     -->
+    </div> 
+    
     <div class="row mb-3 mt-3">
         <div class="col">
             <a class="float-right" href="{% url 'home' %}"><i class="fa fa-reply fa-2x"></i> Home</a>
@@ -195,6 +195,25 @@
         </div>
         <div class="modal-body">
             <img src="data:image/png;base64, {{trade_donut|safe}}" class="card-img-top" alt="">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="donut" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="donut">Low Stock Donut</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <img src="data:image/png;base64, {{donut|safe}}" class="card-img-top" alt="">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

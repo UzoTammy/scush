@@ -172,7 +172,7 @@ class ApplyCreateView(CreateView):
         return context
 
     def form_valid(self, form):
-        hr_email = 'ogechukwu.okpala@ozonefl.com'
+        hr_email = 'uzo.nwokoro@ozonefl.com'
         context = {
             'first_name': form.instance.first_name,
             'second_name': form.instance.second_name,

@@ -231,11 +231,10 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         """
         qs = BalanceSheet.objects.filter(date__year=obj.date.year)
         if qs.exists():
-            profit = qs.aggregate(Sum('profit'))['profit__sum']
-            roi = round(profit/obj.capital.amount, 2)
+            # profit = qs.aggregate(Sum('profit'))['profit__sum']
+            # roi = round(profit/obj.capital.amount, 2)
             wc = round(obj.current_asset.amount - obj.liability.amount)
-
-               
+       
         # From Profit & Loss for the month
         latest_date = TradeDaily.objects.latest('date').date
         qs = TradeDaily.objects.filter(date__year=latest_date.year)
@@ -271,11 +270,6 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         salary_payable = employees.aggregate(Sum('salary'))['salary__sum']
         # add 20% to the salary due to incentive we pay
         salary_payable = 1.2 * float(salary_payable)
-        
-        # try:
-        #     wf_prod = int(100*salary_payable/float(net_profit))
-        # except Exception:
-        #     wf_prod = 0
             
         number_of_employees = employees.count()
         today = datetime.date.today()
@@ -381,8 +375,21 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['basics'] = (product_count, customer_base, workforce, application)
         context['ytd'] = (sales, purchase, credit_balance, rent_paid)
         context['monthly_kpi'] = (growth,margin,expenses,man_hour_kpi)
-               
-        context['extras'] = (bank_balance, roi, wc)
+
+        """Inventory Turnover Ratio"""  
+        #1. get the cost of goods sold
+        year = ProductExtension.objects.latest('date').date.year    
+        qs = ProductExtension.objects.filter(date__year=year)
+        qs = qs.annotate(cogs=F('sell_out')*F('cost_price')) 
+        cogs = float(qs.aggregate(Sum('cogs'))['cogs__sum'])
+        #2. get the initial and current stock values
+        earliest_date = qs.earliest('date').date
+        earliest_value = qs.filter(date=earliest_date).aggregate(Sum('stock_value'))['stock_value__sum']
+        current_date = qs.latest('date').date
+        current_value = qs.filter(date=current_date).aggregate(Sum('stock_value'))['stock_value__sum']
+        average_stock_value = (earliest_value + current_value)/2
+        itr = round(cogs/average_stock_value, 2) # inventory turnover ratio
+        context['extras'] = (bank_balance, itr, wc)
 
         # stock performance section
         qs = ProductExtension.objects.all()
@@ -412,6 +419,12 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['stock_value_ratio'] = stock_values_2days
         context['plotter'] = plotter.line_plot([str(date.day) for date in dates], stock_values, 'Low-Stock Velocity', 'Stock Value', 
                                                f'{dates[0].strftime("%d-%b-%y")} to {dates[9].strftime("%d-%b-%y")}')
+        
+        context['sales_bar'] = plotter.bar_plot([str(date.day) for date in dates], 
+                                                [TradeDaily.objects.get(date=date).sales.amount for date in dates if TradeDaily.objects.filter(date=date).exists()],
+                                                'Sales Revenue', 'Sales', 
+                                                f'{dates[0].strftime("%d-%b-%y")} to {dates[9].strftime("%d-%b-%y")}')
+
         # Categorized inventory sellout velocity plot
         items, values, legends = list(), list(), list()
         date = ProductExtension.objects.latest('date').date
@@ -431,6 +444,7 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         
         """Business Growth trend in the last 10 days"""
         qs = BalanceSheet.objects.all().order_by('date')
+        qs_bs = qs # to be used further down
         # take the last 10 records if they are upto 10 otherwise no change
         qs = qs[qs.count()-10:] if qs.count() >= 10 else qs
         # extract the profit for y-axis, days of the date for x-axis from each record
@@ -442,26 +456,32 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                                                 )
         """Margin trend in the last 10 days"""
         qs = TradeDaily.objects.all().order_by('date')
-        qs = qs[qs.count()-10:] if qs.count() >= 10 else qs
+        qs = qs[qs.count()-10:] if qs.count() > 10 else qs
+
         context['margin_plot'] = plotter.bar_plot([str(record.date.day) for record in qs if qs.exists()], 
                                                    [record.margin_ratio() for record in qs if qs.exists()],
                                                     title='Margin Ratio', y_axis='Ratio', 
-                                                   x_axis=f'{dates[0]} to {dates[-1]}'
-                                                )
+                                                   x_axis=f'{dates[0]} to {dates[-1]}')
+        
         context['expenses_plot'] = plotter.bar_plot_two([str(record.date.day) for record in qs if qs.exists()], 
                                                         [record.delivery_expense_ratio() for record in qs if qs.exists()],
                                                         [record.admin_expense_ratio() for record in qs if qs.exists()],
                                                         title='Expenses Ratio', y_axis='Direct & Admin', 
-                                                        x_axis=f'{dates[0]} to {dates[-1]}'
-                                                    )
-        #tye
-        sales = TradeDaily.objects.latest('date').sales
-        debit = BalanceSheet.objects.latest('date').sundry_debtor
-        credit = BalanceSheet.objects.latest('date').liability
-        latest_date = BankBalance.objects.latest('date').date
+                                                        x_axis=f'{dates[0]} to {dates[-1]}')
+        
+        """Donut plot to show distribution of current assets & liability"""
+        #1. get the current debtor & credit amount from balance sheet model
+        bs_obj = BalanceSheet.objects.latest('date')
+        debit = bs_obj.sundry_debtor
+        credit = bs_obj.liability
+        latest_date = bs_obj.date
+        #2. get stock value from ProductExtension model
+        stock_value = ProductExtension.objects.latest('date').stock_value
+        #3. get bank balance from bal=nk balance model
         bank_balance = BankBalance.objects.filter(date=latest_date).aggregate(Sum('bank_balance'))['bank_balance__sum']
+        bank_balance = bank_balance if bank_balance != None else 0.0
         context['trade_donut'] = plotter.donut(['Debits',  'Credits', 'Stock', 'Cash'], 
-                                               [debit.amount, credit.amount, sum(values),  bank_balance],
+                                               [debit.amount, credit.amount, stock_value,  bank_balance],
                                                'Trade Figures')
         return context
 

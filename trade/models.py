@@ -143,6 +143,7 @@ class BankAccount(models.Model):
 
 
 class BankBalance(models.Model):
+
     bank = models.ForeignKey(BankAccount, on_delete=models.CASCADE)
     date = models.DateField(default=date.today)
     bank_balance = MoneyField(max_digits=12, decimal_places=2)
@@ -159,3 +160,15 @@ class BankBalance(models.Model):
 
     def delta(self):
         return self.bank_balance - self.account_package_balance
+    
+
+class Creditor(models.Model):
+    account = models.CharField(max_length=50)
+    date = models.DateField(default=date.today)
+    amount = MoneyField(max_digits=12, decimal_places=2)
+    ledger = models.CharField(max_length=2, default='CR', choices=[('CR', 'Cr'), ('DR', 'Dr')])
+    account_type = models.CharField(max_length=10, default='Ext', choices=[('Ext', 'External'), ('Int', 'Internal')])
+    status = models.BooleanField(default=True)
+
+    class Meta:
+        unique_together = (("account", "date"),)

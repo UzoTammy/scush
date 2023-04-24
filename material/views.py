@@ -15,7 +15,7 @@ from django.core.mail import EmailMessage
 
 
 
-mail_list = ['uzo.nwokoro@ozonefl.com', 'g.motun01@gmail.com', 'dickson.abanum@ozonefl.com']
+mail_list = ['uzo.nwokoro@ozonefl.com', 'abasiama.ibanga@gmail.com', 'dickson.abanum@ozonefl.com']
 # ml = ['uzo.nwokoro@ozonefl.com']
 
 
