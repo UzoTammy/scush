@@ -382,12 +382,14 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         qs = ProductExtension.objects.filter(date__year=year)
         qs = qs.annotate(cogs=F('sell_out')*F('cost_price')) 
         cogs = float(qs.aggregate(Sum('cogs'))['cogs__sum'])
+
         #2. get the initial and current stock values
+        qs = qs.annotate(value_of_stock=F('stock_value')*F('cost_price'))
         earliest_date = qs.earliest('date').date
-        earliest_value = qs.filter(date=earliest_date).aggregate(Sum('stock_value'))['stock_value__sum']
+        earliest_value = qs.filter(date=earliest_date).aggregate(Sum('value_of_stock'))['value_of_stock__sum']
         current_date = qs.latest('date').date
-        current_value = qs.filter(date=current_date).aggregate(Sum('stock_value'))['stock_value__sum']
-        average_stock_value = (earliest_value + current_value)/2
+        current_value = qs.filter(date=current_date).aggregate(Sum('value_of_stock'))['value_of_stock__sum']
+        average_stock_value = float((earliest_value + current_value)/2)
         itr = round(cogs/average_stock_value, 2) # inventory turnover ratio
         context['extras'] = (bank_balance, itr, wc)
 
