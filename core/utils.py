@@ -26,7 +26,10 @@ def monthly_sales_revenue(x, y):
     plt.switch_backend('AGG')
     plt.figure(figsize=(4, 4))
     plt.title('Monthly Sales Revenue')
-    plt.barh(x, y)
+    #('#FF0000', '#ADD8E6', '#FFFF00', '#ADFF2F', '#FFA500', '#90EE90')
+    colors = ['#FF0000' for _ in y]
+    colors[-1] = '#42B608'
+    plt.barh(x, y, color=colors)
     plt.ylabel('month')
     plt.xlabel('Sales (N)')
     plt.tight_layout()

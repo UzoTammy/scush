@@ -179,11 +179,26 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        context['current_pl'] = TradeDaily.objects.latest('date')
-
-        month = [obj.month for obj in self.get_queryset().order_by('pk')]
-        sales = [obj.sales.amount for obj in self.get_queryset().order_by('pk')]    
-        context['chart'] = plotter.monthly_sales_revenue(month, sales)
+        latest_date = TradeDaily.objects.latest('date').date
+        qs = TradeDaily.objects.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
+        # final_obj = TradeDaily.objects.latest('date')
+        if qs.exists():
+            pl_obj = {
+                'month': latest_date.strftime('%B, %Y'),
+                'opening_stock': qs.earliest('date').opening_value,
+                'sales': Money(qs.aggregate(Sum('sales'))['sales__sum'], 'NGN'),
+                'purchase': Money(qs.aggregate(Sum('purchase'))['purchase__sum'], 'NGN'),
+                'direct_expenses': Money(qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum'], 'NGN'),  
+                'indirect_expenses': Money(qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum'], 'NGN'),
+                'closing_stock': qs.latest('date').closing_value,
+                'gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN')
+            }
+            context['current_pl'] = pl_obj
+            month = [obj.month for obj in self.get_queryset().order_by('pk')]
+            month.append(latest_date.strftime('%B'))
+            sales = [obj.sales.amount for obj in self.get_queryset().order_by('pk')]
+            sales.append(pl_obj['sales'].amount)    
+            context['chart'] = plotter.monthly_sales_revenue(month, sales)
         
         return context
 

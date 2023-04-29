@@ -11,8 +11,7 @@
                     class="table table-bordered">
                 <caption>Monthly Trading, Profit & Loss Account - {{object_list.last.year|lower}}</caption>
             <thead class="text-center">
-                <tr>
-
+                <tr class="text-white bg-dark">
                     <th>ID</th>
                     <th>Month</th>
                     <th>Opening Stock</th>
@@ -25,14 +24,14 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="bg-light text-right">
-                    <th colspan="2">{{current_pl.date}}</th>
-                    <th>{{current_pl.opening_value}}</th>
+                <tr class="bg-success text-white text-right">
+                    <th colspan="2">{{current_pl.month}}</th>
+                    <th>{{current_pl.opening_stock}}</th>
                     <th>{{current_pl.sales}}</th>
                     <th>{{current_pl.purchase}}</th>
                     <th>{{current_pl.direct_expenses}}</th>
                     <th>{{current_pl.indirect_expenses}}</th>
-                    <th>{{current_pl.closing_value}}</th>
+                    <th>{{current_pl.closing_stock}}</th>
                     <th>{{current_pl.gross_profit}}</th>
                 </tr>
                 {% for object in object_list %}
