@@ -178,8 +178,11 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        context['current_pl'] = TradeDaily.objects.latest('date')
+
         month = [obj.month for obj in self.get_queryset().order_by('pk')]
-        sales = [obj.sales.amount for obj in self.get_queryset().order_by('pk')]
+        sales = [obj.sales.amount for obj in self.get_queryset().order_by('pk')]    
         context['chart'] = plotter.monthly_sales_revenue(month, sales)
         
         return context

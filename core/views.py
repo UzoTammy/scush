@@ -476,12 +476,15 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         credit = bs_obj.liability
         latest_date = bs_obj.date
         #2. get stock value from ProductExtension model
-        stock_value = ProductExtension.objects.latest('date').value_of_stock()
+        qs = ProductExtension.objects.filter(date=latest_date)
+        qs = qs.annotate(sv=F('cost_price')*F('stock_value'))
+        stock_value = float(qs.aggregate(Sum('sv'))['sv__sum']) if qs.exists() else 110e6
+
         #3. get bank balance from bal=nk balance model
         bank_balance = BankBalance.objects.filter(date=latest_date).aggregate(Sum('bank_balance'))['bank_balance__sum']
         bank_balance = bank_balance if bank_balance != None else 0.0
         context['trade_donut'] = plotter.donut(['Debits',  'Credits', 'Stock', 'Funds'], 
-                                               [debit.amount, credit.amount, stock_value.amount,  bank_balance],
+                                               [debit.amount, credit.amount, stock_value,  bank_balance],
                                                'Current Asset Distribution')
         return context
 
