@@ -15,6 +15,7 @@ urlpatterns = [
     path('company/', CompanyPageView.as_view(), name='company'),
     path('dashboard/', DashBoardView.as_view(), name='dashboard'),
     path('policies/', PoliciesView.as_view(), name='policies'),
+    path('daily_report/', DailyReportView.as_view(), name='daily-report'),
     # Json model
     path('json/list/', JsonListView.as_view(), name='json-list'),
     path('json/<int:pk>/detail/', JsonDetailView.as_view(), name='json-detail'),

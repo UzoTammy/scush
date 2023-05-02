@@ -1,17 +1,18 @@
 import calendar
 import datetime
+from typing import Any, Dict
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
 from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm, 
-                    BankBalanceCopyForm, CreditorAccountForm)
+                    BankBalanceCopyForm, CreditorAccountForm, FinancialForm)
 from django.shortcuts import render, redirect
 from .models import *
 from stock.models import ProductExtension
 from django.urls.base import reverse_lazy
 from django.db.models import (Sum, F, Avg, ExpressionWrapper, DecimalField)
 from matplotlib import pyplot as plt
-from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView)                            
+from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView, FormView)                            
 from datetime import timedelta
 from ozone import mytools
 from core import utils as plotter
@@ -913,6 +914,7 @@ class BankBalanceListViewAdmin(LoginRequiredMixin, ListView):
             context['total_package'] = self.get_queryset().aggregate(Sum('account_package_balance'))['account_package_balance__sum']
         return context
     
+
 class BankAccountDetailView(LoginRequiredMixin, DetailView):
     model = BankAccount
     template_name = 'trade/bank_account/bank_account_detail.html'
@@ -922,19 +924,23 @@ class BankAccountDetailView(LoginRequiredMixin, DetailView):
         context['bank'] = BankBalance.objects.filter(bank=kwargs['object']).order_by('-pk')[:10]
         return context
 
+
 class BankAccountListView(LoginRequiredMixin, ListView):
     model = BankAccount
     template_name = 'trade/bank_account/bank_account_list.html'
+
 
 class BankAccountUpdateView(LoginRequiredMixin, UpdateView):
     model = BankAccount
     template_name = 'trade/bank_account/bank_account_form.html'
     form_class = BankAccountForm
 
+
 class BankAccountCreateView(LoginRequiredMixin, CreateView):
     model = BankAccount
     form_class = BankAccountForm
     template_name = 'trade/bank_account/bank_account_form.html'
+
 
 class BankBalanceCreateView(LoginRequiredMixin, CreateView):
     model = BankBalance
@@ -947,18 +953,22 @@ class BankBalanceCreateView(LoginRequiredMixin, CreateView):
         context['records'] = self.get_queryset().filter(date=date)
         return context
 
+
 class BankBalanceDetailView(LoginRequiredMixin, DetailView):
     model = BankBalance
     template_name = 'trade/bank_account/bank_balance_detail.html'
+
 
 class BankBalanceUpdateView(LoginRequiredMixin, UpdateView):
     model = BankBalance
     template_name = 'trade/bank_account/bank_balance_form.html'
     form_class = BankBalanceForm
 
+
 class BankBalanceListView(LoginRequiredMixin, ListView):
     model = BankBalance
     template_name = 'trade/bank_account/bank_balance_list.html'
+
 
 class BankBalanceCopyView(LoginRequiredMixin, TemplateView):
     template_name = 'trade/bank_account/bank_balance_copy.html'
@@ -980,9 +990,37 @@ class CreditorHomeView(LoginRequiredMixin,TemplateView ):
         
         return context
     
+
 class CreditorCreateView(LoginRequiredMixin, CreateView):
     model = Creditor
     form_class = CreditorAccountForm
     template_name = 'trade/creditors/creditor_form.html'
 
+
+class FinancialsCreateView(LoginRequiredMixin, FormView):
+    """To Create Balance Sheet and P & L from one form"""
+    template_name = 'trade/financials_form.html'
+    form_class = FinancialForm
+    success_url = reverse_lazy('trade-home')
+
+    def form_valid(self, form):
+        trade_instance, balance_sheet_instance = form.save()  
+        trade_instance.save()
+        balance_sheet_instance.save()
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs: Any):
+        context = super().get_context_data(**kwargs)
+        trade = TradeDaily.objects.latest('date')
+        bs = BalanceSheet.objects.latest('date')
+        context['direct_income'] = trade.direct_income
+        context['indirect_income'] = trade.indirect_income
+        context['adjusted_profit'] = bs.adjusted_profit
+        context['capital'] = bs.capital
+        context['loan_liability'] = bs.loan_liability
+        context['fixed_asset'] = bs.fixed_asset
+        context['investment'] = bs.investment
+        context['suspense'] = bs.suspense
+        context['difference'] = bs.difference
+        return context
     

@@ -1,0 +1,50 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row">
+        <div class="col text-center">
+            <h3>Daily Report Guide</h3>
+        </div>
+    </div>
+    
+    <div class="row mt-3">
+        <div class="col">
+            <h5>Expected Date: {{expected_date}}</h5>
+            <table class="table" data-toggle="table">
+                <thead class="text-center thead-dark">
+                    <tr>
+                        <th>Report</th>
+                        <th>Last updated on</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    {% for state in status %}
+                    <tr>
+                        {% if forloop.counter == 1 %}
+                        <td><a href="{% url 'bank-balance-create' %}">Bank Balance</a> </td>
+                        {% elif forloop.counter == 2 %}
+                        <td><a href="{% url 'import-csv' %}">Stock Report</a> </td>
+                        {% elif forloop.counter == 3 %}
+                        <td><a href="{% url 'trade-daily-create' %}">P & L Report</a> </td>
+                        {% else %}
+                        <td><a href="{% url 'bs-create' %}">Balance Sheet</a> </td>
+                        {% endif %}
+                        <td>{{state|array:2}}</td>
+                        {% if state|array:3 == 'Updated' %}
+                        <td class="text-success">{{state|array:3}}</td>
+                        {% else %}
+                        <td>{{state|array:3}}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

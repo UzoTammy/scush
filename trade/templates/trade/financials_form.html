@@ -1,0 +1,60 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row d-flex justify-content-end">
+        <div class="col-6">
+            <h4>Unchanged fields</h4>
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-primary">P & L Record</li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Direct Income
+                    <span>{{direct_income}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Indirect Income
+                    <span>{{indirect_income}}</span>
+                </li>
+                <li class="list-group-item list-group-item-primary">Balance Sheet Record</li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Adjusted Profit
+                    <span>{{adjusted_profit}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Capital
+                    <span>{{capital}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Loan Liability
+                    <span>{{loan_liability}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Fixed Asset
+                    <span>{{fixed_asset}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Investment
+                    <span>{{investment}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Suspense
+                    <span>{{suspense}}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">Difference
+                    <span>{{difference}}</span>
+                </li>
+              </ul>
+            <p class="mt-3">These values are taken from the latest data in the database. If they do not correspond
+                with the data you tend to enter against these fields, either you go ahead and update
+                the record thereafter or you add P & L and Balance sheet on their respective forms.
+            </p> 
+            <a class="btn btn-dark float-right mr-2" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i></a> 
+        </div>
+        <div class="col-6">
+            <form method="post">
+                {% csrf_token %}
+                <h3>P & L and Balance Sheet Combined</h3>
+                {{ form|crispy }}
+                <div class="m-3">
+                    <input class="btn btn-primary" type="submit" value="Submit">
+                    <a class="btn btn-dark float-right" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i></a>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

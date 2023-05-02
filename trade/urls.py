@@ -51,5 +51,8 @@ urlpatterns += [
 urlpatterns += [
     path('creditors/', CreditorHomeView.as_view(), name='creditor-home'),
     path('creditors/create/', CreditorCreateView.as_view(), name='creditor-create'),
-    
+]
+
+urlpatterns += [
+    path('financial/create/', FinancialsCreateView.as_view(), name='financial-create'),
 ]

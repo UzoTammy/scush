@@ -25,6 +25,7 @@ import csv
 import json
 import os
 from pathlib import Path
+from typing import Any, Dict
 
 from django.core.mail import EmailMessage
 from django.contrib import messages
@@ -166,6 +167,31 @@ class CompanyPageView(View):
             'md': md 
         }
         return render(request, 'core/company.html', context)
+
+
+class DailyReportView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/daily_report.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs) 
+        dates = [('Bank Balance', BankBalance.objects.latest('date').date), 
+                ('Stock Report', ProductExtension.objects.latest('date').date),
+                ('P & L Report', TradeDaily.objects.latest('date').date), 
+                ('Balance Sheet', BalanceSheet.objects.latest('date').date)
+            ]
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+        if yesterday.weekday() == calendar.SUNDAY:
+            yesterday -= datetime.timedelta(days=1)
+        context['expected_date'] = yesterday
+        status = list()
+        for date in dates:
+            if yesterday > date[1]: # expected date is greater than date in database
+                status.append((date[0], date[1], 'Update required'))
+            else:
+                status.append((date[0], date[1], 'Updated'))
+
+        context['status'] = status
+        return context
 
 
 class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
