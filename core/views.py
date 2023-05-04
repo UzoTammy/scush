@@ -25,7 +25,6 @@ import csv
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict
 
 from django.core.mail import EmailMessage
 from django.contrib import messages
@@ -34,7 +33,7 @@ from django.views.generic import (TemplateView, ListView, CreateView, DetailView
 from django.views import View
 from django.db.models import F, Sum, Q
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from staff.models import Employee, Permit
+from staff.models import Employee, Permit, Payroll
 from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
 from apply.models import Applicant
@@ -506,13 +505,26 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         qs = qs.annotate(sv=F('cost_price')*F('stock_value'))
         stock_value = float(qs.aggregate(Sum('sv'))['sv__sum']) if qs.exists() else 110e6
 
-        #3. get bank balance from bal=nk balance model
+        #3. get bank balance from bank balance model
         bank_balance = BankBalance.objects.filter(date=latest_date).aggregate(Sum('bank_balance'))['bank_balance__sum']
         bank_balance = bank_balance if bank_balance != None else 0.0
         context['trade_donut'] = plotter.donut(['Debits',  'Credits', 'Stock', 'Funds'], 
                                                [debit.amount, credit.amount, stock_value,  bank_balance],
                                                'Current Asset Distribution')
+        """To plot payout"""
+        qs_payout = Payroll.objects.all()
+        payout_periods = qs_payout.values_list('period', flat=True).distinct()
+        payout_periods = payout_periods.order_by('period')
+        payout_periods = payout_periods[payout_periods.count()-10:] if payout_periods.count()>10 else payout_periods
+        payouts = list()
+        for period in payout_periods:
+            payouts.append(float(sum(obj.net_pay.amount for obj in qs_payout.filter(period=period))))
+        short_month = {1:'Jan', 2: 'Feb', 3:"Mar", 4:'Apr', 5:'May', 6:'Jun', 7:'Jul', 8:'Aug', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dec'}
+        months = [short_month[int(x.split('-')[1])] for x in payout_periods]
+        context['payout_plot'] = plotter.line_plot(months, payouts, title='Payout', y_axis='Pay', x_axis='Period')
+        
         return context
+
 
 class KPIMailSend(LoginRequiredMixin, View):
     def get(self, request, **kwargs):
