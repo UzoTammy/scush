@@ -21,6 +21,10 @@ matplotlib = "*"
 requests = "*"
 xhtml2pdf = "*"
 reportlab = "==3.6.6"
+pytest-django = "*"
+coverage = "*"
+pytest-cov = "*"
+crispy-bootstrap4 = "*"
 
 [requires]
 python_version = "3.8"

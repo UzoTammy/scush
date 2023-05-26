@@ -25,6 +25,7 @@ import csv
 import json
 import os
 from pathlib import Path
+from django.conf import settings
 
 from django.core.mail import EmailMessage
 from django.contrib import messages
@@ -58,10 +59,8 @@ def index(request):
     """
     context = {
         'debug_mode': True if settings.DEBUG else False,
-        # 'siter': 'https://www.scush.com.ng/home/'
     }
     return render(request, 'core/index.html', context)
-
 
 def developer_login(request):
     """
@@ -77,7 +76,7 @@ def developer_login(request):
 
 class ScushView(TemplateView):
     """
-    This is to be examined to know its relevance
+    This is to be examine to know its relevance
     """
     template_name = 'core/scush.html'
 
@@ -111,7 +110,7 @@ class ScushView(TemplateView):
 
 class HomeView(LoginRequiredMixin, TemplateView):
     """Summary
-    The home view is mainly an html page with just a title context.
+    The home view is mainly a page with just a title context.
     It only requires authenticated user with no permission
     """
     template_name = 'core/home.html'
@@ -121,11 +120,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context['title'] = 'Home'
         # context['trade'] = TradeDaily.objects.all()
         
-        # Build paths inside the project like this: BASE_DIR / 'subdir'.
-        BASE_DIR = Path(__file__).resolve().parent.parent
-
-        # json file for CSV file upload
-        filepath = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
+        # json file for CSV file upload used in import stock balance
+        filepath = os.path.join(settings.BASE_DIR, 'core', f'{self.request.user}.json')
         if os.path.exists(filepath):
             os.remove(filepath)
         return context
@@ -523,6 +519,14 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         months = [short_month[int(x.split('-')[1])] for x in payout_periods]
         context['payout_plot'] = plotter.line_plot(months, payouts, title='Payout', y_axis='Pay', x_axis='Period')
         
+        """Current stock availability"""
+        stock_date = ProductExtension.objects.latest('date').date
+        qs = ProductExtension.objects.filter(date=stock_date)
+        qs_stock = qs.filter(product__velocity__in=[3, 4, 5])
+        if qs_stock.exists():
+            qs_available = [obj for obj in qs_stock if obj.stock_value>0] 
+            availability = len(qs_available)
+            context['percent_available'] = 100 * availability/qs_stock.count() 
         return context
 
 
