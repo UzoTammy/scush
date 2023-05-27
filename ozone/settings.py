@@ -198,7 +198,7 @@ SESSION_TIMEOUT_REDIRECT = 'login'
 
 # General settings
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-# CURRENCIES = ('NGN',)
+CURRENCIES = ('NGN',)
 DEFAULT_CURRENCY = 'NGN'
 
 django_on_heroku.settings(locals())
