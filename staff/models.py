@@ -94,8 +94,6 @@ class EmployeeBalance(models.Model):
     value_type = models.CharField(max_length=2, default='Cr')
     description = models.CharField(max_length=50)
     
-
-
     def __str__(self):
         return f'{self.staff}-{self.period}'
     
@@ -174,6 +172,7 @@ class Terminate(models.Model):
                                         )
     remark = models.CharField(max_length=100)
     date = models.DateField(default=timezone.now)
+    status = models.BooleanField(default=True, choices=[(True, 'On'), (False, 'Off')])
 
     def __str__(self):
         return self.staff.fullname()

@@ -23,8 +23,8 @@ xx/
 /documentation
 /staff/data.json
 /logs
-/tests.py
-
+users/tests.py
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

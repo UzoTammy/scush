@@ -32,16 +32,7 @@ from core.models import JsonDataset
 from delivery.models import DeliveryNote
 from django.db.models import Sum, F, Avg
 from ozone import mytools
-from core.utils import string_float
 
-
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.INFO)
-
-# file_handler = logging.FileHandler(filename=os.path.join(settings.BASE_DIR, 'logs', 'stock', 'views.log'), mode='w')
-# formatter = logging.Formatter('%(name)s:%(levelname)s:%(message)s')
-# file_handler.setFormatter(formatter)
-# logger.addHandler(file_handler)
 
 permitted_group_name = 'Sales'
 
@@ -339,6 +330,7 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 class ProductCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = 'stock/product_form.html'
     form_class = FormProduct
+
     
     def test_func(self):
         """if user is a member of the group Sales then grant access to this view"""

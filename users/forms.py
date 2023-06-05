@@ -57,18 +57,14 @@ class MyForm(forms.ModelForm):
                                              'placeholder': 'Residential address and not more than 100 characters',
                                              'rows': 5},
                                       )
-
         }
 
-
 class UserRegisterForm(UserCreationForm):
-    # email = forms.EmailField()
-    # first_name = forms.CharField(max_length=30)
-    # last_name = forms.CharField(max_length=30)
-
+    email = forms.EmailField()
+    
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ['password1', 'password2']
+        fields = ['username', 'email', 'password1', 'password2']
         # fields = UserCreationForm.Meta.fields
 
 class UserUpdateForm(forms.ModelForm):
@@ -79,7 +75,6 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']
-
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:

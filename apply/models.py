@@ -59,6 +59,7 @@ class Applicant(models.Model):
     pending = PendingManager()
     rejected = RejectedManager()
     objects = ApplicantManager()
+    
 
     
     def __str__(self):

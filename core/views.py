@@ -26,7 +26,6 @@ import json
 import os
 from pathlib import Path
 from django.conf import settings
-
 from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
@@ -38,8 +37,8 @@ from staff.models import Employee, Permit, Payroll
 from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
 from apply.models import Applicant
-from trade.models import TradeDaily, TradeMonthly, BalanceSheet, BankBalance
-from warehouse.models import Stores, Renewal
+from trade.models import TradeDaily, BalanceSheet, BankBalance
+from warehouse.models import Renewal
 from .forms import JsonDatasetForm
 from .models import JsonDataset
 from django.conf import settings
@@ -48,7 +47,6 @@ from mail import mailbox
 from django.template import loader
 from django.urls import reverse
 from core import utils as plotter
-
 
 
 def index(request):

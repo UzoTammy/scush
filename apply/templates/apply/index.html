@@ -1,0 +1,44 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+
+{% block content %} 
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-center mt-3">Employ & Re-employ</h3>
+            <p>New applicant who is hired for the first time, will require an employment form to
+                be filled. It will require more information in addition to that in application form.
+            </p>
+            <div class="row">
+                <div class="col-sm-4">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item active">Click on Applicant to Employ</li>
+                        {% for applicant in pending_applicants %}
+                        <li class="list-group-item">
+                            <a href="{% url 'apply-detail' applicant.pk %}">{{applicant}}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            <p class="mt-3">Returning applicant will be re-engaged. 
+                The application form will require update
+                and a creation of re-engagement database
+            </p>
+            <div class="row">
+                <div class="col-sm-4">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item active">Click on Resigned Staff</li>
+                        {% for person in resigned_staff %}
+                        <li class="list-group-item">
+                            <a href="{% url 'apply-detail' person.staff.staff.pk %}">
+                                {{person.staff.pk|zeropadding:3}}-{{person}}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

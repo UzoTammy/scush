@@ -15,11 +15,12 @@
         <div class="col-8">
             <form method="POST">{% csrf_token %}
         <fieldset class="form-group">
-            <legend class="text-info mb-3">Create User</legend>
+            <legend class="text-info mb-3">Register User</legend>
             {{ form|crispy }}
         </fieldset>
         <div class="form-group">
             <button class="btn btn-outline-info" type="submit">Sign Up</button>
+            <a class="btn btn-outline-dark float-right" href="{% url 'home' %}">Cancel</a>
         </div>
     </form>
             <div class="border-top pt-3">

@@ -210,9 +210,13 @@
                     <i class="fa fa-gears text-white"></i> Administration</a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="{% url 'import-csv'%}">Import CSV</a>
+                    <a class="dropdown-item" href="{% url 'apply-index' %}">Employ</a>
+                    <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'payroll-process'%}">Create Payroll</a>
                     <a class="dropdown-item" href="{% url 'json-new' %}">Add to Settings</a>
-                    <!-- <a class="dropdown-item" href="{% url 'email-sample' %}">Sampler</a> -->
+                    <hr class="dropdown-divider">
+                    <a class="dropdown-item" href="{% url 'register' %}">Register</a>
+                    
                 </div>
             </li>
             {% endif %}

@@ -1,8 +1,9 @@
 import datetime
-import logging
+from typing import Any, Dict
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.template import loader
 from .models import Applicant
+from staff.models import Terminate
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
@@ -21,6 +22,13 @@ from .forms import ApplicantForm, MyForm
 from django.urls import reverse_lazy, reverse
 
 
+class ApplyIndexView(LoginRequiredMixin, TemplateView):
+    template_name = 'apply/index.html'
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['pending_applicants'] = Applicant.pending.all().order_by('-apply_date')
+        context['resigned_staff'] = Terminate.objects.filter(termination_type='Resign').order_by('-date')
+        return context
 
 class ApplyHomeView(LoginRequiredMixin, TemplateView):
     template_name = 'apply/home.html'
@@ -142,6 +150,7 @@ class ApplyListViewRejected(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
 
 
+
 class ApplyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Applicant
     template_name = 'apply/applicant_list.html'
@@ -156,7 +165,7 @@ class ApplyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 
 class ApplyDetailView(LoginRequiredMixin, DetailView):
-    model = Applicant
+    queryset = Applicant.objects.all()
 
 
 class ApplyCreateView(CreateView):
