@@ -356,8 +356,9 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['welfare_for_a_date_total_amount'] = qs.aggregate(Sum('amount'))['amount__sum']
         return context
 
-class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     queryset = Employee.active.all()
+
+class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     ordering = '-pk'
     template_name = 'staff/employee_list_private.html'
 
@@ -402,32 +403,41 @@ class StaffListPicturesView(LoginRequiredMixin, ListView):
     ordering = '-pk'
     paginate_by = 4
 
+    
 class StaffCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Employee
-    form_class = EmployeeForm
-   
+    form_class = EmployeeForm    
+    
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
-
+    
     def get_context_data(self, **kwargs):
-        applicant_obj = Applicant.objects.get(id=self.request.path_info.split('/')[3])
+        applicant_obj = Applicant.objects.get(id=self.kwargs['pk'])
         context = super().get_context_data(**kwargs)
         context['title'] = 'New'
         context['applicant_obj'] = applicant_obj
         return context
-
+    
+    
     def form_valid(self, form):
-        form.instance.staff_id = Applicant.objects.get(id=self.request.path_info.split('/')[3]).pk
-        """Change applicant's status to employed"""
-        applicant = Applicant.objects.get(id=form.instance.staff_id)
+        # change the applicant from pending to employed
+        # the model has status field with choices (None for pending, True for Employed, False for rejected)
+        applicant = Applicant.objects.get(id=self.kwargs['pk'])
         applicant.status = True
         applicant.save()
+
+        # Approved salary shared to basic salary & allowance
+        salary = float(form.cleaned_data['salary'])
+        form.instance.basic_salary = 0.6 * salary
+        form.instance.allowance = 0.4 * salary
+        
+        form.instance.staff = applicant
         """Send mail to applicant and admin before overwriting save"""
         return super().form_valid(form)
-
+        
 class StaffUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Employee
     fields = ['image']
@@ -448,6 +458,7 @@ class StaffUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             form.instance.image.name = 'default.jpg'
             form.save()
         return super().form_valid(form)
+
 
 class PDFProfileView(View):
 
@@ -988,6 +999,7 @@ class TerminatedStaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView)
         context['resigned'] = self.get_queryset().filter(termination_type='Resign').count()
         
         return context
+
 # Payroll Section
 class PayrollHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'staff/payroll/salary.html'
@@ -1083,6 +1095,7 @@ class CreditUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('credit-detail', kwargs={'pk': self.kwargs['pk']})
 
+
 class CreditNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = CreditForm
     template_name = 'staff/payroll/creditnote_form.html'
@@ -1114,7 +1127,6 @@ class CreditNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return context
 
         
-    
 class DebitNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = DebitNote
     template_name = 'staff/payroll/debitnote_list.html'
@@ -1137,6 +1149,7 @@ class DebitNoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['total'] = self.get_queryset().aggregate(Sum('value'))['value__sum']
         return context
+
 
 class DebitUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = DebitNote
@@ -1185,6 +1198,7 @@ class DebitNoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
                 context['payroll_url'] = reverse('payroll-process')
         return context
 
+
 class DebitNoteDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = DebitNote
     template_name = 'staff/payroll/debitnote_detail.html'
@@ -1206,6 +1220,7 @@ class TaxList(LoginRequiredMixin, ListView):
         
         return ['staff/payroll/tax_list.html']
 
+
 class UpdateTax(LoginRequiredMixin, UpdateView):
     model = Employee
 
@@ -1226,6 +1241,7 @@ class UpdateTax(LoginRequiredMixin, UpdateView):
         }
         messages.success(request, 'Tax updated successfully !!!')
         return redirect(reverse('update-tax'), context)
+
 
 class PayrollViews(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Payroll
@@ -1287,6 +1303,7 @@ class PayrollViews(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         }
         return render(request, self.template_name, context=context)
 
+
 class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Payroll
 
@@ -1347,6 +1364,7 @@ class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             'totals': totals
         }
         return render(request, 'staff/payroll/payroll_summary.html', context)
+
 
 class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     """Generate payroll and save to Payroll model"""
@@ -1466,6 +1484,7 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             )
         return render(request, 'staff/payroll/payroll_reports.html', context)
 
+
 class ModifyGeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     model = Payroll
     template_name = 'staff/payroll/payroll_modify.html'
@@ -1499,6 +1518,7 @@ class ModifyGeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
         context['payroll_with_outstanding_value'] = qs
         context['the_period_in_word'] = f"{mytools.Period.full_months[period.split('-')[1]]}, {period.split('-')[0]}"
         return render(request, self.template_name, context)
+
 
 class RegeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'staff/payroll/regenerate_payroll.html'
@@ -1538,6 +1558,7 @@ class RegeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['records'] = qs
         context['the_period'] = the_period
         return render(request, self.template_name, context)
+
 
 class RegeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'staff/payroll/regenerated_payroll.html'
@@ -1611,6 +1632,7 @@ class RegeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['period'] = period
         return render(request, self.template_name, context)
 
+
 class SalaryPayment(LoginRequiredMixin, UserPassesTestMixin, ListView):
     queryset = Payroll.objects.filter(status=False)
     template_name = 'staff/payroll/start_pay.html'
@@ -1650,6 +1672,7 @@ class SalaryPayment(LoginRequiredMixin, UserPassesTestMixin, ListView):
         j = period.split('-')
         context['date_period'] = f"{mytools.Period.full_months[str(j[1]).zfill(2)]}, {j[0]}"
         return render(request, self.template_name, context=context)
+
 
 class StaffPoliciesView(TemplateView):
     template_name = 'staff/policies.html'

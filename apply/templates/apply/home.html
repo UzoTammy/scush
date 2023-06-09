@@ -32,14 +32,14 @@
                     <span class="float-right">Female: <span class="circle">{{applicants.gender.female}}</span></span></li>
                 <hr>
                 <li>Status <span class="float-right ml-3">Employed: 
-                    <a href="{% url 'apply-employed' %}">
                         <span class="circle">{{applicants.status.employed}}</span>
-                    </a></span> 
+                    </span> 
                     <span class="float-right ml-3">Pending: 
-                        <a href="{% url 'apply-pending' %}">
-                            <span class="circle">{{applicants.status.pending}}</span></a></span>
+                            <span class="circle">{{applicants.status.pending}}</span>
+                    </span>
                     <span class="float-right ml-3">Rejected: 
-                        <a href="{% url 'apply-rejected' %}"><span class="circle">{{applicants.status.rejected}}</span></a> </span>
+                        <span class="circle">{{applicants.status.rejected}}</span>
+                     </span>
                 </li>
                 <hr>
                 <li>Marital Status <span class="float-right ml-5">Married: <span class="circle">{{applicants.marital_status.married}}</span></span> 

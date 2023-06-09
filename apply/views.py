@@ -3,7 +3,7 @@ from typing import Any, Dict
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.template import loader
 from .models import Applicant
-from staff.models import Terminate
+from staff.models import Terminate, Employee
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
@@ -150,7 +150,6 @@ class ApplyListViewRejected(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
 
 
-
 class ApplyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Applicant
     template_name = 'apply/applicant_list.html'
@@ -166,6 +165,13 @@ class ApplyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 class ApplyDetailView(LoginRequiredMixin, DetailView):
     queryset = Applicant.objects.all()
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        employees_apply_id = Employee.objects.values_list('staff__pk', flat=True).distinct()
+        context['status'] = True if self.kwargs['pk'] in employees_apply_id else False
+        self.request.session['data'] = 'Hello world'
+        return context
 
 
 class ApplyCreateView(CreateView):
@@ -222,7 +228,7 @@ class RejectApplicant(View):
 
 
 class ApplyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Applicant
+    queryset = Applicant.objects.all()
     form_class = ApplicantForm
 
     def test_func(self):

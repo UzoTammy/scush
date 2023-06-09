@@ -52,7 +52,8 @@ class EmployeeForm(forms.ModelForm):
     BRANCHES.insert(0, (None, '--------'))
     POSITIONS.insert(0, (None, '--------'))
     DEPARTMENTS.insert(0, (None, '--------'))
-
+    
+    
     date_employed = forms.DateField(widget=forms.DateInput(attrs={
         'type': 'date'
     }))
@@ -60,14 +61,20 @@ class EmployeeForm(forms.ModelForm):
     branch = forms.ChoiceField(choices=BRANCHES, required=False)
     position = forms.ChoiceField(choices=POSITIONS, required=False)
     department = forms.ChoiceField(choices=DEPARTMENTS, required=False)
-
+    salary = forms.DecimalField(max_digits=8, decimal_places=2, help_text='<small class=text-danger>Note: Currency in Naira</small>')
+    
     class Meta:
         model = Employee
-        fields = ('date_employed', 'is_management', 'position',
-              'department', 'branch', 'banker', 'account_number',
-              'basic_salary', 'allowance', 'tax_amount')
+        fields = ('date_employed', 'position',
+              'department', 'branch', 'banker', 
+              'account_number')
+        extra = ['salary']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['salary'].widget.attrs['placeholder'] = 'Enter Salary as Approved'
 
-
+    
 class DateTimeSelectorWidget(forms.MultiWidget):
     def __init__(self, attrs=None):
         days = [(day, str(day).zfill(2)) for day in range(1, 32)]
@@ -114,7 +121,3 @@ class RequestPermissionForm(forms.ModelForm):
     class Meta:
         model = RequestPermission
         fields = ('staff', 'reason', 'start_date', 'resume_date')
-
-    
-    
-    

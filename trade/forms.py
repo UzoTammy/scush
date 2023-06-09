@@ -9,7 +9,7 @@ from .models import (BalanceSheet,
                     Creditor
                     )
 # from djmoney.models.fields import MoneyField, Money
-from djmoney.forms import MoneyWidget, MoneyField
+from djmoney.forms import MoneyField
 
 class TradeMonthlyForm(forms.ModelForm):
     year = forms.IntegerField(required=False)
@@ -25,8 +25,7 @@ class TradeDailyForm(forms.ModelForm):
     class Meta:
         model = TradeDaily
         fields = '__all__'
-
-    
+ 
 class BSForm(forms.ModelForm):
 
     date = forms.DateField(widget=DateInput(attrs={'type':'date'}))
@@ -60,7 +59,6 @@ class BankBalanceCopyForm(forms.ModelForm):
     class Meta:
         model = BankBalance
         fields = '__all__'
-
 
 class CreditorAccountForm(forms.ModelForm):
     json_dict = JsonDataset.objects.get(pk=1).dataset

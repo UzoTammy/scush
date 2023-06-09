@@ -49,6 +49,7 @@ class Employee(models.Model):
     tax_amount = MoneyField(max_digits=6,
                             decimal_places=2,
                             default_currency='NGN',
+                            default=Money(0, 'NGN'),
                             validators=[
                                MinMoneyValidator(0),
                                MaxMoneyValidator(5000),
@@ -290,4 +291,13 @@ class RequestPermission(models.Model):
             days = len(mytools.DateRange(self.start_date.date(), self.resume_date.date()).exclude_weekday(calendar.SUNDAY))
             return f'{days - 1}D'
 
-
+class ReEngage(models.Model):
+    staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    date = models.DateField(default=datetime.date.today)
+    approved_salary = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN')
+    
+    # send to employee model
+    terminated_date = models.DateField() #take date from terminated model 
+    last_salary_paid = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN')
+    #taking from employee model
+    

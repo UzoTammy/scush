@@ -4,6 +4,7 @@ from django.utils import timezone
 import datetime
 from ozone import mytools
 
+
 class ApplicantManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset()
@@ -86,4 +87,4 @@ class Applicant(models.Model):
         years_str = mytools.DatePeriod(date_string).year_month_week_day()
         return years_str
 
-
+    

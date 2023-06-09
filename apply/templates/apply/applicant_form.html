@@ -34,7 +34,6 @@
                     <div class="form-row">
                         <div class="col-sm-4">
                             <span class="form-label text-info">First Name</span><span class="text-danger">*</span>
-                            
                             {{form.first_name}}
                         </div>
                         <div class="col-sm-4">
@@ -83,18 +82,17 @@
                     </div>
                     <hr>
                     <div class="form-row">
-                        <div class="col">
+                        <div class="col-sm-6">
                             <div class="form-label text-info">Course <span class="text-muted">(optional)</span></div>
                             <div>{{ form.course }}</div>
                         </div>
-                        <div class="col">
+                        <div class="col-sm-6">
                             <div class="form-label text-info">
                                 Mobile<span class="text-danger">*</span>
                             </div>
                             <div>{{ form.mobile }}
-                                <small class="form-help text-danger">format like this 080-1234-5678</small>
+                                <small class="text-danger">e.g nnn-nnnn-nnnn</small>
                             </div>
-
                         </div>
                     </div>
                     <hr>
@@ -142,9 +140,10 @@
                                 </small>
                             </button>
                         </div>
+                        
                         <div class="col d-flex justify-content-end mr-5">
                             {% if title == 'Update' %}
-                            <a class="btn btn-outline-secondary" type="button" href="{% url 'apply-pending' %}">
+                            <a class="btn btn-outline-secondary" type="button" href="{% url 'apply-detail' form.instance.id %}">
                                 <i class="fa fa-reply text-danger"></i> Cancel</a>
                             {% else %}
                             <a class="btn btn-outline-secondary" type="button" href="{% url 'index' %}">
@@ -173,7 +172,6 @@
                             <p class="text-muted text-center">Information provided to us is for employment
                                 purposes only and cannot be compromised.
                             </p>
-
                         </div>
                     </div>
                 </div>

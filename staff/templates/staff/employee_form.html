@@ -5,11 +5,12 @@
 <div class="container">
     <div class="row p-3 d-flex justify-content-center">
         <div class="col-sm-8 p-3 shadow-lg">
-            <form method="POST" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <legend class="text-danger">{{ title }} Employee: {{ applicant_obj }}</legend>
+                <legend class="text-danger">{{ title }} Employee: {{applicant_obj}}</legend>
                 <fieldset class="bg-light">
                     <div class="ml-2">{{ form|crispy }}</div>
+                    <div class="ml-2">{{ other_form|crispy }}</div>
                 </fieldset>
                 <div class="form-group p-2">
                     <button class="btn btn-outline-warning" type="submit">Submit</button>
@@ -19,7 +20,7 @@
                         <i class="fa fa-reply text-danger"></i> Return</a>
                     {% else %}
                     <a class="btn btn-outline-light float-right"
-                       href="{% url 'staff-list' %}">
+                       href="{% url 'apply-index' %}">
                         <i class="fa fa-reply text-danger"></i> Return</a>
                     {% endif %}
                 </div>

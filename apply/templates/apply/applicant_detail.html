@@ -10,6 +10,7 @@
     <div class="col-3 bg-dark">
       <ul class="nav flex-column">
           <li class="nav-item mt-3">
+            {% if not status %}
               {% if object.status is None %}
                 <a href="{% url 'employee-create' object.pk %}" class="nav-link">
                     Employ</a>
@@ -18,6 +19,9 @@
                   style="pointer-events: none;">
                     Employ</a>
               {% endif %}
+             {% else %} 
+             <a class="nav-link" href="#">Re-Employ</a>
+             {% endif %}
           </li>
       </ul>
       <ul class="nav flex-column">
@@ -55,7 +59,7 @@
       <ul class="nav flex-column">
           <li class="nav-item">
               <!--        return-->
-            <a href="{% url 'apply' %}" class="nav-link">
+            <a href="{% url 'apply-index' %}" class="nav-link">
                 <i class="fa fa-reply text-danger"></i> Return</a>
           </li>
       </ul>
@@ -71,22 +75,23 @@
                  alt="...">
                  <p class="text-primary">Applied since {{ object.get_apply_age_string}} ago</p>
                   <p class="text-danger">Status: {{object.status|yesno:'Employed, Rejected, Pending'}}</p></li>
-              <li class="list-group-item"><h5 class="card-title text-info">
+              <li class="list-group-item"><h5 class="card-title text-info text-center">
                 Application Data for {{ object }}</h5>
               </li>
-              <li class="list-group-item">Full Name: {{ object.last_name|upper}},
-                {{ object.first_name}} {{ object.second_name}}</li>
-              <li class="list-group-item">Date of Birth: {{ object.birth_date}}</li>
+              
+              <li class="list-group-item">Full Name: <span class="float-right">{{ object.last_name|upper}},
+                {{ object.first_name}} {{ object.second_name}}</span> </li>
+              <li class="list-group-item">Date of Birth: <span class="float-right">{{ object.birth_date}}</span> </li>
               <!-- <li class="list-group-item">Date of Birth: {{ object.birth_date}}</li> -->
-              <li class="list-group-item">Gender: {{ object.gender}}</li>
-              <li class="list-group-item">Marital Status: {{object.marital_status}}</li>
-              <li class="list-group-item">Date Applied: {{ object.apply_date}}</li>
-              <li class="list-group-item">Qualification: {{ object.qualification}}</li>
-              <li class="list-group-item">Course of Study: {{ object.course}}</li>
-              <li class="list-group-item">Last Modified on: {{ object.modified_date}}</li>
-              <li class="list-group-item">Mobile Number: {{ object.mobile}}</li>
-              <li class="list-group-item">Email: {{ object.email}}</li>
-              <li class="list-group-item">Address: {{ object.address}}</li>
+              <li class="list-group-item">Gender: <span class="float-right">{{ object.gender}}</span></li>
+              <li class="list-group-item">Marital Status: <span class="float-right">{{object.marital_status}}</span> </li>
+              <li class="list-group-item">Date Applied: <span class="float-right">{{ object.apply_date}}</span></li>
+              <li class="list-group-item">Qualification: <span class="float-right">{{ object.qualification}}</span></li>
+              <li class="list-group-item">Course of Study: <span class="float-right">{{ object.course}}</span></li>
+              <li class="list-group-item">Last Modified on: <span class="float-right">{{ object.modified_date}}</span></li>
+              <li class="list-group-item">Mobile Number: <span class="float-right">{{ object.mobile}}</span></li>
+              <li class="list-group-item">Email: <span class="float-right">{{ object.email}}</span></li>
+              <li class="list-group-item">Address: <span class="float-right">{{ object.address}}</span></li>
             </ul>   
         </div>
     </div>
