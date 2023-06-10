@@ -28,4 +28,35 @@
         </div>
     </div>
 </div>
+
+<script>
+    
+    const numberInput = document.getElementById('id_salary');
+    
+    numberInput.addEventListener('input', function(event) {
+    const input = event.target.value.replace(/[^\d.-]/g, '');
+    
+    const cursorPosition = event.target.selectionStart;
+
+    const currencyValue = Number(input).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    event.target.value = currencyValue;
+    const newCursorPosition = calculateCursorPosition(cursorPosition, event.target.value);
+    event.target.setSelectionRange(newCursorPosition, newCursorPosition);
+    
+    });
+
+    function calculateCursorPosition(oldPosition, newValue) {
+        const oldValueLength = numberInput.value.length;
+        const commaCountOld = (numberInput.value.match(/,/g) || []).length;
+        const commaCountNew = (newValue.match(/,/g) || []).length;
+
+        const delta = commaCountNew - commaCountOld;
+
+        return oldPosition + delta;
+    }
+
+</script>
 {% endblock %}

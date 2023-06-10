@@ -1,6 +1,17 @@
 {% extends 'users/base.html' %}
 {% load custom_tags %}
 
+{% block head %}
+<style>
+    .curved-grey {
+        background-color: rgb(207, 204, 204);
+        border-radius: 50px 100px 50px 100px;
+        padding: .2rem;
+    }
+</style>
+    
+{% endblock head %}
+
 {% block content %} 
 <div class="container">
     <div class="row">
@@ -18,9 +29,9 @@
     <small class="text-muted">Select applicant to employ</small>
     <div class="row">
         {% for applicant in pending_applicants %}
-        <div class="col-sm-3">
+        <div class="col-sm-3 mt-3">
             {{forloop.counter}}.
-            <a href="{% url 'apply-detail' applicant.pk %}">
+            <a class="curved-grey" href="{% url 'apply-detail' applicant.pk %}">
                 {{applicant}}
             </a>
         </div>
@@ -30,9 +41,9 @@
     <small class="text-muted">Select applicant to employ</small>              
     <div class="row">
         {% for person in resigned_staff %}
-        <div class="col-sm-3">
+        <div class="col-sm-3 mt-3">
             {{forloop.counter}}.
-            <a href="{% url 'apply-detail' person.staff.staff.pk %}">
+            <a class="curved-grey" href="{% url 'apply-detail' person.staff.staff.pk %}">
                     {{person.staff.pk|zeropadding:3}}-{{person}}
             </a>
         </div>

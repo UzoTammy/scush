@@ -20,15 +20,17 @@ from django.views.generic import (View,
                                   )
 from .forms import ApplicantForm, MyForm
 from django.urls import reverse_lazy, reverse
-
+from django.utils.safestring import mark_safe
 
 class ApplyIndexView(LoginRequiredMixin, TemplateView):
     template_name = 'apply/index.html'
+    
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context['pending_applicants'] = Applicant.pending.all().order_by('-apply_date')
-        context['resigned_staff'] = Terminate.objects.filter(termination_type='Resign').order_by('-date')
+        context['resigned_staff'] = Terminate.objects.filter(status=True).filter(termination_type='Resign').order_by('-date')
         return context
+
 
 class ApplyHomeView(LoginRequiredMixin, TemplateView):
     template_name = 'apply/home.html'
@@ -170,9 +172,33 @@ class ApplyDetailView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         employees_apply_id = Employee.objects.values_list('staff__pk', flat=True).distinct()
         context['status'] = True if self.kwargs['pk'] in employees_apply_id else False
-        self.request.session['data'] = 'Hello world'
+            
         return context
 
+    def post(self, request, **kwargs):
+        
+        # Employee database needs to change status to true
+        employee = Employee.objects.get(staff__pk=self.kwargs['pk'])
+        employee.status = True
+        try:
+            employee.basic_salary = 0.4 * float(self.request.POST['salary'])
+            employee.allowance = 0.6 * float(self.request.POST['salary'])
+
+            # Terminated database object change status
+            terminated_employee = Terminate.objects.get(staff__staff__pk=self.kwargs['pk'])
+            terminated_employee.status = False
+            terminated_employee.save()
+        except ValueError as varErr:
+            messages.error(request, mark_safe(
+                '<h6 id="flashElement" class="flash text-danger">&#x26A0; No value entered or you entered invalid value</h6>'
+                )
+            )
+            return super().get(self, request, **kwargs)
+        
+        messages.success(request, mark_safe(
+            f'<h6 class="text-success">{employee} successfully re-engaged &#10004;</h6>'))
+        employee.save()
+        return super().get(self, request, **kwargs)  
 
 class ApplyCreateView(CreateView):
     """No login required and no restriction on user's needed, making it available

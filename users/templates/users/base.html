@@ -179,14 +179,7 @@
                    aria-expanded="false">
                     <i class="fa fa-file-pdf-o text-white"></i> Report</a>
                 <div class="dropdown-menu">
-                    <!-- <a class="dropdown-item text-muted">Stock</a>
-                    <div class="dropbutton col">
-                        <a class="dropdown-item" href="#">Products
-                            <small><i class="fa fa-play text-info"></i></small></a>
-                            <div class="dropdown-content">
-                                <a href="{% url 'pdf-stock-list' %}">All</a>
-                            </div>
-                    </div> -->
+                    
                     <a class="dropdown-item" href="{% url 'daily-report' %}">Daily Report</a>
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'policies-docs' %}">Policies and Procedures</a>
@@ -210,9 +203,11 @@
                     <i class="fa fa-gears text-white"></i> Administration</a>
                 <div class="dropdown-menu">
                     <a class="dropdown-item" href="{% url 'import-csv'%}">Import CSV</a>
+                    <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'apply-index' %}">Employ</a>
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'payroll-process'%}">Create Payroll</a>
+                    <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'json-new' %}">Add to Settings</a>
                     <hr class="dropdown-divider">
                     <a class="dropdown-item" href="{% url 'register' %}">Register</a>

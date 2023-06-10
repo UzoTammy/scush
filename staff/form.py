@@ -61,7 +61,7 @@ class EmployeeForm(forms.ModelForm):
     branch = forms.ChoiceField(choices=BRANCHES, required=False)
     position = forms.ChoiceField(choices=POSITIONS, required=False)
     department = forms.ChoiceField(choices=DEPARTMENTS, required=False)
-    salary = forms.DecimalField(max_digits=8, decimal_places=2, help_text='<small class=text-danger>Note: Currency in Naira</small>')
+    salary = forms.CharField(max_length=12, help_text='<small class=text-danger>Note: Currency in Naira</small>')
     
     class Meta:
         model = Employee

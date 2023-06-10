@@ -3,6 +3,25 @@
 {% load  custom_tags %}
 
 
+{% block head %} 
+<style>
+  @keyframes flash {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  .flash {
+    animation: flash 1s infinite;
+  }
+</style>
+{% endblock head %}
+
 {% block content %}
 
 <div class="container-fluid">
@@ -20,8 +39,9 @@
                     Employ</a>
               {% endif %}
              {% else %} 
-             <a class="nav-link" href="#">Re-Employ</a>
+             <a class="nav-link" href="#" data-toggle="modal" data-target="#reEngageModalCenter">Re-Employ</a>
              {% endif %}
+             
           </li>
       </ul>
       <ul class="nav flex-column">
@@ -41,7 +61,6 @@
               </a>
           </li>
       </ul>
-      
       <ul class="nav flex-column">
           <li class="nav-item">
                <!--       Delete -->
@@ -74,7 +93,10 @@
                      height="50px"
                  alt="...">
                  <p class="text-primary">Applied since {{ object.get_apply_age_string}} ago</p>
-                  <p class="text-danger">Status: {{object.status|yesno:'Employed, Rejected, Pending'}}</p></li>
+                 {% if not status %}
+                  <p class="text-danger">Status: {{object.status|yesno:'Employed, Rejected, Pending'}}</p>
+                  {% endif %}
+                </li>
               <li class="list-group-item"><h5 class="card-title text-info text-center">
                 Application Data for {{ object }}</h5>
               </li>
@@ -97,12 +119,7 @@
     </div>
     </div>
   </div>
-  
-   
 
-      
-     
-      
   </div>
 </div>
 <!--    Modals-->
@@ -165,4 +182,51 @@
     </div>
   </div>
 </div>
+
+<!-- Button trigger modal -->
+  
+  <!-- Re-Engage -->
+  <div class="modal fade" 
+  id="reEngageModalCenter" 
+  tabindex="-1" 
+  role="dialog" 
+  aria-labelledby="reEnageModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="reEngageModalLongTitle">Re-Engage</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col">
+              <form action="" method="post">
+                {% csrf_token %}
+                <div class="form-group bg-light">
+                  <label for="">Approved Salary</label>
+                  <input name="salary" class="form-control" type="number">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const flashElement = document.getElementById('flashElement');
+
+  setTimeout(function() {
+    flashElement.classList.remove('flash');
+  }, 5000);
+
+  </script>
 {% endblock %}
