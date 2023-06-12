@@ -58,7 +58,7 @@
             {% for employee in object_list %}
             <tr class="text-center">
                 <th scope="row">
-                    <a href="{% url 'terminated-detail' employee.pk %}">{{ employee.staff.pk|zeropadding:3 }}</a>
+                    {{ employee.staff.pk|zeropadding:3 }}
                 </th>
                 <td class="text-center"><img src="{{ employee.staff.image.url }}"
                          class="rounded-circle"
