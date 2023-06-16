@@ -54,6 +54,11 @@ class Applicant(models.Model):
     status = models.BooleanField(choices=[(True, 'Employed'), (None, 'Pending'),
                                           (False, 'Rejected')],
                                  null=True, blank=True)
+    state = models.CharField(max_length=10, default='Applied', choices=[('Applied', 'Applied'), 
+                                                                        ('Rejected', 'Rejected'),
+                                                                        ('Employed', 'Employed'),
+                                                                        ('Terminated', 'Terminated'),
+                                                                        ('Re-Engaged', 'Re-Engaged')])
     
     this_year = ThisYearApplicantManager()
     employed = EmployedManager()

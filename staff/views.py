@@ -2061,6 +2061,7 @@ class NextView(LoginRequiredMixin, View):
                 json.dump(json_data, wf, indent=2)
             
         return redirect('payroll-process')    
+
 class ProcessEmployeeUpdateView(LoginRequiredMixin, TemplateView):
     template_name = 'staff/payroll/employee_update.html'
 
