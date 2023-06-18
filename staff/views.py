@@ -734,60 +734,6 @@ class StaffTerminate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         messages.info(request, "Incorrect key word, Staff yet to be terminated")
         return redirect('employee-detail', pk=kwargs['pk'])
 
-# class StaffTerminateDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
-#     model = Terminate
-#     template_name = 'staff/terminated_detail.html'
-
-#     def test_func(self):
-#         """if user is a member of of the group HRD then grant access to this view"""
-#         if self.request.user.groups.filter(name='HRD').exists():
-#             return True
-#         return False
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         obj = get_object_or_404(Terminate, pk=self.kwargs['pk'])
-#         staff = Payroll.objects.filter(staff__pk=obj.staff.pk)
-#         permissions = Permit.objects.filter(staff__pk=obj.staff.pk)
-#         hours = int(sum([(p.ending_at - p.starting_from).total_seconds() for p in permissions])/(60*60)) if permissions else None
-#         gratuity = EmployeeBalance.objects.filter(staff__pk=obj.staff.pk)
-#         gratuity = round(sum([g.value.amount for g in gratuity]), 2)
-#         context['salary_paid_out'] = staff.aggregate(Sum('net_pay'))['net_pay__sum']
-#         context['permissions_taken'] = hours
-#         context['welfare'] = ''
-#         context['gratuity'] = gratuity
-#         return context
-    
-
-    # def post(self, request, **kwargs):
-    #     if request.POST['date'] or request.POST['salary'] != '':
-    #         date_employed = datetime.datetime.strptime(request.POST['date'], '%Y-%m-%d').date()
-    #         salary = float(request.POST['salary'])
-    #         terminated_staff = get_object_or_404(Terminate, pk=kwargs['pk'])
-    #         employee = terminated_staff.staff
-    #         employee.date_employed = date_employed
-    #         employee.basic_salary = 0.4 * salary
-    #         employee.allowance = 0.6 * salary
-    #         if 'management' in request.POST:
-    #             employee.is_management = True
-    #         employee.status = True
-    #         employee.save()
-    #         terminated_staff.delete()
-    #         messages.info(request, 'Staff Re-engaged successfully, You can now update profile as employee')
-
-    #         mail_message = f'{employee.fullname()} with code number {str(employee.id).zfill(3)} re-employed this day {date_employed.strftime("%d-%m-%Y")}.'
-    #         send_mail(subject=f'Re-engaged staff - {employee.fullname()}({str(employee.id).zfill(3)})',
-    #         message='', 
-    #         from_email=request.user.email,
-    #         recipient_list=[request.user.email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
-    #         fail_silently=True,
-    #         html_message=mail_message
-    #         )
-    #     else:
-    #         messages.info(request, 'Date or salary not entered')
-        
-    #     return redirect('terminated', staff_category='terminate')
-
 class staffWelfare(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Employee
 
@@ -1288,8 +1234,6 @@ class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         data['credit'] = queryset.aggregate(total=Sum('credit_amount'))
         data['debit'] = queryset.aggregate(total=Sum('debit_amount'))
         data['net_pay'] = queryset.aggregate(total=Sum('net_pay'))
-        # data['deduction'] = queryset.aggregate(total=Sum('deduction'))
-        # data['outstanding'] = queryset.aggregate(total=Sum('outstanding'))
         return data
 
     def get(self, request, *args, **kwargs):
@@ -1298,7 +1242,11 @@ class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         periods = self.get_queryset().values_list('period', flat=True).distinct()
         dataset = list()
         if kwargs.get('summary_period') == 'Month':
-            periods = periods.filter(period__contains=datetime.date.today().year)
+            if request.GET == {}:
+                year = datetime.date.today().year
+            else:
+                year = int(request.GET['year'])
+            periods = periods.filter(period__contains=year)
             for period in sorted(periods):
                 queryset = self.get_queryset().filter(period=period)
                 qs_dict = self.get_dict(queryset)
@@ -1324,7 +1272,9 @@ class PayrollSummaryView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             'title': kwargs.get('summary_period'),
             'current_period': self.get_queryset().last().period,
             'dataset': tuple(dataset),
-            'totals': totals
+            'totals': totals,
+            'years': [str(datetime.date.today().year - i) for i in range(3)],
+            'year': str(year)
         }
         return render(request, 'staff/payroll/payroll_summary.html', context)
 
