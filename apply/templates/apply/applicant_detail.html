@@ -1,21 +1,24 @@
 {% extends 'users/base.html' %}
 {% load static %}
-{% load  custom_tags %}
+{% load custom_tags %}
 
 
-{% block head %} 
+{% block head %}
 <style>
   @keyframes flash {
     0% {
       opacity: 1;
     }
+
     50% {
       opacity: 0;
     }
+
     100% {
       opacity: 1;
     }
   }
+
   .flash {
     animation: flash 1s infinite;
   }
@@ -28,205 +31,178 @@
   <div class="row">
     <div class="col-3 bg-dark">
       <ul class="nav flex-column">
-          <li class="nav-item mt-3">
-            {% if not status %}
-              {% if object.status is None %}
-                <a href="{% url 'employee-create' object.pk %}" class="nav-link">
-                    Employ</a>
-              {% else %}
-                <a href="{% url 'employee-create' object.pk %}" class="nav-link"
-                  style="pointer-events: none;">
-                    Employ</a>
-              {% endif %}
-             {% else %} 
-             <a class="nav-link" href="#" data-toggle="modal" data-target="#reEngageModalCenter">Re-Employ</a>
-             {% endif %}
-             
-          </li>
+        {% if status %}
+        <li>
+          <a class="nav-link" href="#" data-toggle="modal" data-target="#reEngageModalCenter">Re-Engage</a>
+        </li>
+        {% else %}
+        <li class="nav-item mt-3">
+          <a href="{% url 'employee-create' object.pk %}" class="nav-link">Employ</a>
+        </li>
+        <li class="nav-item">
+          <a href="#" data-target="#rejectModal" data-toggle="modal" tabindex="-1" class="nav-link">
+            Reject
+          </a>
+        </li>
+        {% endif %}
       </ul>
       <ul class="nav flex-column">
         <li class="nav-item">
-              <a href="{% url 'apply-update' object.pk %}" class="nav-link">
-                  Update</a>
+          <a href="{% url 'apply-update' object.pk %}" class="nav-link">
+            Update</a>
+        </li>
+      </ul>
+
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <!--       Delete -->
+          <!-- Button trigger modal -->
+          {% if user.is_superuser %}
+          {% if not status %}
+          <a href="#" class="nav-link" data-toggle="modal" data-target="#deleteModal">
+            Delete
+          </a>
+          {% endif %}
+          {% endif %}
         </li>
       </ul>
       <ul class="nav flex-column">
-          <li class="nav-item">
-              <a href="#"
-                data-target="#rejectModal"
-                data-toggle="modal"
-                tabindex="-1"
-                class="nav-link">
-                  Reject
-              </a>
-          </li>
-      </ul>
-      <ul class="nav flex-column">
-          <li class="nav-item">
-               <!--       Delete -->
-              <!-- Button trigger modal -->
-              {% if user.is_superuser %}
-                  <a href="#"    
-                    class="nav-link"
-                    data-toggle="modal"
-                    data-target="#deleteModal">
-                      Delete
-                  </a>
-              {% endif %}
-          </li>
-      </ul>
-      <ul class="nav flex-column">
-          <li class="nav-item">
-              <!--        return-->
-            <a href="{% url 'apply-index' %}" class="nav-link">
-                <i class="fa fa-reply text-danger"></i> Return</a>
-          </li>
+        <li class="nav-item">
+          <!--        return-->
+          <a href="{% url 'apply-index' %}" class="nav-link">
+            <i class="fa fa-reply text-danger"></i> Return</a>
+        </li>
       </ul>
     </div>
-  <!--    The detailed view-->
+    <!--    The detailed view-->
     <div class="col-9">
       <div class="row">
         <div class="col">
-            <ul class="list-group">
-              <li class="list-group-item text-right"><img src="{% static 'customer/logo.png' %}"
-                class="rounded-circle p-2"
-                     height="50px"
-                 alt="...">
-                 <p class="text-primary">Applied since {{ object.get_apply_age_string}} ago</p>
-                 {% if not status %}
-                  <p class="text-danger">Status: {{object.status|yesno:'Employed, Rejected, Pending'}}</p>
-                  {% endif %}
-                </li>
-              <li class="list-group-item"><h5 class="card-title text-info text-center">
+          <ul class="list-group">
+            <li class="list-group-item text-right"><img src="{% static 'customer/logo.png' %}"
+                class="rounded-circle p-2" height="50px" alt="...">
+              <p class="text-primary">Applied since {{ object.get_apply_age_string}} ago</p>
+              {% if not status %}
+              <p class="text-danger">Status: {{object.status|yesno:'Employed, Rejected, Pending'}}</p>
+              {% endif %}
+            </li>
+            <li class="list-group-item">
+              <h5 class="card-title text-info text-center">
                 Application Data for {{ object }}</h5>
-              </li>
-              
-              <li class="list-group-item">Full Name: <span class="float-right">{{ object.last_name|upper}},
+            </li>
+
+            <li class="list-group-item">Full Name: <span class="float-right">{{ object.last_name|upper}},
                 {{ object.first_name}} {{ object.second_name}}</span> </li>
-              <li class="list-group-item">Date of Birth: <span class="float-right">{{ object.birth_date}}</span> </li>
-              <!-- <li class="list-group-item">Date of Birth: {{ object.birth_date}}</li> -->
-              <li class="list-group-item">Gender: <span class="float-right">{{ object.gender}}</span></li>
-              <li class="list-group-item">Marital Status: <span class="float-right">{{object.marital_status}}</span> </li>
-              <li class="list-group-item">Date Applied: <span class="float-right">{{ object.apply_date}}</span></li>
-              <li class="list-group-item">Qualification: <span class="float-right">{{ object.qualification}}</span></li>
-              <li class="list-group-item">Course of Study: <span class="float-right">{{ object.course}}</span></li>
-              <li class="list-group-item">Last Modified on: <span class="float-right">{{ object.modified_date}}</span></li>
-              <li class="list-group-item">Mobile Number: <span class="float-right">{{ object.mobile}}</span></li>
-              <li class="list-group-item">Email: <span class="float-right">{{ object.email}}</span></li>
-              <li class="list-group-item">Address: <span class="float-right">{{ object.address}}</span></li>
-            </ul>   
+            <li class="list-group-item">Date of Birth: <span class="float-right">{{ object.birth_date}}</span> </li>
+            <!-- <li class="list-group-item">Date of Birth: {{ object.birth_date}}</li> -->
+            <li class="list-group-item">Gender: <span class="float-right">{{ object.gender}}</span></li>
+            <li class="list-group-item">Marital Status: <span class="float-right">{{object.marital_status}}</span> </li>
+            <li class="list-group-item">Date Applied: <span class="float-right">{{ object.apply_date}}</span></li>
+            <li class="list-group-item">Qualification: <span class="float-right">{{ object.qualification}}</span></li>
+            <li class="list-group-item">Course of Study: <span class="float-right">{{ object.course}}</span></li>
+            <li class="list-group-item">Last Modified on: <span class="float-right">{{ object.modified_date}}</span>
+            </li>
+            <li class="list-group-item">Mobile Number: <span class="float-right">{{ object.mobile}}</span></li>
+            <li class="list-group-item">Email: <span class="float-right">{{ object.email}}</span></li>
+            <li class="list-group-item">Address: <span class="float-right">{{ object.address}}</span></li>
+          </ul>
         </div>
-    </div>
+      </div>
     </div>
   </div>
 
-  </div>
+</div>
 </div>
 <!--    Modals-->
-<div class="modal fade"
-     id="deleteModal"
-     tabindex="-1"
-     aria-labelledby="deleteModalLabel"
-     aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="deleteModalLabel">Delete - {{object}}</h5>
-        <button type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close text-danger"></i>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+          <i class="fa fa-close text-danger"></i>
         </button>
       </div>
       <div class="modal-body">
         This Applicant will be deleted permanently, proceed?
       </div>
-        <form action="{% url 'apply-delete' object.id %}" method="post">{% csrf_token %}
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-danger">Yes, Delete</button>
-        <button
-           type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-      </div>
-        </form>
+      <form action="{% url 'apply-delete' object.id %}" method="post">{% csrf_token %}
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Yes, Delete</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 <!--For Reject-->
-<div class="modal fade"
-     id="rejectModal"
-     tabindex="-1"
-     aria-labelledby="rejectModalLabel"
-     aria-hidden="true">
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="rejectModalLabel">Reject - {{object}}</h5>
-        <button type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close text-danger"></i>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+          <i class="fa fa-close text-danger"></i>
         </button>
       </div>
       <div class="modal-body">
         Are you sure you want to reject this applicant?
       </div>
-        <form action="{% url 'apply-reject' object.id %}">
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-danger" name="result" value="Yes">Yes</button>
-        <button
-           type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-      </div>
-        </form>
+      <form action="{% url 'apply-reject' object.id %}">
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger" name="result" value="Yes">Yes</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
 <!-- Button trigger modal -->
-  
-  <!-- Re-Engage -->
-  <div class="modal fade" 
-  id="reEngageModalCenter" 
-  tabindex="-1" 
-  role="dialog" 
-  aria-labelledby="reEnageModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="reEngageModalLongTitle">Re-Engage</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col">
-              <form action="" method="post">
-                {% csrf_token %}
-                <div class="form-group bg-light">
-                  <label for="">Approved Salary</label>
-                  <input name="salary" class="form-control" type="number">
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-              </form>
-            </div>
+
+<!-- Re-Engage -->
+<div class="modal fade" id="reEngageModalCenter" tabindex="-1" role="dialog" aria-labelledby="reEnageModalCenterTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reEngageModalLongTitle">Re-Engage</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col">
+            <form action="" method="post">
+              {% csrf_token %}
+              <div class="form-group bg-light">
+                <label for="">Apply Date</label>
+                <input name="applyDate" class="form-control" type="date" required>
+              </div>
+              <div class="form-group bg-light">
+                <label for="">Approved Salary</label>
+                <input name="salary" class="form-control" type="number" placeholder="Basic + allowance">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+            </form>
           </div>
         </div>
-        
       </div>
+
     </div>
   </div>
+</div>
 
-  <script>
-    const flashElement = document.getElementById('flashElement');
+<script>
+  const flashElement = document.getElementById('flashElement');
 
-  setTimeout(function() {
+  setTimeout(function () {
     flashElement.classList.remove('flash');
   }, 5000);
 
-  </script>
+</script>
 {% endblock %}

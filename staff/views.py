@@ -66,48 +66,6 @@ outstanding is the amount the company is willing to reserve for the staff
 
     @staticmethod
     def regime(salary_payable, salary_less_tax):
-        # if salary_payable > 2 * salary_less_tax:
-        #     """condition 1: if what your earned is greater than twice 
-        #     your salary. pay 150% of salary"""
-        #     deduction = Money(0, 'NGN')
-        #     outstanding = salary_payable - 1.5 * salary_less_tax
-        #     salary_payable = 1.5 * salary_less_tax
-        # elif 1.8 * salary_less_tax < salary_payable <= 2 * salary_less_tax:
-        #     deduction = Money(0, 'NGN')
-        #     outstanding = salary_payable - 1.4 * salary_less_tax
-        #     salary_payable = 1.4 * salary_less_tax
-        # elif 1.6 * salary_less_tax < salary_payable <= 1.8 * salary_less_tax:
-        #     deduction = Money(0, 'NGN')
-        #     outstanding = salary_payable - 1.3 * salary_less_tax
-        #     salary_payable = 1.3 * salary_less_tax
-        # elif 1.4 * salary_less_tax < salary_payable <= 1.6 * salary_less_tax:
-        #     deduction = Money(0, 'NGN')
-        #     outstanding = salary_payable - 1.2 * salary_less_tax
-        #     salary_payable = 1.2 * salary_less_tax
-        # elif 1.2 * salary_less_tax < salary_payable <= 1.4 * salary_less_tax:
-        #     deduction = Money(0, 'NGN')
-        #     outstanding = salary_payable - 1.1 * salary_less_tax
-        #     salary_payable = 1.1 * salary_less_tax
-        # elif salary_less_tax < salary_payable <= 1.2 * salary_less_tax:
-        #     deduction = Money(0, 'NGN')
-        #     outstanding = Money(0, 'NGN')
-        # elif 0.5 * salary_less_tax <= salary_payable <= salary_less_tax:
-        #     """condition 3: Small that is between half gross pay and
-        #     gross pay, get amount to pay"""
-        #     deduction = salary_less_tax - salary_payable
-        #     outstanding = Money(0, 'NGN')
-        # elif Money(0, 'NGN') <= salary_payable <= 0.5 * salary_less_tax:
-        #     """condition 4: Too Small that is between zero and half gross
-        #     pay, get less than your gross pay"""
-        #     deduction = salary_payable
-        #     outstanding = Money(0, 'NGN')
-        #     salary_payable = Money(0, 'NGN') #salary_less_tax - salary_payable
-        # else:
-        #     """condition 5: Too bad that is when amount to pay goes negative,
-        #     cease and deduct gross salary"""
-        #     deduction = salary_less_tax
-        #     outstanding = salary_payable
-        #     salary_payable = Money(0, 'NGN')
         return [salary_payable, Money(0, 'NGN'), Money(0, 'NGN')]
 
 
@@ -358,7 +316,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['welfare_for_a_date_total_amount'] = qs.aggregate(Sum('amount'))['amount__sum']
         return context
 
-    queryset = Employee.active.all()
+    # queryset = Employee.active.all()
 
 class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     ordering = '-pk'
@@ -405,7 +363,6 @@ class StaffListPicturesView(LoginRequiredMixin, ListView):
     ordering = '-pk'
     paginate_by = 4
 
-    
 class StaffCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Employee
     form_class = EmployeeForm    
@@ -425,18 +382,19 @@ class StaffCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     
     
     def form_valid(self, form):
-        # change the applicant from pending to employed
-        # the model has status field with choices (None for pending, True for Employed, False for rejected)
         applicant = Applicant.objects.get(id=self.kwargs['pk'])
-        applicant.status = True
-        applicant.save()
-
+        
+        """Form data"""
+        form.instance.staff = applicant
         # Approved salary shared to basic salary & allowance
-        salary = float(form.cleaned_data['salary'])
+        salary = float(form.cleaned_data['salary'].replace(',', ''))
         form.instance.basic_salary = 0.6 * salary
         form.instance.allowance = 0.4 * salary
-        
-        form.instance.staff = applicant
+
+        # change the applicant from pending to employed
+        applicant.state = 'Employed'
+        applicant.save()
+
         """Send mail to applicant and admin before overwriting save"""
         return super().form_valid(form)
         
@@ -755,19 +713,22 @@ class StaffTerminate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         if request.POST['keyWord'] == 'TERMINATE':
             """Update Employee record"""
-            qs = self.get_queryset().get(id=kwargs['pk'])
-            qs.status = False
-            qs.save()
+            employee = self.get_queryset().get(id=kwargs['pk'])
+            employee.status = False
+            employee.save()
 
             """Create a terminate record"""
-            term = Terminate(staff=qs,
+            term = Terminate(staff=employee,
                              termination_type=request.POST['type'],
                              remark=request.POST['remark'],
                              date=request.POST['date'])
             term.save()
 
+            employee.staff.state = 'Resigned' if term.termination_type == 'Resign' else 'Sacked'
+            employee.staff.save()    
+
             """success message"""
-            messages.success(request, f"{qs} with ID {str(qs.pk).zfill(3)} is terminated successfully")
+            messages.success(request, f"{employee} with ID {str(employee.pk).zfill(3)} is terminated successfully")
             return redirect('staff-list')
 
         messages.info(request, "Incorrect key word, Staff yet to be terminated")

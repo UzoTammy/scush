@@ -54,19 +54,14 @@ class Applicant(models.Model):
     status = models.BooleanField(choices=[(True, 'Employed'), (None, 'Pending'),
                                           (False, 'Rejected')],
                                  null=True, blank=True)
-    state = models.CharField(max_length=10, default='Applied', choices=[('Applied', 'Applied'), 
-                                                                        ('Rejected', 'Rejected'),
-                                                                        ('Employed', 'Employed'),
-                                                                        ('Terminated', 'Terminated'),
-                                                                        ('Re-Engaged', 'Re-Engaged')])
+    state = models.CharField(max_length=10, default='Applied')
     
-    this_year = ThisYearApplicantManager()
-    employed = EmployedManager()
-    pending = PendingManager()
-    rejected = RejectedManager()
     objects = ApplicantManager()
+    # this_year = ThisYearApplicantManager()
+    # employed = EmployedManager()
+    # pending = PendingManager()
+    # rejected = RejectedManager()
     
-
     
     def __str__(self):
         return f'{self.last_name}, {self.first_name} {self.second_name}'

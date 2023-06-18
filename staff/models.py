@@ -16,6 +16,7 @@ class ActiveEmployeeManager(models.Manager):
         """Either True for active or false for Terminated Employee"""
         return super().get_queryset().filter(status=True)
 
+
 class Employee(models.Model):
 
     staff = models.ForeignKey(Applicant, on_delete=models.CASCADE)

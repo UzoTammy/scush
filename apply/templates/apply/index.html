@@ -4,9 +4,9 @@
 {% block head %}
 <style>
     .curved-grey {
-        background-color: rgb(207, 204, 204);
-        border-radius: 50px 100px 50px 100px;
-        padding: .2rem;
+        background-color: rgb(236, 233, 233);
+        /* border-radius: 50px 50px 50px 50px; */
+        padding: .3rem;
     }
 </style>
     
@@ -28,7 +28,7 @@
     <h4>Pending Applicants</h4>
     <small class="text-muted">Select applicant to employ</small>
     <div class="row">
-        {% for applicant in pending_applicants %}
+        {% for applicant in applied %}
         <div class="col-sm-3 mt-3">
             {{forloop.counter}}.
             <a class="curved-grey" href="{% url 'apply-detail' applicant.pk %}">
@@ -37,14 +37,15 @@
         </div>
         {% endfor %}
     </div>
-    <h4 class="mt-3">Resigned Staff</h4>
+    <hr>
+    <h4 class="mt-3">Employed but later Resigned</h4>
     <small class="text-muted">Select applicant to employ</small>              
     <div class="row">
-        {% for person in resigned_staff %}
+        {% for person in resigned %}
         <div class="col-sm-3 mt-3">
             {{forloop.counter}}.
-            <a class="curved-grey" href="{% url 'apply-detail' person.staff.staff.pk %}">
-                    {{person.staff.pk|zeropadding:3}}-{{person}}
+            <a class="curved-grey" href="{% url 'apply-detail' person.pk %}">
+                    {{person}}
             </a>
         </div>
         {% endfor %}

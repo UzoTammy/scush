@@ -3,7 +3,7 @@ from typing import Any, Dict
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.template import loader
 from .models import Applicant
-from staff.models import Terminate, Employee
+from staff.models import Terminate, Employee, ReEngage
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
@@ -21,14 +21,16 @@ from django.views.generic import (View,
 from .forms import ApplicantForm, MyForm
 from django.urls import reverse_lazy, reverse
 from django.utils.safestring import mark_safe
+from djmoney.models.fields import Money
+from decimal import Decimal
 
 class ApplyIndexView(LoginRequiredMixin, TemplateView):
     template_name = 'apply/index.html'
     
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context['pending_applicants'] = Applicant.pending.all().order_by('-apply_date')
-        context['resigned_staff'] = Terminate.objects.filter(status=True).filter(termination_type='Resign').order_by('-date')
+        context['applied'] = Applicant.objects.filter(state='Applied').order_by('-apply_date')
+        context['resigned'] = Applicant.objects.filter(state='Resigned').order_by('-apply_date')
         return context
 
 
@@ -170,9 +172,7 @@ class ApplyDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        employees_apply_id = Employee.objects.values_list('staff__pk', flat=True).distinct()
-        context['status'] = True if self.kwargs['pk'] in employees_apply_id else False
-            
+        context['status'] = True if self.queryset.get(pk=self.kwargs['pk']).state == 'Resigned' else False
         return context
 
     def post(self, request, **kwargs):
@@ -180,25 +180,48 @@ class ApplyDetailView(LoginRequiredMixin, DetailView):
         # Employee database needs to change status to true
         employee = Employee.objects.get(staff__pk=self.kwargs['pk'])
         employee.status = True
+        employee.staff.state = 'Re-Engaged'
+
         try:
             employee.basic_salary = 0.4 * float(self.request.POST['salary'])
             employee.allowance = 0.6 * float(self.request.POST['salary'])
 
             # Terminated database object change status
-            terminated_employee = Terminate.objects.get(staff__staff__pk=self.kwargs['pk'])
-            terminated_employee.status = False
-            terminated_employee.save()
+            terminated_employee = Terminate.objects.filter(staff__staff__pk=self.kwargs['pk'])
+            if terminated_employee.exists():
+                term_date = terminated_employee.date
+                terminated_employee.delete()
+            else:
+                term_date = datetime.date.today()
         except ValueError as varErr:
             messages.error(request, mark_safe(
                 '<h6 id="flashElement" class="flash text-danger">&#x26A0; No value entered or you entered invalid value</h6>'
                 )
             )
             return super().get(self, request, **kwargs)
+        except:
+            messages.error(request, mark_safe(
+                '<h6 id="flashElement" class="flash text-danger">error occured and execution aborted !!!</h6>')
+                )
+            return super().get(self, request, **kwargs)
         
+        # Create the re-Engage model
+        re_engaged = ReEngage(
+            staff = employee,
+            date = datetime.datetime.strptime(self.request.POST['applyDate'], '%Y-%m-%d').date(),
+            approved_salary = Money(float(self.request.POST['salary']), 'NGN'),
+            terminated_date = term_date,
+            last_salary_paid = employee.basic_salary + employee.allowance
+        )
+
         messages.success(request, mark_safe(
-            f'<h6 class="text-success">{employee} successfully re-engaged &#10004;</h6>'))
+            f'<h6 class="text-success">{employee} successfully re-Engaged &#10004;</h6>'))
         employee.save()
+        employee.staff.save()
+        re_engaged.save()
+
         return super().get(self, request, **kwargs)  
+
 
 class ApplyCreateView(CreateView):
     """No login required and no restriction on user's needed, making it available
@@ -213,6 +236,7 @@ class ApplyCreateView(CreateView):
         return context
 
     def form_valid(self, form):
+        
         hr_email = 'uzo.nwokoro@ozonefl.com'
         context = {
             'first_name': form.instance.first_name,
@@ -247,7 +271,7 @@ class RejectApplicant(View):
     def get(self, request, *args, **kwargs):
         applicant = get_object_or_404(Applicant, id=kwargs['pk'])
         if request.GET['result'] == 'Yes':
-            applicant.status = False
+            applicant.state = 'Rejected'
             applicant.save()
             messages.info(request, f'{applicant} rejected successfully!!!')
         return redirect(reverse('apply-detail', kwargs={'pk': applicant.id}))
@@ -306,6 +330,3 @@ def test_form(request):
             return render(request, 'apply/form_result.html', {'form': form})
     form = MyForm()
     return render(request, 'apply/my_name.html', {'form': form})
-
-
-
