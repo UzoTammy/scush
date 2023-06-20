@@ -47,6 +47,12 @@ from mail import mailbox
 from django.template import loader
 from django.urls import reverse
 from core import utils as plotter
+from core.mixins import DateTimeMixin
+
+
+
+
+
 
 
 def index(request):
@@ -106,24 +112,24 @@ class ScushView(TemplateView):
         return context
 
 
-class HomeView(LoginRequiredMixin, TemplateView):
+class HomeView(LoginRequiredMixin, DateTimeMixin, TemplateView):
     """Summary
     The home view is mainly a page with just a title context.
     It only requires authenticated user with no permission
     """
     template_name = 'core/home.html'
-
+    
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
         context['title'] = 'Home'
-        # context['trade'] = TradeDaily.objects.all()
-        
-        # json file for CSV file upload used in import stock balance
+
         filepath = os.path.join(settings.BASE_DIR, 'core', f'{self.request.user}.json')
         if os.path.exists(filepath):
             os.remove(filepath)
-        return context
 
+        print(self.days_apart('2022-11-29', '2023-06-19'))
+        return context
+    
 
 class AboutView(TemplateView):
     """

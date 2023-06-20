@@ -15,15 +15,15 @@ class ThisYearApplicantManager(models.Manager):
 
 class EmployedManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(status=True)
+        return super().get_queryset().filter(state='Employed')
 
 class PendingManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(status=None)
+        return super().get_queryset().filter(state='Applied')
 
 class RejectedManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(status=False)
+        return super().get_queryset().filter(state='Rejected')
 
 class Applicant(models.Model):
     first_name = models.CharField(max_length=30)
@@ -57,10 +57,10 @@ class Applicant(models.Model):
     state = models.CharField(max_length=10, default='Applied')
     
     objects = ApplicantManager()
-    # this_year = ThisYearApplicantManager()
-    # employed = EmployedManager()
-    # pending = PendingManager()
-    # rejected = RejectedManager()
+    this_year = ThisYearApplicantManager()
+    employed = EmployedManager()
+    pending = PendingManager()
+    rejected = RejectedManager()
     
     
     def __str__(self):
