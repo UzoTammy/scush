@@ -23,6 +23,7 @@
                 <i class="fa fa-archive text-warning"></i>
                     Years
             </p>
+            
             <ul class="nav flex-column">
                 {% for yr in years %}
                 <li class="nav-item">
@@ -125,11 +126,12 @@
                             </table>
                         </div>
                     </div>
-                    <div class="row p-3">
+                    <div class="row mb-5">
                         <div class="col">
                             {% with payroll|first as first_record %}
-                            <a class="btn btn-outline-primary" href="{% url 'pdf-payroll-list' first_record.period %}">PDF & Print</a>
-                            {%endwith%}
+                            <a class="btn btn-outline-primary" 
+                            href="{% url 'pdf-payroll-list' first_record.period %}">PDF & Print</a>
+                            {% endwith %}
                         </div>
                         <div class="col">
                             <a type="button"

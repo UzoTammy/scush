@@ -127,7 +127,6 @@ class HomeView(LoginRequiredMixin, DateTimeMixin, TemplateView):
         if os.path.exists(filepath):
             os.remove(filepath)
 
-        print(self.days_apart('2022-11-29', '2023-06-19'))
         return context
     
 

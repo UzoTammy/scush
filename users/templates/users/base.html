@@ -67,6 +67,14 @@
             border-radius: 50px 50px 50px 50px;
             background-color: lightblue;
         }
+
+        .footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: black;
+        /* Additional styling for the footer */
+        }
         
         @media (min-width: 996px) {
             .collapse.collapse-sm {
@@ -274,6 +282,18 @@
 {{development}}
 {% block content %} {% endblock %}
 
+<div class="footer">
+    <div class="row">
+        <div class="col">
+            <!--    Social Media and key partners-->
+            <div class="row float-right mr-3 mt-3">
+                <a href="#"><i class="fa fa-facebook fa-2x p-2"></i></a>
+                <a href="#"><i class="fa fa-twitter fa-2x p-2"></i></a>
+                <a href="#"><i class="fa fa-instagram fa-2x p-2"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
     integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

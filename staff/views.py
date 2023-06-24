@@ -1198,7 +1198,7 @@ class PayrollViews(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         month = period.split('-')[1]
 
         this_year = datetime.date.today().year
-        years = [str(this_year)]
+        years = [str(this_year), str(this_year-1)]
         context = {
             'title': 'view payroll',
             'heading': {'year': year, 'month': mytools.Period.full_months.get(month)},
