@@ -69,10 +69,10 @@
         }
 
         .footer {
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-        background-color: black;
+            position: fixed;
+            width: 100%;
+            background-color: rgb(60, 53, 53);
+            bottom: 0;
         /* Additional styling for the footer */
         }
         
@@ -106,194 +106,205 @@
 </head>
 <body>
     <!-- Navbar -->
-<nav id="navmain"
-     class="navbar sticky-top navbar-expand-md navbar-white bg-primary">
-    <button
-            class="navbar-toggler bg-light"
-            type="button"
-            data-toggle="collapse"
-            data-target="#Dropdown"
-            aria-controls="Dropdown"
-            aria-expanded="false"
-            aria-label="Toggle navigation">
-        <i class="fa fa-navicon fa-1x text-secondary"></i>
-    </button>
-    <a class="navbar-brand text-success"
-       href="{% url 'about' %}"
-       data-toggle="tooltip"
-       title="About Ozone">
-        <span class="text-danger"></span>
-        <img src="{% static 'customer/logo.png' %}" height="30" class="rounded-circle" alt="#" ️>
-    </a>
-    <div class="collapse navbar-collapse" id="Dropdown">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link active text-light" href="{% url 'index' %}">
-                    <i class="fa fa-home text-white fa-2x"></i><span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-light" href="{% url 'apply-home' %}">
-                    <i class="fa fa-pencil-square text-white"></i> Applicants</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active text-light" href="{% url 'staff-home' %}">
-                    <i class="fa fa-user text-white"></i> Staff</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active text-light" href="{% url 'customer-home' %}">
-                    <i class="fa fa-users bg-dark text-white"></i> Customers</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active text-light" href="{% url 'product-home' %}">
-                    <i class="fa fa-cubes text-white"></i> Stocks</a>
-            </li>
+    <nav id="navmain"
+        class="navbar sticky-top navbar-expand-md navbar-white bg-primary">
+        <button
+                class="navbar-toggler bg-light"
+                type="button"
+                data-toggle="collapse"
+                data-target="#Dropdown"
+                aria-controls="Dropdown"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <i class="fa fa-navicon fa-1x text-secondary"></i>
+        </button>
+        <a class="navbar-brand text-success"
+        href="{% url 'about' %}"
+        data-toggle="tooltip"
+        title="About Ozone">
+            <span class="text-danger"></span>
+            <img src="{% static 'customer/logo.png' %}" height="30" class="rounded-circle" alt="#" ️>
+        </a>
+        <div class="collapse navbar-collapse" id="Dropdown">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url 'index' %}">
+                        <i class="fa fa-home text-white fa-2x"></i><span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="{% url 'apply-home' %}">
+                        <i class="fa fa-pencil-square text-white"></i> Applicants</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url 'staff-home' %}">
+                        <i class="fa fa-user text-white"></i> Staff</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url 'customer-home' %}">
+                        <i class="fa fa-users bg-dark text-white"></i> Customers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url 'product-home' %}">
+                        <i class="fa fa-cubes text-white"></i> Stocks</a>
+                </li>
 
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-light"
-                   data-toggle="dropdown"
-                   href="#"
-                   role="button"
-                   aria-haspopup="true"
-                   aria-expanded="false">
-                    <i class="fa fa-play-circle text-white"></i>
-                    More
-                </a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'bank-account-home' %}">Bank Account</a>  
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'post-list' %}">Briefs</a>  
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'creditor-home' %}">Creditors</a>  
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'article-list' %}">Materials</a>
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'sales-center-list' %}">Outlets</a>
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'warehouse-home' %}">Stores</a>
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'target-home' %}">Target & Budget</a>
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'trade-home' %}">Trade</a>
-                            
-                </div>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-light"
+                    data-toggle="dropdown"
+                    href="#"
+                    role="button"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                        <i class="fa fa-play-circle text-white"></i>
+                        More
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'bank-account-home' %}">Bank Account</a>  
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'post-list' %}">Briefs</a>  
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'creditor-home' %}">Creditors</a>  
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'article-list' %}">Materials</a>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'sales-center-list' %}">Outlets</a>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'warehouse-home' %}">Stores</a>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'target-home' %}">Target & Budget</a>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'trade-home' %}">Trade</a>
+                                
+                    </div>
 
-            <li class="nav-item">
-                <a class="nav-link active text-light" href="{% url 'request-home' %}">
-                    <i class="fa fa-list-alt text-white"></i> Requests</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
-                   aria-haspopup="true"
-                   aria-expanded="false">
-                    <i class="fa fa-file-pdf-o text-white"></i> Report</a>
-                <div class="dropdown-menu">
-                    
-                    <a class="dropdown-item" href="{% url 'daily-report' %}">Daily Report</a>
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'policies-docs' %}">Policies and Procedures</a>
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'pdf-staff-summary' %}">Company Summary</a>
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url 'request-home' %}">
+                        <i class="fa fa-list-alt text-white"></i> Requests</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                        <i class="fa fa-file-pdf-o text-white"></i> Report</a>
+                    <div class="dropdown-menu">
+                        
+                        <a class="dropdown-item" href="{% url 'daily-report' %}">Daily Report</a>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'policies-docs' %}">Policies and Procedures</a>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'pdf-staff-summary' %}">Company Summary</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url 'delivery-home' %}">
+                        <i class="fa fa-truck text-white"></i> Delivery</a>
+                </li>
+                {% if user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url 'json-list' %}">
+                        <i class="fa fa-gears text-white"></i> Settings</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                        <i class="fa fa-gears text-white"></i> Administration</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{% url 'import-csv'%}">Import CSV</a>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'apply-index' %}">Employ</a>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'payroll-process'%}">Create Payroll</a>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'json-new' %}">Add to Settings</a>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'register' %}">Register</a>
+                        
+                    </div>
+                </li>
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav">
+                
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url 'profile' %}">
+                        <img src="{{user.profile.staff.image.url}}"
+                            height="30"
+                            class="rounded-circle bg-white"
+                            alt="">
+                        {{user.username|title}} | Your Info
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url 'users-list' %}">
+                        <i class="fa fa-users"></i> Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url 'dashboard' %}">
+                        <i class="fa fa-tachometer text-white"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-light" href="{% url 'logout' %}">
+                        <i class="fa fa-sign-out text-white"></i> Sign Out</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'login' %}">
+                        <i class="fa fa-sign-in text-dark"></i> Sign In</a>
+                </li>
+                <li class="nav-item">
+                    <button type="button"
+                            class="btn btn-danger btn-sm"
+                            data-toggle="modal"
+                            data-target="#registerModal">
+                        Register
+                    </button>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col text-center">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
                 </div>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active text-light" href="{% url 'delivery-home' %}">
-                    <i class="fa fa-truck text-white"></i> Delivery</a>
-            </li>
-            {% if user.is_superuser %}
-            <li class="nav-item">
-                <a class="nav-link active text-light" href="{% url 'json-list' %}">
-                    <i class="fa fa-gears text-white"></i> Settings</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
-                   aria-haspopup="true"
-                   aria-expanded="false">
-                    <i class="fa fa-gears text-white"></i> Administration</a>
-                <div class="dropdown-menu">
-                    <a class="dropdown-item" href="{% url 'import-csv'%}">Import CSV</a>
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'apply-index' %}">Employ</a>
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'payroll-process'%}">Create Payroll</a>
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'json-new' %}">Add to Settings</a>
-                    <hr class="dropdown-divider">
-                    <a class="dropdown-item" href="{% url 'register' %}">Register</a>
-                    
-                </div>
-            </li>
-            {% endif %}
-        </ul>
-        <ul class="navbar-nav">
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {{development}}
+    {% block content %} {% endblock %}
+
+    <!-- <div class="container-fluid footer"> -->
+        <!-- <div class="row"> -->
+            <!-- <div class="col-sm text-white"> -->
+                   <!-- Social Media and key partners -->
+                <!-- <div class="ml-3 mt-2"> -->
             
-            {% if user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link active text-light" href="{% url 'profile' %}">
-                    <img src="{{user.profile.staff.image.url}}"
-                         height="30"
-                         class="rounded-circle bg-white"
-                         alt="">
-                    {{user.username|title}} | Your Info
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active text-light" href="{% url 'users-list' %}">
-                    <i class="fa fa-users"></i> Users
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active text-light" href="{% url 'dashboard' %}">
-                    <i class="fa fa-tachometer text-white"></i> Dashboard</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active text-light" href="{% url 'logout' %}">
-                    <i class="fa fa-sign-out text-white"></i> Sign Out</a>
-            </li>
-            {% else %}
-            <li class="nav-item">
-                <a class="nav-link text-white" href="{% url 'login' %}">
-                    <i class="fa fa-sign-in text-dark"></i> Sign In</a>
-            </li>
-            <li class="nav-item">
-                <button type="button"
-                        class="btn btn-danger btn-sm"
-                        data-toggle="modal"
-                        data-target="#registerModal">
-                    Register
-                </button>
-            </li>
-            {% endif %}
-        </ul>
-    </div>
-</nav>
-<div class="container-fluid">
-    <div class="row">
-        <div class="col text-center">
-            {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-            {% endfor %}
-            {% endif %}
-        </div>
-    </div>
-</div>
-{{development}}
-{% block content %} {% endblock %}
-
-<div class="footer">
-    <div class="row">
-        <div class="col">
-            <!--    Social Media and key partners-->
-            <div class="row float-right mr-3 mt-3">
-                <a href="#"><i class="fa fa-facebook fa-2x p-2"></i></a>
-                <a href="#"><i class="fa fa-twitter fa-2x p-2"></i></a>
-                <a href="#"><i class="fa fa-instagram fa-2x p-2"></i></a>
-            </div>
-        </div>
-    </div>
-</div>
+                    <!-- <a href="{% url 'home' %}"><i class="fa fa-2x fa-home ml-3 mt-2"></i></a> -->
+                
+                    <!-- <span class="ml-2"> -->
+                        <!-- Mobile: <a href="tel:+2348033759440">+234-(803)-375-9440</a> || -->
+                        <!-- Email: <span><a href="mailto:">contact@ozonefl.com</a></span> || -->
+                        <!-- Website: <a href="https://www.ozonefl.com" target="_blank">https://www.ozonefl.com</a> -->
+                    <!-- </span> -->
+                    <!-- <div class="float-right"> -->
+                        <!-- <a class="ml-2" href="#"><i class="fa fa-facebook fa-2x p-2"></i></a> -->
+                        <!-- <a class="ml-2" href="#"><i class="fa fa-twitter fa-2x p-2"></i></a> -->
+                        <!-- <a class="ml-2" href="#"><i class="fa fa-instagram fa-2x p-2"></i></a> -->
+                    <!-- </div> -->
+                <!-- </div> -->
+            <!-- </div> -->
+        <!-- </div> -->
+    <!-- </div> -->
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
     integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

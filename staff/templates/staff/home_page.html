@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %} {% load static %} {% load custom_tags %} 
+{% extends 'users/base.html' %} 
+{% load static %} 
+{% load custom_tags %} 
 
 {% block head %}
 <style>
@@ -81,7 +83,7 @@
             </div>
         </nav>
         <!--   Body of Page     -->
-        <div class="col-sm-9" style="font-family: Times New Roman; font-size: 12pt">
+        <div class="col-sm-10" style="font-family: Times New Roman; font-size: 12pt">
             <div class="row p-2">
                 <div class="col">
                     {% for key, value in countdown %} {% if value == 0 %}
@@ -318,9 +320,8 @@
                         </div>
                     </div>
                 </div>
-                
-                <!--Probation Tables-->
             </div>
+        </div>
         </div>
     </div>
 </div>
