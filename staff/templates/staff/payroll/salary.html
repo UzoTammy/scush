@@ -1,4 +1,5 @@
 {% extends 'users/base.html' %}
+{% load custom_tags %}
 
 {% block content %}
 <div class="container-fluid">
@@ -113,22 +114,50 @@
             </ul>
         </div>
         <div class="col-9 mt-3">
-            <h3 class="text-center">Payroll Page</h3>
-            <p class="text-danger text-right">Current Date: {% now 'jS \o\f M, Y' %}</p>
-            <h5>The Payroll Process</h5>
-            <p>This is established to manage payroll effectively by the Human Resource Department (HRD).</p>
-            <p>The Payroll is of two parts: Salaries and Gratuity</p>
-            <p>Salaries are processed every calendar month and includes:</p>
-            <ul>
-                <li>Taxes (PIT)</li>
-                <li>Credit, Incentives and Bonus if any</li>
-                <li>Salary</li>
-                <li>Debit and Shortages and Repayments</li>
-            </ul>
-            <p>Meanwhile, Gratuity (Money accrued for a staff pending resignation or retirement) is a reserve earned 
-                from performance and kept in a seperate database. Even though, it is recorded during salary payment, it is a seperated
-                account but can only be processed under the payroll system. 
-            </p>
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-center">Payroll Page</h3>
+                    <p class="text-danger float-right">Current Date: {% now 'jS \o\f M, Y' %}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm">
+                    <h5>The Payroll Process</h5>
+                    <p>This is established to manage payroll effectively by the Human Resource Department (HRD).</p>
+                    <p>The Payroll is of two parts: Salaries and Gratuity</p>
+                    <p>Salaries are processed every calendar month and includes:</p>
+                    <ul>
+                        <li>Taxes (PIT)</li>
+                        <li>Credit, Incentives and Bonus if any</li>
+                        <li>Salary</li>
+                        <li>Debit and Shortages and Repayments</li>
+                    </ul>
+                    <p>Meanwhile, Gratuity (Money accrued for a staff pending resignation or retirement) is a reserve earned 
+                        from performance and kept in a seperate database. Even though, it is recorded during salary payment, it is a seperated
+                        account but can only be processed under the payroll system. 
+                    </p>
+                </div>
+                <div class="col-sm">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          Total Payout
+                          <span class="badge badge-danger badge-pill">{{payout_total|myriad}}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          Payout in {{payout_year|str}}
+                          <span class="badge badge-danger badge-pill">{{payout_current_year|myriad}}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          Gratuity
+                          <span class="badge badge-danger badge-pill">{{gratuity|myriad}}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Welfare
+                            <span class="badge badge-danger badge-pill">{{welfare|myriad}}</span>
+                        </li>
+                      </ul>
+                </div>
+            </div>
             
             {% if last_period_generated %}
             <p class="text-danger text-right">Last Period Generated: {{last_period_generated}}</p>

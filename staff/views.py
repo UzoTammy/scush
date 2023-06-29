@@ -924,7 +924,7 @@ class PayrollHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         today = datetime.date.today()
         
         payroll = Payroll.objects.all()
-
+        
         if payroll.exists():
             last = Payroll.objects.last()
 
@@ -935,6 +935,12 @@ class PayrollHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['last_period_generated'] = f'{calendar.month_name[month_in_period]}, {year_in_period}'
             context['next_period'] = mytools.Period(year_in_period, month_in_period).next()
             context['payroll_current_period'] = Payroll.objects.last().period
+            #payout, welfare & gratuity
+            context['payout_total'] = payroll.aggregate(Sum('net_pay'))['net_pay__sum']
+            context['payout_current_year'] = payroll.filter(period__contains=year_in_period).aggregate(Sum('net_pay'))['net_pay__sum']
+            context['payout_year'] = year_in_period
+            context['gratuity'] = EmployeeBalance.objects.aggregate(Sum('value'))['value__sum']
+            context['welfare'] = Welfare.objects.aggregate(Sum('amount'))['amount__sum']
         else:
             context['next_period'] = f'{today.year}-{str(today.month).zfill(2)}'
         next_month = context['next_period'].split('-')[1]

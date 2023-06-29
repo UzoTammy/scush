@@ -82,7 +82,11 @@ def dividedby(value, arg):
 @register.filter
 def myriad(value):
     try:
+        if isinstance(value, (decimal.Decimal,)):
+                value = float(value)
         if 1e3 <= value < 1e6:
+            if isinstance(value, (decimal.Decimal,)):
+                value = float(value)
             return f"{round(value/1e3, 1)}K"
         elif 1e6 <= value < 1e9:
             return f"{round(value/1e6, 1)}M"
