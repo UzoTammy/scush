@@ -32,6 +32,14 @@
                     <li class="nav-item">
                         <a class="nav-link"
                                data-toggle="modal"
+                               data-target="#staffMgmt">
+                            <i class="fa fa-briefcase text-warning"></i>
+                            Make Mgmt. Staff
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link"
+                               data-toggle="modal"
                                data-target="#staffSalary">
                             <i class="fa fa-credit-card text-warning"></i>
                             Change Salary
@@ -376,6 +384,64 @@
         </div>
     </div>
 </div>
+
+<div class="modal"
+     tabindex="-1"
+     data-backdrop="static"
+     role="dialog"
+     id="staffMgmt">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Convert to Management Staff <br>
+                </h3>
+                
+                <button type="button"
+                        class="close"
+                        aria-label="close"
+                        data-dismiss="modal">
+                    <i class="fa fa-times text-danger"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <h4>{{view.kwargs.pk|zeropadding:3}} - {{object}} </h4>
+                    <p class="text-info">Current Status:{% if object.is_management %} 
+                        Management Staff {% else %} Non-management Staff {% endif %}</p>
+                    <form action="{% url 'employee-management' object.pk %}"
+                          method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="form-label" for="mgmtStaff">Click to Convert</label>
+                                <input id="mgmtStaff"
+                                       class="form-check form-check-inline ml-2"
+                                       name="mgmtStaff"
+                                       type="checkbox" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-footer">
+                <button type="submit"
+                        class="btn btn-outline-info">
+                    Submit
+                </button>
+                <button type="button"
+                        data-dismiss="modal"
+                        class="btn btn-outline-dark">
+                    Cancel
+                </button>
+            </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!--Change Salary-->
 <div class="modal"

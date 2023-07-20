@@ -17,6 +17,7 @@ urlpatterns = [
     path('permit/<int:pk>/', StaffPermit.as_view(), name='employee-permit'),
     path('request/permission/<int:pk>/', RequestPermissionView.as_view(), name='request-permission'), # working
     path('salary-change/<int:pk>/', StaffSalaryChange.as_view(), name='employee-salary-change'),
+    path('change/management/<int:pk>/', StaffChangeManagement.as_view(), name='employee-management'),
     path('home/<str:staff_category>/', TerminatedStaffListView.as_view(), name='terminated'),
     path('pk-reset/', PKResetView.as_view(), name='pk-reset'),
     path('pk-reset/payroll/', PKResetPayroll.as_view(), name='pk-reset-payroll'),

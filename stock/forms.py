@@ -1,19 +1,21 @@
 from django import forms
 from .models import ProductExtension, Product
 from core.models import JsonDataset
-import json
-from django.templatetags.static import static
+
 
 class ChoiceOption:
-    json_obj = JsonDataset.objects.get(pk=1)
-    if json_obj:
-        json_dict = json_obj.dataset
-        SOURCES = [(i, i) for i in json_dict['product-source']]
-        CATEGORY = [(i, i) for i in json_dict['product-category']]
-        UNITS = [(i, i) for i in json_dict['product-units']]
-        PACKS = [(i, i) for i in json_dict['product-packs']]
-        STATES = [(i, i) for i in json_dict['product-states']]
-        VOLUME_UNITS = [(i, i) for i in json_dict['product-volume-units']]
+    try:
+        json_obj =  JsonDataset.objects.get(pk=1)
+        if json_obj:
+            json_dict = json_obj.dataset
+            SOURCES = [(i, i) for i in json_dict['product-source']]
+            CATEGORY = [(i, i) for i in json_dict['product-category']]
+            UNITS = [(i, i) for i in json_dict['product-units']]
+            PACKS = [(i, i) for i in json_dict['product-packs']]
+            STATES = [(i, i) for i in json_dict['product-states']]
+            VOLUME_UNITS = [(i, i) for i in json_dict['product-volume-units']]
+    except Exception as err:
+        str(err)    
     
 
 class FormProduct(forms.ModelForm):

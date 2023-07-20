@@ -5,6 +5,7 @@ import json
 import os
 import time
 from pathlib import Path
+from typing import Any
 
 from django.forms import ValidationError
 from survey.models import Question
@@ -20,7 +21,7 @@ from core.models import JsonDataset
 from django.contrib.auth.models import User
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.views.generic import (View,
                                   TemplateView,
                                   ListView,
@@ -521,6 +522,16 @@ class StaffSalaryChange(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                                      )
         change_salary.save()
         messages.success(request, f"Salary Change is successful")
+        return redirect('employee-detail', pk=kwargs['pk'])
+
+class StaffChangeManagement(View):
+    
+    def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
+        if request.POST['mgmtStaff'] == 'on':
+            obj = get_object_or_404(Employee, pk=kwargs['pk'])
+            obj.is_management = True
+            obj.save()
+            messages.success(request, 'Change made successfully !!!')
         return redirect('employee-detail', pk=kwargs['pk'])
 
 class StaffPermit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):

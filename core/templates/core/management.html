@@ -1,0 +1,999 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block head %}
+<style>
+    #navmain {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h3 class="text-center mt-3">Management Profile</h3>
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-3">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                {% for obj in staff %}
+                <a class="nav-link {% if forloop.counter == 1 %} active {% endif %}"
+                    id="v-pills-{{obj.staff.first_name}}-tab" data-toggle="pill"
+                    href="#v-pills-{{obj.staff.first_name}}" role="tab" aria-controls="v-pills-{{obj.staff.first_name}}"
+                    aria-selected="true"><img height="24rem;" class="rounded-circle mr-2" src="{{obj.image.url}}"
+                        alt="">{{obj.staff}}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="tab-content" id="v-pills-tabContent">
+                {% with staff|array:1 as person %}
+                <div class="tab-pane fade show active" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
+                    aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
+                    <div class="row mb-3">
+                        <div class="col-sm-2">
+                            <img class="rounded-circle" height="180rem;" src="{{person.image.url}}" alt="{{person}}">
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Summary:</h4>
+                            <p>
+                                Uzo Tammy Nwokoro (he/him) is an accomplished entrepreneur and project manager
+                                with a
+                                background in chemical engineering. As the Managing Director and Founder of Ozone F & L
+                                in Lagos, Nigeria,
+                                Uzo has demonstrated exceptional leadership in the beverage distribution industry.
+                                Leveraging his expertise
+                                in project management through the Google Career Certificate in Project Management, he
+                                has successfully built
+                                Ozone F & L into a leading distributor of main stream spirit products from the three
+                                major brewery companies in Nigeria - Guinness Nigeria Plc, Nigerian Breweries, and
+                                International
+                                Breweries.
+                            </p>
+                        </div>
+                    </div>
+                    <h4>Professional Experience:</h4>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h5>Managing Director and Founder, Ozone F & L</h5>
+
+                            <ul>
+                                <li>Founded Ozone F & L in Lagos, Nigeria, with a vision to establish a
+                                    prominent presence in the beverage distribution sector.
+                                </li>
+                                <li>
+                                    Utilized his background in chemical engineering to optimize supply chain
+                                    processes and ensure efficient distribution operations.</li>
+                                <li>Successfully secured exclusive distribution rights with Guinness Nigeria
+                                    Plc, Nigerian Breweries, and International Breweries, establishing strong
+                                    partnerships with these major players in the industry.</li>
+                                <li>Under his leadership, Ozone F & L has achieved remarkable success, earning
+                                    recognition with the prestigious Integrity Award and the National Volume
+                                    Award.
+                                </li>
+                            </ul>
+                            <h5>Project Management and Developer</h5>
+                            <ul>
+                                <li>In addition to his role as Managing Director,
+                                    Uzo is a passionate developer with expertise in Python and Django frameworks.</li>
+                                <li>
+                                    As a DevOps enthusiast, he has implemented robust
+                                    and efficient development workflows, enabling seamless deployment and delivery of
+                                    projects.
+                                </li>
+                                <li>
+                                    His skills in project management have been honed through the Google Career
+                                    Certificate in Project Management,
+                                    enabling him to lead Ozone F & L's initiatives with precision.
+                                </li>
+                            </ul>
+                            <h4>Education:</h4>
+                            <ul>
+                                <li>Bachelor of Engineering in Chemical Engineering, Federal University of Technology,
+                                    Minna</li>
+                                <li>
+                                    Google Career Certificate in Project Management</li>
+                            </ul>
+
+
+                            <h4>Skills and Qualities:</h4>
+                            <ul>
+                                <li>Industry Knowledge: Extensive knowledge of the beverage distribution industry, with
+                                    a focus on main stream spirit products and technical proficiency in Python, Django,
+                                    and DevOps practices.
+                                </li>
+                                <li>Entrepreneurial Vision: A visionary leader who identified the potential in the
+                                    beverage distribution sector and transformed that vision into a successful business.
+                                </li>
+                                <li>Project Management: Proven ability to lead and execute projects with precision,
+                                    delivering results that meet and exceed stakeholders' expectations.
+                                </li>
+                                <li>Supply Chain Optimization: Skilled in optimizing supply chain processes to enhance
+                                    efficiency and reduce costs, contributing to Ozone F & L's competitive advantage.
+                                </li>
+                                <li>Team Building: Exceptional team-building skills, fostering a culture of
+                                    collaboration, innovation, and continuous improvement.
+                                </li>
+                            </ul>
+
+                            <h4>Achievements:</h4>
+                            <ul>
+                                <li>Ozone F & L received the esteemed Integrity Award for its commitment to ethical
+                                    practices and maintaining the highest standards of integrity in its operations.
+                                </li>
+                                <li>Uzo's expertise in project management played a pivotal role in streamlining Ozone F
+                                    & L's operations, leading to enhanced productivity and customer satisfaction.
+                                </li>
+                                <li>The company also earned the National Volume Award, recognizing its outstanding
+                                    performance and leadership in the distribution of main stream spirit products.
+                                </li>
+                            </ul>
+
+                            <h4>Professional Memberships:</h4>
+                            <ul>
+                                <li>- Member, Python Developers Community
+                                </li>
+                                <li>- Participant, Nigeria Beverage Distributors Association
+                                </li>
+                            </ul>
+                            <h4>Languages:</h4>
+
+                            <ul>
+                                <li>English (Fluent)</li>
+                                <li>Igbo (Conversational)
+                                </li>
+                            </ul>
+                            <h4>Interests:</h4>
+                            <p>
+                                Uzo enjoys exploring new technologies, mentoring young professionals, and advocating
+                                for sustainable business practices in the beverage distribution industry.
+                                This Managing Director and Founder profile showcases Uzo Tammy Nwokoro's remarkable
+                                achievements as a visionary leader in the beverage distribution sector. His
+                                background in chemical engineering, combined with his passion for project
+                                management, Python development, and DevOps practices, has been instrumental in
+                                driving Ozone F & L's success. Uzo's commitment to excellence, integrity, and
+                                innovation makes him an invaluable asset to Ozone F & L and the wider beverage
+                                distribution community in Lagos, Nigeria.
+
+                            </p>
+
+
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                {% with staff|array:2 as person %}
+                <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
+                    aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
+                    <div class="row mb-3">
+                        <div class="col-sm-2">
+                            {% with staff|array:2 as person %} <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}"> {% endwith%}
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Summary:</h4>
+                            <p>
+                                Onyeka Sabastine Akposionu (he/him) is an accomplished and charismatic
+                                leader with a strong understanding of the business sector.
+                                As the General Manager of Ozone, he has played a pivotal role in
+                                the company's success for over three years. With a degree in Business
+                                Administration from Lagos State University, Onyeka brings a wealth of
+                                knowledge and expertise to the organization. He is a dedicated family man,
+                                married with three kids, and serves as the main face of the company,
+                                representing its values and vision.
+                            </p>
+                        </div>
+                    </div>
+
+                    <h4>Professional Experience:</h4>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h5>General Manager</h5>
+                            <ul>
+                                <li>As the General Manager, Onyeka oversees all aspects of the company's operations,
+                                    driving strategic initiatives, and ensuring efficient business processes.
+                                </li>
+                                <li>Under his leadership, the company has achieved remarkable growth and expanded its
+                                    market presence.
+                                </li>
+                                <li>Onyeka's exceptional management skills have fostered a culture of excellence and
+                                    teamwork within the organization.
+                                </li>
+                                <li>He is actively involved in cultivating key partnerships and building strong
+                                    relationships with clients and stakeholders.
+                                </li>
+                            </ul>
+                            <h5>Education:</h5>
+                            <ul>
+                                <li>Bachelor of Science in Business Administration, Lagos State University</li>
+                            </ul>
+                            <h5>Skills and Qualities:</h5>
+                            <ul>
+                                <li>Business Acumen: A seasoned professional with a deep understanding of the business
+                                    sector and a strategic approach to decision-making.
+                                </li>
+                                <li>Charismatic Leadership: Known for his inspiring leadership style, which motivates
+                                    and empowers teams to achieve their full potential.
+                                </li>
+                                <li>
+                                    Market Expertise: Possesses extensive knowledge of the industry, staying abreast of
+                                    market trends and best practices.
+                                </li>
+                                <li>
+                                    Relationship Building: Exceptional interpersonal skills, fostering strong
+                                    connections with clients, partners, and employees.
+                                </li>
+                                <li>Team Management: Adept at building and leading high-performing teams, nurturing a
+                                    collaborative and results-oriented work culture.
+                                </li>
+                            </ul>
+                            <h4>Personal Information:</h4>
+                            <ul>
+                                <li>Marital Status: Married</li>
+                                <li>Children: Three kids</li>
+                            </ul>
+                            <h4>Achievements:</h4>
+                            <ul>
+                                <li>Under Onyeka's leadership, the company achieved significant revenue growth and
+                                    market
+                                    expansion, solidifying its position as a key player in the industry.
+                                </li>
+                                <li>His strategic insights and innovative ideas have led to the successful launch of
+                                    new products and
+                                    services, driving business success.</li>
+                            </ul>
+                            <h4>Languages:</h4>
+                            <ul>
+                                <li>English (Fluent)</li>
+                                <li>Igbo (Conversational)</li>
+                                <li>Yoruba (Conversational)</li>
+                            </ul>
+                            <h4>Interests:</h4>
+                            <p>
+                                Onyeka enjoys spending quality time with his family, reading business-related
+                                literature, and
+                                staying active through sports and outdoor activities.
+
+                                This General Manager profile showcases Onyeka Sabastine Akposionu's exceptional
+                                leadership skills
+                                and his significant contributions to the success of the company as the main face of the
+                                organization. With a strong educational background and a wealth of industry knowledge,
+                                Onyeka's
+                                strategic vision and charismatic leadership have been instrumental in driving the
+                                company's growth
+                                and success. His dedication to his family and the business sector further solidifies his
+                                commitment
+                                to excellence and continued impact in the industry.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                {% with staff|array:3 as person %}
+                <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
+                    aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
+                    <div class="row mb-3">
+                        <div class="col-sm-2">
+                            {% with staff|array:3 as person %}<img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Summary:</h4>
+                            <p>
+                                Chukwudi Christopher Anyanwutaku (he/him) is a dedicated and ardent Warehouse Manager
+                                with a background in accounting.
+                                With prior experience as a bulk teller at former Spring Bank, Chukwudi brings a unique
+                                financial perspective to his role as
+                                the Warehouse Manager at Ozone F & L. His expertise in accounting, coupled with his
+                                warehouse management skills, allows him to
+                                efficiently oversee the flow of inventory into the company and coordinate its
+                                distribution to all outlets. Chukwudi's commitment
+                                to excellence, strong work ethic, and emphasis on responsibility and accountability make
+                                him a valuable
+                                leader both in the workplace and as a devoted family man.
+                            </p>
+                        </div>
+                    </div>
+                    <h4>Professional Experience:</h4>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h5>Warehouse Manager, Ozone F & L</h5>
+                            <ul>
+                                <li>Chukwudi is responsible for managing all aspects of inventory inflow, storage, and
+                                    outflow at Ozone F & L.</li>
+                                <li>With a background as a bulk teller at former Spring Bank, he brings a unique
+                                    financial perspective to warehouse operations.</li>
+                                <li>Chukwudi's expertise in accounting allows him to optimize inventory management while
+                                    ensuring accurate record-keeping
+                                    and financial transparency.
+                                </li>
+                                <li>He collaborates closely with other departments to maintain a seamless supply chain
+                                    and support the company's financial objectives.</li>
+                            </ul>
+                            <h5>Education:</h5>
+                            <ul>
+                                <li>Diploma in Accounting</li>
+                            </ul>
+                            <h5>Skills and Qualities:</h5>
+                            <ul>
+                                <li>Inventory Management: Adept at controlling inventory levels, ensuring proper stock
+                                    rotation, and minimizing stockouts.
+                                </li>
+                                <li>Financial Acumen: Leveraging his accounting knowledge,
+                                    Chukwudi maintains a sharp focus on financial efficiency in warehouse operations.
+                                </li>
+                                <li>
+                                    Organization: Known for his exceptional organizational skills, he ensures an orderly
+                                    and efficient warehouse environment.</li>
+                                <li>
+                                    Responsibility and Accountability: A strong advocate of responsibility and
+                                    accountability, both in his professional and personal life.</li>
+                                <li>Hardworking and Committed: Chukwudi's dedication to his work is evident in his
+                                    consistent pursuit of excellence.</li>
+                            </ul>
+                            <h4>Personal Information:</h4>
+                            <ul>
+                                <li>Marital Status: Committed Family Man</li>
+                                <li>Children: Four children</li>
+                            </ul>
+                            <h4>Achievements:</h4>
+                            <ul>
+                                <li>Under Chukwudi's management,
+                                    the warehouse operations at Ozone F & L have achieved improved efficiency and
+                                    reduced inventory discrepancies.</li>
+                                <li>His financial acumen and attention to detail have contributed to cost control
+                                    measures and increased profitability.</li>
+                            </ul>
+
+                            <h4>Interests:</h4>
+                            <p>
+                                Chukwudi enjoys spending quality time with his family, staying physically active, and
+                                engaging in
+                                community activities that promote responsibility and accountability.
+
+                                This Warehouse Manager profile highlights Chukwudi Christopher Anyanwutaku's accounting
+                                background
+                                and his prior experience as a bulk teller at former Spring Bank. His financial acumen,
+                                along with his
+                                diligent and experienced approach to warehouse management, makes him an invaluable asset
+                                to Ozone F & L.
+                                Chukwudi's dedication to excellence, responsibility, and teamwork, both in the warehouse
+                                and as a family
+                                man, reflects his commitment to success in all aspects of his life.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                {% with staff|array:4 as person %}
+                <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
+                    aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
+                    <h5>Head of Marketing Profile - Eneka ThankGod Ojonugwa</h5>
+                    <div class="row mb-3">
+                        <div class="col-sm-2">
+                            {% with staff|array:4 as person %} <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}"> {% endwith%}
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Summary:</h4>
+                            <p>
+                                Eneka ThankGod Ojonugwa (he/him) is a dynamic and dedicated professional with a
+                                background in agric
+                                economics & extensions. With prior experience as administrative personnel at the Nigeria
+                                Airforce
+                                flying team school, Eneka's journey at Ozone has been marked by exceptional growth and
+                                success.
+                                Starting as a sales representative, he quickly endeared himself to customers with his
+                                vibrant
+                                personality and commitment to delivering results. As a result of his outstanding
+                                performance and
+                                dedication, he has risen through the ranks to become the Head of Marketing. Eneka is a
+                                dependable and
+                                positive impact on the management team, continuously driving the company's growth and
+                                success.
+                            </p>
+                        </div>
+                    </div>
+                    <h4>Professional Experience:</h4>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h5>Head of Marketing, Ozone F & L</h5>
+                            <ul>
+                                <li>As the Head of Marketing, Eneka leads and oversees all marketing strategies and
+                                    initiatives at Ozone F & L.</li>
+                                <li>He leverages his background in agric economics & extensions to understand market
+                                    dynamics and identify growth opportunities.</li>
+                                <li>Eneka's vibrant personality and customer-centric approach have contributed to
+                                    building strong relationships with clients and stakeholders.</li>
+                                <li>He collaborates with the sales team and other departments to ensure marketing
+                                    efforts align with the company's overall objectives.</li>
+                            </ul>
+                            <h5>Education:</h5>
+                            <ul>
+                                <li>Bachelor's of Science in Agric Economics & Extensions</li>
+                            </ul>
+                            <h5>Skills and Qualities:</h5>
+                            <ul>
+                                <li>Marketing Expertise: Adept at developing and implementing marketing strategies that
+                                    drive brand awareness and sales growth.</li>
+
+                                <li>Customer Relationship Management: Known for his ability to build strong and lasting
+                                    relationships with customers and stakeholders.</li>
+                                <li>
+                                    Result-Oriented: Committed to delivering outstanding results and achieving marketing
+                                    targets.</li>
+                                <li>
+                                    Strategic Thinking: A strategic thinker who identifies growth opportunities and
+                                    adapts to market changes. </li>
+
+                            </ul>
+
+                            <h4>Achievements:</h4>
+                            <ul>
+                                <li>Eneka's exceptional marketing strategies have significantly contributed to increased
+                                    market share and revenue growth for Ozone F & L.</li>
+                                <li>His leadership and customer-centric approach have resulted in enhanced customer
+                                    satisfaction and loyalty.</li>
+                            </ul>
+                            <h4>Interests:</h4>
+                            <p>
+                                Eneka enjoys staying up-to-date with industry trends, exploring new marketing
+                                techniques, and engaging in community initiatives.
+
+                                This Head of Marketing profile highlights Eneka ThankGod Ojonugwa's remarkable journey
+                                at Ozone F & L, showcasing his dedication and commitment to achieving success. His
+                                background in agric economics & extensions, coupled with his vibrant personality, has
+                                made him an outstanding marketing leader. Eneka's impact on management, his ability to
+                                build strong customer relationships, and his result-oriented approach have been
+                                instrumental in driving Ozone F & L's growth and success in the market.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                {% with staff|array:5 as person %}
+                <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
+                    aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
+                    <h5>IT and Data Analyst Profile - Dickson Abanum</h5>
+                    <div class="row mb-3">
+                        <div class="col-sm-2">
+                            {% with staff|array:5 as person %} <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Summary:</h4>
+                            <p>
+                                Dickson Abanum is a highly skilled IT and Data Analyst with a higher national diploma in
+                                Computer
+                                Science.
+                                As a key member of the team at Ozone F & L, he plays a crucial role in managing IT
+                                systems and analyzing data.
+                                Dickson's quick grasp of data and adaptability to new technologies make him an
+                                invaluable asset to Ozone F & L.
+                                He is known for his proactive approach to problem-solving and his dedication to
+                                resolving issues promptly.
+                                A devoted family man, Dickson is married with a son and maintains a strong commitment to
+                                his work.
+                                He is recognized for his prudence with resources and esteemed for his unwavering
+                                integrity.
+                            </p>
+                        </div>
+                    </div>
+                    <h4>Professional Experience:</h4>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h5>IT and Data Analyst, Ozone F & L</h5>
+                            <ul>
+                                <li>Dickson is responsible for managing the company's IT systems and conducting data
+                                    analysis to derive valuable insights.</li>
+                                <li>His quick data analysis skills enable the team at Ozone F & L to make well-informed
+                                    decisions
+                                    and respond swiftly to changing market demands.</li>
+                                <li>Dickson is adept at adapting to new technologies, ensuring that Ozone F & L remains
+                                    at the forefront of IT advancements.</li>
+                                <li>He takes a proactive approach to resolving IT issues and continuously seeks
+                                    innovative solutions.</li>
+                            </ul>
+                            <h5>Education:</h5>
+                            <ul>
+                                <li>Higher Diploma in Computer Science</li>
+                            </ul>
+                            <h5>Skills and Qualities:</h5>
+                            <ul>
+                                <li>Data Analysis: Proficient in data analysis tools and techniques, extracting
+                                    meaningful information from complex datasets.</li>
+
+                                <li>IT Management: Expertise in managing and maintaining IT systems, ensuring smooth
+                                    operations and data security.</li>
+                                <li>
+                                    Resource Prudence: Demonstrates careful management of resources, optimizing
+                                    efficiency and cost-effectiveness. </li>
+                                <li>Integrity: Highly regarded for his ethical conduct and commitment to maintaining the
+                                    highest standards of integrity.</li>
+
+                            </ul>
+
+                            <h4>Achievements:</h4>
+                            <ul>
+                                <li>Dickson's data analysis skills have played a significant role in driving data-driven
+                                    decision-making
+                                    within Ozone F & L, leading to improved performance and operational efficiency.
+                                </li>
+                                <li>His proactive IT management has minimized downtime and ensured the company's IT
+                                    infrastructure operates seamlessly.
+                                </li>
+                            </ul>
+                            <h4>Interests:</h4>
+                            <p>
+                                Dickson enjoys exploring the latest technological advancements, spending quality time
+                                with his family, and engaging in community activities.
+
+                                This IT and Data Analyst profile showcases Dickson Abanum's exceptional skills and
+                                qualities in the field of IT and data analysis at Ozone F & L. As a computer science
+                                graduate, he brings valuable expertise to the company, enabling data-driven decisions
+                                and ensuring optimal IT system management. Dickson's proactive problem-solving,
+                                adaptability to new technologies, and commitment to integrity reflect his dedication to
+                                providing top-notch IT solutions and contributing to Ozone F & L's ongoing success.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                {% with staff|array:6 as person %}
+                <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
+                    aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
+                    <h5>Sales Center Manager Profile - Blessing Sunday Nandi</h5>
+                    <div class="row mb-3">
+                        <div class="col-sm-2">
+                            {% with staff|array:6 as person %} <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Summary:</h4>
+                            <p>
+                                Blessing Sunday Nandi is a resilient and ambitious Sales Manager with a passion for
+                                driving sales success. Her dedication and enthusiasm in the field of sales are
+                                unmatched. Despite facing challenges in completing her university education, Blessing's
+                                resilience has allowed her to excel in her role as a Sales Manager. She possesses
+                                exceptional intelligence and knowledge, which she applies strategically to achieve
+                                outstanding sales results. As a reliable and proactive team player, Blessing is
+                                instrumental in expanding the company's customer base and driving growth in new markets.
+                            </p>
+                        </div>
+                    </div>
+                    <h4>Professional Experience:</h4>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h5>Sales Center Manager, Genesis</h5>
+                            <ul>
+                                <li>Blessing serves as the Sales Manager, leading and guiding the sales team to achieve
+                                    their targets.</li>
+                                <li>Her resilience and determination in the face
+                                    of challenges have propelled her to excel in driving sales growth.</li>
+                                <li>With her exceptional intelligence and strategic thinking, Blessing formulates
+                                    effective sales strategies that yield impressive results.</li>
+                                <li>With her exceptional intelligence and strategic thinking, Blessing formulates
+                                    effective sales strategies that yield impressive results.</li>
+                            </ul>
+                            <h5>Education:</h5>
+                            <ul>
+                                <li>Diploma in Computer Studies</li>
+                                <li>Online Teacher's Program Certification</li>
+                            </ul>
+                            <h5>Skills and Qualities:</h5>
+                            <ul>
+                                <li>Sales Expertise: Blessing demonstrates a profound
+                                    understanding of sales techniques and utilizes them effectively to achieve
+                                    outstanding results.</li>
+
+                                <li>Resilience: Her unwavering determination allows her to overcome obstacles and emerge
+                                    stronger in her pursuit of sales success.</li>
+                                <li>
+                                    Enthusiasm: Blessing's enthusiasm is contagious, inspiring her team to perform at
+                                    their best and achieve remarkable sales outcomes.</li>
+                                <li>Reliability: Known for her dependability and consistency in meeting deadlines and
+                                    objectives.</li>
+                                <li>Strategic Thinking: Blessing's strategic approach to sales enables the company to
+                                    penetrate new markets and expand its customer base.</li>
+                            </ul>
+
+                            <h4>Achievements:</h4>
+                            <ul>
+                                <li>Blessing's resilient attitude has been instrumental in overcoming sales challenges
+                                    and driving consistent revenue growth for the company.</li>
+                                <li>His proactive IT management has minimized downtime and ensured the company's IT
+                                    infrastructure operates seamlessly.
+                                </li>
+                                <li>Her strategic sales planning has resulted in winning significant deals and fostering
+                                    long-term relationships with clients.</li>
+                            </ul>
+                            <h4>Interests:</h4>
+                            <p>
+                                Blessing enjoys staying up-to-date with the latest sales trends, attending sales
+                                conferences, and continuously honing her skills to excel in her role.
+
+                                This Sales Manager profile highlights Blessing Sunday Nandi's exceptional resilience and
+                                passion for sales success. Despite facing challenges in completing her university
+                                education, her dedication and strategic thinking have enabled her to achieve outstanding
+                                sales results. Blessing's enthusiasm and reliability make her a valuable asset to the
+                                sales team, inspiring them to perform at their best. Her unwavering determination in
+                                overcoming obstacles has contributed significantly to the company's growth and success
+                                in new markets.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+                {% with staff|array:7 as person %}
+                <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
+                    aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
+                    <h5>Data Integration Specialist Profile - Ifeoma Emilia Ifediba</h5>
+                    <div class="row mb-3">
+                        <div class="col-sm-2">
+                            {% with staff|array:7 as person %} <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Summary:</h4>
+                            <p>
+                                Ifeoma Emilia Ifediba is a loyal, long-serving, and dedicated Data Integration
+                                Specialist at Ozone F & L. With a degree in Computer Science, she excels in her role of
+                                managing data between Ozone and trading partner companies. As a crucial link in the data
+                                flow process, Ifeoma ensures seamless integration and submission of data on a daily
+                                basis. Her commitment to duty, unwavering integrity, and meticulous attention to detail
+                                make her an invaluable asset in maintaining strong relationships and facilitating
+                                efficient data exchange.
+                            </p>
+                        </div>
+                    </div>
+                    <h4>Professional Experience:</h4>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h5>Data Integration Specialist, Ozone F & L</h5>
+                            <ul>
+                                <li>Ifeoma holds the position of Data Integration Specialist, responsible for managing
+                                    data between Ozone and trading partner companies.</li>
+                                <li>Her expertise in computer science enables her to efficiently handle data integration
+                                    processes and optimize data flow.</li>
+                                <li>As a loyal member of the team, Ifeoma is committed to the success of Ozone and its
+                                    trading partnerships.</li>
+                                <li>She ensures accurate and timely data submissions to trading partner companies on a
+                                    daily basis, contributing to the company's growth and success.</li>
+
+                            </ul>
+                            <h5>Education:</h5>
+                            <ul>
+                                <li>Higher Diploma in Computer Science</li>
+                            </ul>
+                            <h5>Skills and Qualities:</h5>
+                            <ul>
+                                <li>Data Integration: Proficient in integrating and transferring data between different
+                                    systems and organizations seamlessly.</li>
+
+                                <li>Data Management: Meticulous in handling data to ensure accuracy and consistency in
+                                    submissions to trading partners.</li>
+                                <li>
+                                    Commitment and Loyalty: Ifeoma's loyalty to Ozone F & L is reflected in her
+                                    dedication and long tenure with the company.</li>
+                                <li>Reliability: Known for her dependability and consistency in meeting deadlines and
+                                    objectives.</li>
+                                <li>Integrity: Highly trusted for her ethical conduct in handling sensitive data and
+                                    maintaining confidentiality.</li>
+                                <li>Communication: Effective in bridging communication between Ozone and trading partner
+                                    companies to facilitate smooth data exchange.</li>
+                            </ul>
+
+                            <h4>Achievements:</h4>
+                            <ul>
+                                <li>Ifeoma's efficient data integration processes have contributed to streamlined
+                                    operations and improved data accuracy between Ozone and partner companies.</li>
+
+                                <li>Her exceptional organizational skills have resulted in timely and reliable data
+                                    submissions, enhancing relationships with trading partners.
+                                </li>
+                                <li>Her strategic sales planning has resulted in winning significant deals and fostering
+                                    long-term relationships with clients.</li>
+                            </ul>
+                            <h4>Interests:</h4>
+                            <p>
+                                Ifeoma enjoys staying up-to-date with the latest data integration technologies and
+                                exploring new ways to optimize data flow. Outside of work, she actively engages in
+                                community activities and continues to enhance her professional skills.
+
+                                This Data Integration Specialist profile emphasizes Ifeoma Emilia Ifediba's loyalty,
+                                dedication, and commitment to Ozone F & L. Her computer science background and integrity
+                                make her a trusted professional in managing data between Ozone and trading partner
+                                companies. Ifeoma's attention to detail and efficiency contribute significantly to the
+                                success of data submissions, enhancing the overall operations and success of Ozone F &
+                                L. Her loyalty to the company strengthens its reputation and fosters long-lasting
+                                partnerships with external trading companies.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+
+                {% with staff|array:7 as person %}
+                <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
+                    aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
+                    <h5>Data Integration Specialist Profile - Ifeoma Emilia Ifediba</h5>
+                    <div class="row mb-3">
+                        <div class="col-sm-2">
+                            {% with staff|array:7 as person %} <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Summary:</h4>
+                            <p>
+                                Ifeoma Emilia Ifediba is a loyal, long-serving, and dedicated Data Integration
+                                Specialist at Ozone F & L. With a degree in Computer Science, she excels in her role of
+                                managing data between Ozone and trading partner companies. As a crucial link in the data
+                                flow process, Ifeoma ensures seamless integration and submission of data on a daily
+                                basis. Her commitment to duty, unwavering integrity, and meticulous attention to detail
+                                make her an invaluable asset in maintaining strong relationships and facilitating
+                                efficient data exchange.
+                            </p>
+                        </div>
+                    </div>
+                    <h4>Professional Experience:</h4>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h5>Data Integration Specialist, Ozone F & L</h5>
+                            <ul>
+                                <li>Ifeoma holds the position of Data Integration Specialist, responsible for managing
+                                    data between Ozone and trading partner companies.</li>
+                                <li>Her expertise in computer science enables her to efficiently handle data integration
+                                    processes and optimize data flow.</li>
+                                <li>As a loyal member of the team, Ifeoma is committed to the success of Ozone and its
+                                    trading partnerships.</li>
+                                <li>She ensures accurate and timely data submissions to trading partner companies on a
+                                    daily basis, contributing to the company's growth and success.</li>
+
+                            </ul>
+                            <h5>Education:</h5>
+                            <ul>
+                                <li>Higher Diploma in Computer Science</li>
+                            </ul>
+                            <h5>Skills and Qualities:</h5>
+                            <ul>
+                                <li>Data Integration: Proficient in integrating and transferring data between different
+                                    systems and organizations seamlessly.</li>
+
+                                <li>Data Management: Meticulous in handling data to ensure accuracy and consistency in
+                                    submissions to trading partners.</li>
+                                <li>
+                                    Commitment and Loyalty: Ifeoma's loyalty to Ozone F & L is reflected in her
+                                    dedication and long tenure with the company.</li>
+                                <li>Reliability: Known for her dependability and consistency in meeting deadlines and
+                                    objectives.</li>
+                                <li>Integrity: Highly trusted for her ethical conduct in handling sensitive data and
+                                    maintaining confidentiality.</li>
+                                <li>Communication: Effective in bridging communication between Ozone and trading partner
+                                    companies to facilitate smooth data exchange.</li>
+                            </ul>
+
+                            <h4>Achievements:</h4>
+                            <ul>
+                                <li>Ifeoma's efficient data integration processes have contributed to streamlined
+                                    operations and improved data accuracy between Ozone and partner companies.</li>
+
+                                <li>Her exceptional organizational skills have resulted in timely and reliable data
+                                    submissions, enhancing relationships with trading partners.
+                                </li>
+                                <li>Her strategic sales planning has resulted in winning significant deals and fostering
+                                    long-term relationships with clients.</li>
+                            </ul>
+                            <h4>Interests:</h4>
+                            <p>
+                                Ifeoma enjoys staying up-to-date with the latest data integration technologies and
+                                exploring new ways to optimize data flow. Outside of work, she actively engages in
+                                community activities and continues to enhance her professional skills.
+
+                                This Data Integration Specialist profile emphasizes Ifeoma Emilia Ifediba's loyalty,
+                                dedication, and commitment to Ozone F & L. Her computer science background and integrity
+                                make her a trusted professional in managing data between Ozone and trading partner
+                                companies. Ifeoma's attention to detail and efficiency contribute significantly to the
+                                success of data submissions, enhancing the overall operations and success of Ozone F &
+                                L. Her loyalty to the company strengthens its reputation and fosters long-lasting
+                                partnerships with external trading companies.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+
+                {% with staff|array:8 as person %}
+                <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
+                    aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
+                    <h5>Head of Accounts Profile - Abasiama Mmenim Ibanga</h5>
+                    <div class="row mb-3">
+                        <div class="col-sm-2">
+                            {% with staff|array:8 as person %} <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Summary:</h4>
+                            <p>
+                                Abasiama Mmenim Ibanga is an exceptionally trusted and dependable staff member at Ozone
+                                F & L. Her dedication and commitment to the company's success have earned her the
+                                well-deserved promotion to the position of Head of Accounts. Despite her background in
+                                mass communication, Abasiama's integrity, responsibility, and accountability have made
+                                her a valuable asset in managing financial matters at Ozone. Her role as Head of
+                                Accounts is vital, ensuring the company's financial health and maintaining a high level
+                                of trust with stakeholders.
+                            </p>
+                        </div>
+                    </div>
+                    <h4>Professional Experience:</h4>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h5>Head of Accounts, Ozone F & L</h5>
+                            <ul>
+                                <li>Abasiama holds the position of Head of Accounts, leading the financial management
+                                    and accounting processes at the company.</li>
+
+                                <li>Her exceptional dedication and trustworthiness have played a significant role in her
+                                    promotion to this pivotal role.</li>
+
+                                <li>Despite having no formal background in accounting, Abasiama has proven her integrity
+                                    and ability to handle financial matters responsibly and accurately.</li>
+
+                                <li>As Head of Accounts, she ensures financial transparency and accountability,
+                                    contributing to the company's growth and financial stability.</li>
+
+                            </ul>
+                            <h5>Education:</h5>
+                            <ul>
+                                <li>Higher Diploma in Mass Communication</li>
+                            </ul>
+                            <h5>Skills and Qualities:</h5>
+                            <ul>
+                                <li>Financial Management: Proficient in overseeing financial operations, and
+                                    financial reporting.</li>
+
+                                <li>Integrity: Highly trusted for her honesty and ethical conduct, even in the face of
+                                    challenging financial decisions.</li>
+                                <li>
+                                    Responsibility: Demonstrates a strong sense of responsibility in managing the
+                                    company's financial resources.</li>
+
+                                <li>Accountability: Takes ownership of financial outcomes and ensures compliance with
+                                    financial regulations.</li>
+
+                                <li>Leadership: Provides effective leadership to the accounting team, fostering a
+                                    culture of excellence and professionalism.</li>
+
+                                <li>Coordination: Effective in implementing financial transactions between Ozone and
+                                    trading partner
+                                    companies to facilitate smooth transfer of funds.</li>
+                            </ul>
+
+                            <h4>Achievements:</h4>
+                            <ul>
+                                <li>Abasiama's exceptional dedication and commitment to her role have resulted in
+                                    streamlined financial processes and enhanced financial accuracy.</li>
+
+                                <li>Despite her background in mass communication, she has proven to be a reliable and
+                                    proficient Head of Accounts, contributing to Ozone's financial success.
+                                </li>
+
+                            </ul>
+                            <h4>Interests:</h4>
+                            <p>
+                                Abasiama enjoys staying updated with financial industry trends and regulations,
+                                attending financial management workshops, and exploring opportunities for professional
+                                growth.
+
+                                This Head of Accounts profile highlights Abasiama Mmenim Ibanga's exceptional
+                                dedication, trustworthiness, and integrity in managing financial matters at Ozone F & L.
+                                Despite her non-accounting background, she has proven her ability to lead the accounting
+                                team effectively and ensure financial transparency and responsibility. Abasiama's
+                                commitment to her role is pivotal in maintaining the company's financial stability and
+                                fostering trust with stakeholders. Her exceptional leadership and financial management
+                                skills make her a vital asset to Ozone's success.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+
+                {% with staff|array:9 as person %}
+                <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
+                    aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
+                    <h5>Chukwunonso Frank Ofoekwe - Sales Manager of an Independent Outlet</h5>
+                    <div class="row mb-3">
+                        <div class="col-sm-2">
+                            {% with staff|array:9 as person %} <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Summary:</h4>
+                            <p>
+                                Chukwunonso Frank Ofoekwe is an exceptional and loyal Sales Manager, entrusted with
+                                managing an independent outlet at Ozone F & L. Despite not possessing formal educational
+                                credentials, his deep knowledge of the company's affairs and unparalleled dedication
+                                make him an invaluable asset in this crucial role. As the Sales Manager of the
+                                independent outlet, Chukwunonso's leadership and customer-centric approach have fostered
+                                outstanding customer relations, ensuring consistent satisfaction. His charm,
+                                dependability, and unwavering commitment to the company's progress have made him a
+                                highly respected and essential part of Ozone's success.
+                            </p>
+                        </div>
+                    </div>
+                    <h4>Professional Experience:</h4>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <h5>Sales Manager - Independent Outlet, Ozone F & L</h5>
+                            <ul>
+                                <li>Chukwunonso holds the esteemed position of Sales Manager, entrusted with managing an
+                                    independent outlet within the company.</li>
+
+                                <li>His extensive knowledge of Ozone's operations and deep commitment to the company's
+                                    success set him apart as an exceptional leader.</li>
+
+                                <li>As the Sales Manager of the independent outlet, Chukwunonso's unwavering dedication
+                                    ensures optimal customer experiences and business growth.</li>
+
+                                <li>His invaluable experience and proficiency in customer relations make him a trusted
+                                    and integral member of the sales team.</li>
+
+                            </ul>
+
+                            <h5>Skills and Qualities:</h5>
+                            <ul>
+                                <li>Sales Leadership: Demonstrates exceptional leadership skills, fostering a
+                                    high-performing sales team and driving business growth.</li>
+
+                                <li>Customer Relations: Exhibits outstanding interpersonal skills, maintaining strong
+                                    relationships with customers and ensuring their utmost satisfaction.</li>
+                                <li>
+                                    Dependability: Known for his unwavering commitment and reliability, earning the
+                                    trust and respect of his colleagues.</li>
+
+                                <li>Adherence to Policies: Chukwunonso ensures strict adherence to company policies,
+                                    maintaining transparency and ethical practices in all dealings.</li>
+
+                                <li>Goal-Oriented: Possesses a determined and focused approach, consistently achieving
+                                    sales targets and contributing to Ozone's success.</li>
+
+
+                            </ul>
+
+                            <h4>Achievements:</h4>
+                            <ul>
+                                <li>Chukwunonso's leadership has been pivotal in the independent outlet's success,
+                                    achieving consistent customer satisfaction and revenue growth.</li>
+
+                                <li>His outstanding customer relations have resulted in a loyal customer base and a
+                                    positive reputation for the independent outlet.
+                                </li>
+
+                            </ul>
+                            <h4>Interests:</h4>
+                            <p>
+                                Chukwunonso is dedicated to the progress of the independent outlet and continually seeks
+                                innovative strategies to enhance sales performance and customer experiences. He remains
+                                engaged with industry trends to stay ahead in the competitive market.
+
+                                This profile showcases Chukwunonso Frank Ofoekwe's remarkable role as the Sales Manager
+                                of an independent outlet at Ozone F & L. Despite his lack of formal educational
+                                credentials, his extensive knowledge and commitment to the company's success have earned
+                                him this vital position. As the Sales Manager, Chukwunonso's exceptional leadership and
+                                customer-centric approach have been instrumental in achieving customer satisfaction and
+                                business growth. His charm, reliability, and unwavering dedication make him a highly
+                                regarded and indispensable member of Ozone's sales team. Chukwunonso's commitment to the
+                                independent outlet's progress embodies a charismatic and results-driven professional
+                                dedicated to the ongoing success of Ozone F & L.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endwith %}
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="row m-3">
+        <div class="col">
+            <a class="float-right" href="{% url 'index' %}"><i class="fa fa-reply fa-2x"></i></a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -25,6 +25,7 @@ import csv
 import json
 import os
 from pathlib import Path
+from typing import Any, Dict
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.contrib import messages
@@ -166,6 +167,15 @@ class CompanyPageView(View):
         }
         return render(request, 'core/company.html', context)
 
+class ManagementProfileView(TemplateView):
+    template_name = 'core/management.html'
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        management_staff = Employee.objects.filter(status=True).filter(is_management=True)
+        context['staff'] = management_staff
+        return context
 
 class DailyReportView(LoginRequiredMixin, TemplateView):
     template_name = 'core/daily_report.html'
