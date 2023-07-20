@@ -6,6 +6,7 @@ import os
 import time
 from pathlib import Path
 from typing import Any
+from django.db.models.query import QuerySet
 
 from django.forms import ValidationError
 from survey.models import Question
@@ -320,6 +321,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     # queryset = Employee.active.all()
 
 class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = Employee
     ordering = '-pk'
     template_name = 'staff/employee_list_private.html'
 
@@ -328,7 +330,10 @@ class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
-
+    
+    def get_queryset(self) -> QuerySet[Any]:
+        return super().get_queryset().filter(status=True)
+    
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         """requires if data exist for query"""
