@@ -16,9 +16,12 @@
     <div class="row">
         <div class="col-3">
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile"
+                    role="tab" aria-controls="v-pills-profile" aria-selected="true"><img height="24rem;"
+                        class="rounded-circle mr-2" src="{% static 'customer/logo.png' %}" alt=""> Ozone Profile</a>
+
                 {% for obj in staff %}
-                <a class="nav-link {% if forloop.counter == 1 %} active {% endif %}"
-                    id="v-pills-{{obj.staff.first_name}}-tab" data-toggle="pill"
+                <a class="nav-link" id="v-pills-{{obj.staff.first_name}}-tab" data-toggle="pill"
                     href="#v-pills-{{obj.staff.first_name}}" role="tab" aria-controls="v-pills-{{obj.staff.first_name}}"
                     aria-selected="true"><img height="24rem;" class="rounded-circle mr-2" src="{{obj.image.url}}"
                         alt="">{{obj.staff}}</a>
@@ -27,8 +30,74 @@
         </div>
         <div class="col-9">
             <div class="tab-content" id="v-pills-tabContent">
+                <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel"
+                    aria-labelledby="v-pills-profile-tab">
+                    <div class="row mb-3">
+                        <div class="col-sm-2">
+                            <img class="rounded-circle" height="120rem;" src="{% static 'customer/logo.png' %}"
+                                alt="Ozone">
+                        </div>
+                        <div class="col-sm-10">
+                            <h4>Company Profile: Ozone F & L Trading Co. Ltd</h4>
+                            <p>
+                                Established in November 2009, Ozone F & L stands as a distinguished distribution company
+                                specializing in the one-way pack brands of global beverage giants, including Guinness
+                                Nigeria Plc (a subsidiary of Diageo), Nigeria Breweries Plc (a subsidiary of Heineken),
+                                and International Breweries Plc (a subsidiary of AB InBev). With these leading brands
+                                under our belt, we have played an instrumental role in their early market penetration,
+                                setting us apart as a pioneer in the beverage distribution sector.
+                            </p>
+                        </div>
+                    </div>
+                    <h4>Market Dominance:</h4>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <p5>As key players in the global beverage market, Guinness Nigeria Plc, Nigeria Breweries
+                                Plc, and International Breweries Plc have achieved unmatched control and recognition.
+                                With Ozone as a pivotal distribution partner, we have fortified our position as a
+                                trusted ally, facilitating seamless access to a diverse range of beverages, including
+                                top beer brands, wines, and spirits.
+                            </p5>
+
+                            <h4 class="mt-3">Vision and Values:</h4>
+                            <p>At Ozone, we have tirelessly pursued our vision to become the most reliable and relevant
+                                one-way pack distribution company in Lagos. Our core values of transparency, support,
+                                commitment, and reliability have guided our operations, nurturing an environment of
+                                trust and partnership with our valued business associates.</p>
+
+                            <h4 class="mt-3">Exceptional Management Team:</h4>
+                            <p>
+                                Our success is fueled by an exceptional management team, a collective force that has
+                                earned Ozone the status of a household name in the zone we serve. Each member brings a
+                                wealth of experience, expertise, and dedication, serving as the driving force behind our
+                                continued growth and prominence.
+                            </p>
+                            <h4 class="mt-3">Strategic Acquisition Opportunity:</h4>
+                            <p>
+                                As a company interested in exploring growth and diversification, the acquisition of
+                                Ozone F & L offers unparalleled strategic advantages. With our established presence and
+                                expertise in the beverage distribution sector, you gain access to a vast network, a
+                                reliable reputation, and the potential to enhance your market share significantly.
+                            </p>
+
+                            <h4 class="mt-3">Why Choose Ozone F & L:</h4>
+                            <ul>
+                                <li>Market Pioneer: Ozone's early involvement in distributing top brands has positioned
+                                    us as pioneers in the beverage distribution industry.</li>
+                                <li>Trusted Partner: Our reputation for transparency, accountability, and unwavering
+                                    support makes us a sought-after distribution ally.</li>
+                                <li>Established Network: Our extensive distribution network provides an edge in reaching
+                                    diverse customer segments across Lagos state.</li>
+                                <li>Experienced Management: Our seasoned management team possesses the knowledge and
+                                    foresight to drive further success.</li>
+                            </ul>
+                            
+                        </div>
+                    </div>
+                </div>
+
                 {% with staff|array:9 as person %}
-                <div class="tab-pane fade show active" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
+                <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
                     aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
                     <div class="row mb-3">
                         <div class="col-sm-2">
@@ -167,8 +236,7 @@
                     aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}">
+                            <img class="rounded-circle" height="180rem;" src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -274,8 +342,7 @@
                     aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}">
+                            <img class="rounded-circle" height="180rem;" src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -371,8 +438,7 @@
                     <h5>Head of Marketing Profile - Eneka ThankGod Ojonugwa</h5>
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                             <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}">
+                            <img class="rounded-circle" height="180rem;" src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -457,8 +523,7 @@
                     <h5>IT and Data Analyst Profile - Dickson Abanum</h5>
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                             <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}">
+                            <img class="rounded-circle" height="180rem;" src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -545,8 +610,7 @@
                     <h5>Sales Center Manager Profile - Blessing Sunday Nandi</h5>
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}">
+                            <img class="rounded-circle" height="180rem;" src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -629,8 +693,7 @@
                     <h5>Data Integration Specialist Profile - Ifeoma Emilia Ifediba</h5>
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}">
+                            <img class="rounded-circle" height="180rem;" src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -710,15 +773,14 @@
                     </div>
                 </div>
                 {% endwith %}
-                
+
                 {% with staff|array:2 as person %}
                 <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
                     aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
                     <h5>Head of Accounts Profile - Abasiama Mmenim Ibanga</h5>
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}">
+                            <img class="rounded-circle" height="180rem;" src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -811,8 +873,7 @@
                     <h5>Chukwunonso Frank Ofoekwe - Sales Manager of an Independent Outlet</h5>
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}">
+                            <img class="rounded-circle" height="180rem;" src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -897,11 +958,8 @@
                 </div>
                 {% endwith %}
             </div>
-
         </div>
     </div>
-
-
     <div class="row m-3">
         <div class="col">
             <a class="float-right" href="{% url 'index' %}"><i class="fa fa-reply fa-2x"></i></a>
