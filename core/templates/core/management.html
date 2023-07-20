@@ -27,7 +27,7 @@
         </div>
         <div class="col-9">
             <div class="tab-content" id="v-pills-tabContent">
-                {% with staff|array:1 as person %}
+                {% with staff|array:9 as person %}
                 <div class="tab-pane fade show active" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
                     aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
                     <div class="row mb-3">
@@ -162,13 +162,13 @@
                     </div>
                 </div>
                 {% endwith %}
-                {% with staff|array:2 as person %}
+                {% with staff|array:8 as person %}
                 <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
                     aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            {% with staff|array:2 as person %} <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}"> {% endwith%}
+                            <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -269,13 +269,13 @@
                     </div>
                 </div>
                 {% endwith %}
-                {% with staff|array:3 as person %}
+                {% with staff|array:7 as person %}
                 <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
                     aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            {% with staff|array:3 as person %}<img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                            <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -365,14 +365,14 @@
                     </div>
                 </div>
                 {% endwith %}
-                {% with staff|array:4 as person %}
+                {% with staff|array:6 as person %}
                 <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
                     aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
                     <h5>Head of Marketing Profile - Eneka ThankGod Ojonugwa</h5>
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            {% with staff|array:4 as person %} <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}"> {% endwith%}
+                             <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -457,8 +457,8 @@
                     <h5>IT and Data Analyst Profile - Dickson Abanum</h5>
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            {% with staff|array:5 as person %} <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                             <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -539,14 +539,14 @@
                     </div>
                 </div>
                 {% endwith %}
-                {% with staff|array:6 as person %}
+                {% with staff|array:4 as person %}
                 <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
                     aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
                     <h5>Sales Center Manager Profile - Blessing Sunday Nandi</h5>
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            {% with staff|array:6 as person %} <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                            <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -623,14 +623,14 @@
                     </div>
                 </div>
                 {% endwith %}
-                {% with staff|array:7 as person %}
+                {% with staff|array:3 as person %}
                 <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
                     aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
                     <h5>Data Integration Specialist Profile - Ifeoma Emilia Ifediba</h5>
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            {% with staff|array:7 as person %} <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                            <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -710,103 +710,15 @@
                     </div>
                 </div>
                 {% endwith %}
-
-                {% with staff|array:7 as person %}
-                <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
-                    aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
-                    <h5>Data Integration Specialist Profile - Ifeoma Emilia Ifediba</h5>
-                    <div class="row mb-3">
-                        <div class="col-sm-2">
-                            {% with staff|array:7 as person %} <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
-                        </div>
-                        <div class="col-sm-10">
-                            <h4>Summary:</h4>
-                            <p>
-                                Ifeoma Emilia Ifediba is a loyal, long-serving, and dedicated Data Integration
-                                Specialist at Ozone F & L. With a degree in Computer Science, she excels in her role of
-                                managing data between Ozone and trading partner companies. As a crucial link in the data
-                                flow process, Ifeoma ensures seamless integration and submission of data on a daily
-                                basis. Her commitment to duty, unwavering integrity, and meticulous attention to detail
-                                make her an invaluable asset in maintaining strong relationships and facilitating
-                                efficient data exchange.
-                            </p>
-                        </div>
-                    </div>
-                    <h4>Professional Experience:</h4>
-                    <div class="row mb-3">
-                        <div class="col">
-                            <h5>Data Integration Specialist, Ozone F & L</h5>
-                            <ul>
-                                <li>Ifeoma holds the position of Data Integration Specialist, responsible for managing
-                                    data between Ozone and trading partner companies.</li>
-                                <li>Her expertise in computer science enables her to efficiently handle data integration
-                                    processes and optimize data flow.</li>
-                                <li>As a loyal member of the team, Ifeoma is committed to the success of Ozone and its
-                                    trading partnerships.</li>
-                                <li>She ensures accurate and timely data submissions to trading partner companies on a
-                                    daily basis, contributing to the company's growth and success.</li>
-
-                            </ul>
-                            <h5>Education:</h5>
-                            <ul>
-                                <li>Higher Diploma in Computer Science</li>
-                            </ul>
-                            <h5>Skills and Qualities:</h5>
-                            <ul>
-                                <li>Data Integration: Proficient in integrating and transferring data between different
-                                    systems and organizations seamlessly.</li>
-
-                                <li>Data Management: Meticulous in handling data to ensure accuracy and consistency in
-                                    submissions to trading partners.</li>
-                                <li>
-                                    Commitment and Loyalty: Ifeoma's loyalty to Ozone F & L is reflected in her
-                                    dedication and long tenure with the company.</li>
-                                <li>Reliability: Known for her dependability and consistency in meeting deadlines and
-                                    objectives.</li>
-                                <li>Integrity: Highly trusted for her ethical conduct in handling sensitive data and
-                                    maintaining confidentiality.</li>
-                                <li>Communication: Effective in bridging communication between Ozone and trading partner
-                                    companies to facilitate smooth data exchange.</li>
-                            </ul>
-
-                            <h4>Achievements:</h4>
-                            <ul>
-                                <li>Ifeoma's efficient data integration processes have contributed to streamlined
-                                    operations and improved data accuracy between Ozone and partner companies.</li>
-
-                                <li>Her exceptional organizational skills have resulted in timely and reliable data
-                                    submissions, enhancing relationships with trading partners.
-                                </li>
-                                <li>Her strategic sales planning has resulted in winning significant deals and fostering
-                                    long-term relationships with clients.</li>
-                            </ul>
-                            <h4>Interests:</h4>
-                            <p>
-                                Ifeoma enjoys staying up-to-date with the latest data integration technologies and
-                                exploring new ways to optimize data flow. Outside of work, she actively engages in
-                                community activities and continues to enhance her professional skills.
-
-                                This Data Integration Specialist profile emphasizes Ifeoma Emilia Ifediba's loyalty,
-                                dedication, and commitment to Ozone F & L. Her computer science background and integrity
-                                make her a trusted professional in managing data between Ozone and trading partner
-                                companies. Ifeoma's attention to detail and efficiency contribute significantly to the
-                                success of data submissions, enhancing the overall operations and success of Ozone F &
-                                L. Her loyalty to the company strengthens its reputation and fosters long-lasting
-                                partnerships with external trading companies.</p>
-                        </div>
-                    </div>
-                </div>
-                {% endwith %}
-
-                {% with staff|array:8 as person %}
+                
+                {% with staff|array:2 as person %}
                 <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
                     aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
                     <h5>Head of Accounts Profile - Abasiama Mmenim Ibanga</h5>
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            {% with staff|array:8 as person %} <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                            <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
@@ -893,14 +805,14 @@
                 </div>
                 {% endwith %}
 
-                {% with staff|array:9 as person %}
+                {% with staff|array:1 as person %}
                 <div class="tab-pane fade" id="v-pills-{{person.staff.first_name}}" role="tabpanel"
                     aria-labelledby="v-pills-{{person.staff.first_name}}-tab">
                     <h5>Chukwunonso Frank Ofoekwe - Sales Manager of an Independent Outlet</h5>
                     <div class="row mb-3">
                         <div class="col-sm-2">
-                            {% with staff|array:9 as person %} <img class="rounded-circle" height="180rem;"
-                                src="{{person.image.url}}" alt="{{person}}"> {% endwith %}
+                            <img class="rounded-circle" height="180rem;"
+                                src="{{person.image.url}}" alt="{{person}}">
                         </div>
                         <div class="col-sm-10">
                             <h4>Summary:</h4>
