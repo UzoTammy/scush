@@ -1,13 +1,11 @@
 import datetime
 from typing import Any, Dict
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.template import loader
 from .models import Applicant
 from staff.models import Terminate, Employee, ReEngage
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
-from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.utils import timezone
 from django.views.generic import (View,
@@ -22,7 +20,8 @@ from .forms import ApplicantForm, MyForm
 from django.urls import reverse_lazy, reverse
 from django.utils.safestring import mark_safe
 from djmoney.models.fields import Money
-from decimal import Decimal
+from core.tasks import send_email
+
 
 class ApplyIndexView(LoginRequiredMixin, TemplateView):
     template_name = 'apply/index.html'
@@ -238,6 +237,7 @@ class ApplyCreateView(CreateView):
     def form_valid(self, form):
         
         hr_email = 'uzo.nwokoro@ozonefl.com'
+        
         context = {
             'first_name': form.instance.first_name,
             'second_name': form.instance.second_name,
@@ -252,17 +252,15 @@ class ApplyCreateView(CreateView):
             'address': form.instance.address,
             'header': f'Your application received successfully'
         }
+
         if form.instance.email:
-            email = EmailMessage(
-                subject='Application for a job at Ozone',
-                body=loader.render_to_string('mail/apply_for_job.html', context),
-                from_email='',
-                to=[form.instance.email],
-                cc=[hr_email]
-            )
-            email.content_subtype = 'html'
-            email.send(fail_silently=True)
-        # return HttpResponse('testing')
+            send_email.delay(None, 
+                             form.instance.email, 
+                             hr_email, 
+                             'Application for a job at Ozone', 
+                             context, 
+                             'mail/apply_for_job.html')
+            
         return super().form_valid(form)
 
 

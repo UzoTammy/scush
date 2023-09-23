@@ -660,6 +660,7 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return render(request, 'trade/no_record.html', {'message': f'No Daily Record to Report from {from_date} to {to_date}'})
 
 
+
 class BSListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = BalanceSheet
     ordering = ('-date')

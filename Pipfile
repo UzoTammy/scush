@@ -25,6 +25,7 @@ pytest-django = "*"
 coverage = "*"
 pytest-cov = "*"
 crispy-bootstrap4 = "*"
+celery = "*"
 
 [requires]
 python_version = "3.8"

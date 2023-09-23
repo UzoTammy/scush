@@ -19,6 +19,7 @@ Here are the list of all that is done here
 """
 
 # all imports
+import time
 import datetime
 import calendar
 import csv
@@ -49,11 +50,6 @@ from django.template import loader
 from django.urls import reverse
 from core import utils as plotter
 from core.mixins import DateTimeMixin
-
-
-
-
-
 
 
 def index(request):
@@ -451,6 +447,7 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 stock_values_2days = None
         else:
             stock_values_2days = 0.0
+
         context['stock_value_ratio'] = stock_values_2days
         context['plotter'] = plotter.line_plot([str(date.day) for date in dates], stock_values, 'Low-Stock Velocity', 'Stock Value', 
                                                f'{dates[0].strftime("%d-%b-%y")} to {dates[9].strftime("%d-%b-%y")}')
@@ -484,18 +481,22 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         # extract the profit for y-axis, days of the date for x-axis from each record
         profits = [record.growth_ratio() for record in qs if qs.exists()]
         dates_str = [record.date.strftime('%d-%b-%y') for record in qs if qs.exists()]
+        
         context['growth_plot'] = plotter.line_plot([str(record.date.day) for record in qs if qs.exists()], 
                                                    profits, title='Growth Ratio', y_axis='Ratio', 
                                                    x_axis=f'{dates_str[0]} to {dates_str[-1]}',
                                                 )
+            
+            
         """Margin trend in the last 10 days"""
         qs = TradeDaily.objects.all().order_by('date')
         qs = qs[qs.count()-10:] if qs.count() > 10 else qs
 
         context['margin_plot'] = plotter.bar_plot([str(record.date.day) for record in qs if qs.exists()], 
-                                                   [record.margin_ratio() for record in qs if qs.exists()],
+                                                [record.margin_ratio() for record in qs if qs.exists()],
                                                     title='Margin Ratio', y_axis='Ratio', 
-                                                   x_axis=f'{dates_str[0]} to {dates_str[-1]}')
+                                                x_axis=f'{dates_str[0]} to {dates_str[-1]}')
+            
         
         context['expenses_plot'] = plotter.bar_plot_two([str(record.date.day) for record in qs if qs.exists()], 
                                                         [record.delivery_expense_ratio() for record in qs if qs.exists()],
@@ -540,6 +541,9 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             qs_available = [obj for obj in qs_stock if obj.stock_value>0] 
             availability = len(qs_available)
             context['percent_available'] = 100 * availability/qs_stock.count() 
+        
+        finish = time.perf_counter()
+        
         return context
 
 

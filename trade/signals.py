@@ -6,6 +6,7 @@ from django.core.mail import EmailMessage
 from django.template import loader
 from .models import BalanceSheet, Money, TradeDaily
 from djmoney.models.fields import Money
+from core.tasks import send_email
 
 
 @receiver(post_save, sender=TradeDaily)
@@ -50,7 +51,6 @@ def trade_daily_create(sender, instance, created, **kwargs):
             'total_gross_profit': Money(qs.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN'),
             'total_direct_income': Money(qs.aggregate(Sum('direct_income'))['direct_income__sum'], 'NGN'),
             'total_indirect_income': Money(qs.aggregate(Sum('indirect_income'))['indirect_income__sum'], 'NGN'),
-            
             'sales_drive': qs_all.order_by('-pk')[:5],
         } 
     
@@ -66,26 +66,19 @@ def trade_daily_create(sender, instance, created, **kwargs):
         round(100*dataset['total_direct_expenses']/dataset['total_sales'], 2) 
         if dataset['total_sales']>Money(0, 'NGN') else "Nil",
     }
-
-    email = EmailMessage(
-        subject=f'Daily P & L Report for {instance.date.strftime("%B, %Y")}',
-        body=loader.render_to_string('trade/mail_daily_PL.html', context={'object': dataset, 'ratio': total_ratio, 'head_title': head_title}),
-        from_email='',
-        to=['uzo.nwokoro@ozonefl.com'],
-        cc=['dickson.abanum@ozonefl.com'],
-        headers={'message-id': 'zebra'},
-    )
-    email.content_subtype="html"
-    email.send(fail_silently=False)
-
-
+    
+    send_email(None, 
+            ['uzo.nwokoro@ozonefl.com'],
+            ['dickson.abanum@ozonefl.com'], 
+            f'Daily P & L Report for {instance.date.strftime("%B, %Y")}',
+            {'object': dataset, 'ratio': total_ratio, 'head_title': head_title},
+            'trade/mail_daily_PL.html')
+    
 @receiver(post_save, sender=BalanceSheet)
 def bs_mail_sender(sender, instance, created, **kwargs):
-    if created:
-        head_title = 'Created'
-    else:
-        head_title = 'Updated'
-
+    
+    head_title = 'Created' if created else 'Updated'
+    
     email = EmailMessage(
         subject=f'Balance Sheet As At {instance.date.strftime("%B, %Y")}',
         body = loader.render_to_string('trade/mail_bs.html', context={'object': instance, 'head_title': head_title}),

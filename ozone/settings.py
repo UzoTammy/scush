@@ -206,3 +206,9 @@ django_on_heroku.settings(locals())
 del STATICFILES_STORAGE
 
 # logger.info(f'Apps running: {len(INSTALLED_APPS)}')
+
+# celery
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+if DEBUG == False:
+    CELERY_BROKER_URL = 'amqps://zympqvbd:hfnhfkm_WcWArXDPJjBLtPzCw7geWTeo@chimpanzee.rmq.cloudamqp.com/zympqvbd' 
