@@ -67,13 +67,13 @@ def trade_daily_create(sender, instance, created, **kwargs):
         if dataset['total_sales']>Money(0, 'NGN') else "Nil",
     }
     
-    send_email(None, 
-            ['uzo.nwokoro@ozonefl.com'],
-            ['dickson.abanum@ozonefl.com'], 
-            f'Daily P & L Report for {instance.date.strftime("%B, %Y")}',
-            {'object': dataset, 'ratio': total_ratio, 'head_title': head_title},
-            'trade/mail_daily_PL.html')
+    send_email(None, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com', 
+        f'Daily P & L Report for {instance.date.strftime("%B, %Y")}',
+        {'object': dataset, 'ratio': total_ratio, 'head_title': head_title}, 
+        'trade/mail_daily_PL.html'
+    )
     
+
 @receiver(post_save, sender=BalanceSheet)
 def bs_mail_sender(sender, instance, created, **kwargs):
     
@@ -89,6 +89,3 @@ def bs_mail_sender(sender, instance, created, **kwargs):
     )
     email.content_subtype='html'
     email.send(fail_silently=True)
-
-
-    
