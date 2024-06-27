@@ -1,5 +1,17 @@
 from django.urls import path
-from .views import *
+from .views import (StaffMainPageView, StaffListView, StaffPoliciesView, StaffListPicturesView,
+                    StaffDetailView, StaffUpdateView, StaffCreateView, StaffListPrivateView,
+                    StaffTerminate, StaffSuspend, StaffReassign, StaffPermit, RequestPermissionView,
+                    StaffSalaryChange, StaffChangeManagement, TerminatedStaffListView, PKResetView,
+                    PKResetPayroll, AddGratuity, GratuityListView, GratuityDetailView, GratuityUpdateView,
+                    GratuityListViewOneStaff, UserHandleCreateView, CreditNoteListView, CreditDetailView,
+                    CreditNoteCreateView, CreditUpdateView, DebitNoteListView, DebitNoteDetailView, DebitUpdateView,
+                    DebitNoteCreateView, PayrollHome, PayrollViews, GeneratePayroll, RegeneratedPayroll,
+                    RegeneratePayroll, SalaryPayment, Payslip, PayslipStatement, PayrollSummaryView,
+                    ModifyGeneratedPayroll, MakeOutstandingValueZero, UpdateTax, TaxList, RequestPermissionUpdateView,
+                    RequestPermissionListView, PermissionFromRequest, RequestPermissionDisapprove, staffWelfare,
+                    WelfareSupportList,WelfareSupportListViewOneStaff, PayrollView, ProcessEmployeeUpdateView,
+                    BackView, NextView)
 
 
 urlpatterns = [

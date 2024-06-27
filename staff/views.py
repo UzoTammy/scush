@@ -805,7 +805,7 @@ class Payslip(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def post(self, request, pk):
         """The update of status, date paid and the alert message for successful payment"""
-        staff = self.model.objects.get(pk=int(request.POST['pk']))
+        staff = self.model.objects.get(pk=pk)
         staff.status = True
         staff.date_paid = datetime.date.today()
         staff.save()
