@@ -81,7 +81,7 @@ class StaffMainPageView(LoginRequiredMixin, UserPassesTestMixin, View):
         return False
 
     template_name = 'staff/home_page.html'
-    messages_one = f"""Employees remain the most important asset of this company.
+    messages_one = """Employees remain the most important asset of this company.
 Their combined effort is the result of what we have today. However, for the purpose of leadership and direction,
 we must provide policies and procedures to guide everyone towards expected result. We believe in their collaborative
 effort, integrity, punctuality and passion as they carry out their various assigned tasks. Therefore, whatever we do,
@@ -90,7 +90,7 @@ staff deserves respect from one another irrespective of position and status and 
 discharge their duty to them. In as much as we have groomed them to treat our customers as Kings and Queens. The 
 happiness of our staff is important, that is what we expect them to transfer to our customers and their fellow staff. 
 """
-    messages_two = f"""The most important parameter we measure is employee engagement. Those who are discretionary,
+    messages_two = """The most important parameter we measure is employee engagement. Those who are discretionary,
     committed, enthusiastic and involved. They don't work just for a paycheck or just for the next promotion, but work 
     on behalf of the organisation's goals. These workers are exceptional, productive and contented. 
     On the other, and unfortunately, their exist employees who chose not to be engaged, they are toxic, complaining 
@@ -788,7 +788,7 @@ class Payslip(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context = super().get_context_data(**kwargs)
         staff = get_object_or_404(Employee, pk=kwargs['object'].staff_id)
         period = kwargs['object'].period
-        month = int(period.split('-')[1])
+        # month = int(period.split('-')[1])
 
         # balance = EmployeeBalance.objects.filter(staff=staff).filter(date__month=month).aggregate(total=Sum('value'))['total']
         # balance = decimal.Decimal('0') if balance is None else balance
@@ -805,12 +805,12 @@ class Payslip(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def post(self, request, pk):
         """The update of status, date paid and the alert message for successful payment"""
-        staff = self.model.objects.get(pk=request.POST['pk'])
+        staff = self.model.objects.get(pk=int(request.POST['pk']))
         staff.status = True
         staff.date_paid = datetime.date.today()
         staff.save()
         messages.success(request, f"{staff} paid successfully !!!")
-        return HttpResponseRedirect(reverse('start-pay'))
+        return redirect(reverse('start-pay'))
 
 class PayslipStatement(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Payroll
@@ -1509,7 +1509,7 @@ class RegeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return context
 
     def post(self, request, **kwargs):
-        f"""get the records you want to replace with payroll data
+        """get the records you want to replace with payroll data
         put it in a list of dictionaries
         2. compare the lists, if they are not equal, run the dictionaries 
         and compare"""
@@ -1839,7 +1839,7 @@ class RequestPermissionDisapprove(LoginRequiredMixin, View):
         mail_message = loader.render_to_string('mail/permission.html', context)
 
         send_mail(subject=f"Permission Request ID - {str(obj.pk).zfill(3)}",
-        message=f"Your request for permission is NOT APPROVED",
+        message="Your request for permission is NOT APPROVED",
         from_email='',
         recipient_list=[obj.request_by.email, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com'],
         fail_silently=True,
@@ -1965,8 +1965,8 @@ class PayrollView(LoginRequiredMixin, TemplateView):
                 context['switch'] = 2
             elif switch == 3:
                 context['switch'] = switch + 1
-                with open(filepath, 'r') as rf:
-                    content = json.load(rf)
+                # with open(filepath, 'r') as rf:
+                #     content = json.load(rf)
                     
             else:
                 os.remove(filepath)    
