@@ -60,7 +60,6 @@ class Renewal(models.Model):
     class Meta:
         verbose_name_plural = 'Renewal'
         
-
     def __str__(self):
         return f'{self.store.name}-{self.date}'
 

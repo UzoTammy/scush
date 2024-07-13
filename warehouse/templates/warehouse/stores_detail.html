@@ -3,7 +3,7 @@
 {% block content %}
 <div class="section">
     <div class="row">
-<!--        side menu-->
+        <!--        side menu-->
         <div class="col-2 bg-dark">
             <p class="m-2 text-white">
                 <i class="fa fa-minus text-warning"></i>
@@ -11,10 +11,7 @@
             </p>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link"
-                       data-toggle="modal"
-                       data-target="#payModal"
-                       href="#">
+                    <a class="nav-link" data-toggle="modal" data-target="#payModal" href="#">
                         Renew or Pay Rent
                     </a>
                 </li>
@@ -31,10 +28,7 @@
                 </li>
                 {% if not object.disabled %}
                 <li class="nav-item">
-                    <a class="nav-link"
-                       data-toggle="modal"
-                       data-target="#disableModal"
-                       href="#">
+                    <a class="nav-link" data-toggle="modal" data-target="#disableModal" href="#">
                         Disable
                     </a>
                 </li>
@@ -54,57 +48,53 @@
         </div>
         <!--        -->
         <div class="col-8">
-        <div class="container mt-2">
-            <div class="row">
-                <div class="col">
-                    <h3 class="text-center">{{object.name}} {{object.store_type}}</h3>
+            <div class="row mt-3 justify-content-center vh-100">
+                <div class="col-8">
+                    <h3 class="text-center">{{object.name}} <span class="">{{object.store_type}}</span></h3>
                     <ul class="list-group">
-                        <li class="list-group-item">Store: {{object.name}}</li>
-                        <li class="list-group-item">Type: {{object.store_type}}</li>
-                        <li class="list-group-item">Used As: {{object.usage}}</li>
-                        <li class="list-group-item">Owner: {{object.owner}}</li>
-                        <li class="list-group-item">Address: {{object.address}}</li>
-                        <li class="list-group-item">Contact: {{object.contact}}</li>
-                        <li class="list-group-item">Rent per annum: {{object.rent_amount}}</li>
-                        <li class="list-group-item">Capacity: {{object.capacity}}</li>
-                        <li class="list-group-item">Expiry Date: {{object.expiry_date}}</li>
-                        <li class="list-group-item">Status: {{object.status|yesno:'Paid, Not paid'}}</li>
+                        <li class="list-group-item">Store <span class="float-right">{{object.name}}</span></li>
+                        <li class="list-group-item">Type <span class="float-right">{{object.store_type}}</span></li>
+                        <li class="list-group-item">Used As <span class="float-right">{{object.usage}}</span></li>
+                        <li class="list-group-item">Owner <span class="float-right">{{object.owner}}</span></li>
+                        <li class="list-group-item">Address <span class="float-right">{{object.address}}</span></li>
+                        <li class="list-group-item">Contact <span class="float-right">{{object.contact}}</span></li>
+                        <li class="list-group-item">Rent per annum <span
+                                class="float-right">{{object.rent_amount}}</span></li>
+                        <li class="list-group-item">Capacity <span class="float-right">{{object.capacity}}</span></li>
+                        <li class="list-group-item">Expiry Date <span class="float-right">{{object.expiry_date}}</span>
+                        </li>
+                        <li class="list-group-item">Status <span class="float-right">{{object.status|yesno:'Paid, Not paid'}}</span></li>
 
                         <li class="list-group-item">
                             {% if not object.disabled %}
-                            <a class="btn btn-primary float-right" href="{% url 'warehouse-bank-create' object.pk %}">Add Bank Account</a></li>
-                            {% else %}
-                            <h4 class="text-danger float-right">Store is disabled</h4>
-                            {% endif %}
+                            <a class="btn btn-primary float-right"
+                                href="{% url 'warehouse-bank-create' object.pk %}">Add Bank Account</a>
+                        </li>
+                        {% else %}
+                        <h4 class="text-danger float-right">Store is disabled</h4>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-    </div>
+
 </div>
 
 <!--Modal-->
 <div class="section">
-<!--    Rent Renewal-->
-    <div class="modal fade"
-         id="payModal"
-         tabindex="-1"
-         aria-labelledby="payModalLabel"
-         aria-hidden="true">
+    <!--    Rent Renewal-->
+    <div class="modal fade" id="payModal" tabindex="-1" aria-labelledby="payModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header bg-secondary text-white">
-                <h5 class="modal-title" id="payModalLabel">
-                    Rent Renewal
-                </h5>
-                <button type="button"
-                        class="close"
-                        data-dismiss="modal"
-                        aria-label="Close">
-                    <span aria-hidden="true"><i class="fa fa-times text-danger"></i></span>
-                </button>
-            </div>
+                    <h5 class="modal-title" id="payModalLabel">
+                        Rent Renewal
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fa fa-times text-danger"></i></span>
+                    </button>
+                </div>
                 <form action="{% url 'warehouse-pay-rent' object.pk %}" method="post">
                     {% csrf_token %}
                     <div class="modal-body">
@@ -114,37 +104,30 @@
                             <div class="col">
                                 <div class="form-group">
                                     <label for="period">Period</label>
-                                    <select class="form-control"
-                                            name="period"
-                                            id="period">
+                                    <select class="form-control" name="period" id="period">
                                         {% for i in range %}
-                                            <option value="{{i}}">{{i}}</option>
+                                        <option value="{{i}}">{{i}}</option>
                                         {% endfor %}
                                     </select>
-                        </div>
+                                </div>
                             </div>
                             <div class="col">
                                 <div class="form-group">
-                            <label for="unit">Unit</label>
-                            <select class="form-control"
-                                    name="unit"
-                                   id="unit">
-                                <option value="Year">Year</option>
-                                <option value="Month">Month</option>
-                            </select>
-                        </div>
+                                    <label for="unit">Unit</label>
+                                    <select class="form-control" name="unit" id="unit">
+                                        <option value="Year">Year</option>
+                                        <option value="Month">Month</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
                     </div>
                     <div class="modal-footer">
-                        <button type="submit"
-                                class="btn btn-outline-primary">
+                        <button type="submit" class="btn btn-outline-primary">
                             Renew
                         </button>
-                        <button type="button"
-                                data-dismiss="modal"
-                                class="btn btn-outline-secondary">
+                        <button type="button" data-dismiss="modal" class="btn btn-outline-secondary">
                             Close
                         </button>
                     </div>
@@ -155,27 +138,27 @@
 
     <!-- Disable Store and Bank Account -->
     <!-- Button trigger modal -->
-  
-  
-  <div class="modal fade" id="disableModal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="ModalLabel">Disable {{object}}</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+
+
+    <div class="modal fade" id="disableModal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalLabel">Disable {{object}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>{{object}} will be disabled, and will no longer appear on the list, Proceed?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <a class="nav-link btn btn-danger" href="{% url 'disable-store-bank' object.pk %}">Yes</a>
+                </div>
+            </div>
         </div>
-        <div class="modal-body">
-          <p>{{object}} will be disabled, and will no longer appear on the list, Proceed?</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-          <a class="nav-link btn btn-danger" href="{% url 'disable-store-bank' object.pk %}">Yes</a>
-        </div>
-      </div>
     </div>
-  </div>
 
 </div>
 {% endblock %}
