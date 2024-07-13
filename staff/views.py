@@ -177,15 +177,11 @@ happiness of our staff is important, that is what we expect them to transfer to 
             'title': 'Staff Home',
             'message_one': self.messages_one,
             'workforce': queryset.count(),
-            'male': queryset.filter(staff__gender='MALE').count(),
             'female': queryset.filter(staff__gender='FEMALE').count(),
-            'married': queryset.filter(staff__marital_status='MARRIED').count(),
-            'single': queryset.filter(staff__marital_status='SINGLE').count(),
-
+            
             'message_two': self.messages_two,
 
             'management': queryset.filter(is_management=True).count(),
-            'non_management': queryset.exclude(is_management=True).count(),
             'terminated': Employee.objects.filter(status=False).count(),
             
             'probation': queryset.filter(is_confirmed=False).count(),

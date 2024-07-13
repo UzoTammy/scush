@@ -35,13 +35,19 @@
     }
 
     .redbull {
-        width: 130px;
-        rotate: 30deg;
+        width: 120px;
+        rotate: -30deg;
+        
+        @media screen and (max-width: 576px) {
+            rotate: 0deg;
+            gap: 20px;
+        }
     }
 
     .cousin {
-        width: 130px;
-        rotate: 45deg;
+        width: 120px;
+        rotate: 30deg;
+        margin: 20px 20px;
     }
 
     @keyframes blink {
@@ -92,32 +98,16 @@
 
     <!-- The companies logo -->
     <div class="row">
-        <div class="col-sm-2 text-center">
-            <img class="rounded-circle" src="{% static 'customer/logo.png' %}" alt="">   
-        </div>
-        <div class="col-sm-2 text-center">
-            <a href="#" class="">
-                <img src="{% static 'customer/photo/GN.png'%}" class="rounded-circle gn">
-            </a>
-        </div>
-        <div class="col-sm-2 text-center">
+        <div class="col-sm text-center">
+            <a href="#" class=""><img src="{% static 'customer/photo/GN.png'%}" class="rounded-circle gn"></a>
             <a href=""><img class="nb" src="{% static 'customer/photo/NB.jpeg'%}"></a>
-        </div>
-        <div class="col-sm-2 text-center">
-            <a href="#" class="">
-                <img class="redbull" src="{% static 'customer/photo/redbull.jpeg'%}">
-            </a>
-        </div>
-        <div class="col-sm-2 text-center">
             <a href="#"><img class="ab" src="{% static 'customer/photo/AB.jpeg'%}"></a>
-        </div>
-        <div class="col-sm-2 text-center">
+            <a href="#" class=""><img class="redbull" src="{% static 'customer/photo/redbull.jpeg'%}"></a>
             <a href="#" class=""><img class="cousin" src="{% static 'customer/photo/4cousins.jpeg'%}"></a>
+            <img width="150px" class="rounded-circle" src="{% static 'customer/logo.png' %}" alt="">
+            
         </div>
     </div>
-
-    
-
 </div>
 
 {% endblock %}

@@ -7,12 +7,7 @@
     .newspaper {
         column-count: 3;
     }
-    .circle {
-        border-radius: 50px 50px 50px 50px;
-        background-color: rgb(10, 11, 11);
-        padding: 5px;
-        color: white;
-    }
+    
 </style>
 {% endblock head %} 
 
@@ -119,44 +114,31 @@
                 {{payroll_list}}
                 <p class="newspaper">{{message_one}}</p>
                 <!--Workforce basic characteristics -->
-                <div class="text-center">
+                <div class="vh-100">
                     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 text-info">
                         <div class="col p-2">
                             <i class="fa fa-group text-danger"></i>
-                            Workforce <span class="circle">{{workforce}}</span>
+                            Workforce <span class="badge badge-dark float-right">{{workforce}}</span>
                         </div>
-                        <div class="col p-2">
-                            <i class="fa fa-male text-danger"></i>
-                            Male <span class="circle">{{male}}</span>
-                        </div>
+                        
                         <div class="col p-2">
                             <i class="fa fa-female text-danger"></i>
-                            Female <span class="circle">{{female}}</span> 
+                            Female <span class="badge badge-dark float-right">{{female}}</span> 
                         </div>
-                        <div class="col p-2">
-                            <i class="fa fa-mars-double text-danger"></i>
-                            Married: <span class="circle">{{married}}</span>
-                        </div>
-                        <div class="col p-2">
-                            <i class="fa fa-mars text-danger"></i>
-                            Single <span class="circle">{{single}}</span>
-                        </div>
+                        
                         <div class="col p-2">
                             <i class="fa fa-briefcase text-danger"></i>
-                            Management <span class="circle">{{management}}</span>
+                            Management <span class="badge badge-dark float-right">{{management}}</span>
                         </div>
-                        <div class="col p-2">
-                            <i class="fa fa-cog text-danger"></i>
-                            Non-Management <span class="circle">{{non_management}}</span>
-                        </div>
+                        
                         <div class="col p-2">
                             <a href="{% url 'terminated' staff_category %}">
                                 <i class="fa fa-stop text-danger"></i>
-                                Terminated <span class="circle">{{terminated}}</span></a>
+                                Terminated <span class="badge badge-dark float-right">{{terminated}}</span></a>
                         </div>
                         <div class="col p-2">
                             <i class="fa fa-step-forward text-danger"></i>
-                            Probation <span class="circle">{{probation}}</span>
+                            Probation <span class="badge badge-dark float-right">{{probation}}</span>
                         </div>
                     
                 </div>

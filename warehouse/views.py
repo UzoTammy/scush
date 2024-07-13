@@ -1,6 +1,5 @@
 import datetime
 import calendar
-from django.urls import reverse, reverse_lazy
 from django.views.generic import (View, TemplateView, ListView, CreateView, UpdateView, DetailView)
 from .models import Stores, Renewal, BankAccount
 from .form import BankAccountForm, StoreForm
@@ -166,7 +165,7 @@ class StoresUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         
     def post(self, request, *args, **kwargs):
         # the message
-        messages.success(request, f'Changes Made Successfully !!!')
+        messages.success(request, 'Changes Made Successfully !!!')
         return super().post(request, *args, **kwargs)
 
     
