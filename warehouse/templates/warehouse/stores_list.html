@@ -1,31 +1,22 @@
 {% extends 'users/base.html' %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container">
     <div class="row m-2">
         <div class="col-sm-12">
         <table data-search="true"
                    data-pagination="true"
                    data-toggle="table"
-                   class="table table-bordered table-info caption-top table-bordered table-sm">
-                <caption>
-                    <div class="row">
-                        <div class="col text-center">
-                            All Stores
-                        </div>
-                    </div>
-                </caption>
+                   class="table table-bordered caption-top table-bordered table-sm text-monospace">
+
+                <caption><h3 class="text-center">All Stores</h3></caption>
                 <thead class="bg-dark text-white">
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Type</th>
-                    <th scope="col">Used As</th>
-                    <th scope="col">Owner</th>
                     <th scope="col">Contact</th>
-                    <th scope="col">Address</th>
                     <th scope="col">Rent per Annum</th>
                     <th scope="col">Expiry Date</th>
-                    <th scope="col">Capacity</th>
                     <th scope="col">Status</th>
                 </tr>
                 </thead>
@@ -34,13 +25,9 @@
                 <tr>
                     <th scope="row"><a href="{% url 'warehouse-detail' store.pk %}">{{store.name}}</a></th>
                     <td>{{store.store_type}}</td>
-                    <td>{{store.usage}}</td>
-                    <td>{{store.owner}}</td>
                     <td>{{store.contact}}</td>
-                    <th>{{store.address}}</th>
-                    <th>{{store.rent_amount}}</th>
+                    <th class="text-right">{{store.rent_amount}}</th>
                     <th>{{store.expiry_date}}</th>
-                    <th>{{store.capacity}}</th>
                     <th>{{store.status|yesno:'Paid, Not Paid'}}</th>
                 </tr>
             {% endfor %}
@@ -49,41 +36,6 @@
     </div>
     </div>
 
-    <div class="row m-2">
-        <div class="col">
-            <table data-search="true"
-                   data-pagination="true"
-                   data-toggle="table"
-                   class="table table-bordered caption-top table-info table-sm">
-                <caption>
-                    <div class="row">
-                        <div class="col text-center">
-                            Bank Details
-                        </div>
-                    </div>
-                </caption>
-                <thead class="bg-dark text-white">
-                <tr>
-                    <th scope="col">Store</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Number</th>
-                    <th scope="col">Bank</th>
-                </tr>
-                </thead>
-                <tbody>
-                    {% for object in stores_bank %}
-                <tr>
-                    <th scope="row"><a href="{% url 'warehouse-bank-detail' object.pk %}">{{object.store.name}}</a></th>
-                    <td>{{object.name}}</td>
-                    <td>{{object.account_number}}</td>
-                    <td>{{object.bank}}</td>
-                </tr>
-            {% endfor %}
-                </tbody>
-            </table>
-            {{banks}}
-        </div>
-    </div>
 
     <div class="row m-2 float-right">
         <div class="col">

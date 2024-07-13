@@ -80,6 +80,8 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 class StoresListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Stores
     template_name = 'warehouse/stores_list.html'
+    ordering = ('store_type', 'name')
+
     context_object_name = 'stores'
 
     def test_func(self):
@@ -90,11 +92,6 @@ class StoresListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def get_queryset(self):
         return super().get_queryset().filter(disabled=False)
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super(StoresListView, self).get_context_data(**kwargs)
-        context['stores_bank'] = BankAccount.active.all()
-        return context
 
 
 class StoreHelpView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
