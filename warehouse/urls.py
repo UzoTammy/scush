@@ -1,7 +1,9 @@
 from django.urls import path
 from .views import (
     DisableStoreAndAccount, HomeView, StoresListView, StoreHelpView, StoresDetailView,
-     StoresCreateView, StoresUpdateView, PayRent, BankAccountCreate, BankAccountUpdate, BankAccountDetail
+     StoresCreateView, StoresUpdateView, PayRent, 
+     BankAccountCreate, BankAccountUpdate, BankAccountDetail,
+     StoreLevyCreateView, StoreLevyListView, StoreLevyUpdateView
      )
 
 urlpatterns = [
@@ -16,5 +18,9 @@ urlpatterns = [
     path('bank/<int:pk>/update/', BankAccountUpdate.as_view(), name='warehouse-bank-update'),
     path('bank/<int:pk>/detail/', BankAccountDetail.as_view(), name='warehouse-bank-detail'),
     path('<int:pk>/payment/', StoresDetailView.as_view(), name='payment'),
-    path('<int:pk>/store/bank', DisableStoreAndAccount.as_view(), name='disable-store-bank')
+    path('<int:pk>/store/bank', DisableStoreAndAccount.as_view(), name='disable-store-bank'),
+    path('levy/create/', StoreLevyCreateView.as_view(), name='store-levy-create'),
+    path('levy/list/', StoreLevyListView.as_view(), name='store-levy-list'),
+    path('levy/update/<int:pk>/', StoreLevyUpdateView.as_view(), name='store-levy-update'),
+       
 ]

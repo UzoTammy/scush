@@ -1,0 +1,59 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+{% block content %}
+<div class="container mt-3">
+    <div class="row justify-content-center">
+        <div class="col-sm-10">
+        <table data-search="true"
+                   data-pagination="true"
+                   data-toggle="table"
+                   class="table table-bordered caption-top table-bordered table-sm text-monospace">
+
+                <caption><h3 class="text-center">Store Levies</h3></caption>
+                <thead class="bg-dark text-white">
+                <tr>
+                    <th scope="col">Store</th>
+                    <th scope="col">Paid To</th>
+                    <th scope="col">Set Amount</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Full Payment</th>
+                    <th scope="col">Remarks</th>
+                </tr>
+                </thead>
+                <tbody>
+            {% for object in object_list %}
+                <tr>
+                    <th scope="row"><a href="{% url 'store-levy-update' object.pk %}">{{object.store.name}}</a></th>
+                    <td>{{object.party}}</td>
+                    <td>{{object.store.allocated_levy_amount}}</td>
+                    <th>{{object.payment_date}}</th>
+                    <th class="text-right">{{object.amount_paid}}</th>
+                    
+                    <th class="text-center">
+                        {% if object.payment_in_full %} 
+                        <i class="fa fa-check-circle text-success"></i>
+                        {% else %}
+                        <i class="fa fa-times-circle text-danger"></i>
+                        {% endif %}
+                    </th>
+                
+                    
+                    <th>{{object.description}}</th>
+                </tr>
+            {% endfor %}
+                </tbody>
+        </table>
+        <div class="row float-right">
+            <i>Click item on store column to update</i>
+            <div class="col">
+                <a type="button" class="btn btn-outline-dark" href="{% url 'warehouse-home' %}"><i class="fa fa-reply"></i></a>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+    
+</div>
+{% endblock %}

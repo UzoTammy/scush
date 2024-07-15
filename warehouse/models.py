@@ -2,6 +2,7 @@ import datetime
 from django.urls import reverse
 from django.db import models
 from djmoney.models.fields import MoneyField
+from djmoney.money import Money
 from django.utils import timezone
 
 
@@ -31,6 +32,7 @@ class Stores(models.Model):
                              decimal_places=2,
                              default_currency='NGN'
                              )
+    allocated_levy_amount = MoneyField(max_digits=7, decimal_places=2, default_currency='NGN', default=Money(0, 'NGN'))
     capacity = models.IntegerField(help_text='How many 33cl Cans?')
     expiry_date = models.DateField(default=timezone.now)
     status = models.BooleanField(default=False)  # paid & not paid
@@ -44,11 +46,25 @@ class Stores(models.Model):
 
 
     def __str__(self):
-        return self.name
+        return f'Store {self.name}'
 
     def get_absolute_url(self):
         return reverse('warehouse-detail', kwargs={'pk': self.pk})
 
+
+class StoreLevy(models.Model):
+    store = models.ForeignKey(Stores, on_delete=models.CASCADE)
+    amount_paid = MoneyField(max_digits=7, decimal_places=2, default_currency='NGN')
+    payment_date = models.DateField(default=timezone.now)
+    party = models.CharField(max_length=30, verbose_name='Payable To')
+    payment_in_full = models.BooleanField(default=True, verbose_name='Full or Part Payment')
+    description = models.CharField(max_length=200, blank=True, null=True, verbose_name='Remarks')
+
+    
+    def __str__(self) -> str:
+        return f'Levy {self.store.name}'
+    
+    
 
 class Renewal(models.Model):
     store = models.ForeignKey(Stores, on_delete=models.CASCADE)

@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
+    <div class="row vh-100">
 <!--        side menu-->
         <div class="col-3 bg-dark">
             <ul class="nav flex-column">
@@ -24,8 +24,22 @@
             </ul>
             <ul class="nav flex-column">
                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'store-levy-create' %}">
+                        <i class="fa fa-money text-warning"></i> Pay Levy
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'store-levy-list' %}">
+                        <i class="fa fa-money text-warning"></i> Levy List
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav flex-column">
+                <li class="nav-item">
                     <a class="nav-link" href="?property=self">
-                        <i class="fa fa-house text-warning"></i> Owned Properties
+                        <i class="fa fa-home text-warning"></i> Owned Properties
                     </a>
                 </li>
             </ul>

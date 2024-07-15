@@ -1,12 +1,17 @@
 import datetime
 import calendar
+from django.db.models.base import Model as Model
+from django.db.models.query import QuerySet
 from django.views.generic import (View, TemplateView, ListView, CreateView, UpdateView, DetailView)
-from .models import Stores, Renewal, BankAccount
-from .form import BankAccountForm, StoreForm
+from .models import Stores, StoreLevy, Renewal, BankAccount
+from .forms import BankAccountForm, StoreForm, StoreLevyForm
 from django.db.models import Sum
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from djmoney.money import Money
+
 
 
 def next_year(date):
@@ -139,17 +144,7 @@ class StoresCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class StoresUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Stores
     template_name = 'warehouse/stores_form.html'
-    fields = ('name',
-              'store_type',
-              'usage',
-              'owner',
-              'address',
-              'contact',
-              'rent_amount',
-              'capacity',
-              'expiry_date',
-              'status',
-              'disabled')
+    form_class = StoreForm
     
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -258,4 +253,21 @@ class DisableStoreAndAccount(LoginRequiredMixin, View):
         messages.info(request, 'This Store and its Bank Account is disabled')
         return redirect('warehouse-detail', kwargs['pk'])
 
+
+class StoreLevyCreateView(LoginRequiredMixin, CreateView):
+    form_class = StoreLevyForm
+    template_name = 'warehouse/storelevy_form.html'
+    success_url = reverse_lazy('warehouse-home')
+
+
+class StoreLevyListView(LoginRequiredMixin, ListView):
+    model = StoreLevy
+
+ 
+class StoreLevyUpdateView(LoginRequiredMixin, UpdateView):
+    form_class = StoreLevyForm
+    model = StoreLevy
+    template_name = 'warehouse/storelevy_form.html'
+    success_url = reverse_lazy('store-levy-list')
+    
     

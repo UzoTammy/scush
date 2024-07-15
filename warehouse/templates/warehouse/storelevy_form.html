@@ -1,0 +1,29 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row d-flex justify-content-center">
+        <div class="col-sm-8">
+            <form action="#" method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col">
+                        <h3>{% if view.kwargs.pk %} Update {% else %} Pay {% endif %} Levy </h3>
+                        <hr>
+                        {{form|crispy}}
+                    </div>
+                </div>
+                
+                <div class="col">
+                    <input class="btn btn-outline-info" type="submit" value="Submit">
+                    <a class="btn btn-outline-dark float-right" 
+                    href="{{ view.request.headers.referer}}">
+                    <i class="fa fa-reply"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
