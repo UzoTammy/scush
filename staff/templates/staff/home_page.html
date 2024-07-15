@@ -28,6 +28,11 @@
                             <i class="fa fa-group text-warning"></i> Employee 
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'terminated' staff_category %}">
+                            <i class="fa fa-angle-left text-warning"></i> Terminated
+                        </a>
+                    </li>
                     <!--Payroll-->
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'salary' %}">
@@ -56,6 +61,7 @@
                             <i class="fa fa-universal-access text-warning"></i> Permission
                         </a>
                     </li>
+                    
                     <!--Welfare-->
                     {% if user.is_superuser %}
                     <li class="nav-item">

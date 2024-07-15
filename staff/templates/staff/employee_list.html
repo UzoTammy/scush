@@ -26,6 +26,7 @@
                         <div class="col text-right">
                             <!--  links to variety of listings-->
                             <a href="{% url 'pdf-employee-list' %}"
+                               target="_blank"
                                class="btn btn-dark btn-sm text-right">
                                 <i class="fa fa-file-pdf-o text-white"></i>
                                 <!-- PDF Format -->
@@ -104,7 +105,7 @@
                     <th scope="col">Qualification</th>
                     <th scope="col">Course</th>
                     <th scope="col">Mobile</th>
-                    <th scope="col">Official Mobile</th>
+                    <!-- <th scope="col">Official Mobile</th> -->
                     <th scope="col">Age(yrs)</th>
                     <th scope="col">DOB</th>
                     <th scope="col">Position</th>
@@ -130,7 +131,7 @@
                     <td>{{employee.staff.qualification}}</td>
                     <td>{{employee.staff.course}}</td>
                     <td>{{employee.staff.mobile}}</td>
-                    <td>{{employee.official_mobile|default_if_none:""}}</td>
+                    <!-- <td>{{employee.official_mobile|default_if_none:""}}</td> -->
                     <td> {{employee.staff.get_age}}</td>
                     <td>{{employee.staff.birth_date}}</td>
                     <td>{{employee.position}}</td>

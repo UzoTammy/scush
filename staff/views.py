@@ -905,8 +905,7 @@ class UserHandleCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return reverse("employee-detail", kwargs={'pk': self.kwargs['pk']})
 
 class TerminatedStaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    queryset = Terminate.objects.filter(status=True)
-    template_name = 'staff/staff_views.html'
+    model = Terminate
     ordering = '-date'
 
     def test_func(self):
@@ -914,6 +913,11 @@ class TerminatedStaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView)
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
+    
+    def get_queryset(self) -> QuerySet[Any]:
+        queryset = super().get_queryset()
+        return queryset.filter(status=True)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['sacked'] = self.get_queryset().filter(termination_type='Sack').count()
@@ -1998,4 +2002,4 @@ class ProcessEmployeeUpdateView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         
         return context
-    
+
