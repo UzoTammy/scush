@@ -210,5 +210,5 @@ del STATICFILES_STORAGE
 # celery
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
-if DEBUG == False:
+if not DEBUG:
     CELERY_BROKER_URL = 'amqps://zympqvbd:hfnhfkm_WcWArXDPJjBLtPzCw7geWTeo@chimpanzee.rmq.cloudamqp.com/zympqvbd' 

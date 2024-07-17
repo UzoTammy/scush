@@ -50,6 +50,7 @@
                 <th scope="col">Date Employed</th>
                 <th scope="col">Date Terminated</th>
                 <th scope="col">Worked for</th>
+                <th>Received</th>
                 <th scope="col">Nature</th>
             </tr>
             </thead>
@@ -58,19 +59,20 @@
             {% for employee in object_list %}
             <tr class="text-center">
                 <th scope="row">
-                    {{ employee.staff.pk|zeropadding:3 }}
+                    {{ employee.object.staff.pk|zeropadding:3 }}
                 </th>
-                <td class="text-center"><img src="{{ employee.staff.image.url }}"
+                <td class="text-center"><img src="{{ employee.object.staff.image.url }}"
                          class="rounded-circle"
                          width="50px"
                          height="50px"
                          alt="">
                 </td>
-                <td class="text-left">{{employee.staff.fullname}}</td>
-                <td>{{employee.staff.date_employed}}</td>
-                <td>{{employee.date}}</td>
-                <td>{{employee.duration}} days</td>
-                <td>{{employee.termination_type}}</td>
+                <td class="text-left">{{employee.object.staff.fullname}}</td>
+                <td>{{employee.object.staff.date_employed}}</td>
+                <td>{{employee.object.date}}</td>
+                <td>{{employee.object.duration}} days</td>
+                <td>{{employee.payout}}</td>
+                <td>{{employee.object.termination_type}}</td>
             </tr>
             {% endfor %}
             </tbody>

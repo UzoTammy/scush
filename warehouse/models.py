@@ -32,7 +32,7 @@ class Stores(models.Model):
                              decimal_places=2,
                              default_currency='NGN'
                              )
-    allocated_levy_amount = MoneyField(max_digits=7, decimal_places=2, default_currency='NGN', default=Money(0, 'NGN'))
+    allocated_levy_amount = MoneyField(max_digits=10, decimal_places=2, default_currency='NGN', default=Money(0, 'NGN'))
     capacity = models.IntegerField(help_text='How many 33cl Cans?')
     expiry_date = models.DateField(default=timezone.now)
     status = models.BooleanField(default=False)  # paid & not paid
@@ -68,7 +68,7 @@ class StoreLevy(models.Model):
 
 class Renewal(models.Model):
     store = models.ForeignKey(Stores, on_delete=models.CASCADE)
-    date = models.DateField(default=timezone.now)
+    date = models.DateField(default=timezone.now) # date paid
     amount_paid = MoneyField(max_digits=10,
                              decimal_places=2,
                              default_currency='NGN')

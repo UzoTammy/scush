@@ -914,6 +914,7 @@ class TerminatedStaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView)
             return True
         return False
     
+
     def get_queryset(self) -> QuerySet[Any]:
         queryset = super().get_queryset()
         return queryset.filter(status=True)
@@ -922,7 +923,17 @@ class TerminatedStaffListView(LoginRequiredMixin, UserPassesTestMixin, ListView)
         context = super().get_context_data(**kwargs)
         context['sacked'] = self.get_queryset().filter(termination_type='Sack').count()
         context['resigned'] = self.get_queryset().filter(termination_type='Resign').count()
+        # terminated_staff_id = self.get_queryset().values_list('staff__staff__pk', flat=True).distinct()
+        objects = list()
+        for employee in self.get_queryset():
+            qs = Payroll.objects.filter(staff__staff__pk=employee.staff.staff.pk)
+            staff = {
+                'object': employee,
+                'payout': Money(qs.aggregate(Sum('net_pay'))['net_pay__sum'], 'NGN') if qs.exists() else Money(0, 'NGN')
+            }
+            objects.append(staff)
         
+        context['object_list'] = objects
         return context
 
 # Payroll Section

@@ -3,7 +3,8 @@ from .views import (
     DisableStoreAndAccount, HomeView, StoresListView, StoreHelpView, StoresDetailView,
      StoresCreateView, StoresUpdateView, PayRent, 
      BankAccountCreate, BankAccountUpdate, BankAccountDetail,
-     StoreLevyCreateView, StoreLevyListView, StoreLevyUpdateView
+     StoreLevyCreateView, StoreLevyListView, StoreLevyUpdateView,
+     PayRentView
      )
 
 urlpatterns = [
@@ -22,5 +23,6 @@ urlpatterns = [
     path('levy/create/', StoreLevyCreateView.as_view(), name='store-levy-create'),
     path('levy/list/', StoreLevyListView.as_view(), name='store-levy-list'),
     path('levy/update/<int:pk>/', StoreLevyUpdateView.as_view(), name='store-levy-update'),
+    path('pay/rent/<int:pk>/', PayRentView.as_view(), name='store-pay-rent'),
        
 ]

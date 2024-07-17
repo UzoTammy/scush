@@ -4,17 +4,16 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row vh-100">
-<!--        side menu-->
+        <!--        side menu-->
         <div class="col-3 bg-dark">
             <ul class="nav flex-column">
                 <li class="nav-item mt-3">
-                    <a class="nav-link"
-                       href="{% url 'warehouse-list-all' %}">
+                    <a class="nav-link" href="{% url 'warehouse-list-all' %}">
                         <i class="fa fa-eye-slash text-warning"></i> View Stores
                     </a>
                 </li>
             </ul>
-            
+
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'warehouse-create' %}">
@@ -58,168 +57,191 @@
                 </li>
             </ul>
         </div>
-<!--        body of page-->
+        <!--        body of page-->
         <div class="col-9">
             <div class="container mt-2">
-
-                {% if view.request.GET.property != 'self' %}
                 <div class="row">
                     <div class="col">
-                        <h3 class="text-center">Stores Home Page</h3>
+                        <h3 class="text-center">Facilities Home Page</h3>
                     </div>
                 </div>
-                <div class="row mt-2">
-                    <div class="col-sm-4">
-                        <div class="card bg-transparent border-0">
-                            <div class="card-body">
-                                <h5 class="card-title">Storage Capacity</h5>
-                                <hr>
-                                <p class="card-text">Total 
-                                    <span class="float-right">{{total_capacity|floatformat:0}}</span>
-                                </p>
-                                <hr>
-                                <p class="card-text">Rented
-                                    <span class="float-right">({{percent_rent|last|floatformat:2}}%) {{rented_capacity|floatformat:0}}</span>
-                                </p>
-                                <hr>
-                                <p class="card-text">Owned 
-                                    <span class="float-right">({{percent_rent|first|floatformat:2}}%) {{owned_capacity|floatformat:0}}</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th class="text-danger">RENT</th>
-                                    <th>Count</th>
-                                    <th>Amount({{N}})</th>
-                                    <th class="text-center">%</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Payable</td>
-                                    <td class="text-center">{{stores.count}}</td>
-                                    <td>{{total_rent_payable_per_annum|floatformat:2}}</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Paid</td>
-                                    <td class="text-center">{{renewal_count}}</td>
-                                    <td>{{rent_amount_paid|floatformat:2}} </td>
-                                    <td class="text-right">{{rent_amount_paid|default_if_none:0|div:total_rent_payable_per_annum|multiply:100|floatformat:2}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Unpaid</td>
-                                    <td class="text-center">{{stores.count|minus:renewal_count}}</td>
-                                    <td>{{rent_amount_unpaid|floatformat:2}}</td>
-                                    <td class="text-right">{{rent_amount_unpaid|default_if_none:0|div:total_rent_payable_per_annum|multiply:100|floatformat:2}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="card bg-transparent border-0">
-                            <div class="card-body">
-                                <h5 class="card-title">Property Use Type</h5>
-                                <hr>
-                                <p class="card-text">
-                                    Offices <span class="float-right">
-                                        ({{rent_percentage.office|floatformat:2}}%) {{N}}{% if rent.office == None %}0.00{% else %}{{rent.office}}{% endif %}
-                                    </span>
-                                </p>
-                                <hr>
-                                <p class="card-text">
-                                    Apartments <span class="float-right">
-                                        ({{rent_percentage.apartment|floatformat:2}}%) {{N}}{% if rent.apartment == None %}0.00{% else %}{{rent.apartment}}{% endif %}
-                                    </span>
-                                    
-                                </p>
-                                <hr>
-                                <p class="card-text">
-                                    Sell-out & Storage 
-                                    <span class="float-right">
-                                        ({{rent_percentage.storage|floatformat:2}}%) {{N}}{% if rent.storage == None %}0.00{% else %}{{rent.storage}}{% endif %}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+                
                 <div class="row">
                     <div class="col">
                         <table class="table table-sm" data-toggle="table" data-pagination="true">
-                            <caption>Rent Position</caption>
+                            <caption>Rented Facilities and due dates</caption>
                             <thead>
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Store</th>
-                                <th scope="col">Expiry date</th>
-                                <th class="text-center"  scope="col">Rent Value</th>
-                                <th scope="col">Time left</th>
-                            </tr>
+                                <tr>
+                                    <th scope="col">Store</th>
+                                    <th class="text-center">Set Levy Value</th>
+                                    <th scope="col">Rent Due Date</th>
+
+                                    <th class="text-center" scope="col">Rent Value</th>
+                                    <th scope="col">Time left</th>
+                                </tr>
                             </thead>
-                            
+
                             <tbody>
-                            {% for store in stores %}
-                                    
-                            <tr>     
-                                <th scope="row">{{store.id|zeropadding:2}} 
-                                    <!-- <i class="fa fa-bolt text-danger"></i> -->
-                                </th>
-                                <td>{{store.name}}</td>
-                                
-                                <td>{{store.expiry_date}}</td>
-                                
-                                <td class="text-right">{{store.rent_amount}}</td>
-                                   {% if store.expiry_date >= today %}
-                                <td>{{store.expiry_date|timeuntil}}</td>
+                                {% for store in rented_stores.all %}
+                                <tr>
+                                    <td>{{store.name}}</td>
+                                    <td class="text-right">{{store.allocated_levy_amount}}</td>
+                                    <td>{{store.expiry_date}}</td>
+                                    <td class="text-right">{{store.rent_amount}}</td>
+                                    {% if store.expiry_date >= store.today %}
+                                    <td>{{store.expiry_date|timeuntil}}</td>
                                     {% else %}
+                                    <td><a href="#" data-toggle="modal" data-target="#dueRent{{store.pk}}Modal">Rent is
+                                            due
 
-                                <td><a href="{% url 'payment' store.pk %}">Rent is due</a></td>
+                                        </a></td>
                                     {% endif %}
-                            </tr>
-                            {% endfor %}
+                                </tr>
+
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                {% else %}
-                <div class="row">
-                    <div class="col-sm-4">
-                        <table class="table table-sm" data-toggle="table" data-pagination="true">
-                            <caption>Owned</caption>
-                            <thead>
-                            <tr>
-                                <th scope="col">ID</th>
-                                <th scope="col">Store</th>
-                                <th scope="col">Value</th>
-                                
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for property in owned_properties %}
-                            <tr>
-                                <th scope="row">{{property.id}}</th>
-                                <td>{{property.name}}</td>
-                                <td class="text-right">{{property.rent_amount|multiply:30}}</td>
-                            </tr>
-                            {% endfor %}
-                            <tr>
-                                <td colspan="2" class="text-right">Total</td>
-                                <td class="text-right">NGN{{owned_property_total|floatformat:'2g'}}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <a href="?#">Return to Store Home Page</a>
-                    </div>
-                </div>
-                {% endif %}
+
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal due rent -->
+<section>
+    {% for store in rented_stores.all %}
+    <div class="modal fade" id="dueRent{{store.pk}}Modal" tabindex="-1" aria-labelledby="dueRentModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dueRentModalLabel">Pay Rent - {{store}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-monospace">
+                    Are you ready to pay rent?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <a href="{% url 'store-pay-rent' store.pk %}" class="btn btn-primary">
+                        Yes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
 {% endblock content%}
+
+
+<div class="row mt-2">
+    <div class="col-sm-4">
+        <table class="table">
+            <caption>Capacity</caption>
+            <thead>
+                <tr>
+                    <td>Total</td>
+                    <td>Rented</td>
+                    <td>Owned</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{rented_stores.capacity.total}}</td>
+                    <td>{{rented_stores.capacity.rented|first}}</td>
+                    <td>{{rented_stores.capacity.owned|first}}</td>
+                </tr>
+                <tr>
+                    <td>100%</td>
+                    <td>{{rented_stores.capacity.rented|last}}%</td>
+                    <td>{{rented_stores.capacity.owned|last}}%</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <div class="col-sm-4">
+        <table class="table">
+            <thead>
+                <caption>Rented</caption>
+                <tr>
+                    <th class="text-danger"></th>
+                    <th>Count</th>
+                    <th>Amount({{rented_stores.currency}})</th>
+                    <th class="text-center">%</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Payable</td>
+                    <td class="text-center">{{rented_stores.amount.paid|last}}</td>
+                    <td class="text-right">{{rented_stores.amount.payable|first}}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Paid</td>
+                    <td class="text-center">{{rented_stores.amount.paid|last}}</td>
+                    <td class="text-right">{{rented_stores.amount.paid|first}} </td>
+                    <td class="text-right"></td>
+                </tr>
+                <tr>
+                    <td>Unpaid</td>
+                    <td class="text-center">{{rented_stores.amount.unpaid|last}}</td>
+                    <td class="text-right">{{rented_stores.amount.unpaid|first}}</td>
+                    <td class="text-right">
+                        {{rent_amount_unpaid}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+
+
+
+
+{% url 'payment' store.pk %}
+{% if view.request.GET.property != 'self' %}
+
+<div class="col-sm-4">
+    <div class="card bg-transparent border-0">
+        <div class="card-body">
+            <h5 class="card-title">Property Use Type</h5>
+            <hr>
+            <p class="card-text">
+                Offices <span class="float-right">
+                    ({{rent_percentage.office|floatformat:2}}%) {{N}}{% if rent.office == None %}0.00{% else
+                    %}{{rent.office}}{% endif %}
+                </span>
+            </p>
+            <hr>
+            <p class="card-text">
+                Apartments <span class="float-right">
+                    ({{rent_percentage.apartment|floatformat:2}}%) {{N}}{% if rent.apartment == None %}0.00{% else
+                    %}{{rent.apartment}}{% endif %}
+                </span>
+
+            </p>
+            <hr>
+            <p class="card-text">
+                Sell-out & Storage
+                <span class="float-right">
+                    ({{rent_percentage.storage|floatformat:2}}%) {{N}}{% if rent.storage == None %}0.00{% else
+                    %}{{rent.storage}}{% endif %}
+                </span>
+            </p>
+        </div>
+    </div>
+</div>
