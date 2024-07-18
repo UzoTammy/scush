@@ -74,16 +74,16 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
             count_paid = stores_in_renewal.count()
             count_unpaid = count_payable - count_paid if count_payable > count_paid else 0
             
-            office_value = self.rented_stores.filter(usage='Office').aggregate(Sum('rent_amount'))
-            ['rent_amount__sum'] if self.rented_stores.filter(usage='Office').exists() else 0
-            business_value = self.rented_stores.filter(usage='Storage').filter(usage='Sell-out').aggregate(Sum('rent_amount'))
-            ['rent_amount__sum'] if self.rented_stores.filter(usage='Storage').filter(usage='Sell-out').exists() else 0
-            quarters_value = self.rented_stores.filter(usage='Apartment').aggregate(Sum('rent_amount'))
-            ['rent_amount__sum'] if self.rented_stores.filter(usage='Office').exists() else 0
+            # office_value = self.rented_stores.filter(usage='Office').aggregate(Sum('rent_amount'))
+            # ['rent_amount__sum'] if self.rented_stores.filter(usage='Office').exists() else 0
+            # business_value = self.rented_stores.filter(usage='Storage').filter(usage='Sell-out').aggregate(Sum('rent_amount'))
+            # ['rent_amount__sum'] if self.rented_stores.filter(usage='Storage').filter(usage='Sell-out').exists() else 0
+            # quarters_value = self.rented_stores.filter(usage='Apartment').aggregate(Sum('rent_amount'))
+            # ['rent_amount__sum'] if self.rented_stores.filter(usage='Office').exists() else 0
             
-            office_percent = office_value/(office_value + business_value + quarters_value)
-            business_percent = business_value/(office_value + business_value + quarters_value)
-            quarters_percent = quarters_value/(office_value + business_value + quarters_value)
+            # office_percent = office_value/(office_value + business_value + quarters_value)
+            # business_percent = business_value/(office_value + business_value + quarters_value)
+            # quarters_percent = quarters_value/(office_value + business_value + quarters_value)
             
             context['rented_stores'] = {
                 'currency': chr(8358),
@@ -99,11 +99,11 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
                     'paid': (total_rent_paid, count_paid),
                     'unpaid': (rent_unpaid, count_unpaid)
                 },
-                'usage': {
-                    'office': (office_value, office_percent),
-                    'business': (business_value, business_percent),
-                    'quarters': (quarters_value, quarters_percent),
-                }
+                # 'usage': {
+                #     'office': (office_value, office_percent),
+                #     'business': (business_value, business_percent),
+                #     'quarters': (quarters_value, quarters_percent),
+                # }
             }
 
         return context
