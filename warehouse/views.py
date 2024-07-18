@@ -65,7 +65,7 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
             rent_paid = qs.aggregate(Sum('amount_paid'))['amount_paid__sum']
             rent_paid = round(rent_paid, 2) #rent paid
             stores_in_renewal = qs.values_list('store__pk', flat=True).distinct() 
-            count_paid = len(stores_in_renewal) #rent count
+            count_paid = stores_in_renewal.count() #rent count
             
             #unpaid rent and count
             qs = self.rented_stores.filter(expiry_date__year__lte=current_year)
@@ -73,19 +73,22 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
             rent_unpaid = round(rent_unpaid, 2) #rent unpaid
             count_unpaid = qs.count() #unpaid rent count
             
-            # office_value = self.rented_stores.filter(usage='Office').aggregate(Sum('rent_amount'))
-            # ['rent_amount__sum'] if self.rented_stores.filter(usage='Office').exists() else 0
-            # business_value = self.rented_stores.filter(usage='Storage').filter(usage='Sell-out').aggregate(Sum('rent_amount'))
-            # ['rent_amount__sum'] if self.rented_stores.filter(usage='Storage').filter(usage='Sell-out').exists() else 0
-            # quarters_value = self.rented_stores.filter(usage='Apartment').aggregate(Sum('rent_amount'))
-            # ['rent_amount__sum'] if self.rented_stores.filter(usage='Office').exists() else 0
-            
-            # office_percent = office_value/(office_value + business_value + quarters_value)
-            # business_percent = business_value/(office_value + business_value + quarters_value)
-            # quarters_percent = quarters_value/(office_value + business_value + quarters_value)
-            
+            #Levy payable and count
+            payable_amount = self.stores.aggregate(Sum('allocated_levy_amount'))['allocated_levy_amount__sum']
+            payable_amount = round(payable_amount, 2)
+            payable_count = self.stores.count()
+
+            #levy paid amount and count
+            qs = StoreLevy.objects.filter(payment_date__year=current_year)
+            paid_amount = qs.aggregate(Sum('amount_paid'))['amount_paid__sum']
+            paid_amount = round(paid_amount, 2)
+            stores_that_paid_levy = qs.values_list('store__pk', flat=True).distinct()
+            paid_count = stores_that_paid_levy.count()
+
+            #levy unpaid amount and count
+
             context['rented_stores'] = {
-                'currency': chr(8358),
+                
                 'today': datetime.date.today(),
                 'all': self.rented_stores.order_by('expiry_date'),
                 'capacity': {
@@ -98,11 +101,15 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
                     'paid': (rent_paid, count_paid),
                     'unpaid': (rent_unpaid, count_unpaid)
                 },
-                # 'usage': {
-                #     'office': (office_value, office_percent),
-                #     'business': (business_value, business_percent),
-                #     'quarters': (quarters_value, quarters_percent),
-                # }
+                'levy': {
+                    'payable': (payable_amount, payable_count),
+                    'paid': (paid_amount, paid_count),
+                    'unpaid': (payable_amount - paid_amount, payable_count - paid_count),
+                    # this unpaid can be made more accurate by looking at stores one-by-one
+                    # take a store, get the levy at store's model, get the paid amount at storelevy model
+                    # if they are equal report zero or report the difference. do this for every store
+                    # sum the results to get the unpaid
+                }
             }
 
         return context

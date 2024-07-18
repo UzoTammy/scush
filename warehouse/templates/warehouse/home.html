@@ -68,7 +68,7 @@
                 </div>
 
                 <div class="row d-flex justify-content-center mt-2">
-                    <div class="col-sm-5">
+                    <div class="col-sm-4">
                         <table class="table">
                             <caption>Capacity</caption>
                             <thead>
@@ -94,7 +94,7 @@
 
                     </div>
 
-                    <div class="col-sm-5">
+                    <div class="col-sm-4">
                         <table class="table">
                             <thead>
                                 <caption>Rented</caption>
@@ -107,15 +107,42 @@
                             <tbody>
                                 
                                 <tr>
-                                    <td class="text-center">{{rented_stores.currency}}{{rented_stores.amount.payable|first}}</td>
-                                    <td class="text-right">{{rented_stores.currency}}{{rented_stores.amount.paid|first}} </td>
-                                    <td class="text-right">{{rented_stores.currency}}{{rented_stores.amount.unpaid|first}}</td>
+                                    <td class="text-center">{{naira}}{{rented_stores.amount.payable|first}}</td>
+                                    <td class="text-right">{{naira}}{{rented_stores.amount.paid|first}} </td>
+                                    <td class="text-right">{{naira}}{{rented_stores.amount.unpaid|first}}</td>
                                 </tr>
                                 
                                 <tr>
                                     <td class="text-center">{{rented_stores.amount.payable|last}}</td>
                                     <td class="text-right">{{rented_stores.amount.paid|last}}</td>
                                     <td class="text-right">{{rented_stores.amount.unpaid|last}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <table class="table">
+                            <thead>
+                                <caption>Levy</caption>
+                                <tr>
+                                    <th>Payable</th>
+                                    <th>Paid</th>
+                                    <th class="text-center">Unpaid</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                                <tr>
+                                    <td class="text-center">{{naira}}{{rented_stores.levy.payable|first}}</td>
+                                    <td class="text-right">{{naira}}{{rented_stores.levy.paid|first}} </td>
+                                    <td class="text-right">{{naira}}{{rented_stores.levy.unpaid|first}}</td>
+                                </tr>
+                                
+                                <tr>
+                                    <td class="text-center">{{rented_stores.levy.payable|last}}</td>
+                                    <td class="text-right">{{rented_stores.levy.paid|last}}</td>
+                                    <td class="text-right">{{rented_stores.levy.unpaid|last}}</td>
                                 </tr>
                             </tbody>
                         </table>
