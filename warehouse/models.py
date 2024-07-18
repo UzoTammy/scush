@@ -31,7 +31,7 @@ class Stores(models.Model):
     rent_amount = MoneyField(max_digits=10,
                              decimal_places=2,
                              default_currency='NGN'
-                             )
+                            )
     allocated_levy_amount = MoneyField(max_digits=10, decimal_places=2, default_currency='NGN', default=Money(0, 'NGN'))
     capacity = models.IntegerField(help_text='How many 33cl Cans?')
     expiry_date = models.DateField(default=timezone.now)
@@ -51,7 +51,6 @@ class Stores(models.Model):
     def get_absolute_url(self):
         return reverse('warehouse-detail', kwargs={'pk': self.pk})
 
-
 class StoreLevy(models.Model):
     store = models.ForeignKey(Stores, on_delete=models.CASCADE)
     amount_paid = MoneyField(max_digits=7, decimal_places=2, default_currency='NGN')
@@ -60,12 +59,9 @@ class StoreLevy(models.Model):
     payment_in_full = models.BooleanField(default=True, verbose_name='Full or Part Payment')
     description = models.CharField(max_length=200, blank=True, null=True, verbose_name='Remarks')
 
-    
     def __str__(self) -> str:
         return f'Levy {self.store.name}'
     
-    
-
 class Renewal(models.Model):
     store = models.ForeignKey(Stores, on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now) # date paid

@@ -9,7 +9,7 @@ from .models import Stores, StoreLevy, Renewal, BankAccount
 from .forms import BankAccountForm, StoreForm, StoreLevyForm, PayRentForm
 from django.db.models import Sum
 from django.shortcuts import redirect, get_object_or_404, render
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from djmoney.money import Money
@@ -56,58 +56,56 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
 
             #for rent amount
             rent_payable = round(self.rented_stores.aggregate(Sum('rent_amount'))['rent_amount__sum'], 2)
-            rent_paid = round(rent_payable - self.rented_stores.filter(status=True).aggregate(Sum('rent_amount'))['rent_amount__sum'], 2)
-            rent_unpaid = round(rent_payable - rent_paid, 2)
-    
-        context['rented_stores'] = {
-            'currency': chr(8358),
-            'today': datetime.date.today(),
-            'all': self.rented_stores,
-            'capacity': {
-                'total': total_capacity,
-                'rented': (rented_capacity, rented_percent),
-                'owned': (owned_capacity, owned_percent),
-            },
-            'amount': {
-                'payable': (rent_payable, self.rented_stores.count()),
-                'paid': (rent_paid, self.rented_stores.filter(status=True).count()),
-                'unpaid': (rent_unpaid, self.rented_stores.count() - self.rented_stores.filter(status=True).count())
+            current_year = datetime.date.today().year
+            renewals = Renewal.objects.filter(date__year=current_year)
+            stores_in_renewal = Renewal.objects.filter(store__disabled=False).values_list('store__pk', flat=True).distinct() 
+            
+            amount_paid_by_each_store = (renewals.filter(store__pk=store).aggregate(Sum('amount_paid'))['amount_paid__sum'] for store in stores_in_renewal)
+            total_rent_paid = 0
+            for amount in amount_paid_by_each_store:
+                
+                if amount is not None:
+                    total_rent_paid += amount 
+
+            total_rent_paid = round(total_rent_paid, 2)
+            rent_unpaid = round(rent_payable - total_rent_paid, 2)
+
+            count_payable = self.rented_stores.count()
+            count_paid = stores_in_renewal.count()
+            count_unpaid = count_payable - count_paid if count_payable > count_paid else 0
+            
+            office_value = self.rented_stores.filter(usage='Office').aggregate(Sum('rent_amount'))
+            ['rent_amount__sum'] if self.rented_stores.filter(usage='Office').exists() else 0
+            business_value = self.rented_stores.filter(usage='Storage').filter(usage='Sell-out').aggregate(Sum('rent_amount'))
+            ['rent_amount__sum'] if self.rented_stores.filter(usage='Storage').filter(usage='Sell-out').exists() else 0
+            quarters_value = self.rented_stores.filter(usage='Apartment').aggregate(Sum('rent_amount'))
+            ['rent_amount__sum'] if self.rented_stores.filter(usage='Office').exists() else 0
+            
+            office_percent = office_value/(office_value + business_value + quarters_value)
+            business_percent = business_value/(office_value + business_value + quarters_value)
+            quarters_percent = quarters_value/(office_value + business_value + quarters_value)
+            
+            context['rented_stores'] = {
+                'currency': chr(8358),
+                'today': datetime.date.today(),
+                'all': self.rented_stores.order_by('expiry_date'),
+                'capacity': {
+                    'total': total_capacity,
+                    'rented': (rented_capacity, rented_percent),
+                    'owned': (owned_capacity, owned_percent),
+                },
+                'amount': {
+                    'payable': (rent_payable, count_payable),
+                    'paid': (total_rent_paid, count_paid),
+                    'unpaid': (rent_unpaid, count_unpaid)
+                },
+                'usage': {
+                    'office': (office_value, office_percent),
+                    'business': (business_value, business_percent),
+                    'quarters': (quarters_value, quarters_percent),
+                }
             }
-        }
-        # context['N'] = chr(8358)
-        # context['today'] = datetime.date.today()
 
-        # context['owned_properties'] = Stores.active.filter(owner='Self')
-        # context['rent_payable_per_annum'] = self.rented_stores.aggregate(total=Sum('rent_amount'))['total']
-        # context['rent_amount_paid'] = self.rented_stores.filter(status=True).aggregate(total_paid=Sum('rent_amount'))['total_paid']
-        # context['rent_amount_unpaid'] = self.rented_stores.filter(status=False).aggregate(total_paid=Sum('rent_amount'))['total_paid']
-
-        # context['total_capacity'] = Stores.active.aggregate(total=Sum('capacity'))['total']
-        # context['rented_capacity'] = self.rented_stores.aggregate(total=Sum('capacity'))['total']
-        # context['owned_capacity'] = context['total_capacity'] - context['rented_capacity']
-        # context['percent_rent'] = (100*context['owned_capacity']/context['total_capacity'], 100*context['rented_capacity']/context['total_capacity'])
-
-        # context['store_types'] = (i[0] for i in Stores.TYPES)
-        # context['usage'] = (i[0] for i in Stores.USAGE)
-        # context['rent_amount_unpaid'] = context['rent_payable_per_annum'] - context['rent_amount_paid'] if self.renewed_stores.exists() else context['rent_payable_per_annum']
-        
-        # context['renewal_count'] = self.renewed_stores.count()
-
-        # qs = Stores.active.all()
-        # qs_total = qs.aggregate(total=Sum('rent_amount'))['total']
-        # qsu = qs.filter(usage='Storage') | qs.filter(usage='Sell-out')
-        # context['rent'] = {'office': qs.filter(usage='Office').aggregate(total=Sum('rent_amount'))['total'],
-        #                     'apartment': qs.filter(usage='Apartment').aggregate(total=Sum('rent_amount'))['total'],
-        #                     'storage': qsu.aggregate(total=Sum('rent_amount'))['total'],
-        #                     }
-        # office = 0 if context['rent']['office'] is None else 100*context['rent']['office']/qs_total
-        # apartment = 0 if context['rent']['apartment'] is None else 100*context['rent']['apartment']/qs_total
-        # storage = 0 if context['rent']['storage'] is None else 100 * context['rent']['storage'] / qs_total
-        # context['rent_percentage'] = {'office': office,
-        #                                 'apartment': apartment,
-        #                                 'storage': storage}
-        # context['stores'] = self.rented_stores.order_by('expiry_date')
-        # context['owned_property_total'] = 30*context['owned_properties'].aggregate(Sum('rent_amount'))['rent_amount__sum']
         return context
 
 

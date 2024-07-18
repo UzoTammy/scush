@@ -27,14 +27,18 @@ import json
 import os
 from pathlib import Path
 from typing import Any, Dict
+
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic import (TemplateView, ListView, CreateView, DetailView, UpdateView)
-from django.views import View
+from django.template import loader
+from django.urls import reverse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic import (View, TemplateView, ListView, CreateView, DetailView, UpdateView)
 from django.db.models import F, Sum, Q
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth import authenticate, login
+
 from staff.models import Employee, Permit, Payroll
 from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
@@ -43,11 +47,7 @@ from trade.models import TradeDaily, BalanceSheet, BankBalance
 from warehouse.models import Renewal
 from .forms import JsonDatasetForm
 from .models import JsonDataset
-from django.conf import settings
-from django.contrib.auth import authenticate, login
 from mail import mailbox
-from django.template import loader
-from django.urls import reverse
 from core import utils as plotter
 from core.mixins import DateTimeMixin
 
@@ -59,9 +59,10 @@ def index(request):
             access without logging in. 
     """
     context = {
-        'debug_mode': True if settings.DEBUG else False,
+        'debug_mode': settings.DEBUG,
     }
-    return render(request, 'core/index.html', context)
+    response = render(request, 'core/index.html', context)
+    return response
 
 def developer_login(request):
     """

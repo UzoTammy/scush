@@ -522,7 +522,7 @@ class StaffSalaryChange(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                                      remark=request.POST['remark']
                                      )
         change_salary.save()
-        messages.success(request, f"Salary Change is successful")
+        messages.success(request, "Salary Change is successful")
         return redirect('employee-detail', pk=kwargs['pk'])
 
 class StaffChangeManagement(View):
@@ -560,7 +560,7 @@ class StaffPermit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         period = mytools.DatePeriod.working_days(start_date_object, ending_at_object)
 
         if period == -1:
-            messages.info(request, f'Permission cannot be granted on a backward date. Check your date selection')
+            messages.info(request, 'Permission cannot be granted on a backward date. Check your date selection')
         else:
             if period[0] == 0:
                 messages.success(request, f'Permission Granted for {period[1]} Hour(s)')
@@ -604,7 +604,7 @@ class RequestPermissionView(LoginRequiredMixin, UserPassesTestMixin, View):
                 resume_date=resume_date
             )
             permission.save()
-            messages.success(request, f"permission has been requested. Approval will be required to GRANT IT")
+            messages.success(request, "permission has been requested. Approval will be required to GRANT IT")
             email = EmailMessage(
                 subject=f'Permission Request ID - {str(permission.pk).zfill(3)}',
                 body=loader.render_to_string('mail/request_permission.html', context={'object': permission, 'title': 'Permission'}),
@@ -614,7 +614,7 @@ class RequestPermissionView(LoginRequiredMixin, UserPassesTestMixin, View):
             email.content_subtype="html"
             email.send(fail_silently=False)
         else:
-            messages.warning(request, f"Start date cannot be greater than end date. REQUESTED UNSUCCESSFUL")
+            messages.warning(request, "Start date cannot be greater than end date. REQUESTED UNSUCCESSFUL")
         return redirect(staff)
 
 class StaffReassign(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -767,7 +767,7 @@ class staffWelfare(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         )
         welfare.save()
         
-        messages.success(request, f'Welfare support saved successfully !!!')
+        messages.success(request, 'Welfare support saved successfully !!!')
         return redirect('employee-detail', pk=kwargs['pk'])
 
 class Payslip(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -1451,7 +1451,7 @@ class ModifyGeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
         context['periods'] = sorted(list(periods), reverse=True)
 
         qs = str()
-        if request.GET is not {} and 'period' in request.GET:
+        if request.GET != {} and 'period' in request.GET:
             period = request.GET['period']
             payroll = Payroll.objects.filter(period=period)
             modify_type = request.GET['modifyType']
