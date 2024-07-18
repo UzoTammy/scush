@@ -33,6 +33,12 @@ class CacheControlMixin:
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
+class QuerysetToolbox:
+    @staticmethod
+    def to_currency(queryset, fieldname):
+        total = queryset.aggregate(Sum(fieldname))[f'{fieldname}__sum'] if queryset.exists() else 0
+        return round(total, 2)
+
 class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, TemplateView):
     template_name = 'warehouse/home.html'
     rented_stores = Stores.active.exclude(owner='Self')
@@ -47,41 +53,37 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.stores.exists():
-            total_capacity = self.stores.aggregate(Sum('capacity'))['capacity__sum']
-            rented_capacity = self.rented_stores.aggregate(Sum('capacity'))['capacity__sum'] if self.rented_stores.exists() else 0.00
+            total_capacity = QuerysetToolbox.to_currency(self.stores, 'capacity')
+            rented_capacity = QuerysetToolbox.to_currency(self.rented_stores, 'capacity')
             owned_capacity = total_capacity - rented_capacity
             #percentage
             rented_percent = round(100*rented_capacity/total_capacity, 2) 
             owned_percent = round(100 - rented_percent, 2)
 
             #Rent payable and count
-            rent_payable = round(self.rented_stores.aggregate(Sum('rent_amount'))['rent_amount__sum'], 2)
+            rent_payable = QuerysetToolbox.to_currency(self.rented_stores, 'rent_amount')
             count_payable = self.rented_stores.count()
 
             #prerequisite
             current_year = datetime.date.today().year
             #rent paid and count
             qs = Renewal.objects.filter(date__year=current_year)
-            rent_paid = qs.aggregate(Sum('amount_paid'))['amount_paid__sum']
-            rent_paid = round(rent_paid, 2) #rent paid
+            rent_paid = QuerysetToolbox.to_currency(qs, 'amount_paid') #rent paid
             stores_in_renewal = qs.values_list('store__pk', flat=True).distinct() 
             count_paid = stores_in_renewal.count() #rent count
             
             #unpaid rent and count
             qs = self.rented_stores.filter(expiry_date__year__lte=current_year)
-            rent_unpaid = qs.aggregate(Sum('rent_amount'))['rent_amount__sum']
-            rent_unpaid = round(rent_unpaid, 2) #rent unpaid
+            rent_unpaid = QuerysetToolbox.to_currency(qs, 'rent_amount') #rent unpaid
             count_unpaid = qs.count() #unpaid rent count
             
             #Levy payable and count
-            payable_amount = self.stores.aggregate(Sum('allocated_levy_amount'))['allocated_levy_amount__sum']
-            payable_amount = round(payable_amount, 2)
+            payable_amount = QuerysetToolbox.to_currency(self.stores, 'allocated_levy_amount')
             payable_count = self.stores.count()
 
             #levy paid amount and count
             qs = StoreLevy.objects.filter(payment_date__year=current_year)
-            paid_amount = qs.aggregate(Sum('amount_paid'))['amount_paid__sum']
-            paid_amount = round(paid_amount, 2)
+            paid_amount = QuerysetToolbox.to_currency(qs, 'amount_paid')
             stores_that_paid_levy = qs.values_list('store__pk', flat=True).distinct()
             paid_count = stores_that_paid_levy.count()
 
