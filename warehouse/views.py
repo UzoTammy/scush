@@ -33,11 +33,15 @@ class CacheControlMixin:
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
+
 class QuerysetToolbox:
     @staticmethod
-    def to_currency(queryset, fieldname):
-        total = queryset.aggregate(Sum(fieldname))[f'{fieldname}__sum'] if queryset.exists() else 0
+    def to_currency(queryset:QuerySet, fieldname:str)->str:
+        total = queryset.aggregate(Sum(fieldname))[f'{fieldname}__sum'] if queryset.exists() else decimal.Decimal('0')
         return round(total, 2)
+    
+    
+
 
 class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, TemplateView):
     template_name = 'warehouse/home.html'
@@ -114,6 +118,27 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
                 }
             }
 
+
+            context['usage'] = {
+                'number': {
+                    'sell_out': self.stores.filter(usage='Sell-out').count(),
+                    'storage': self.stores.filter(usage='Storage').count(),
+                    'office': self.stores.filter(usage='Office').count(),
+                    'apartment': self.stores.filter(usage='Apartment').count(),
+                },
+                'levy': {
+                    'sell_out': QuerysetToolbox.to_currency(self.stores.filter(usage='Sell-out'), 'allocated_levy_amount'),
+                    'storage': QuerysetToolbox.to_currency(self.stores.filter(usage='Storage'), 'allocated_levy_amount'),
+                    'office': QuerysetToolbox.to_currency(self.stores.filter(usage='Office'), 'allocated_levy_amount'),
+                    'apartment': QuerysetToolbox.to_currency(self.stores.filter(usage='Apartment'), 'allocated_levy_amount'),
+                },
+                'rent': {
+                    'sell_out': QuerysetToolbox.to_currency(self.stores.filter(usage='Sell-out'), 'rent_amount'),
+                    'storage': QuerysetToolbox.to_currency(self.stores.filter(usage='Storage'), 'rent_amount'),
+                    'office': QuerysetToolbox.to_currency(self.stores.filter(usage='Office'), 'rent_amount'),
+                    'apartment': QuerysetToolbox.to_currency(self.stores.filter(usage='Apartment'), 'rent_amount'),
+                },
+            }
         return context
 
 

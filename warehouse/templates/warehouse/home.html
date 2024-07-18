@@ -69,7 +69,7 @@
 
                 <div class="row d-flex justify-content-center mt-2">
                     <div class="col-sm-4">
-                        <table class="table">
+                        <table class="table text-monospace">
                             <caption>Capacity</caption>
                             <thead>
                                 <tr>
@@ -95,7 +95,7 @@
                     </div>
 
                     <div class="col-sm-4">
-                        <table class="table">
+                        <table class="table text-monospace">
                             <thead>
                                 <caption>Rented</caption>
                                 <tr>
@@ -122,7 +122,7 @@
                     </div>
 
                     <div class="col-sm-4">
-                        <table class="table">
+                        <table class="table text-monospace">
                             <thead>
                                 <caption>Levy</caption>
                                 <tr>
@@ -148,34 +148,11 @@
                         </table>
                     </div>
 
-                    <!-- <div class="col-sm-4">
-                        <table class="table">
-                            <thead>
-                                <caption>Usage</caption>
-                                <tr>
-                                    <th>Office</th>
-                                    <th>Business</th>
-                                    <th class="text-center">Quarters</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-center">{{rented_stores.usage.office|first}}</td>
-                                    <td class="text-right">{{rented_stores.usage.business|first}} </td>
-                                    <td class="text-right">{{rented_stores.usage.quarters|first}}</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center">{{rented_stores.usage.office|last}}</td>
-                                    <td class="text-right">{{rented_stores.usage.business|last}}</td>
-                                    <td class="text-right">{{rented_stores.usage.quarters|last}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div> -->
                 </div>
+
                 <div class="row">
                     <div class="col">
-                        <table class="table table-sm" data-toggle="table" data-pagination="true">
+                        <table class="table table-sm text-monospace" data-toggle="table" data-pagination="true">
                             <caption>Rented Facilities and due dates</caption>
                             <thead>
                                 <tr>
@@ -204,6 +181,62 @@
                                 </tr>
 
                                 {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row d-flex justify-content-center">
+                    <div class="col">
+                        <table class="table text-monospace" data-toggle="table">
+                            <thead class="text-center">
+                                <tr>
+                                    <th scope="col" class="bg-light">Usage</th>
+                                    <th>Lock-up</th>
+                                    <th>Warehouse</th>
+                                    <th>Office</th>
+                                    <th>Apartment</th>
+                                    <th class="bg-light">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-right">
+                                <tr>
+                                    <td>Number</td>
+                                    <td>{{usage.number.sell_out}}</td>
+                                    <td>{{usage.number.storage}}</td>
+                                    <td>{{usage.number.office}}</td>
+                                    <td>{{usage.number.apartment}}</td>
+                                    <td>{{usage.number.sell_out|add:usage.number.storage|add:usage.number.office|add:usage.number.apartment}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Levy</td>
+                                    <td>{{naira}}{{usage.levy.sell_out}}</td>
+                                    <td>{{naira}}{{usage.levy.storage}}</td>
+                                    <td>{{naira}}{{usage.levy.office}}</td>
+                                    <td>{{naira}}{{usage.levy.apartment}}</td>
+                                    {% with usage.levy.sell_out|add:usage.levy.storage|add:usage.levy.office|add:usage.levy.apartment as levy_total %}
+                                    <td>{{naira}}{{levy_total|floatformat:'2g'}}</td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td>Rent</td>
+                                    <td>{{naira}}{{usage.rent.sell_out}}</td>
+                                    <td>{{naira}}{{usage.rent.storage}}</td>
+                                    <td>{{naira}}{{usage.rent.office}}</td>
+                                    <td>{{naira}}{{usage.rent.apartment}}</td>
+                                    {% with usage.rent.sell_out|add:usage.rent.storage|add:usage.rent.office|add:usage.rent.apartment as rent_total %}
+                                    <td>{{naira}}{{rent_total|floatformat:'2g'}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Total</td>
+                                    <td>{{naira}}{{usage.levy.sell_out|add:usage.rent.sell_out|floatformat:'2g'}}</td>
+                                    <td>{{naira}}{{usage.levy.storage|add:usage.rent.storage|floatformat:'2g'}}</td>
+                                    <td>{{naira}}{{usage.levy.office|add:usage.rent.office|floatformat:'2g'}}</td>
+                                    <td>{{naira}}{{usage.levy.apartment|add:usage.rent.apartment|floatformat:'2g'}}</td>
+                                    <th class="bg-dark text-white">{{naira}}{{rent_total|add:levy_total|floatformat:'2g'}}</th>
+                                    {% endwith %}
+                                    {% endwith %}
+                                </tr>
                             </tbody>
                         </table>
                     </div>
