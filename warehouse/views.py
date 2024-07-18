@@ -54,25 +54,24 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
             rented_percent = round(100*rented_capacity/total_capacity, 2) 
             owned_percent = round(100 - rented_percent, 2)
 
-            #for rent amount
+            #Rent payable and count
             rent_payable = round(self.rented_stores.aggregate(Sum('rent_amount'))['rent_amount__sum'], 2)
-            current_year = datetime.date.today().year
-            renewals = Renewal.objects.filter(date__year=current_year)
-            stores_in_renewal = Renewal.objects.filter(store__disabled=False).values_list('store__pk', flat=True).distinct() 
-            
-            amount_paid_by_each_store = (renewals.filter(store__pk=store).aggregate(Sum('amount_paid'))['amount_paid__sum'] for store in stores_in_renewal)
-            total_rent_paid = 0
-            for amount in amount_paid_by_each_store:
-                
-                if amount is not None:
-                    total_rent_paid += amount 
-
-            total_rent_paid = round(total_rent_paid, 2)
-            rent_unpaid = round(rent_payable - total_rent_paid, 2)
-
             count_payable = self.rented_stores.count()
-            count_paid = stores_in_renewal.count()
-            count_unpaid = count_payable - count_paid if count_payable > count_paid else 0
+
+            #prerequisite
+            current_year = datetime.date.today().year
+            #rent paid and count
+            qs = Renewal.objects.filter(date__year=current_year)
+            rent_paid = qs.aggregate(Sum('amount_paid'))['amount_paid__sum']
+            rent_paid = round(rent_paid, 2) #rent paid
+            stores_in_renewal = qs.values_list('store__pk', flat=True).distinct() 
+            count_paid = len(stores_in_renewal) #rent count
+            
+            #unpaid rent and count
+            qs = self.rented_stores.filter(expiry_date__year__lte=current_year)
+            rent_unpaid = qs.aggregate(Sum('rent_amount'))['rent_amount__sum']
+            rent_unpaid = round(rent_unpaid, 2) #rent unpaid
+            count_unpaid = qs.count() #unpaid rent count
             
             # office_value = self.rented_stores.filter(usage='Office').aggregate(Sum('rent_amount'))
             # ['rent_amount__sum'] if self.rented_stores.filter(usage='Office').exists() else 0
@@ -96,7 +95,7 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
                 },
                 'amount': {
                     'payable': (rent_payable, count_payable),
-                    'paid': (total_rent_paid, count_paid),
+                    'paid': (rent_paid, count_paid),
                     'unpaid': (rent_unpaid, count_unpaid)
                 },
                 # 'usage': {
