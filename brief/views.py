@@ -16,7 +16,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         try:
             id = int(self.request.user.username.split('-')[1])
-        except:
+        except Exception:
             id = Employee.active.first().id
         form.instance.author = Employee.active.get(id=id)
         return super().form_valid(form)

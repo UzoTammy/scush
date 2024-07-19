@@ -1,28 +1,28 @@
 import datetime
-import calendar
 import decimal
 from django.db.models.base import Model as Model
-from django.db.models.query import QuerySet
-from django.http import HttpRequest, HttpResponse
-from django.views.generic import (View, TemplateView, ListView, CreateView, UpdateView, DetailView)
-from .models import Stores, StoreLevy, Renewal, BankAccount
-from .forms import BankAccountForm, StoreForm, StoreLevyForm, PayRentForm
-from django.db.models import Sum
-from django.shortcuts import redirect, get_object_or_404, render
-from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import redirect, get_object_or_404, render
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
+from django.views.generic import (View, TemplateView, ListView, CreateView, UpdateView, DetailView)
+
 from djmoney.money import Money
 
-from django.views.decorators.cache import never_cache
-from django.utils.decorators import method_decorator
+from core.tools import QuerySum as Qsum
+from .models import Stores, StoreLevy, Renewal, BankAccount
+from .forms import BankAccountForm, StoreForm, StoreLevyForm, PayRentForm
+
 
 
 def next_year(date):
     year = date.year
     month = date.month
     day = date.day
-    if calendar.isleap(year) and month == 2 and day == 29:
+    if month == 2 and day == 29:
         month = 3
         day = 1
     year += 1
@@ -32,15 +32,6 @@ class CacheControlMixin:
     @method_decorator(never_cache)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
-
-
-class QuerysetToolbox:
-    @staticmethod
-    def to_currency(queryset:QuerySet, fieldname:str)->str:
-        total = queryset.aggregate(Sum(fieldname))[f'{fieldname}__sum'] if queryset.exists() else decimal.Decimal('0')
-        return round(total, 2)
-    
-    
 
 
 class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, TemplateView):
@@ -57,37 +48,37 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.stores.exists():
-            total_capacity = QuerysetToolbox.to_currency(self.stores, 'capacity')
-            rented_capacity = QuerysetToolbox.to_currency(self.rented_stores, 'capacity')
+            total_capacity = Qsum.to_currency(self.stores, 'capacity')
+            rented_capacity = Qsum.to_currency(self.rented_stores, 'capacity')
             owned_capacity = total_capacity - rented_capacity
             #percentage
             rented_percent = round(100*rented_capacity/total_capacity, 2) 
             owned_percent = round(100 - rented_percent, 2)
 
             #Rent payable and count
-            rent_payable = QuerysetToolbox.to_currency(self.rented_stores, 'rent_amount')
+            rent_payable = Qsum.to_currency(self.rented_stores, 'rent_amount')
             count_payable = self.rented_stores.count()
 
             #prerequisite
             current_year = datetime.date.today().year
             #rent paid and count
             qs = Renewal.objects.filter(date__year=current_year)
-            rent_paid = QuerysetToolbox.to_currency(qs, 'amount_paid') #rent paid
+            rent_paid = Qsum.to_currency(qs, 'amount_paid') #rent paid
             stores_in_renewal = qs.values_list('store__pk', flat=True).distinct() 
             count_paid = stores_in_renewal.count() #rent count
             
             #unpaid rent and count
             qs = self.rented_stores.filter(expiry_date__year__lte=current_year)
-            rent_unpaid = QuerysetToolbox.to_currency(qs, 'rent_amount') #rent unpaid
+            rent_unpaid = Qsum.to_currency(qs, 'rent_amount') #rent unpaid
             count_unpaid = qs.count() #unpaid rent count
             
             #Levy payable and count
-            payable_amount = QuerysetToolbox.to_currency(self.stores, 'allocated_levy_amount')
+            payable_amount = Qsum.to_currency(self.stores, 'allocated_levy_amount')
             payable_count = self.stores.count()
 
             #levy paid amount and count
             qs = StoreLevy.objects.filter(payment_date__year=current_year)
-            paid_amount = QuerysetToolbox.to_currency(qs, 'amount_paid')
+            paid_amount = Qsum.to_currency(qs, 'amount_paid')
             stores_that_paid_levy = qs.values_list('store__pk', flat=True).distinct()
             paid_count = stores_that_paid_levy.count()
 
@@ -127,16 +118,16 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
                     'apartment': self.stores.filter(usage='Apartment').count(),
                 },
                 'levy': {
-                    'sell_out': QuerysetToolbox.to_currency(self.stores.filter(usage='Sell-out'), 'allocated_levy_amount'),
-                    'storage': QuerysetToolbox.to_currency(self.stores.filter(usage='Storage'), 'allocated_levy_amount'),
-                    'office': QuerysetToolbox.to_currency(self.stores.filter(usage='Office'), 'allocated_levy_amount'),
-                    'apartment': QuerysetToolbox.to_currency(self.stores.filter(usage='Apartment'), 'allocated_levy_amount'),
+                    'sell_out': Qsum.to_currency(self.stores.filter(usage='Sell-out'), 'allocated_levy_amount'),
+                    'storage': Qsum.to_currency(self.stores.filter(usage='Storage'), 'allocated_levy_amount'),
+                    'office': Qsum.to_currency(self.stores.filter(usage='Office'), 'allocated_levy_amount'),
+                    'apartment': Qsum.to_currency(self.stores.filter(usage='Apartment'), 'allocated_levy_amount'),
                 },
                 'rent': {
-                    'sell_out': QuerysetToolbox.to_currency(self.stores.filter(usage='Sell-out'), 'rent_amount'),
-                    'storage': QuerysetToolbox.to_currency(self.stores.filter(usage='Storage'), 'rent_amount'),
-                    'office': QuerysetToolbox.to_currency(self.stores.filter(usage='Office'), 'rent_amount'),
-                    'apartment': QuerysetToolbox.to_currency(self.stores.filter(usage='Apartment'), 'rent_amount'),
+                    'sell_out': Qsum.to_currency(self.stores.filter(usage='Sell-out'), 'rent_amount'),
+                    'storage': Qsum.to_currency(self.stores.filter(usage='Storage'), 'rent_amount'),
+                    'office': Qsum.to_currency(self.stores.filter(usage='Office'), 'rent_amount'),
+                    'apartment': Qsum.to_currency(self.stores.filter(usage='Apartment'), 'rent_amount'),
                 },
             }
         return context

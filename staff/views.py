@@ -6,12 +6,26 @@ import os
 import time
 from pathlib import Path
 from typing import Any
-from django.db.models.query import QuerySet
+from decimal import Decimal
 
+from django.db.models.query import QuerySet
+from django.db.models import (F, Sum, Avg, Max, Min)
+from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.mail import send_mail, EmailMessage
 from django.forms import ValidationError
-from survey.models import Question
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from users.models import Profile
 from apply.models import Applicant
+from django.shortcuts import render, reverse, redirect, get_object_or_404
+from django.template import loader
+from django.urls import reverse_lazy
+from django.views.generic import (View,TemplateView,ListView,DetailView,CreateView,UpdateView)
+
+from djmoney.money import Money
+
+from ozone import mytools
 from .models import (
     Employee, EmployeeBalance, CreditNote, DebitNote, Payroll, 
     Reassign, Terminate, Suspend, Permit,SalaryChange, 
@@ -19,25 +33,8 @@ from .models import (
 )
 from .form import (DebitForm, CreditForm, EmployeeForm)
 from core.models import JsonDataset
-from django.contrib.auth.models import User
-from django.shortcuts import render, reverse, redirect, get_object_or_404
-from django.urls import reverse_lazy
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.views.generic import (View,
-                                  TemplateView,
-                                  ListView,
-                                  DetailView,
-                                  CreateView,
-                                  UpdateView)
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from djmoney.money import Money
-from ozone import mytools
-from decimal import Decimal
-from django.contrib import messages
-from django.core.mail import send_mail
-from django.core.mail import EmailMessage
-from django.template import loader
-from django.db.models import (F, Sum, Avg, Max, Min)
+from core.tools import QuerySum as Qsum
+from survey.models import Question
 
 
 def duration(start_date, resume_date):
@@ -789,12 +786,13 @@ class Payslip(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         # balance = EmployeeBalance.objects.filter(staff=staff).filter(date__month=month).aggregate(total=Sum('value'))['total']
         # balance = decimal.Decimal('0') if balance is None else balance
 
-        cr = EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Cr').aggregate(Sum('value'))['value__sum']
-        dr = EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Dr').aggregate(Sum('value'))['value__sum']
-        Cr = decimal.Decimal('0') if cr is None else cr
-        Dr = decimal.Decimal('0') if dr is None else dr
-            
-
+        # cr = EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Cr').aggregate(Sum('value'))['value__sum']
+        # dr = EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Dr').aggregate(Sum('value'))['value__sum']
+        # Cr = decimal.Decimal('0') if cr is None else cr
+        # Dr = decimal.Decimal('0') if dr is None else dr
+        
+        Cr = Qsum.to_currency(EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Cr'), 'value')
+        Dr = Qsum.to_currency(EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Dr'), 'value')
         context['balance'] = Cr - Dr
         
         return context
@@ -1993,6 +1991,7 @@ class BackView(LoginRequiredMixin, View):
             os.remove(filepath)    
         return redirect('payroll-process')
 
+
 class NextView(LoginRequiredMixin, View):
     def get(self, request):
         BASE_DIR = Path(__file__).resolve().parent.parent
@@ -2005,6 +2004,7 @@ class NextView(LoginRequiredMixin, View):
                 json.dump(json_data, wf, indent=2)
             
         return redirect('payroll-process')    
+
 
 class ProcessEmployeeUpdateView(LoginRequiredMixin, TemplateView):
     template_name = 'staff/payroll/employee_update.html'

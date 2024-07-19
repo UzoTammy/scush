@@ -192,13 +192,13 @@ class ApplyDetailView(LoginRequiredMixin, DetailView):
                 terminated_employee.delete()
             else:
                 term_date = datetime.date.today()
-        except ValueError as varErr:
+        except ValueError:
             messages.error(request, mark_safe(
                 '<h6 id="flashElement" class="flash text-danger">&#x26A0; No value entered or you entered invalid value</h6>'
                 )
             )
             return super().get(self, request, **kwargs)
-        except:
+        except Exception:
             messages.error(request, mark_safe(
                 '<h6 id="flashElement" class="flash text-danger">error occured and execution aborted !!!</h6>')
                 )
@@ -250,7 +250,7 @@ class ApplyCreateView(CreateView):
             'mobile': form.instance.mobile,
             'email': form.instance.email,
             'address': form.instance.address,
-            'header': f'Your application received successfully'
+            'header': 'Your application received successfully'
         }
 
         if form.instance.email:

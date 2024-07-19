@@ -4,61 +4,9 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row vh-100">
-        <!--        side menu-->
-        <div class="col-3 bg-dark">
-            <ul class="nav flex-column">
-                <li class="nav-item mt-3">
-                    <a class="nav-link" href="{% url 'warehouse-list-all' %}">
-                        <i class="fa fa-eye-slash text-warning"></i> View Stores
-                    </a>
-                </li>
-            </ul>
-
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'warehouse-create' %}">
-                        <i class="fa fa-plus text-warning"></i> Add Store
-                    </a>
-                </li>
-            </ul>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'store-levy-create' %}">
-                        <i class="fa fa-money text-warning"></i> Pay Levy
-                    </a>
-                </li>
-            </ul>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'store-levy-list' %}">
-                        <i class="fa fa-money text-warning"></i> Levy List
-                    </a>
-                </li>
-            </ul>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="?property=self">
-                        <i class="fa fa-home text-warning"></i> Owned Properties
-                    </a>
-                </li>
-            </ul>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'warehouse-help' %}">
-                        <i class="fa fa-question text-warning"></i> Help
-                    </a>
-                </li>
-            </ul>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}">
-                        <i class="fa fa-reply text-warning"></i> Home
-                    </a>
-                </li>
-            </ul>
-        </div>
+        
         <!--        body of page-->
-        <div class="col-9">
+        <div class="col">
             <div class="container mt-2">
                 <div class="row">
                     <div class="col">
@@ -91,17 +39,25 @@
                                 </tr>
                             </tbody>
                         </table>
-
                     </div>
-
-                    <div class="col-sm-4">
-                        <table class="table text-monospace">
+                    
+                    <div class="col-sm-8 mt-3">
+                        <table class="table text-monospace" data-toggle="table">
                             <thead>
-                                <caption>Rented</caption>
+                                <tr>
+                                    <th colspan="3">Rented</th>
+                                    <th class="bg-light" colspan="3">Levy</th>
+
+                                </tr>
                                 <tr>
                                     <th>Payable</th>
                                     <th>Paid</th>
                                     <th class="text-center">Unpaid</th>
+                                    
+                                    <th class="bg-light">Payable</th>
+                                    <th class="bg-light">Paid</th>
+                                    <th class="bg-light text-center">Unpaid</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -110,46 +66,39 @@
                                     <td class="text-center">{{naira}}{{rented_stores.amount.payable|first}}</td>
                                     <td class="text-right">{{naira}}{{rented_stores.amount.paid|first}} </td>
                                     <td class="text-right">{{naira}}{{rented_stores.amount.unpaid|first}}</td>
+                                    <td class="bg-light text-center">{{naira}}{{rented_stores.levy.payable|first}}</td>
+                                    <td class="bg-light text-right">{{naira}}{{rented_stores.levy.paid|first}} </td>
+                                    <td class="bg-light text-right">{{naira}}{{rented_stores.levy.unpaid|first}}</td>
                                 </tr>
                                 
                                 <tr>
                                     <td class="text-center">{{rented_stores.amount.payable|last}}</td>
                                     <td class="text-right">{{rented_stores.amount.paid|last}}</td>
                                     <td class="text-right">{{rented_stores.amount.unpaid|last}}</td>
+                                    <td class="bg-light text-center">{{rented_stores.levy.payable|last}}</td>
+                                    <td class="bg-light text-right">{{rented_stores.levy.paid|last}}</td>
+                                    <td class="bg-light text-right">{{rented_stores.levy.unpaid|last}}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="col-sm-4">
-                        <table class="table text-monospace">
-                            <thead>
-                                <caption>Levy</caption>
-                                <tr>
-                                    <th>Payable</th>
-                                    <th>Paid</th>
-                                    <th class="text-center">Unpaid</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                
-                                <tr>
-                                    <td class="text-center">{{naira}}{{rented_stores.levy.payable|first}}</td>
-                                    <td class="text-right">{{naira}}{{rented_stores.levy.paid|first}} </td>
-                                    <td class="text-right">{{naira}}{{rented_stores.levy.unpaid|first}}</td>
-                                </tr>
-                                
-                                <tr>
-                                    <td class="text-center">{{rented_stores.levy.payable|last}}</td>
-                                    <td class="text-right">{{rented_stores.levy.paid|last}}</td>
-                                    <td class="text-right">{{rented_stores.levy.unpaid|last}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
+                    
                 </div>
 
+                <div class="bg-info clearfix">
+                    <button type="button" class="btn btn-dark float-left">
+                        <a href="{% url 'warehouse-list-all' %}">
+                        <i class="fa fa-eye-slash text-warning"></i> View Stores
+                        </a>
+                    </button>
+                    <button type="button" class="btn btn-dark float-right">
+                        <a href="{% url 'warehouse-create' %}">
+                            <i class="fa fa-plus text-warning"></i> Add Store
+                        </a>
+                    </button>
+                </div>
+                
                 <div class="row">
                     <div class="col">
                         <table class="table table-sm text-monospace" data-toggle="table" data-pagination="true">
@@ -185,10 +134,24 @@
                         </table>
                     </div>
                 </div>
+                
+                <div class="bg-info clearfix">
+                    <button type="button" class="btn btn-dark float-left">
+                        <a href="{% url 'store-levy-list' %}">
+                            <i class="fa fa-eye-slash text-warning"></i> Paid Levies
+                        </a>
+                    </button>
+                    <button type="button" class="btn btn-dark float-right">
+                        <a href="{% url 'store-levy-create' %}">
+                            <i class="fa fa-money text-warning"></i> Pay Levy
+                        </a>
+                    </button>
+                </div>
 
                 <div class="row d-flex justify-content-center">
                     <div class="col">
                         <table class="table text-monospace" data-toggle="table">
+                            <caption>Facility Usage</caption>
                             <thead class="text-center">
                                 <tr>
                                     <th scope="col" class="bg-light">Usage</th>
@@ -240,6 +203,19 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+
+                <div class="bg-info clearfix mt-3 mb-3">
+                    <button type="button" class="btn btn-dark float-left">
+                        <a href="{% url 'warehouse-help' %}">
+                            <i class="fa fa-question text-warning"></i> Help
+                        </a>
+                    </button>
+                    <button type="button" class="btn btn-dark float-right">
+                        <a href="{% url 'home' %}">
+                            <i class="fa fa-reply text-warning"></i> Home
+                        </a>
+                    </button>
                 </div>
             </div>
         </div>
