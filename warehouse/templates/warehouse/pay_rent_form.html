@@ -5,16 +5,17 @@
 <div class="container mt-2">
     <div class="row d-flex justify-content-center">
         <div class="col-sm-8 shadow-lg">
-            <form action="#" method="post">
+            <form action="" method="post">
                 {% csrf_token %}
                 <div class="row m-5">
                     <div class="col">
-                        <h3>Pay Rent</h3>
+                        <h3>{% if not update %}  Pay Rent for {{store}} {% else %} Update Rent Renewal {% endif %}</h3>
                         {{form|crispy}}
                     </div>
                 </div>
                 <div class="col mb-4">
                     <input class="btn btn-outline-info" type="submit" value="Submit">
+                    
                     <a class="btn btn-outline-dark float-right" href="{% url 'warehouse-home' %}">
                         <i class="fa fa-reply"></i>
                     </a>

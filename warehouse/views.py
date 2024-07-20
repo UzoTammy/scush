@@ -3,7 +3,7 @@ import decimal
 from django.db.models.base import Model as Model
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.http import HttpRequest, HttpResponse
+from django.db.models.query import QuerySet
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -14,8 +14,8 @@ from djmoney.money import Money
 
 from core.tools import QuerySum as Qsum
 from .models import Stores, StoreLevy, Renewal, BankAccount
-from .forms import BankAccountForm, StoreForm, StoreLevyForm, PayRentForm
-
+from .forms import BankAccountForm, StoreForm, StoreLevyForm, PayRentForm, RentRenewalUpdateForm
+from .signals import signal_renew_store
 
 
 def next_year(date):
@@ -109,7 +109,6 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
                 }
             }
 
-
             context['usage'] = {
                 'number': {
                     'sell_out': self.stores.filter(usage='Sell-out').count(),
@@ -129,6 +128,7 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
                     'office': Qsum.to_currency(self.stores.filter(usage='Office'), 'rent_amount'),
                     'apartment': Qsum.to_currency(self.stores.filter(usage='Apartment'), 'rent_amount'),
                 },
+
             }
         return context
 
@@ -139,38 +139,58 @@ class PayRentView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['form'] = PayRentForm()
+        context['store'] = get_object_or_404(Stores, pk=self.kwargs.get('pk'))
         return context
 
     def post(self, request, *args, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        store = get_object_or_404(Stores, pk=kwargs.get('pk'))
-        form = PayRentForm(data=request.POST)
+        store = context.get('store')
+
+        form = PayRentForm(request.POST)
 
         if form.is_valid():
             # get the store, 
-            store.status = True
-            if store.expiry_date.month + int(request.POST['months']) > 12:
-                month = store.expiry_date.month + int(request.POST['months']) - 12
-                year = store.expiry_date.year + int(request.POST['years']) + 1
-            else:
-                month = store.expiry_date.month + int(request.POST['months'])
-                year = store.expiry_date.year + int(request.POST['years'])
-            store.expiry_date = datetime.date(year, month, store.expiry_date.day)
-            store.save()
-            
             renew = Renewal(
                 store = store,
                 date = datetime.datetime.strptime(request.POST['date_paid'], '%Y-%m-%d'),
                 amount_paid = Money(decimal.Decimal(request.POST['amount_paid_0']), request.POST['amount_paid_1']),
             )
             renew.save()
+
+            signal_renew_store.send(sender=None, instance=store, extra_data={'month': int(request.POST['months']), 'year': int(request.POST['years'])})
             
             messages.success(request, 'Payment of Rent is successfully complete!!')
-            return redirect('warehouse-home')
+            return redirect('store-rent-list')
         
         context['form'] = form
             
+        return render(request, self.template_name, context)
+
+
+class UpdateRentView(LoginRequiredMixin, TemplateView):
+    template_name = 'warehouse/pay_rent_form.html'
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        renew_obj = get_object_or_404(Renewal, pk=self.kwargs.get('pk'))
+        context['form'] = RentRenewalUpdateForm(instance=renew_obj)
+        context['update'] = True
+        context['renew_obj'] = renew_obj
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        form = RentRenewalUpdateForm(request.POST, instance=context.get('renew_obj'))
+        if form.is_valid():
+            form.instance.store = context.get('renew_obj').store
+            form.instance.date = datetime.datetime.strptime(request.POST['date'], '%Y-%m-%d')
+            form.instance.amount_paid = Money(decimal.Decimal(request.POST['amount_paid_0']), request.POST['amount_paid_1'])
+            form.save()
+            signal_renew_store.send(sender=None, instance=form.instance.store, extra_data={'month': int(request.POST['month']), 'year': int(request.POST['year'])})
+            messages.success(request, 'Update of Rent is successful!!')
+            return redirect('store-rent-list')
+        context['form'] = form
         return render(request, self.template_name, context)
 
 class StoresListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -211,8 +231,9 @@ class StoresDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['expiry_date'] = next_year(kwargs['object'].expiry_date)
-        context['range'] = range(1, 12)
+        current_year = datetime.date.today().year
+        context['renew_list'] = Renewal.objects.filter(date__year=current_year).filter(store__pk=self.kwargs.get('pk'))
+        
         return context
 
 
@@ -256,47 +277,6 @@ class StoresUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().post(request, *args, **kwargs)
 
     
-class PayRent(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Stores
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def post(self, request, *args, **kwargs):
-        qs = self.get_queryset().get(id=kwargs['pk'])
-        period = int(request.POST['period'])
-        the_unit = request.POST['unit']
-        if the_unit == 'Year':
-            factor = period
-            date = datetime.date(qs.expiry_date.year + period, qs.expiry_date.month, qs.expiry_date.day)
-        else:
-            factor = period/12
-            num = qs.expiry_date.month + period
-            if num > 12:
-                num -= 12
-                year = qs.expiry_date.year + 1
-            else:
-                year = qs.expiry_date.year
-            date = datetime.date(year, num, qs.expiry_date.day)
-        qs.expiry_date = date
-        qs.status = True
-        qs.save()
-
-        # This session is to create renewal database
-        renew = Renewal(store=qs,
-                        date=datetime.date.today(),
-                        amount_paid=qs.rent_amount*factor,
-                        )
-        renew.save()
-
-        # the message
-        messages.success(request, f'Rent renewal successfully !!!')
-
-        return redirect('warehouse-detail', pk=kwargs['pk'])
-
 
 class BankAccountCreate(LoginRequiredMixin, CreateView):
     form_class = BankAccountForm
@@ -351,9 +331,6 @@ class StoreLevyCreateView(LoginRequiredMixin, CreateView):
     template_name = 'warehouse/storelevy_form.html'
     success_url = reverse_lazy('warehouse-home')
 
-    def get(self, request: HttpRequest, *args: str, **kwargs: reverse_lazy) -> HttpResponse:
-        return super().get(request, *args, **kwargs)
-
 
 class StoreLevyListView(LoginRequiredMixin, ListView):
     model = StoreLevy
@@ -364,5 +341,10 @@ class StoreLevyUpdateView(LoginRequiredMixin, UpdateView):
     model = StoreLevy
     template_name = 'warehouse/storelevy_form.html'
     success_url = reverse_lazy('store-levy-list')
+
+class RentListView(LoginRequiredMixin, ListView):
+    template_name = 'warehouse/storerent_list.html'
+    model = Renewal
     
-    
+    def get_queryset(self) -> QuerySet:
+        return super().get_queryset().filter(date__year=datetime.date.today().year).order_by('store')

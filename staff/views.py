@@ -783,14 +783,6 @@ class Payslip(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         period = kwargs['object'].period
         # month = int(period.split('-')[1])
 
-        # balance = EmployeeBalance.objects.filter(staff=staff).filter(date__month=month).aggregate(total=Sum('value'))['total']
-        # balance = decimal.Decimal('0') if balance is None else balance
-
-        # cr = EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Cr').aggregate(Sum('value'))['value__sum']
-        # dr = EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Dr').aggregate(Sum('value'))['value__sum']
-        # Cr = decimal.Decimal('0') if cr is None else cr
-        # Dr = decimal.Decimal('0') if dr is None else dr
-        
         Cr = Qsum.to_currency(EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Cr'), 'value')
         Dr = Qsum.to_currency(EmployeeBalance.objects.filter(staff=staff, period=period, value_type='Dr'), 'value')
         context['balance'] = Cr - Dr
@@ -1673,23 +1665,6 @@ class GratuityListView(ListView):
         context['term_staff'] = term_staff_data
         return context
 
-
-class GratuityListViewOneStaff(LoginRequiredMixin, TemplateView):
-
-    template_name = 'staff/gratuity/employee_gratuity_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs) 
-        
-        context['staff'] = Employee.objects.get(id=kwargs['pk'])
-        staff_gratuity = EmployeeBalance.objects.filter(staff=kwargs['pk'])
-        context['staff_gratuity'] = staff_gratuity
-        value = staff_gratuity.filter(value_type='Cr').aggregate(Sum('value'))['value__sum']
-        credit_amount = value if value is not None else decimal.Decimal('0')
-        value = staff_gratuity.filter(value_type='Dr').aggregate(Sum('value'))['value__sum']
-        debit_amount = value if value is not None else decimal.Decimal('0')
-        context['net_value'] = credit_amount - debit_amount
-        return context
 
 
 class GratuityDetailView(DetailView):

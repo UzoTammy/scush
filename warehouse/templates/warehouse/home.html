@@ -11,10 +11,25 @@
                 <div class="row">
                     <div class="col">
                         <h3 class="text-center">Facilities Home Page</h3>
-                        
                     </div>
                 </div>
-
+                <div class="row mt-3">
+                    <div class="col text-center">
+                            <a href="{% url 'warehouse-list-all' %}">
+                            <i class="fa fa-eye-slash text-warning"></i> Stores
+                            </a>
+                    </div>
+                    <div class="col text-center">
+                            <a href="{% url 'store-rent-list' %}">
+                            <i class="fa fa-eye-slash text-warning"></i> Rent
+                            </a>
+                    </div>
+                    <div class="col text-center">
+                            <a href="{% url 'store-levy-list' %}">
+                            <i class="fa fa-eye-slash text-warning"></i> Levy
+                            </a>
+                    </div>
+                </div>
                 <div class="row d-flex justify-content-center mt-2">
                     <div class="col-sm-4">
                         <table class="table text-monospace">
@@ -86,18 +101,6 @@
                     
                 </div>
 
-                <div class="bg-info clearfix">
-                    <button type="button" class="btn btn-dark float-left">
-                        <a href="{% url 'warehouse-list-all' %}">
-                        <i class="fa fa-eye-slash text-warning"></i> View Stores
-                        </a>
-                    </button>
-                    <button type="button" class="btn btn-dark float-right">
-                        <a href="{% url 'warehouse-create' %}">
-                            <i class="fa fa-plus text-warning"></i> Add Store
-                        </a>
-                    </button>
-                </div>
                 
                 <div class="row">
                     <div class="col">
@@ -135,19 +138,7 @@
                     </div>
                 </div>
                 
-                <div class="bg-info clearfix">
-                    <button type="button" class="btn btn-dark float-left">
-                        <a href="{% url 'store-levy-list' %}">
-                            <i class="fa fa-eye-slash text-warning"></i> Paid Levies
-                        </a>
-                    </button>
-                    <button type="button" class="btn btn-dark float-right">
-                        <a href="{% url 'store-levy-create' %}">
-                            <i class="fa fa-money text-warning"></i> Pay Levy
-                        </a>
-                    </button>
-                </div>
-
+                
                 <div class="row d-flex justify-content-center">
                     <div class="col">
                         <table class="table text-monospace" data-toggle="table">

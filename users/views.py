@@ -44,12 +44,12 @@ def profile(request):
         if request.FILES:
             if p_form.is_valid():
                 p_form.save()
-                messages.success(request, f'Profile picture updated successfully!!')
+                messages.success(request, 'Profile picture updated successfully!!')
                 return redirect('profile')
         else:
             if u_form.is_valid():
                 u_form.save()
-                messages.success(request, f'Profile info updated successfully!!')
+                messages.success(request, 'Profile info updated successfully!!')
                 return redirect('profile')
 
     else:

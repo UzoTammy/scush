@@ -9,13 +9,7 @@
                 <i class="fa fa-minus text-warning"></i>
                 Action
             </p>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="modal" data-target="#payModal" href="#">
-                        Renew or Pay Rent
-                    </a>
-                </li>
-            </ul>
+            
             <p class="m-2 text-white">
                 <i class="fa fa-minus text-warning"></i>
                 Basic
@@ -74,87 +68,6 @@
                         <h4 class="text-danger float-right">Store is disabled</h4>
                         {% endif %}
                     </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<!--Modal-->
-<div class="section">
-    <!--    Rent Renewal-->
-    <div class="modal fade" id="payModal" tabindex="-1" aria-labelledby="payModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-secondary text-white">
-                    <h5 class="modal-title" id="payModalLabel">
-                        Rent Renewal
-                    </h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true"><i class="fa fa-times text-danger"></i></span>
-                    </button>
-                </div>
-                <form action="{% url 'warehouse-pay-rent' object.pk %}" method="post">
-                    {% csrf_token %}
-                    <div class="modal-body">
-                        <p>The Store: {{object}} {{object.store_type}}</p>
-                        <p>Current Annual Rent: {{object.rent_amount}}</p>
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="period">Period</label>
-                                    <select class="form-control" name="period" id="period">
-                                        {% for i in range %}
-                                        <option value="{{i}}">{{i}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="unit">Unit</label>
-                                    <select class="form-control" name="unit" id="unit">
-                                        <option value="Year">Year</option>
-                                        <option value="Month">Month</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-outline-primary">
-                            Renew
-                        </button>
-                        <button type="button" data-dismiss="modal" class="btn btn-outline-secondary">
-                            Close
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Disable Store and Bank Account -->
-    <!-- Button trigger modal -->
-
-
-    <div class="modal fade" id="disableModal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="ModalLabel">Disable {{object}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>{{object}} will be disabled, and will no longer appear on the list, Proceed?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                    <a class="nav-link btn btn-danger" href="{% url 'disable-store-bank' object.pk %}">Yes</a>
                 </div>
             </div>
         </div>
