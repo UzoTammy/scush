@@ -854,12 +854,12 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         current_year = datetime.date.today().year
         p_and_l = TradeDaily.objects.filter(date__year=current_year)
-        balancesheet = BalanceSheet.objects.filter(date__year=2023)
+        indirect_expenses = QSum.to_currency(p_and_l, 'indirect_expenses')
         qs = Stores.active.all()
         context['sales'] = QSum.to_currency(p_and_l, 'sales')
-        context['profit'] = QSum.to_currency(balancesheet, 'profit')
+        context['profit'] = QSum.to_currency(p_and_l, 'gross_profit') - indirect_expenses
         context['rent'] = QSum.to_currency(qs, 'rent_amount')
         context['levy'] = QSum.to_currency(qs, 'allocated_levy_amount')
-        context['admin_expenses'] = QSum.to_currency(p_and_l, 'indirect_expenses')
+        context['admin_expenses'] = indirect_expenses
         # context['']
         return context
