@@ -39,7 +39,7 @@ from django.db.models import F, Sum, Q
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import authenticate, login
 
-from staff.models import Employee, Permit, Payroll
+from staff.models import Employee, Permit, Payroll, Welfare
 from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
 from apply.models import Applicant
@@ -860,7 +860,8 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
         self_rent = QSum.to_currency(qs_self, 'rent_amount')
 
         payout = QSum.to_currency(Payroll.objects.filter(period__contains=str(current_year)), 'net_pay')
-
+        welfare = Welfare.objects.filter(date__year=current_year)
+        
         context['sales'] = QSum.to_currency(p_and_l, 'sales')
         context['profit'] = QSum.to_currency(p_and_l, 'gross_profit') - indirect_expenses
         context['rent'] = QSum.to_currency(qs, 'rent_amount') - self_rent
@@ -868,4 +869,5 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
         context['admin_expenses'] = indirect_expenses
         context['self_rent'] = self_rent
         context['payout'] = payout
+        context['welfare'] = QSum.to_currency(welfare, 'amount')
         return context
