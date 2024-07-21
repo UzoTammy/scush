@@ -12,7 +12,7 @@ def zero_padding(value, n):
     try:
         if value.isdigit():
             return value.zfill(n)
-    except:
+    except Exception:
         return None
 
 @register.filter(name='addsep')
@@ -72,7 +72,7 @@ def divide(value, arg):
 def minus(value, arg):
     try:
         return value - arg
-    except:
+    except Exception:
         return None
 
 @register.filter
@@ -87,20 +87,20 @@ def myriad(value):
         if 1e3 <= value < 1e6:
             if isinstance(value, (decimal.Decimal,)):
                 value = float(value)
-            return f"{round(value/1e3, 1)}K"
+            return f"{round(value/1e3, 2)}K"
         elif 1e6 <= value < 1e9:
-            return f"{round(value/1e6, 1)}M"
+            return f"{round(value/1e6, 3)}M"
         elif value >= 1e9:
-            return f"{round(value/1e9, 1)}B"
+            return f"{round(value/1e9, 3)}B"
         return round(value, 1)
-    except:
+    except Exception:
         return None
 
 @register.filter
 def array(value, arg):
     try:
         return value[arg-1]
-    except:
+    except Exception:
         return None
 
 @register.filter

@@ -1,0 +1,60 @@
+{% extends 'core/base.html' %}
+{% block head %}
+{% load custom_tags %}
+<style>
+    body {
+        font-family: monospace;
+        font-size: medium;
+    }
+</style>
+{% endblock %}
+
+{% block content%}
+<div class="container">
+    <div class="row mt-3">
+        <div class="col">
+            <h3 class="text-center">Business Summary Page</h3>
+        </div>
+    </div>
+    <div class="container px-lg-5">
+        <div class="row row-cols-4 mx-lg-n5">
+          <div class="col py-3 px-lg-5 border bg-light">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-center rounded-circle bg-light">Sales</li>
+                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{sales|myriad}}</li>
+              </ul>
+          </div>
+          <div class="col py-3 px-lg-5 border bg-light">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-center rounded-circle bg-light">Profit</li>
+                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{profit|myriad}}</li>
+              </ul>
+          </div>
+          <div class="col py-3 px-lg-5 border bg-light">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-center rounded-circle bg-light">Levy</li>
+                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{levy|myriad}}</li>
+              </ul>
+          </div>
+          <div class="col py-3 px-lg-5 border bg-light">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-center rounded-circle bg-light">Rent</li>
+                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{rent|myriad}}</li>
+              </ul>
+          </div>
+          <div class="col py-3 px-lg-5 border bg-light">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-center rounded-circle bg-light">Admin. Expenses</li>
+                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{admin_expenses|myriad}}</li>
+              </ul>
+          </div>
+          <!-- <div class="col py-3 px-lg-5 border bg-light">Payout</div> -->
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <a class="btn btn-outline-dark float-right" href="{{view.request.headers.Referer}}"><i class="fa fa-reply"></i> Return</a>
+        </div>
+    </div>
+</div>
+{% endblock%}

@@ -10,8 +10,10 @@ from djmoney.forms.fields import MoneyField
 class StoreForm(forms.ModelForm):
     expiry_date = forms.DateField(
         widget=forms.DateInput(
-                               attrs={'type': 'date',
-                                      'value': datetime.date.today}
+                               attrs={
+                                   'type': 'date',
+                                   'value': datetime.date.today
+                                }
                                ))
 
     class Meta:
@@ -32,6 +34,12 @@ class PayRentForm(forms.Form):
         if self.cleaned_data['months'] == '0' and self.cleaned_data['years'] == '0':
             raise forms.ValidationError('Both month and year cannot be empty')
         # return super().clean()
+
+# class PayAnyRentForm(forms.ModelForm):
+#     class Meta:
+#         model = Renewal
+#         fields = ('store', 'month', 'year', 'date', 'amount_paid')
+
 
 class RentRenewalUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

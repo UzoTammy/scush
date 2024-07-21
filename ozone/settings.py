@@ -175,10 +175,10 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # My input
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
-# LOGOUT_REDIRECT_URL = 'login'
 
 # Email Server
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend'
@@ -196,7 +196,7 @@ ADMINS = (('SCuSH', 'scush@ozonefl.com'),)
 # installed django_session_timeout
 SESSION_EXPIRE_SECONDS = 60*20 if DEBUG else 60 * 10
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
-SESSION_TIMEOUT_REDIRECT = 'login'
+# SESSION_TIMEOUT_REDIRECT = 'login'
 
 # General settings
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

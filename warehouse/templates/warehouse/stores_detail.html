@@ -1,77 +1,54 @@
 {% extends 'users/base.html' %}
 
 {% block content %}
-<div class="section">
-    <div class="row">
-        <!--        side menu-->
-        <div class="col-2 bg-dark">
-            <p class="m-2 text-white">
-                <i class="fa fa-minus text-warning"></i>
-                Action
-            </p>
-            
-            <p class="m-2 text-white">
-                <i class="fa fa-minus text-warning"></i>
-                Basic
-            </p>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'warehouse-update' object.pk %}">
-                        Update
-                    </a>
+<!--        -->
+<div class="container">
+    <div class="row mt-3 justify-content-center">
+        <div class="col-8">
+            <h3 class="text-center">{{object.name}} <span class="">{{object.store_type}}</span></h3>
+            <ul class="list-group">
+                <li class="list-group-item">Store <span class="float-right">{{object.name}}</span></li>
+                <li class="list-group-item">Type <span class="float-right">{{object.store_type}}</span></li>
+                <li class="list-group-item">Used As <span class="float-right">{{object.usage}}</span></li>
+                <li class="list-group-item">Owner <span class="float-right">{{object.owner}}</span></li>
+                <li class="list-group-item">Address <span class="float-right">{{object.address}}</span></li>
+                <li class="list-group-item">Contact <span class="float-right">{{object.contact}}</span></li>
+                <li class="list-group-item">Rent per annum <span class="float-right">{{object.rent_amount}}</span></li>
+                <li class="list-group-item">Capacity <span class="float-right">{{object.capacity}}</span></li>
+                <li class="list-group-item">Expiry Date <span class="float-right">{{object.expiry_date}}</span>
                 </li>
-                {% if not object.disabled %}
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="modal" data-target="#disableModal" href="#">
-                        Disable
-                    </a>
+                <li class="list-group-item">Status <span class="float-right">{{object.status|yesno:'Paid, Not paid'}}</span></li>
+
+                <li class="list-group-item">
+                    {% if not object.disabled %}
+                    <div class="row">
+                        <div class="col text-center">
+                            <a href="{% url 'warehouse-update' object.pk %}">
+                                Update
+                            </a>
+                        </div>
+                        <div class="col text-center">
+                            <a class="" href="{% url 'warehouse-bank-create' object.pk %}">Add Bank Account
+                            </a>
+                        </div>
+                        {% if not object.disabled %}
+                        <div class="col text-center">
+                            <a href="{% url 'warehouse-update' object.pk %}">
+                                Disable
+                            </a>
+                        </div>
+
+                        {% endif %}
+                    </div>
                 </li>
+                {% else %}
+                <h4 class="text-danger float-right">Store is disabled</h4>
                 {% endif %}
             </ul>
-            <p class="m-2 text-white">
-                <i class="fa fa-minus text-warning"></i>
-                End
-            </p>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'warehouse-list-all' %}">
-                        <i class="fa fa-reply text-warning"></i> Back
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <!--        -->
-        <div class="col-8">
-            <div class="row mt-3 justify-content-center vh-100">
-                <div class="col-8">
-                    <h3 class="text-center">{{object.name}} <span class="">{{object.store_type}}</span></h3>
-                    <ul class="list-group">
-                        <li class="list-group-item">Store <span class="float-right">{{object.name}}</span></li>
-                        <li class="list-group-item">Type <span class="float-right">{{object.store_type}}</span></li>
-                        <li class="list-group-item">Used As <span class="float-right">{{object.usage}}</span></li>
-                        <li class="list-group-item">Owner <span class="float-right">{{object.owner}}</span></li>
-                        <li class="list-group-item">Address <span class="float-right">{{object.address}}</span></li>
-                        <li class="list-group-item">Contact <span class="float-right">{{object.contact}}</span></li>
-                        <li class="list-group-item">Rent per annum <span
-                                class="float-right">{{object.rent_amount}}</span></li>
-                        <li class="list-group-item">Capacity <span class="float-right">{{object.capacity}}</span></li>
-                        <li class="list-group-item">Expiry Date <span class="float-right">{{object.expiry_date}}</span>
-                        </li>
-                        <li class="list-group-item">Status <span class="float-right">{{object.status|yesno:'Paid, Not paid'}}</span></li>
 
-                        <li class="list-group-item">
-                            {% if not object.disabled %}
-                            <a class="btn btn-primary float-right"
-                                href="{% url 'warehouse-bank-create' object.pk %}">Add Bank Account</a>
-                        </li>
-                        {% else %}
-                        <h4 class="text-danger float-right">Store is disabled</h4>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
+            <a class="btn btn-outline-dark mt-3 mr-3 float-right" href="{% url 'warehouse-list-all' %}">Return</a>
         </div>
     </div>
-
+    
 </div>
 {% endblock %}

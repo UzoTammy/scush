@@ -1,4 +1,3 @@
-import decimal
 import calendar
 import datetime
 import json
@@ -16,8 +15,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail, EmailMessage
 from django.forms import ValidationError
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from users.models import Profile
-from apply.models import Applicant
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.template import loader
 from django.urls import reverse_lazy
@@ -26,12 +23,12 @@ from django.views.generic import (View,TemplateView,ListView,DetailView,CreateVi
 from djmoney.money import Money
 
 from ozone import mytools
-from .models import (
-    Employee, EmployeeBalance, CreditNote, DebitNote, Payroll, 
-    Reassign, Terminate, Suspend, Permit,SalaryChange, 
-    RequestPermission, Welfare
-)
 from .form import (DebitForm, CreditForm, EmployeeForm)
+from .models import (Employee, EmployeeBalance, CreditNote, DebitNote, Payroll, 
+                     Reassign, Terminate, Suspend, Permit,SalaryChange, 
+                     RequestPermission, Welfare)
+from users.models import Profile
+from apply.models import Applicant
 from core.models import JsonDataset
 from core.tools import QuerySum as Qsum
 from survey.models import Question
@@ -417,7 +414,6 @@ class StaffUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             form.instance.image.name = 'default.jpg'
             form.save()
         return super().form_valid(form)
-
 
 class PDFProfileView(View):
 

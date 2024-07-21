@@ -9,7 +9,7 @@
                    data-toggle="table"
                    class="table table-bordered caption-top table-bordered table-sm text-monospace">
 
-                <caption><h3 class="text-center">Store Levies</h3></caption>
+                <caption><h3 class="text-center">Paid Levies for the current Year</h3></caption>
                 <thead class="bg-dark text-white">
                 <tr>
                     <th scope="col">Store</th>
@@ -45,8 +45,9 @@
                 </tbody>
         </table>
         <div class="row float-right">
-            <i>Click item on store column to update</i>
+            
             <div class="col">
+                <a class="btn btn-outline-primary" href="{% url 'store-levy-create' %}"><i class="fa fa-paypal"></i> Pay Levy</a>
                 <a type="button" class="btn btn-outline-dark" href="{% url 'warehouse-home' %}"><i class="fa fa-reply"></i></a>
             </div>
         </div>

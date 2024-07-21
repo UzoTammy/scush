@@ -1,4 +1,5 @@
 from typing import Any
+from django.utils.safestring import mark_safe
 
 class CustomMiddleware:
     def __init__(self, get_response):
@@ -13,7 +14,7 @@ class CustomMiddleware:
     def process_template_response(self, request, response):
         if hasattr(response, 'context_data'):
             # Add custom data to the context
-            response.context_data['naira'] = chr(8358)
+            response.context_data['naira'] = mark_safe('<span>&#8358</span>')
         return response
     
     

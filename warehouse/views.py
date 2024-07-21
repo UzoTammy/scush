@@ -4,6 +4,8 @@ from django.db.models.base import Model as Model
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models.query import QuerySet
+from django.forms import BaseModelForm
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -167,6 +169,17 @@ class PayRentView(LoginRequiredMixin, TemplateView):
             
         return render(request, self.template_name, context)
 
+class PayAnyRentView(LoginRequiredMixin, CreateView):
+    template_name = 'warehouse/pay_rent_form.html'
+    # model = Renewal
+    form_class = RentRenewalUpdateForm
+    success_url = reverse_lazy('store-rent-list')
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        signal_renew_store.send(sender=None, instance=form.instance.store, extra_data={'month': int(form.cleaned_data['month']), 'year': int(form.cleaned_data['year'])})
+        messages.success(self.request, 'Update of Rent is successful!!') 
+        return super().form_valid(form)
+    
 
 class UpdateRentView(LoginRequiredMixin, TemplateView):
     template_name = 'warehouse/pay_rent_form.html'
@@ -183,12 +196,10 @@ class UpdateRentView(LoginRequiredMixin, TemplateView):
         context = self.get_context_data(**kwargs)
         form = RentRenewalUpdateForm(request.POST, instance=context.get('renew_obj'))
         if form.is_valid():
-            form.instance.store = context.get('renew_obj').store
-            form.instance.date = datetime.datetime.strptime(request.POST['date'], '%Y-%m-%d')
-            form.instance.amount_paid = Money(decimal.Decimal(request.POST['amount_paid_0']), request.POST['amount_paid_1'])
-            form.save()
+            
             signal_renew_store.send(sender=None, instance=form.instance.store, extra_data={'month': int(request.POST['month']), 'year': int(request.POST['year'])})
             messages.success(request, 'Update of Rent is successful!!')
+            form.save()
             return redirect('store-rent-list')
         context['form'] = form
         return render(request, self.template_name, context)

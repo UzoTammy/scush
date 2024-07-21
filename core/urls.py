@@ -1,5 +1,10 @@
 from django.urls import path
-from .views import *
+from django.views.generic import TemplateView
+from .views import (ScushView, HomeView, CompanyPageView, AboutView,
+                    DashBoardView,PoliciesView, ManagementProfileView, DailyReportView,
+                    JsonListView, JsonDetailView, JsonCreateView, JsonUpdateView,
+                    JsonCategoryKeyView, JsonCategoryKeyValueUpdateView, JsonCategoryKeyValueCreateView,
+                    KPIMailSend, ImportCSVView, SaveCSVFile, BusinessSummaryView)
 from . import views
 # from django.contrib.auth import views as auth_views
 # from django.contrib.auth.forms import PasswordChangeForm
@@ -29,7 +34,9 @@ urlpatterns = [
     path('mail/<str:target>/<str:kpi>/', KPIMailSend.as_view(), name='kpi_mail'),
     
     path('import/csv/', ImportCSVView.as_view(), name='import-csv'),
-    path('import/csv/save/', SaveCSVFile.as_view(), name='save-csv')
+    path('import/csv/save/', SaveCSVFile.as_view(), name='save-csv'),
+
+    path('business/summary/', BusinessSummaryView.as_view(), name='business-summary')
     
 ]
 

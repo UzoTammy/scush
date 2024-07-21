@@ -4,7 +4,7 @@ from .views import (
      StoresCreateView, StoresUpdateView,
      BankAccountCreate, BankAccountUpdate, BankAccountDetail,
      StoreLevyCreateView, StoreLevyListView, StoreLevyUpdateView,
-     PayRentView, UpdateRentView, RentListView
+     PayRentView, UpdateRentView, RentListView, PayAnyRentView
      )
 
 urlpatterns = [
@@ -24,6 +24,7 @@ urlpatterns = [
     path('levy/list/', StoreLevyListView.as_view(), name='store-levy-list'),
     path('levy/update/<int:pk>/', StoreLevyUpdateView.as_view(), name='store-levy-update'),
 
+    path('pay/rent/', PayAnyRentView.as_view(), name='pay-any-rent'),
     path('pay/rent/<int:pk>/', PayRentView.as_view(), name='store-pay-rent'),
     path('renew/rent/<int:pk>/', UpdateRentView.as_view(), name='renew-rent-update'),
     path('rent/list/', RentListView.as_view(), name='store-rent-list')

@@ -44,13 +44,13 @@ from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
 from apply.models import Applicant
 from trade.models import TradeDaily, BalanceSheet, BankBalance
-from warehouse.models import Renewal
+from warehouse.models import Renewal, StoreLevy, Stores
 from .forms import JsonDatasetForm
 from .models import JsonDataset
 from mail import mailbox
 from core import utils as plotter
 from core.mixins import DateTimeMixin
-
+from .tools import QuerySum as QSum
 
 def index(request):
     """
@@ -124,7 +124,6 @@ class HomeView(LoginRequiredMixin, DateTimeMixin, TemplateView):
         filepath = os.path.join(settings.BASE_DIR, 'core', f'{self.request.user}.json')
         if os.path.exists(filepath):
             os.remove(filepath)
-
         return context
     
 
@@ -847,4 +846,20 @@ class SaveCSVFile(LoginRequiredMixin, View):
         messages.success(request, "Uploaded file saved Successfully !!!")
         context['obj_created_updated'] = (obj_created, obj_updated)
         return render(request, 'core/import_csv.html', context=context)
-    
+
+class BusinessSummaryView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/business_summary.html'
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        current_year = datetime.date.today().year
+        p_and_l = TradeDaily.objects.filter(date__year=current_year)
+        balancesheet = BalanceSheet.objects.filter(date__year=2023)
+        qs = Stores.active.all()
+        context['sales'] = QSum.to_currency(p_and_l, 'sales')
+        context['profit'] = QSum.to_currency(balancesheet, 'profit')
+        context['rent'] = QSum.to_currency(qs, 'rent_amount')
+        context['levy'] = QSum.to_currency(qs, 'allocated_levy_amount')
+        context['admin_expenses'] = QSum.to_currency(p_and_l, 'indirect_expenses')
+        # context['']
+        return context
