@@ -14,10 +14,10 @@ class CustomMiddleware:
     def process_template_response(self, request, response):
         if hasattr(response, 'context_data'):
             # Add custom data to the context
-            if not request.user_agent.is_mobile: 
-                response.context_data['naira'] = mark_safe('<span>&#8358</span>')
-            else:
-                response.context_data['naira'] = 'N'
+            # if not request.user_agent.is_mobile: 
+            response.context_data['naira'] = 'N'
+            # else:
+            #     response.context_data['naira'] = 'N'
         return response
     
     
