@@ -856,10 +856,16 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
         p_and_l = TradeDaily.objects.filter(date__year=current_year)
         indirect_expenses = QSum.to_currency(p_and_l, 'indirect_expenses')
         qs = Stores.active.all()
+        qs_self = Stores.active.filter(owner='Self')
+        self_rent = QSum.to_currency(qs_self, 'rent_amount')
+
+        payout = QSum.to_currency(Payroll.objects.filter(period__contains=str(current_year)), 'net_pay')
+
         context['sales'] = QSum.to_currency(p_and_l, 'sales')
         context['profit'] = QSum.to_currency(p_and_l, 'gross_profit') - indirect_expenses
-        context['rent'] = QSum.to_currency(qs, 'rent_amount')
+        context['rent'] = QSum.to_currency(qs, 'rent_amount') - self_rent
         context['levy'] = QSum.to_currency(qs, 'allocated_levy_amount')
         context['admin_expenses'] = indirect_expenses
-        # context['']
+        context['self_rent'] = self_rent
+        context['payout'] = payout
         return context

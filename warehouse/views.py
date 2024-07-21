@@ -95,7 +95,7 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
                     'rented': (rented_capacity, rented_percent),
                     'owned': (owned_capacity, owned_percent),
                 },
-                'amount': {
+                'rent': {
                     'payable': (rent_payable, count_payable),
                     'paid': (rent_paid, count_paid),
                     'unpaid': (rent_unpaid, count_unpaid)
