@@ -866,8 +866,19 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
         context['profit'] = QSum.to_currency(p_and_l, 'gross_profit') - indirect_expenses
         context['rent'] = QSum.to_currency(qs, 'rent_amount') - self_rent
         context['levy'] = QSum.to_currency(qs, 'allocated_levy_amount')
+
         context['admin_expenses'] = indirect_expenses
         context['self_rent'] = self_rent
         context['payout'] = payout
         context['welfare'] = QSum.to_currency(welfare, 'amount')
+
+        latest_date = BankBalance.objects.latest('date').date
+        fund_qs = BankBalance.objects.filter(date=latest_date)
+        context['fund_date'] = latest_date
+        context['fund'] = QSum.to_currency(fund_qs, 'bank_balance')  
+
+        latest_date = TradeDaily.objects.latest('date').date
+        stock_qs = TradeDaily.objects.filter(date=latest_date)
+        context['stock_date'] = latest_date
+        context['stock'] = QSum.to_currency(stock_qs, 'closing_value')
         return context

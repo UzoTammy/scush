@@ -4,7 +4,6 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row vh-100">
-        
         <!--        body of page-->
         <div class="col">
             <div class="container mt-2">
@@ -242,33 +241,3 @@
 </section>
 
 {% endblock content%}
-
-<div class="col-sm-4">
-    <div class="card bg-transparent border-0">
-        <div class="card-body">
-            <h5 class="card-title">Property Use Type</h5>
-            <hr>
-            <p class="card-text">
-                Offices <span class="float-right">
-                    ({{rent_percentage.office|floatformat:2}}%) {{N}}{% if rent.office == None %}0.00{% else
-                    %}{{rent.office}}{% endif %}
-                </span>
-            </p>
-            <hr>
-            <p class="card-text">
-                Apartments <span class="float-right">
-                    ({{rent_percentage.apartment|floatformat:2}}%) {{N}}{% if rent.apartment == None %}0.00{% else
-                    %}{{rent.apartment}}{% endif %}
-                </span>
-            </p>
-            <hr>
-            <p class="card-text">
-                Sell-out & Storage
-                <span class="float-right">
-                    ({{rent_percentage.storage|floatformat:2}}%) {{N}}{% if rent.storage == None %}0.00{% else
-                    %}{{rent.storage}}{% endif %}
-                </span>
-            </p>
-        </div>
-    </div>
-</div>
