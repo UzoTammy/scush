@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap4',
     'djmoney',
+    'django_user_agents',
     
     'core.apps.CoreConfig',
     'customer.apps.CustomerConfig',
@@ -81,6 +82,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'django_user_agents.middleware.UserAgentMiddleware',
 
     'core.middleware.CustomMiddleware',
     
