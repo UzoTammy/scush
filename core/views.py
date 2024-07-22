@@ -25,6 +25,7 @@ import calendar
 import csv
 import json
 import os
+import decimal
 from pathlib import Path
 from typing import Any, Dict
 
@@ -881,4 +882,10 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
         stock_qs = TradeDaily.objects.filter(date=latest_date)
         context['stock_date'] = latest_date
         context['stock'] = QSum.to_currency(stock_qs, 'closing_value')
+        if self.request.GET.get('currency') == 'dollars':
+            dollar_rate = decimal.Decimal(1/1540)
+            context['sales'] *= dollar_rate
+            context['profit'] *= dollar_rate
+            context['rent'] *= dollar_rate
+            context['levy'] *= dollar_rate
         return context

@@ -16,6 +16,8 @@ class CustomMiddleware:
             # Add custom data to the context
             # if not request.user_agent.is_mobile: 
             response.context_data['naira'] = 'N'
+            if request.GET.get('currency') == 'dollars':
+                response.context_data['naira'] = '$'
             # else:
             #     response.context_data['naira'] = 'N'
         return response

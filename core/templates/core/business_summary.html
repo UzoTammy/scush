@@ -16,6 +16,26 @@
             <h3 class="text-center">Business Summary Page</h3>
         </div>
     </div>
+    <div class="row mt-2 mb-3">
+      <div class="col">
+        <a href="?currency=dollars">
+          {% if view.request.GET.currency == 'dollars' %}
+          <i class="fa fa-check-circle text-success"></i> 
+          {% else %}
+          <i class="fa fa-times-circle text-danger"></i> 
+          {% endif %}
+          Dollars
+        </a>
+        <a class="ml-2" href="?currency=naira">
+          {% if view.request.GET.currency == 'naira' or not view.request.GET %}
+          <i class="fa fa-check-circle text-success"></i> 
+          {% else %}
+          <i class="fa fa-times-circle text-danger"></i> 
+          {% endif %}
+          Naira
+        </a>
+      </div>
+    </div>
     <div class="container px-lg-5">
         <div class="row mx-lg-n5">
           <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
@@ -94,7 +114,7 @@
     </div>
     <div class="row mt-3">
         <div class="col">
-            <a class="btn btn-outline-dark float-right" href="{{view.request.headers.Referer}}"><i class="fa fa-reply"></i> Return</a>
+            <a class="btn btn-outline-dark float-right" href="{% url 'home' %}"><i class="fa fa-reply"></i> Return</a>
         </div>
     </div>
 </div>
