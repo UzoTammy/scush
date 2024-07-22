@@ -186,7 +186,7 @@ class Welfare(models.Model):
     staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now)
     description = models.CharField(max_length=150)
-    amount = models.FloatField(default=0.0)
+    amount = MoneyField(max_digits=10, decimal_places=2)
 
 # Create User will be seen in users model
 class Payroll(models.Model):

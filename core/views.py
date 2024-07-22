@@ -872,7 +872,7 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
         context['self_rent'] = self_rent
         context['payout'] = payout
         context['welfare'] = QSum.to_currency(welfare, 'amount')
-
+        
         latest_date = BankBalance.objects.latest('date').date
         fund_qs = BankBalance.objects.filter(date=latest_date)
         context['fund_date'] = latest_date
