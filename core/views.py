@@ -882,6 +882,14 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
         stock_qs = TradeDaily.objects.filter(date=latest_date)
         context['stock_date'] = latest_date
         context['stock'] = QSum.to_currency(stock_qs, 'closing_value')
+
+        latest_date = BalanceSheet.objects.latest('date').date
+        bs = BalanceSheet.objects.get(date=latest_date)
+        context['liability'] = bs.liability.amount if bs else decimal.Decimal(0)
+        context['debtors'] = bs.sundry_debtor.amount if bs else decimal.Decimal(0)
+        context['suspense'] = bs.suspense.amount if bs else decimal.Decimal(0)
+        context['capital'] = bs.capital.amount if bs else decimal.Decimal(0)
+
         if self.request.GET.get('currency') == 'dollars':
             dollar_rate = decimal.Decimal(1/1540)
             context['sales'] *= dollar_rate
@@ -894,4 +902,9 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
             context['welfare'] *= dollar_rate
             context['fund'] *= dollar_rate  
             context['stock'] *= dollar_rate
+            context['liability'] *= dollar_rate
+            context['debtors'] *= dollar_rate
+            context['suspense'] *= dollar_rate
+            context['capital'] *= dollar_rate
+
         return context

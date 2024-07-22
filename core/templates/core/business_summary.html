@@ -88,7 +88,7 @@
           </div>
           <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
             <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Fund (<small class="text-muted">{{fund_date|date:'dS N'}}</small>)</li>
+                <li class="list-group-item text-center rounded-circle bg-light">Funds (<small class="text-muted">{{fund_date|date:'dS N'}}</small>)</li>
                 <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{fund|myriad}}</li>
               </ul>
           </div>
@@ -100,14 +100,20 @@
           </div>
           <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
             <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Reserve</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{welfare|myriad}}</li>
+                <li class="list-group-item text-center rounded-circle bg-light">Suspense</li>
+                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{suspense|myriad}}</li>
               </ul>
           </div>
           <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
             <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Tax</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{welfare|myriad}}</li>
+                <li class="list-group-item text-center rounded-circle bg-light">Liability</li>
+                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{liability|myriad}}</li>
+              </ul>
+          </div>
+          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-center rounded-circle bg-light">Debtors</li>
+                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{debtors|myriad}}</li>
               </ul>
           </div>
         </div>
