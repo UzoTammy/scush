@@ -38,84 +38,20 @@
     </div>
     <div class="container px-lg-5">
         <div class="row mx-lg-n5">
+
+        {% for key, value in business_summary.items %}
           <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
             <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Sales</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{sales|myriad}}</li>
+                <li class="list-group-item text-center rounded-circle bg-light">{{key}} 
+                  {% if key == 'Fund' %} (<small class="text-muted">{{fund_date|date:'dS N'}}</small>) {% endif %}
+                  {% if key == 'Stock' %} (<small class="text-muted">{{stock_date|date:'dS N'}}</small>) {% endif %}
+                  
+                </li>
+                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{value|myriad}}</li>
               </ul>
           </div>
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Profit</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{profit|myriad}}</li>
-              </ul>
-          </div>
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Levy</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{levy|myriad}}</li>
-              </ul>
-          </div>
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Rent</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{rent|myriad}}</li>
-              </ul>
-          </div>
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Owner's Rent</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{self_rent|myriad}}</li>
-              </ul>
-          </div>
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Admin. Expenses</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{admin_expenses|myriad}}</li>
-              </ul>
-          </div>
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Payout</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{payout|myriad}}</li>
-              </ul>
-          </div>
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Welfare</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{welfare|myriad}}</li>
-              </ul>
-          </div>
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Funds (<small class="text-muted">{{fund_date|date:'dS N'}}</small>)</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{fund|myriad}}</li>
-              </ul>
-          </div>
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Stock (<small class="text-muted">{{stock_date|date:'dS N'}}</small>)</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{stock|myriad}}</li>
-              </ul>
-          </div>
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Suspense</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{suspense|myriad}}</li>
-              </ul>
-          </div>
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Liability</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{liability|myriad}}</li>
-              </ul>
-          </div>
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">Debtors</li>
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{debtors|myriad}}</li>
-              </ul>
-          </div>
+
+      {% endfor %}
         </div>
     </div>
     <div class="row mt-3">

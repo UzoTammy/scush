@@ -863,48 +863,41 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
         payout = QSum.to_currency(Payroll.objects.filter(period__contains=str(current_year)), 'net_pay')
         welfare = Welfare.objects.filter(date__year=current_year)
         
-        context['sales'] = QSum.to_currency(p_and_l, 'sales')
-        context['profit'] = QSum.to_currency(p_and_l, 'gross_profit') - indirect_expenses
-        context['rent'] = QSum.to_currency(qs, 'rent_amount') - self_rent
-        context['levy'] = QSum.to_currency(qs, 'allocated_levy_amount')
-
-        context['admin_expenses'] = indirect_expenses
-        context['self_rent'] = self_rent
-        context['payout'] = payout
-        context['welfare'] = QSum.to_currency(welfare, 'amount')
+        business_summary = {
+            'Sales': QSum.to_currency(p_and_l, 'sales'),
+            'Profit': QSum.to_currency(p_and_l, 'gross_profit') - indirect_expenses,
+            'Rent': QSum.to_currency(qs, 'rent_amount') - self_rent,
+            'Levy': QSum.to_currency(qs, 'allocated_levy_amount'),
+            'Admin Expenses': indirect_expenses,
+            'Self Rent': self_rent,
+            'Payout': payout,
+            'Welfare': QSum.to_currency(welfare, 'amount'),
+        }
         
         latest_date = BankBalance.objects.latest('date').date
         fund_qs = BankBalance.objects.filter(date=latest_date)
         context['fund_date'] = latest_date
-        context['fund'] = QSum.to_currency(fund_qs, 'bank_balance')  
+
+        business_summary['Fund'] = QSum.to_currency(fund_qs, 'bank_balance')  
 
         latest_date = TradeDaily.objects.latest('date').date
         stock_qs = TradeDaily.objects.filter(date=latest_date)
         context['stock_date'] = latest_date
-        context['stock'] = QSum.to_currency(stock_qs, 'closing_value')
+
+        business_summary['Stock'] = QSum.to_currency(stock_qs, 'closing_value')
 
         latest_date = BalanceSheet.objects.latest('date').date
         bs = BalanceSheet.objects.get(date=latest_date)
-        context['liability'] = bs.liability.amount if bs else decimal.Decimal(0)
-        context['debtors'] = bs.sundry_debtor.amount if bs else decimal.Decimal(0)
-        context['suspense'] = bs.suspense.amount if bs else decimal.Decimal(0)
-        context['capital'] = bs.capital.amount if bs else decimal.Decimal(0)
+
+        business_summary['Liability'] = bs.liability.amount if bs else decimal.Decimal(0)
+        business_summary['Debtors'] = bs.sundry_debtor.amount if bs else decimal.Decimal(0)
+        business_summary['Current Asset'] = bs.current_asset.amount if bs else decimal.Decimal(0)
+        business_summary['Capital'] = bs.capital.amount if bs else decimal.Decimal(0)
 
         if self.request.GET.get('currency') == 'dollars':
             dollar_rate = decimal.Decimal(1/1540)
-            context['sales'] *= dollar_rate
-            context['profit'] *= dollar_rate
-            context['rent'] *= dollar_rate
-            context['levy'] *= dollar_rate
-            context['admin_expenses'] *= dollar_rate
-            context['self_rent'] *= dollar_rate
-            context['payout'] *= dollar_rate
-            context['welfare'] *= dollar_rate
-            context['fund'] *= dollar_rate  
-            context['stock'] *= dollar_rate
-            context['liability'] *= dollar_rate
-            context['debtors'] *= dollar_rate
-            context['suspense'] *= dollar_rate
-            context['capital'] *= dollar_rate
-
+            for key, value in business_summary.items():
+                business_summary[key] = value*dollar_rate
+            
+        context['business_summary'] = business_summary
         return context
