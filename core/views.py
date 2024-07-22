@@ -888,4 +888,10 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
             context['profit'] *= dollar_rate
             context['rent'] *= dollar_rate
             context['levy'] *= dollar_rate
+            context['admin_expenses'] *= dollar_rate
+            context['self_rent'] *= dollar_rate
+            context['payout'] *= dollar_rate
+            context['welfare'] *= dollar_rate
+            context['fund'] *= dollar_rate  
+            context['stock'] *= dollar_rate
         return context

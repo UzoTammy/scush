@@ -6,7 +6,6 @@ from djmoney.money import Money
 from django.utils import timezone
 
 
-
 class ActiveStoreManager(models.Manager):
     """"To work those stores that are not disabled"""
     def get_queryset(self):
@@ -53,7 +52,7 @@ class Stores(models.Model):
 
 class StoreLevy(models.Model):
     store = models.ForeignKey(Stores, on_delete=models.CASCADE)
-    amount_paid = MoneyField(max_digits=10, decimal_places=2, default_currency='NGN')
+    amount_paid = MoneyField(max_digits=12, decimal_places=2, default_currency='NGN')
     payment_date = models.DateField(default=timezone.now)
     party = models.CharField(max_length=30, verbose_name='Payable To')
     payment_in_full = models.BooleanField(default=True, verbose_name='Full or Part Payment')
