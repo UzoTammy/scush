@@ -1,12 +1,16 @@
 import datetime
+
 from django.dispatch import receiver
 from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.core.mail import EmailMessage
 from django.template import loader
-from .models import BalanceSheet, Money, TradeDaily
-from djmoney.models.fields import Money
+
+from djmoney.money import Money
+
 from core.tasks import send_email
+
+from .models import BalanceSheet, TradeDaily
 
 
 @receiver(post_save, sender=TradeDaily)
@@ -69,7 +73,7 @@ def trade_daily_create(sender, instance, created, **kwargs):
     
     send_email(None, 'uzo.nwokoro@ozonefl.com', 'dickson.abanum@ozonefl.com', 
         f'Daily P & L Report for {instance.date.strftime("%B, %Y")}',
-        {'object': dataset, 'ratio': total_ratio, 'head_title': head_title}, 
+        {'object': dataset, 'ratio': total_ratio, 'head_title': head_title, 'title': 'P & L'}, 
         'trade/mail_daily_PL.html'
     )
     
@@ -81,7 +85,7 @@ def bs_mail_sender(sender, instance, created, **kwargs):
     
     email = EmailMessage(
         subject=f'Balance Sheet As At {instance.date.strftime("%B, %Y")}',
-        body = loader.render_to_string('trade/mail_bs.html', context={'object': instance, 'head_title': head_title}),
+        body = loader.render_to_string('trade/mail_bs.html', context={'object': instance, 'head_title': head_title, 'title': 'Balance Sheet'}),
         from_email='',
         to=['uzo.nwokoro@ozonefl.com'],
         cc=['dickson.abanum@ozonefl.com'],

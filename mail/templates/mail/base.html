@@ -73,8 +73,14 @@
   <body>
     <i class="header">Ozone F & L Trading Co. Ltd.</i>  
     <p>GOB 1-4 Zamfara Plaza, 
-        <br> Trade Fair, Lagos. <br> 
-        <small>https://scush.com.ng</small>
+        <br> Trade Fair, Lagos. 
+        <br> 
+        {% if 'P & L' in title %}
+        <small><a href="https://scush.com.ng/dashboard/">View Dashboard</a></small>
+        {% endif %}
+        {% if 'Balance Sheet' in title %}
+        <small><a href="https://scush.com.ng/business/summary/">View Business Summary</a></small>
+        {% endif %}
     </p>
     
   {% block content %}

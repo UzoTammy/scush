@@ -1,21 +1,25 @@
 import calendar
 import datetime
-from typing import Any, Dict
+from typing import Any
+from datetime import timedelta
+
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
-from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm, 
-                    BankBalanceCopyForm, CreditorAccountForm, FinancialForm)
-from django.shortcuts import render, redirect
-from .models import *
-from stock.models import ProductExtension
+from django.shortcuts import render
 from django.urls.base import reverse_lazy
 from django.db.models import (Sum, F, Avg, ExpressionWrapper, DecimalField)
-from matplotlib import pyplot as plt
 from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView, FormView)                            
-from datetime import timedelta
+
+from djmoney.money import Money
+from matplotlib import pyplot as plt
+
 from ozone import mytools
 from core import utils as plotter
+from stock.models import ProductExtension
+from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm, 
+                    BankBalanceCopyForm, CreditorAccountForm, FinancialForm)
+from .models import TradeDaily, TradeMonthly, BalanceSheet, BankAccount, BankBalance, Creditor
 
 
 GROUP_NAME = 'Administrator'
@@ -136,10 +140,6 @@ class TradeMonthlyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
         context = self.get_context_data(**kwargs)
         form.instance.year = context['last_record']['year']
         form.instance.month = context['last_record']['month']
-        # if form.instance.sales == Money(0, 'NGN'):
-        #     form.instance.sales = Money(1000, 'NGN')
-        # if form.instance.purchase == Money(0, 'NGN'):
-        #     form.instance.purchase = Money(1000, 'NGN')    
         return super().form_valid(form)
 
 
@@ -262,13 +262,6 @@ class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             
             qs = qs.annotate(sales_ratio=ExpressionWrapper(100* self.df* ide/sales, output_field=FloatField()))
             
-
-            # qs = qs.annotate(gross_margin_ratio=ExpressionWrapper(100*self.df*F('gross_profit') / F('sales'), 
-            #                                             output_field=DecimalField()
-            #                                             ))
-            # qs = qs.annotate(sales_ratio=ExpressionWrapper(100*self.df*F('indirect_expenses') / F('sales'), 
-            #                                             output_field=DecimalField()
-            #                                             ))
             qs = qs.annotate(gross_ratio=ExpressionWrapper(100*self.df*(F('indirect_expenses') + F('direct_expenses')) / F('gross_profit'), 
                                                         output_field=DecimalField()
                                                         ))
@@ -390,18 +383,7 @@ class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                     
                     }
                 
-                # previous_month['gross_margin_arrow'] = previous_month['percent_margin'] > current_year_total['percent_margin']
-                # current_month['gross_margin_arrow'] = current_month['percent_margin'] > previous_month['percent_margin']
-
-                # previous_month['sales_arrow'] = previous_month['percent_sales'] > current_year_total['percent_sales']
-                # current_month['sales_arrow'] = current_month['percent_sales'] > previous_month['percent_sales']
-
-                # previous_month['gross_arrow'] = previous_month['percent_gross'] > current_year_total['percent_gross']
-                # current_month['gross_arrow'] = current_month['percent_gross'] > previous_month['percent_gross']
-
-                # previous_month['purchase_arrow'] = previous_month['percent_purchase'] > current_year_total['percent_purchase']
-                # current_month['purchase_arrow'] = current_month['percent_purchase'] > previous_month['percent_purchase']
-
+                
                 context['np_percent'] = round(100 * (current_month['net_profit']/previous_month['net_profit'] - 1), 3)
                 # context['np_bool'] = current_month['net_profit'] > previous_month['net_profit']
                 
@@ -658,7 +640,6 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['dataset'] = latest_record
             return render(request, self.template_name, context)
         return render(request, 'trade/no_record.html', {'message': f'No Daily Record to Report from {from_date} to {to_date}'})
-
 
 
 class BSListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
