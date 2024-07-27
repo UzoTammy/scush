@@ -71,11 +71,17 @@ class CashCollectCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form: Any) -> HttpResponse:
         form.instance.collector = self.request.user
         # Add cash to cash depot
-        cash_depot = CashDepot.objects.latest('date')
-        cash_depot.balance += form.instance.amount
-        if form.instance.post_date > cash_depot.date:
-            cash_depot.date = form.instance.post_date
-        cash_depot.save()
+        if CashDepot.objects.exists():
+            cash_depot = CashDepot.objects.latest('date')
+            cash_depot.balance += form.instance.amount
+            if form.instance.post_date > cash_depot.date:
+                cash_depot.date = form.instance.post_date
+            cash_depot.save()
+        else:
+            CashDepot.objects.create(
+                balance=form.instance.amount,
+                date=form.instance.post_date
+            )
 
         return super().form_valid(form)
 
