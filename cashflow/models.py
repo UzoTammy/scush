@@ -1,3 +1,4 @@
+# import datetime
 from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
@@ -14,6 +15,7 @@ class BankAccount(models.Model):
     lien_value = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
     opening_balance = MoneyField(max_digits=12, decimal_places=2)
     current_balance = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
+    # opening_balance_date = models.DateField(default=datetime.date.today)
     category = models.CharField(max_length=25)
     status = models.BooleanField(default=True) # active
     slug = models.SlugField(unique=True, blank=True)

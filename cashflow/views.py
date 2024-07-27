@@ -35,10 +35,12 @@ class CashflowHomeView(LoginRequiredMixin, FormView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context['object_list'] = BankAccount.objects.all()
-        context['cash'] = CashDepot.objects.latest('date').balance
-        context['date'] = CashDepot.objects.latest('date').date
+        if CashDepot.objects.all().exists():
+            context['cash'] = CashDepot.objects.latest('date').balance
+            # context['cash_date'] = CashDepot.objects.latest('date').date
         context['current_bank_balance_total'] = QuerySum.to_currency(BankAccount.objects.filter(status=True), 'current_balance')
-        context['pending_withdrawals'] = Withdrawal.objects.exclude(stage=-1).exclude(stage=2)
+        context['pending_withdrawals'] = Withdrawal.objects.exclude(stage=-1).exclude(stage=2) # -1, 0, 1, 2
+        
         return context
     
     def form_valid(self, form: Any) -> HttpResponse:
