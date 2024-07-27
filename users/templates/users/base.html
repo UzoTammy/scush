@@ -159,7 +159,9 @@
                         More
                     </a>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{% url 'bank-account-home' %}">Bank Account</a>  
+                        <a class="dropdown-item" href="{% url 'bank-account-home' %}">Funds</a>  
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'cashflow-home' %}">Cashflow</a>  
                         <hr class="dropdown-divider">
                         <a class="dropdown-item" href="{% url 'post-list' %}">Briefs</a>  
                         <hr class="dropdown-divider">
@@ -174,7 +176,7 @@
                         <a class="dropdown-item" href="{% url 'target-home' %}">Target & Budget</a>
                         <hr class="dropdown-divider">
                         <a class="dropdown-item" href="{% url 'trade-home' %}">Trade</a>
-                        <hr>
+                        <hr class="dropdown-divider">
                         <a class="dropdown-item" href="{% url 'business-summary' %}">Business Summary</a>      
                     </div>
 

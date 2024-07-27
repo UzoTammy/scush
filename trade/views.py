@@ -6,6 +6,7 @@ from datetime import timedelta
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls.base import reverse_lazy
 from django.db.models import (Sum, F, Avg, ExpressionWrapper, DecimalField)
@@ -18,7 +19,7 @@ from ozone import mytools
 from core import utils as plotter
 from stock.models import ProductExtension
 from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm, 
-                    BankBalanceCopyForm, CreditorAccountForm, FinancialForm)
+                    BankBalanceCopyForm, CreditorAccountForm, FinancialForm, BankDepositForm)
 from .models import TradeDaily, TradeMonthly, BalanceSheet, BankAccount, BankBalance, Creditor
 
 
@@ -1006,3 +1007,33 @@ class FinancialsCreateView(LoginRequiredMixin, FormView):
         context['difference'] = bs.difference
         return context
     
+
+class BankDepositView(LoginRequiredMixin, FormView):
+    template_name = 'trade/bank_deposit_form.html'
+    form_class = BankDepositForm
+    success_url = reverse_lazy('bank-account-home')
+
+    def get_initial(self) -> dict[str, Any]:
+        self.queryset = BankBalance.objects.filter(bank__nickname='Cash')
+        # 
+        initial = {
+            'amount': self.queryset.latest('date').bank_balance if self.queryset.exists() else Money(0.00, 'NGN')
+        }
+        return initial
+    
+    def form_valid(self, form: Any) -> HttpResponse:
+        # pull out the cash and save
+        cash_obj = self.queryset.latest('date')
+        cash_obj.bank_balance = cash_obj.bank_balance - form.cleaned_data['amount']
+        cash_obj.save()
+
+        # Create a new bank balance
+        # -- We add the deposit both to busy and bank
+        latest_bank_balance_obj = BankBalance.objects.latest('date')
+        BankBalance.objects.create(bank=form.cleaned_data['bank_account'],
+                                   date = form.cleaned_data['date'],
+                                   bank_balance = latest_bank_balance_obj.bank_balance + form.cleaned_data['amount'],
+                                   account_package_balance = latest_bank_balance_obj.account_package_balance + form.cleaned_data['amount']
+                                   )
+        
+        return super().form_valid(form)

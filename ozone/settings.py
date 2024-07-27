@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'brief.apps.BriefConfig',
     'material.apps.MaterialConfig',
     'survey.apps.SurveyConfig',
+    'cashflow.apps.CashflowConfig',
 ]
 
 MIDDLEWARE = [

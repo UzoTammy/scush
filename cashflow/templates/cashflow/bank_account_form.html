@@ -1,0 +1,24 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-sm-6">
+            <form method="post">
+                {% csrf_token %}
+                {% if bank_account.status %}
+                <legend>Disable Account - {{ bank_account }}</legend>
+                <h6>This Bank Account will be disabled. Proceed <span class="text-danger">?</span></h6>
+                {% else %}
+                <legend>Activate Account - {{ bank_account }}</legend>
+                <h6>This Bank Account will be activated. Proceed <span class="text-success">?</span></h6>
+                {% endif %}
+                <button class="btn btn-outline-primary" type="submit">Submit</button>
+                <a class="btn btn-dark" href="{% url 'cashflow-home' %}">Return</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

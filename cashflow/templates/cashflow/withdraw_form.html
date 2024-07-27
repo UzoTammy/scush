@@ -1,0 +1,99 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+
+<div class="container mt-3">
+    <h3 class="text-center">Withdrawal Request Approval Page </h3>
+    <div class="row justify-content-center">
+        <div class="col-sm-6">
+            <ul class="list-group text-monospace flush">
+                <li class="list-group-item list-group-item-danger">Beneficiary<span
+                        class="float-right">{{withdraw_object.party}}</span></li>
+                <li class="list-group-item list-group-item-danger">Amount<span
+                        class="float-right">{{withdraw_object.amount}}</span></li>
+                <li class="list-group-item list-group-item-danger">Requested By<span
+                        class="float-right">{{withdraw_object.requested_by.first_name}}</span></li>
+                <li class="list-group-item list-group-item-danger">Request Date<span
+                        class="float-right">{{withdraw_object.post_date}}</span></li>
+                {% if withdraw_object.stage == 1 %}
+                <li class="list-group-item list-group-item-danger">Bank<span class="float-right"></span></li>
+                {% endif %}
+            </ul>
+            {% if withdraw_object.stage == 0 %}
+            <div class="row mt-3">
+                <div class="col">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-outline-success ml-2" data-toggle="modal"
+                        data-target="#approveWithdrawal">
+                        Approve
+                    </button>
+                </div>
+                <div class="col text-center">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-outline-danger" data-toggle="modal"
+                        data-target="#disapproveWithdrawal">
+                        Disapprove
+                    </button>
+                </div>
+                <div class="col">
+                    <a class="btn btn-dark float-right mr-2" href="{% url 'cashflow-home' %}">Return</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Approve-->
+<div class="modal fade" id="approveWithdrawal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="approveWithdrawalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="approveWithdrawalLabel">Withdraw Request Approve </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h6>Approve request - {{withdraw_object}}</h6>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form action="" method="post">{% csrf_token %}
+                    <input type="hidden" name="decision" value="Approved">
+                    <button type="submit" class="btn btn-outline-primary">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Disapprove-->
+<div class="modal fade" id="disapproveWithdrawal" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="disapproveWithdrawalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="disapproveWithdrawalLabel">Withdraw Request Disapprove </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h6>Disapprove request - {{withdraw_object}}</h6>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form action="" method="post">{% csrf_token %}
+                    <input type="hidden" name="decision" value="Disapproved">
+                    <button type="submit" class="btn btn-outline-primary">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

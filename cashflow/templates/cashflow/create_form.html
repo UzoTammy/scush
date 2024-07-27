@@ -1,0 +1,23 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row justify-content-center">
+        <div class="col-sm-6">
+            <!-- In template.html -->
+
+            <form method="post">
+                {% csrf_token %}
+                <legend>{{ heading }}</legend>
+                <hr>
+                {{ form|crispy }}
+                <button class="btn btn-outline-dark" type="submit">Submit</button>
+                <a class="btn btn-outline-dark float-right" href="{% url 'cashflow-home' %}">Return</a>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

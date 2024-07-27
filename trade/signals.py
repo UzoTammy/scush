@@ -10,7 +10,7 @@ from djmoney.money import Money
 
 from core.tasks import send_email
 
-from .models import BalanceSheet, TradeDaily
+from .models import BalanceSheet, TradeDaily, BankBalance
 
 
 @receiver(post_save, sender=TradeDaily)
@@ -93,3 +93,5 @@ def bs_mail_sender(sender, instance, created, **kwargs):
     )
     email.content_subtype='html'
     email.send(fail_silently=True)
+
+

@@ -6,7 +6,7 @@
 <div class="container-fluid mt-3">
     <div class="row">
         <div class="col">
-            <h3 class="text-center">Bank Account Home Page</h3>
+            <h3 class="text-center">Funds Manager Home Page</h3>
         </div>
     </div>
     <div class="row">
@@ -23,6 +23,9 @@
             </button>
             <div class="collapse collapse-sm" id="Dropdown2">
                 <ul class="nav flex-column mt-3">
+                    <li class="text-white"><i class="fa fa-minus text-warning"></i> Transaction</li>
+                    <li class="nav-item text-white"><a class="nav-link" href="{% url 'bank-deposit' %}">Cash Deposit</a></li>
+                    <hr class="dropdown-divider">
                     <li class="text-white"><i class="fa fa-minus text-warning"></i>Bank Account</li>
                     
                     <li class="nav-item">

@@ -1,4 +1,9 @@
+import datetime
+from typing import Any, Mapping
+
 from django import forms
+from django.forms.renderers import BaseRenderer
+from django.forms.utils import ErrorList
 from django.forms.widgets import DateInput
 from core.models import JsonDataset
 from .models import (BalanceSheet, 
@@ -8,6 +13,7 @@ from .models import (BalanceSheet,
                     BankBalance,
                     Creditor
                     )
+
 # from djmoney.models.fields import MoneyField, Money
 from djmoney.forms import MoneyField
 
@@ -30,7 +36,6 @@ class BSForm(forms.ModelForm):
 
     date = forms.DateField(widget=DateInput(attrs={'type':'date'}))
 
-
     class Meta:
         model = BalanceSheet
         fields = '__all__'
@@ -38,7 +43,7 @@ class BSForm(forms.ModelForm):
 class BankAccountForm(forms.ModelForm):
     account_group = forms.ChoiceField(initial='Business', choices=[('Business', 'Business'), ('Admin', 'Admin')])
     bank = forms.ChoiceField(choices=[
-        ('UBA', 'UBA'), ('Sterling', 'Sterling'), ('Access', 'Access'), ('Heritage', 'Heritage'),
+        ('Nil', '----'), ('UBA', 'UBA'), ('Sterling', 'Sterling'), ('Access', 'Access'), ('Heritage', 'Heritage'),
     ])
 
     class Meta:
@@ -112,3 +117,9 @@ class FinancialForm(forms.ModelForm):
             # trade_instance.save()
             # balance_sheet_instance.save()
         return trade_instance, balance_sheet_instance
+
+class BankDepositForm(forms.Form):
+    
+    amount = MoneyField(max_digits=12, decimal_places=2)
+    bank_account = forms.ModelChoiceField(queryset=BankAccount.objects.exclude(nickname='Cash'), empty_label="Choose Bank Account")
+    date = forms.DateField(initial=datetime.date.today() - datetime.timedelta(days=1), widget=DateInput(attrs={'type':'date'}))

@@ -1,5 +1,14 @@
 from django.urls import path
-from .views import *
+from .views import (EmailSample, TradeHome, TradeTradingReport, TradeMonthlyCreateView,
+                    TradeMonthlyListView, TradeMonthlyDetailView, TradeMonthlyUpdateView,
+                    TradeDailyCreateView, TradeDailyListView, TradeDailyDetailView, TradeDailyUpdateView, 
+                    PLDailyReportView, TradeWeekly, AuditorView,
+                    BSCreateView, BSListView, BSUpdateView, BSDetailView,
+                    BankAccountHomeView, BankAccountDetailView, BankAccountListView, BankAccountUpdateView,
+                    BankAccountCreateView,BankBalanceCreateView, BankBalanceDetailView, BankBalanceUpdateView,
+                    BankBalanceListView, BankBalanceListViewAdmin, BankBalanceCopyView,
+                    CreditorHomeView, CreditorCreateView, FinancialsCreateView, BankDepositView)
+                    
 
 urlpatterns = [
         path('email-sample/', EmailSample.as_view(), name='email-sample'),
@@ -55,4 +64,5 @@ urlpatterns += [
 
 urlpatterns += [
     path('financial/create/', FinancialsCreateView.as_view(), name='financial-create'),
+    path('bank/deposit/', BankDepositView.as_view(), name='bank-deposit')
 ]

@@ -1,11 +1,9 @@
-import datetime
 from django import forms
-from matplotlib import widgets
 from staff.models import Employee
 from django.contrib.auth.forms import AuthenticationForm
 
 class JsonDatasetForm(forms.Form):
-    input_value = forms.CharField(max_length=30, label=f'New Value')
+    input_value = forms.CharField(max_length=30, label='New Value')
 
 
 class MyDateInput(forms.DateInput):
