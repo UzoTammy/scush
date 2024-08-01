@@ -16,6 +16,9 @@ urlpatterns = [
     path('disable/account/<pk>/', views.DisableAccountView.as_view(), name='disable-account'),
     path('approve/withdrawal/<int:pk>', views.ApproveWithdrawalView.as_view(), name='approve-withdrawal'),
     path('administer/withdrawal/<int:pk>', views.AdministerWithdrawalView.as_view(), name='administer-withdrawal'),
+    path('bank/transfer/', views.BankTransferView.as_view(), name='bank-transfer'),
+    path('bank/charges', views.BankChargesView.as_view(), name='bank-charges'),
+    path('bank/statment/<str:pk>/', views.BankStatementView.as_view(), name='bank-statement'),
      
 ]
 

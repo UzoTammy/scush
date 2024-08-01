@@ -1,20 +1,18 @@
 from django.urls import path
 from django.views.generic import TemplateView
-from .views import (ScushView, HomeView, CompanyPageView, AboutView,
+from .views import (HomeView, CompanyPageView, AboutView,
                     DashBoardView,PoliciesView, ManagementProfileView, DailyReportView,
                     JsonListView, JsonDetailView, JsonCreateView, JsonUpdateView,
                     JsonCategoryKeyView, JsonCategoryKeyValueUpdateView, JsonCategoryKeyValueCreateView,
-                    KPIMailSend, ImportCSVView, SaveCSVFile, BusinessSummaryView)
+                    KPIMailSend, ImportCSVView, SaveCSVFile, BusinessSummaryView, ScushProfileView)
 from . import views
-# from django.contrib.auth import views as auth_views
-# from django.contrib.auth.forms import PasswordChangeForm
 
 urlpatterns = [
     # Documentation and guide
     path('', views.index, name='index'),
+    path('scush/profile', ScushProfileView.as_view(), name='scush-profile'),
     path('developer/', views.developer_login, name='developer'),
 
-    path('scush/', ScushView.as_view(), name='scush'),
     path('home/', HomeView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
     path('company/', CompanyPageView.as_view(), name='company'),

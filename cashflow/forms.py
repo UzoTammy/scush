@@ -1,8 +1,13 @@
+import datetime
+
 from django import forms
-from djmoney.forms import MoneyField
 from django.contrib.auth.models import User
 
-from .models import BankAccount, CashCollect, CashDeposit, Disburse, Withdrawal, InterbankTransfer
+from djmoney.forms import MoneyField
+from djmoney.money import Money
+
+from .models import (BankAccount, CashCollect, CashDeposit, Disburse, Withdrawal, 
+                     InterbankTransfer, CashDepot, BankTransfer, BankCharges)
 
 class ChoiceOrInputWidget(forms.MultiWidget):
     def __init__(self, choices=(), attrs=None):
@@ -18,7 +23,6 @@ class ChoiceOrInputWidget(forms.MultiWidget):
         if value:
             return [None, value]  # Custom input case
         return [None, '']  # Default case
-
 
 class ChoiceOrInputField(forms.MultiValueField):
     def __init__(self, choices=(), *args, **kwargs):
@@ -57,9 +61,9 @@ class BankAccountForm(forms.ModelForm):
 
 class CashCollectForm(forms.ModelForm):
     OPTIONS = (
-        ('Kwara1', 'Kwara One'),
-        ('Kwara2', 'Kwara Two'),
-        ('Kwara3', 'Kwara Three'),
+        ('K1', 'Kwara One'),
+        ('K2', 'Kwara Two'),
+        ('MSS', 'MSS'),
         ('FG', 'FG')
     )
 
@@ -81,20 +85,29 @@ class CashDepositForm(forms.ModelForm):
     class Meta:
         model = CashDeposit
         fields = ('bank', 'amount', 'post_date')
+    
+    def clean(self):
+        if CashDepot.objects.exists():
+            cash = CashDepot.objects.latest('date').balance
+            if self.cleaned_data['amount'] > cash:
+                raise forms.ValidationError('Insufficient Cash to Deposit !!!')
 
 class DisburseForm(forms.ModelForm):
-    # requested_by = forms.CharField(max_length=30)
-    # purpose = forms.CharField(max_length=50)
-    # amount = MoneyField(max_digits=7, decimal_places=2)
     request_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     
     class Meta:
         model = Disburse
         fields = ('requested_by', 'purpose', 'amount', 'request_date')
+    
+    def clean(self):
+        if CashDepot.objects.exists():
+            cash = CashDepot.objects.latest('date').balance
+            if self.cleaned_data['amount'] > cash:
+                raise forms.ValidationError('Your Cash is insufficient !!!')
 
 class CurrentBalanceUpdateForm(forms.Form):
-    current_balance = MoneyField(max_digits=12, decimal_places=2)
-
+    current_balance = MoneyField(max_digits=12, decimal_places=2, min_value=0)
+    date = forms.DateField(widget=forms.DateInput({'type': 'date'}), initial=datetime.date.today)
 
 class DisableAccountForm(forms.Form):
     pass    
@@ -112,8 +125,8 @@ class RequestToWithdrawForm(forms.ModelForm):
 
 class InterbankTransferForm(forms.ModelForm):
     queryset = BankAccount.objects.filter(status=True)
-    sender_bank = forms.ModelChoiceField(queryset, empty_label='----', label='From')
-    receiver_bank = forms.ModelChoiceField(queryset, empty_label='----', label='To')
+    sender_bank = forms.ModelChoiceField(queryset, empty_label='------', label='From')
+    receiver_bank = forms.ModelChoiceField(queryset, empty_label='------', label='To')
     
     class Meta:
         model = InterbankTransfer
@@ -126,9 +139,11 @@ class InterbankTransferForm(forms.ModelForm):
             raise forms.ValidationError('Insufficient bank balance')
         
 class ApproveWithdrawalForm(forms.Form):
-    pass
+    remark = forms.CharField(label='Make a note', required=False, 
+                             widget=forms.TextInput(attrs={'placeholder': 'Drop a comment if any'}))
 
 class AdministerWithdrawalForm(forms.ModelForm):
+
     party = forms.CharField(disabled=True)
     amount = MoneyField(disabled=True)
     particulars = forms.CharField(widget=forms.TextInput(attrs={'placeholder': '--e.g cheque number'}))
@@ -144,3 +159,11 @@ class AdministerWithdrawalForm(forms.ModelForm):
     def clean(self):
         if self.cleaned_data.get('bank').current_balance <= self.cleaned_data['amount']:
             raise forms.ValidationError('Insufficient bank balance')
+
+class BankTransactionForm(forms.ModelForm):
+    bank = forms.ModelChoiceField(queryset=BankAccount.objects.filter(status=True), empty_label='-------')
+    post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=datetime.date.today)
+    
+    class Meta:
+        model = BankTransfer
+        exclude = ['processed_by']

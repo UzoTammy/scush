@@ -1,0 +1,36 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container mt-3">
+    <h3 class="text-center">Bank Statement - {{object}}</h3>
+    <div class="row">
+        <div class="col">
+            <table class="table" data-toggle="table">
+                <thead>
+                    <tr>
+                        <th colspan="2">Account Number <span class="float-right">{{object.pk}}</span></th>
+                        <th></th>
+                        <th colspan="2" class="">Opening Balance as at {{object.opening_balance_date}} <span class="float-right">{{object.opening_balance}}</span></th>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <th>Detail</th>
+                        <th>DR</th>
+                        <th>CR</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

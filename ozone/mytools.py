@@ -3,7 +3,7 @@ import calendar
 import csv
 import itertools as it
 from decimal import Decimal
-import random
+
 
 class DatePeriod:
     """last day of the month"""

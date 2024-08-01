@@ -6,7 +6,7 @@
 <div class="container mt-3">
     <div class="row">
         <div class="col">
-            <h3 class="text-center">Cashflow Manager Page</h3>
+            <h3 class="text-center">Cashflow Manager</h3>
         </div>
     </div>
     
@@ -31,6 +31,8 @@
                             <i class="fa fa-times-circle text-muted"></i>
                             {% endif %} 
                             <a href="" data-toggle="modal" data-target="#currentBalanceDetailModal{{bank.pk}}">{{bank.account_number}}</a>
+
+                            <a class="float-right" href="{% url 'bank-statement' bank.pk %}"><i class="fa fa-paste"></i></a>
                         </td>
                         <td>{{bank.short_name}}</td>
                         <td class="text-right">{{bank.lien_value}}</td>
@@ -38,46 +40,74 @@
                         <td class="text-right">{{bank.current_balance}}</td>
                     </tr>
                     {% endfor %}
+                    <tfoot>
+                        <div class="row">
+                            <div class="col">
+                                <a class="ml-2" href="?status=all">
+                                    {% if view.request.GET.status == 'all' %}
+                                    <i class="fa fa-check-circle text-success"></i>
+                                    {% else %}
+                                    <i class="fa fa-times-circle text-danger"></i>
+                                    {% endif %}
+                                    All Banks</a>
+                                <a href="?status=active">
+                                    {% if not view.request.GET.status == 'all' %}
+                                    <i class="fa fa-check-circle text-success"></i>
+                                    {% else %}
+                                    <i class="fa fa-times-circle text-danger"></i>
+                                    {% endif %}
+                                    Active Banks
+                                </a>
+                            </div>
+                        </div>
+                    </tfoot>
                 </tbody>
                 
             </table>
         </div>
         <div class="col-sm-4">
-            <ul class="list-group">
-                {% for withdrawal in pending_withdrawals %}
-                {% if withdrawal.stage == 0 %}
-                <li class="list-group-item">RQ 
-                    <a class="float-right" href="{% url 'approve-withdrawal' withdrawal.pk %}">{{ withdrawal }}</a>
-                </li>
-                {% endif %}
-                {% if withdrawal.stage == 1 %}
-                <li class="list-group-item list-group-item-success">AP 
-                    <a class="float-right" href="{% url 'administer-withdrawal' withdrawal.pk %}">{{ withdrawal }}</a>
-                </li>
-                {% endif %}
-                {% endfor %}
-              </ul>
+            <div class="row mt-2">
+                <div class="col">
+                    <ul class="list-group">
+                        <li class="list-group-item list-group-item-warning">Available Cash 
+                            <span class="float-right">{{ cash }}</span>
+                        </li>
+                        <li class="list-group-item list-group-item-warning">Bank Balance 
+                            <span class="float-right">{{naira}}{{ current_bank_balance_total }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col">
+
+                    <ul class="list-group">
+                        <li class="list-group-item text-center active">Pending Withdrawal</li>
+                        {% for withdrawal in pending_withdrawals %}
+                        {% if withdrawal.stage == 0 %}
+                        <li class="list-group-item">RQ 
+                            <a class="float-right" href="{% url 'approve-withdrawal' withdrawal.pk %}">{{ withdrawal }}</a>
+                        </li>
+                        {% endif %}
+                        {% if withdrawal.stage == 1 %}
+                        <li class="list-group-item list-group-item-success">AP 
+                            <a class="float-right" href="{% url 'administer-withdrawal' withdrawal.pk %}">{{ withdrawal }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div> 
+            </div>
         </div>
     </div>
+    
     <div class="container px-lg-5 mt-5">
         <div class="row mx-lg-n5">
-            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-warning shadow">
-                <h5 class="text-center text-white">Available Cash 
-                    <br>
-                    {{cash}}
-                <h5>
-            </div>
-            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-warning shadow">
-                <h5 class="text-center text-white">Bank Balance 
-                    <br> {{naira}}
-                    {{current_bank_balance_total}}
-                <h5>
-            </div>
             <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
                 <a href="{% url 'cashflow-cash-collect' %}">
                     <h3 class="text-center text-white">Collect <br> Cash</h3>
                 </a>
-              </div>
+            </div>
             <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
                 <a href="{% url 'cashflow-deposit' %}">
                     <h3 class="text-center text-white">Deposit To Bank</h3>
@@ -93,7 +123,6 @@
                     <h3 class="text-center text-white">Request to Withdraw</h3>
                 </a>
             </div>
-            
             <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
                 <a href="{% url 'interbank-transfer' %}">
                     <h3 class="text-center text-white">Inter Bank Transfer</h3>
@@ -104,16 +133,29 @@
                     <h3 class="text-center text-white">Create Bank Account</h3>
                 </a>
             </div>
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
+                <a href="{% url 'bank-transfer' %}">
+                    <h3 class="text-center text-white">Bank <br> Transfer</h3>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
+                <a href="{% url 'bank-charges' %}">
+                    <h3 class="text-center text-white">Bank <br> Charges</h3>
+                </a>
+            </div>
 
         </div>
     </div>
 </div>
 
   
+<!-- Modal Detail-->
   {% for bank in object_list %}
-
-  <!-- Modal Detail-->
-  <div class="modal fade" id="currentBalanceDetailModal{{bank.pk}}" tabindex="-1" aria-labelledby="currentBalanceDetailModalLabel" aria-hidden="true">
+  <div class="modal fade" 
+  id="currentBalanceDetailModal{{bank.pk}}" 
+  tabindex="-1" 
+  aria-labelledby="currentBalanceDetailModalLabel" 
+  aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -134,8 +176,8 @@
               </ul>
         </div>
         <div class="modal-footer">
-            <a class="btn btn-outline-primary" href="{% url 'current-balance' bank.pk %}">Current Balance</a>
             {% if bank.status %}
+            <a class="btn btn-outline-primary" href="{% url 'current-balance' bank.pk %}">Reset Balance</a>
             <a class="btn btn-outline-danger" href="{% url 'disable-account' bank.pk %}">Disable Account</a>
             {% else %}
             <a class="btn btn-outline-success" href="{% url 'disable-account' bank.pk %}">Activate Account</a>
@@ -143,8 +185,7 @@
         </div>
       </div>
     </div>
-  </div>
-
   
+</div>
   {% endfor %}
 {% endblock %}

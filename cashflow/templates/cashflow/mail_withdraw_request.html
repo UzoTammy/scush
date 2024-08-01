@@ -1,0 +1,29 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="container mt-3">
+    <h3 class="text-center">Withdrawal Request</h3>
+    <div class="row justify-content-center">
+        <div class="col">
+            <ul class="list-group text-monospace flush">
+                <li class="list-group-item list-group-item-danger">Beneficiary<span
+                        class="float-right">{{withdraw_object.party}}</span></li>
+                <li class="list-group-item list-group-item-danger">Amount<span
+                        class="float-right">{{withdraw_object.amount}}</span></li>
+                <li class="list-group-item list-group-item-danger">Requested By<span
+                        class="float-right">{{withdraw_object.requested_by.first_name}}</span></li>
+                <li class="list-group-item list-group-item-danger">Request Date<span
+                        class="float-right">{{withdraw_object.post_date}}</span></li>
+                {% if withdraw_object.stage == 1 %}
+                <li class="list-group-item list-group-item-danger">Bank<span class="float-right"></span></li>
+                {% endif %}
+            </ul>
+            {% if request.user.username == 'Uzo-02' %}
+            <a class="mt-3" href="{{url_link}}">Click this link to approve on site</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

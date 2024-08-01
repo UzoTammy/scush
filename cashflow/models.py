@@ -1,4 +1,3 @@
-# import datetime
 from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
@@ -15,7 +14,7 @@ class BankAccount(models.Model):
     lien_value = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
     opening_balance = MoneyField(max_digits=12, decimal_places=2)
     current_balance = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
-    # opening_balance_date = models.DateField(default=datetime.date.today)
+    opening_balance_date = models.DateField()
     category = models.CharField(max_length=25)
     status = models.BooleanField(default=True) # active
     slug = models.SlugField(unique=True, blank=True)
@@ -28,7 +27,6 @@ class BankAccount(models.Model):
     def __str__(self) -> str:
         return f'{self.short_name}-{self.account_number}'
 
-
 class CashDepot(models.Model):
     # affected by cash collection and deposit
     date = models.DateField()
@@ -36,7 +34,6 @@ class CashDepot(models.Model):
 
     def __str__(self) -> str:
         return f'Cash {self.balance}'
-
 
 class CashCollect(models.Model):
     # gathering cash into cash depot
@@ -47,7 +44,6 @@ class CashCollect(models.Model):
 
     def __str__(self) -> str:
         return f'{self.source}-{self.post_date}'
-
 
 class CashDeposit(models.Model):
     # taking cash from cash depot into bank account
@@ -61,7 +57,6 @@ class CashDeposit(models.Model):
 
 class Transaction(models.Model):
     data = models.JSONField(default=list)  # Stores a list of dictionaries
-
 
 class Disburse(models.Model):
     requested_by = models.CharField(max_length=30)
@@ -83,10 +78,10 @@ class Withdrawal(models.Model):
     decided_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decisions', blank=True, null=True)
     particulars = models.CharField(max_length=20, blank=True, null=True)
     stage = models.SmallIntegerField(default=0)
+    # remark = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self) -> str:
         return f'{self.party}: {self.amount}'
-
 
 class InterbankTransfer(models.Model):
     # taking funds from bank to bank internally
@@ -99,4 +94,23 @@ class InterbankTransfer(models.Model):
     def __str__(self) -> str:
         return f'{self.sender_bank.short_name} to {self.receiver_bank.short_name}: {self.amount}'
 
+class BankTransaction(models.Model):
+    bank = models.ForeignKey(BankAccount, on_delete=models.CASCADE) 
+    post_date = models.DateField()
+    amount = MoneyField(max_digits=12, decimal_places=2)
+    processed_by = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        abstract = True
+
+class BankTransfer(BankTransaction):
     
+    def __str__(self) -> str:
+        return f'Transfer {self.post_date} {self.amount}'
+
+class BankCharges(BankTransaction):
+    
+    def __str__(self) -> str:
+        return f'Charges {self.post_date} {self.amount}'
+
+

@@ -1,4 +1,5 @@
 import decimal
+import os
 
 from django.db.models.query import QuerySet
 from django.db.models import Sum
@@ -27,3 +28,21 @@ class QuerySum:
         total = queryset.aggregate(Sum(fieldname))[f'{fieldname}__sum'] if queryset.exists() else decimal.Decimal('0')
         
         return total
+    
+
+def get_directory_size(directory):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(directory):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size / (1024 * 1024), total_size
+
+def count_files_and_directories(directory):
+    file_count = 0
+    dir_count = 0
+    for dirpath, dirnames, filenames in os.walk(directory):
+        # Increment the file and directory counts
+        file_count += len(filenames)
+        dir_count += len(dirnames)
+    return file_count, dir_count
