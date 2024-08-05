@@ -54,10 +54,12 @@ class ChoiceOrInputField(forms.MultiValueField):
 
 class BankAccountForm(forms.ModelForm):
     category = forms.ChoiceField(choices=[('Business', 'Business'), ('Admin', 'Admin')])
+    opening_balance_date = forms.DateField(widget=forms.DateInput({'type': 'date'}), initial=datetime.date.today)
+
 
     class Meta:
         model = BankAccount
-        fields = ('account_number', 'name', 'short_name', 'opening_balance', 'category')
+        fields = ('account_number', 'name', 'short_name', 'opening_balance', 'opening_balance_date', 'category')
 
 class CashCollectForm(forms.ModelForm):
     OPTIONS = (
