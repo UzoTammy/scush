@@ -12,14 +12,14 @@
     
     <div class="row mt-3">
         <div class="col-sm-8">
-            <table class="table" data-toggle="table">
+            <table class="table" data-toggle="table" pagination>
                 <thead>
                     <tr class="text-center">
                         <th>Account Number</th>
                         <th>Shortname</th>
-                        <th>Lien Value</th>
                         <th>Opening balance</th>
                         <th>Current Balance</th>
+                        <th>Lien Value</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,9 +35,10 @@
                             <a class="float-right" href="{% url 'bank-statement' bank.pk %}"><i class="fa fa-paste"></i></a>
                         </td>
                         <td>{{bank.short_name}}</td>
-                        <td class="text-right">{{bank.lien_value}}</td>
                         <td class="text-right">{{bank.opening_balance}}</td>
                         <td class="text-right">{{bank.current_balance}}</td>
+                        <td class="text-right">{{bank.lien_value}}</td>
+                        
                     </tr>
                     {% endfor %}
                     <tfoot>
@@ -64,6 +65,21 @@
                 </tbody>
                 
             </table>
+            {% if is_paginated %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                
+                  {% for num in page_obj.paginator.page_range %}
+                  <li class="page-item {% if request.GET.page == num|stringformat:'s' %} active {% endif %}">
+                    <a class="page-link" href="?page={{num}}">
+                        {{num}} 
+                     </a>
+                    </li>
+                  {% endfor %}
+                  
+                </ul>
+            </nav>
+            {% endif %}
         </div>
         <div class="col-sm-4">
             <div class="row mt-2">
@@ -82,19 +98,22 @@
                 <div class="col">
 
                     <ul class="list-group">
-                        <li class="list-group-item text-center active">Pending Withdrawal</li>
-                        {% for withdrawal in pending_withdrawals %}
-                        {% if withdrawal.stage == 0 %}
-                        <li class="list-group-item">RQ 
-                            <a class="float-right" href="{% url 'approve-withdrawal' withdrawal.pk %}">{{ withdrawal }}</a>
-                        </li>
+                        {% if not pending_withdrawals %}
+                            <li class="list-group-item text-center active">Pending Withdrawal</li>
+                            {% for withdrawal in pending_withdrawals %}
+                                {% if withdrawal.stage == 0 %}
+                                <li class="list-group-item">RQ 
+                                    <a class="float-right" href="{% url 'approve-withdrawal' withdrawal.pk %}">{{ withdrawal }}</a>
+                                </li>
+                                {% endif %}
+                        
+                                {% if withdrawal.stage == 1 %}
+                                <li class="list-group-item list-group-item-success">AP 
+                                    <a class="float-right" href="{% url 'administer-withdrawal' withdrawal.pk %}">{{ withdrawal }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
                         {% endif %}
-                        {% if withdrawal.stage == 1 %}
-                        <li class="list-group-item list-group-item-success">AP 
-                            <a class="float-right" href="{% url 'administer-withdrawal' withdrawal.pk %}">{{ withdrawal }}</a>
-                        </li>
-                        {% endif %}
-                        {% endfor %}
                     </ul>
                 </div> 
             </div>
@@ -111,6 +130,11 @@
             <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
                 <a href="{% url 'cashflow-deposit' %}">
                     <h3 class="text-center text-white">Deposit To Bank</h3>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
+                <a href="{% url 'bank-transfer' %}">
+                    <h3 class="text-center text-white">Bank <br> Transfer</h3>
                 </a>
             </div>
             <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
@@ -133,11 +157,7 @@
                     <h3 class="text-center text-white">Create Bank Account</h3>
                 </a>
             </div>
-            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
-                <a href="{% url 'bank-transfer' %}">
-                    <h3 class="text-center text-white">Bank <br> Transfer</h3>
-                </a>
-            </div>
+            
             <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
                 <a href="{% url 'bank-charges' %}">
                     <h3 class="text-center text-white">Bank <br> Charges</h3>

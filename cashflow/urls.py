@@ -1,7 +1,5 @@
 from django.urls import path
 from . import views
-# from django.contrib.auth import views as auth_views
-# from django.contrib.auth.forms import PasswordChangeForm
 
 urlpatterns = [
     # Documentation and guide

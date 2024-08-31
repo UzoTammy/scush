@@ -6,7 +6,7 @@ from django.db.models.query import QuerySet
 from django.forms import BaseModelForm
 from django.http import HttpRequest, HttpResponse
 from django.urls import reverse_lazy
-from django.views.generic import FormView, CreateView, UpdateView, DetailView
+from django.views.generic import FormView, CreateView, UpdateView, DetailView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.core.mail import EmailMessage, send_mail
@@ -38,7 +38,7 @@ class BankAccountCreateView(LoginRequiredMixin, CreateView):
         form.instance.current_balance = form.instance.opening_balance
         return super().form_valid(form)
 
-class CashflowHomeView(LoginRequiredMixin, FormView):
+class CashflowHomeView(LoginRequiredMixin, FormView, ListView):
     """ 
     1. Display bank accounts, available cash and funds in banks
     2. Provide links to features
@@ -48,10 +48,14 @@ class CashflowHomeView(LoginRequiredMixin, FormView):
         - accummulated bank charges(daily)
     Cash collect: 
     """
+    
     template_name = 'cashflow/home.html'
     form_class = CurrentBalanceUpdateForm
     success_url = reverse_lazy('cashflow-home')
+    paginate_by = 4
+    model = BankAccount
 
+    
     def setup(self, request: HttpRequest, *args: Any, **kwargs: Any) -> None:
         if not CashDepot.objects.exists():
             CashDepot.objects.create(
@@ -60,14 +64,19 @@ class CashflowHomeView(LoginRequiredMixin, FormView):
             )
         return super().setup(request, *args, **kwargs)
     
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
+    def get_queryset(self) -> QuerySet[Any]:
+        queryset = super().get_queryset()
         if self.request.GET.get('status') == 'all':
             queryset = BankAccount.objects.all()
         else:
             queryset = BankAccount.objects.filter(status=True)
-
-        context['object_list'] = queryset
+        return queryset.order_by('-category')
+    
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        
+        context = super().get_context_data(**kwargs)
+        
+        # context['object_list'] = queryset
         if CashDepot.objects.all().exists():
             context['cash'] = CashDepot.objects.latest('date').balance
             # context['cash_date'] = CashDepot.objects.latest('date').date
@@ -333,7 +342,7 @@ class BankStatementView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         # lets get the date
-        date = self.get_object().opening_balance_date
+        # date = self.get_object().opening_balance_date
         # filter deposit
         # deposits = CashDeposit.objects.filter(post_date__gte=date).filter(bank=self.get_object())
         # inter_transfer_in = InterbankTransfer.objects.filter(transfer_date__gte=date).filter(receiver_bank=self.get_object())

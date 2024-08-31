@@ -1,8 +1,8 @@
 from django.urls import path
-from . import views
+# from . import views
 
 urlpatterns = [
-    # list views
-    path('', views.pdf_view, name='pdf-info'),
+#     # list views
+#     path('', views.pdf_view, name='pdf-info'),
     
 ]

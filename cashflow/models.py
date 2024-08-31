@@ -15,7 +15,7 @@ class BankAccount(models.Model):
     opening_balance = MoneyField(max_digits=12, decimal_places=2)
     current_balance = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
     opening_balance_date = models.DateField()
-    category = models.CharField(max_length=25)
+    category = models.CharField(max_length=25) # Business & Admin
     status = models.BooleanField(default=True) # active
     slug = models.SlugField(unique=True, blank=True)
 

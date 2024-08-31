@@ -21,15 +21,22 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% for object in object_list %}
                     <tr>
-                        <td></td>
+                        <td>{{object}}</td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                     </tr>
+                    {% endfor %}
                 </tbody>
             </table>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <a class="btn btn-outline-dark float-right" href="{% url 'cashflow-home' %}"><i class="fa fa-reply"></i></a>
         </div>
     </div>
 </div>
