@@ -52,7 +52,7 @@ class CashflowHomeView(LoginRequiredMixin, FormView, ListView):
     template_name = 'cashflow/home.html'
     form_class = CurrentBalanceUpdateForm
     success_url = reverse_lazy('cashflow-home')
-    paginate_by = 4
+    paginate_by = 5
     model = BankAccount
 
     
@@ -80,7 +80,9 @@ class CashflowHomeView(LoginRequiredMixin, FormView, ListView):
         if CashDepot.objects.all().exists():
             context['cash'] = CashDepot.objects.latest('date').balance
             # context['cash_date'] = CashDepot.objects.latest('date').date
-        context['current_bank_balance_total'] = QuerySum.to_currency(BankAccount.objects.filter(status=True), 'current_balance')
+        context['current_bank_balance_total_business'] = QuerySum.to_currency(BankAccount.objects.filter(status=True).filter(category='Business'), 'current_balance')
+        context['current_bank_balance_total_admin'] = QuerySum.to_currency(BankAccount.objects.filter(status=True).filter(category='Admin'), 'current_balance')
+        
         context['pending_withdrawals'] = Withdrawal.objects.exclude(stage=-1).exclude(stage=2) # -1, 0, 1, 2
         
         return context

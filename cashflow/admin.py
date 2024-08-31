@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CashCollect, CashDepot, Disburse, Withdrawal, CashDeposit
+from .models import CashCollect, CashDepot, Disburse, Withdrawal, CashDeposit, BankAccount
 
 # Register your models here.
 admin.site.register(CashCollect)
@@ -7,3 +7,4 @@ admin.site.register(CashDepot)
 admin.site.register(Disburse)
 admin.site.register(Withdrawal)
 admin.site.register(CashDeposit)
+admin.site.register(BankAccount)
