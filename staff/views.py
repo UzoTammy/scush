@@ -327,7 +327,7 @@ class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         """requires if data exist for query"""
-        if self.queryset:
+        if self.get_queryset().exists():
             workforce = self.get_queryset().count()
             basic_salary_payable = self.get_queryset().aggregate(bs=Sum('basic_salary'))
             allowance_payable = self.get_queryset().aggregate(al=Sum('allowance'))
@@ -342,14 +342,13 @@ class StaffListPrivateView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
             daily_man_hours = hours_spent_per_workday * workforce
             monthly_man_hours = daily_man_hours * month_days
-
             context['monthly_man_hours'] = monthly_man_hours
             context['wage_rate'] = f'{chr(8358)}{float(salary_payable)/monthly_man_hours:,.2f}/Hr'
             context['salary'] = self.get_queryset().aggregate(total=Sum(F('basic_salary') + F('allowance')))
             context['tax'] = self.get_queryset().aggregate(total=Sum('tax_amount'))
             context['salary_management'] = self.get_queryset().filter(is_management=True).aggregate(total=Sum(F('basic_salary') + F('allowance')))
             context['salary_non_management'] = self.get_queryset().filter(is_management=False).aggregate(total=Sum(F('basic_salary') + F('allowance')))
-            context['balance'] = self.get_queryset().aggregate(total=Sum('balance'))
+            context['total'] = f"{chr(8358)}{context['salary_management']['total'] + context['salary_non_management'] ['total']}"
         return context
 
 class StaffListPicturesView(LoginRequiredMixin, ListView):

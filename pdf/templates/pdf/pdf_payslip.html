@@ -8,15 +8,36 @@
     </div>
 
     <div class="subheader">
-        <p>For: {{person.staff.fullname}}<br>
-        Period: {{period_month}}</p>
+        <table>
+            <tbody>
+                <tr>
+                    <td>Staff: {{person.staff.fullname}}</td>
+                    <td>Pay Period: {{period_month}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <hr class="hrItem">
     </div>
 </div>
 <div class="details">
-    <p>Dispatch Date: {{ person.date_paid }}</p>
-    <p>Pay Date: {{ person.date_paid }}</p>
-    <p>Pay Code: <span style="color: chocolate;">{{ paycode }}</span></p>
     
+    <table>
+        <tbody>
+            <tr>
+                <td>Pay Code: <span style="color: chocolate;">{{ paycode }}</span></td>
+                <td>Pay Day: {{ person.date_paid }}</td>
+            </tr>
+            <tr>
+                <td>Total Payout: NGN{{total_pay|floatformat:'2g'}}</td>
+                <td>Number of Payments: {{ pay_count }}</td>
+            </tr>
+            <tr>
+                <td>Receiving Bank: <span>{{person.staff.banker}}</span></td>
+                <td>Account Number: <span>{{person.staff.account_number}}</span></td>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
     <table>
         <tbody>
             <tr>
@@ -50,10 +71,8 @@
             </tr>
         </tbody>
     </table>
-    
-    <p style="color:grey">There is dignity in labour</p>
+    <p style="color:grey">Document date(yyyy-mm-dd): {% now 'Y-m-d' %}</p>
     <p style="color:red; text-align: center;">Confidential document!!!</p>
-
 </div>
 
 {% endblock %}

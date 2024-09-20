@@ -234,14 +234,17 @@ class PayslipView(LoginRequiredMixin, TemplateView):
             dr = EmployeeBalance.objects.filter(staff=staff_id, period=period, value_type='Dr').aggregate(Sum('value'))['value__sum']
             Cr = decimal.Decimal('0') if cr is None else cr
             Dr = decimal.Decimal('0') if dr is None else dr
-            
+            payslips = Payroll.objects.filter(staff_id=staff_id)
+
             context = {
                 'title': 'Payslip',
                 'period_month': f"{month}, {year}",
                 'paycode': request.GET['payCode'],
                 'person': person,
                 'logo_image': Ozone.logo(),
-                'gratuity': Cr - Dr
+                'gratuity': Cr - Dr,
+                'total_pay': payslips.aggregate(Sum('net_pay'))['net_pay__sum'],
+                'pay_count': payslips.count()
             }
             pdf = render_to_pdf(self.template_name, context)
             if pdf:
@@ -250,7 +253,7 @@ class PayslipView(LoginRequiredMixin, TemplateView):
                 return response
             return HttpResponse(f"""<div style=padding:20;><h1>Payslip {user_input} do not exist</h1>
                 <p><a href='/home/'>Return Home</a></p></div>""")
-        except:
+        except Exception:
             return HttpResponse(
                 """<div style="padding:20;">
                 <h2 style="color:red;">Possible Errors</h2>

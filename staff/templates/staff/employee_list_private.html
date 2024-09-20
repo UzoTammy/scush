@@ -96,10 +96,10 @@
                 <th scope="col">Branch</th>
                 <th scope="col">Banker</th>
                 <th scope="col">Acct.Num</th>
-                <th scope="col">Tax</th>
+                <th scope="col">Tax Payable</th>
                 <th scope="col">Basic</th>
                 <th scope="col">Allowance</th>
-                <th scope="col">Balance</th>
+                <th scope="col">Total Pay</th>
             </tr>
             </thead>
             <tbody>
@@ -124,7 +124,7 @@
                 <td>{{employee.tax_amount}}</td>
                 <td>{{employee.basic_salary}}</td>
                 <td>{{employee.allowance}}</td>
-                <td>{{employee.balance}}</td>
+                <td>{{employee.basic_salary|add:employee.allowance}}</td>
             </tr>
             {% endfor %}
             </tbody>
@@ -170,7 +170,7 @@
                         Tax: {{tax.total}}
                     </div>
                     <div class="col-4">
-                        Balance: {{balance.total}}
+                        Balance: {{total}}
                     </div>
                 </div>
 
