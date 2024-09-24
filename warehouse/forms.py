@@ -35,11 +35,6 @@ class PayRentForm(forms.Form):
             raise forms.ValidationError('Both month and year cannot be empty')
         # return super().clean()
 
-# class PayAnyRentForm(forms.ModelForm):
-#     class Meta:
-#         model = Renewal
-#         fields = ('store', 'month', 'year', 'date', 'amount_paid')
-
 
 class RentRenewalUpdateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -59,6 +54,7 @@ class RentRenewalUpdateForm(forms.ModelForm):
 
 
     def clean(self):
+        
         if self.cleaned_data['month'] == '0' and self.cleaned_data['year'] == '0':
             raise forms.ValidationError('Both month and year cannot be empty')
     

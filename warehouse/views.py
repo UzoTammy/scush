@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models.query import QuerySet
 from django.forms import BaseModelForm
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -145,10 +145,8 @@ class PayRentView(LoginRequiredMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-
+        context = self.get_context_data(**kwargs)
         store = context.get('store')
-
         form = PayRentForm(request.POST)
 
         if form.is_valid():
