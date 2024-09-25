@@ -10,28 +10,12 @@
                 <div class="row">
                     <div class="col">
                         <h3 class="text-center">Facilities Home Page </h3>
-                        <span class="">
-                            <a href="{% url 'warehouse-help' %}">
-                            <i class="fa fa-question text-warning"></i> Help
-                            </a>
-                        </span>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col text-center">
-                            <a href="{% url 'warehouse-list-all' %}">
-                            <i class="fa fa-eye-slash text-warning"></i> Facilities
-                            </a>
-                    </div>
-                    <div class="col text-center">
-                            <a href="{% url 'store-rent-list' %}">
-                            <i class="fa fa-eye-slash text-warning"></i> Rent
-                            </a>
-                    </div>
-                    <div class="col text-center">
-                            <a href="{% url 'store-levy-list' %}">
-                            <i class="fa fa-eye-slash text-warning"></i> Levy
-                            </a>
+                        <div class="btn-group">
+                            <a class="btn btn-dark" href="{% url 'warehouse-help' %}"><i class="fa fa-question text-warning"></i> Help</a>
+                            <a class="btn btn-dark" href="{% url 'warehouse-list-all' %}"><i class="fa fa-eye-slash text-warning"></i> Facilities</a>
+                            <a class="btn btn-dark" href="{% url 'store-rent-list' %}"><i class="fa fa-eye-slash text-warning"></i> Rent</a>
+                            <a class="btn btn-dark" href="{% url 'store-levy-list' %}"><i class="fa fa-eye-slash text-warning"></i> Levy</a> 
+                        </div>
                     </div>
                 </div>
                 <div class="row d-flex justify-content-center mt-2">
@@ -63,16 +47,15 @@
                     <div class="col-sm-8 mt-3">
                         <table class="table text-monospace" data-toggle="table">
                             <thead>
-                                <tr>
+                                <tr class="text-center">
                                     <th colspan="3">Rent</th>
                                     <th class="bg-light" colspan="3">Levy</th>
 
                                 </tr>
-                                <tr>
+                                <tr class="text-info text-center">
                                     <th>Payable</th>
                                     <th>Paid</th>
                                     <th class="text-center">Unpaid</th>
-                                    
                                     <th class="bg-light">Payable</th>
                                     <th class="bg-light">Paid</th>
                                     <th class="bg-light text-center">Unpaid</th>
