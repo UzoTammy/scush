@@ -175,7 +175,19 @@ AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_FILE_OVERWRITE = True  # change to false when deploying
 AWS_DEFAULT_ACL = None
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# STORAGES = 'storages.backends.s3boto3.S3Boto3Storage'
+
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+STORAGES = {
+    # Media (image) file management
+    "default": {
+        "BACKEND": 'storages.backends.s3boto3.S3Boto3Storage',
+    },
+    # CSS and JS file management
+    "staticfiles": {
+        "BACKEND": 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    }
+}
 
 # My input
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

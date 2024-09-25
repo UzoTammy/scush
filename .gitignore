@@ -25,6 +25,7 @@ xx/
 /logs
 users/tests.py
 .vscode/
+media/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
