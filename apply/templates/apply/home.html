@@ -5,9 +5,9 @@
 
 <style>
     .circle {
-        background-color: rgb(220, 209, 209);
+        background-color: rgb(230, 231, 236);
         border-radius: 50%;
-        padding: 5px;
+        padding: 10px;
     }
 </style>
 
@@ -18,89 +18,120 @@
     <div class="row">
         <div class="col mt-3">
             <h3 class="text-center">Application Home Page</h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-6 mt-1">
             <p><img class="rounded-circle shadow-lg" height="90px" src="{% static 'customer/logo.png' %}" alt=""></p>
-            <ul style="list-style-type: none;">
-                <hr>
-                <li>Total Number of Applicants <span class="float-right">
-                    <span class="circle"><sup>**</sup>{{applicants.count}}</span>  </span></li>
-                <hr>
-                <li>Gender <span class="float-right ml-5">Male: <span class="circle">{{applicants.gender.male}}</span></span> 
-                    <span class="float-right">Female: <span class="circle">{{applicants.gender.female}}</span></span></li>
-                <hr>
-                <li>Status <span class="float-right ml-3">Employed: 
-                        <span class="circle">{{applicants.status.employed}}</span>
-                    </span> 
-                    <span class="float-right ml-3">Pending: 
-                            <span class="circle">{{applicants.status.pending}}</span>
-                    </span>
-                    <span class="float-right ml-3">Rejected: 
-                        <span class="circle">{{applicants.status.rejected}}</span>
-                     </span>
-                </li>
-                <hr>
-                <li>Marital Status <span class="float-right ml-5">Married: <span class="circle">{{applicants.marital_status.married}}</span></span> 
-                    <span class="float-right">Single: 
-                        <span class="circle">{{applicants.marital_status.single}}</span>
-                    </span>
-                </li>
-                <hr>
-                
-                <li>Stature
-                    <span class="float-right ml-3"> Minor <sup class="text-muted">less 18yrs</sup>: 
-                        <span class="circle">{{applicants.stature.less_than_18}}</span>
-                    </span> 
-                    <span class="float-right ml-3">Youth <sup class="text-muted">btw 18 & 25yrs</sup>: 
-                        <span class="circle">{{applicants.stature.between_18_and_25}}</span>
-                    </span>
-                    <span class="float-right ml-3">Adult <sup class="text-muted">above 25yrs</sup>: 
-                        <span class="circle">{{applicants.stature.above_25}}</span>
-                    </span>
-                </li>
-                <hr>
-            </ul>
-            
-            <sup class="text-muted">**Since June 2021</sup>
-        </div>
-        <div class="col-sm-6 mt-3">
-            <h5 style="color: rgb(255, 0, 81);">Year: {{this_year}}</h5>
-            <ul style="list-style-type: none;">
-                <hr>
-                <li>Total Number of Applicants <span class="float-right">
-                    <span class="circle">{{this_year_applicants.count}}</span>  
-                </span></li>
-                <hr>
-                <li>Gender <span class="float-right ml-5">Male: 
-                    <span class="circle">{{this_year_applicants.gender.male}}</span></span> 
-                    <span class="float-right">Female: <span class="circle">{{this_year_applicants.gender.female}}</span></span></li>
-                <hr>
-                <li>Status <span class="float-right ml-3">Employed: 
-                    <span class="circle">{{this_year_applicants.status.employed}}</span></span> 
-                    <span class="float-right ml-3">Pending: 
-                        <span class="circle">{{this_year_applicants.status.pending}}</span></span>
-                    <span class="float-right ml-3">Rejected: 
-                        <span class="circle">{{this_year_applicants.status.rejected}}</span> </span>
-                </li>
-                <hr>
-                <li>Marital Status <span class="float-right ml-5">Married: <span class="circle">{{this_year_applicants.marital_status.married}}</span></span> 
-                    <span class="float-right">Single: <span class="circle">{{this_year_applicants.marital_status.single}}</span></span></li>
-                <hr>
-                
-                <li>Stature
-                    <span class="float-right ml-3"> Minor <sup class="text-muted">less 18yrs</sup>: 
-                        <span class="circle">{{this_year_applicants.stature.less_than_18}}</span></span> 
-                    <span class="float-right ml-3">Youth <sup class="text-muted">btw 18 & 25yrs</sup>: 
-                        <span class="circle">{{this_year_applicants.stature.between_18_and_25}}</span></span>
-                    <span class="float-right ml-3">Adult <sup class="text-muted">above 25yrs</sup>: 
-                        <span class="circle">{{this_year_applicants.stature.above_25}}</span></span>
-                </li>
-                <hr>
-            </ul>
+
         </div>
     </div>
     
+    <div class="row">
+        
+        <div class="col-sm-6">
+            <p class="text-muted">{{this_year}}</p>
+            <ul class="list-group">
+                <li class="list-group-item p-3">
+                     <h6>
+                        <div class="row">
+                            <div class="col">Total Number of Applicants</div>
+                            <div class="col text-right"><span class="circle">{{this_year_applicants.count}}</span></div>
+                        </div>
+                     </h6>
+                </li>
+                <li class="list-group-item p-3">
+                    <h6>
+                        <div class="row">
+                            <div class="col"> Male <span class="circle">{{this_year_applicants.gender.male}}</span></div>
+                            <div class="col text-right">Female <span class="circle">{{this_year_applicants.gender.female}}</span></div>
+                        </div>
+                    </h6>
+                </li>
+                <li class="list-group-item p-3">
+                    <h6>
+                        <div class="row">
+                            <div class="col">Employed <span class="circle">{{this_year_applicants.status.employed}}</span></div>
+                            <div class="col text-center">Pending <span class="circle">{{this_year_applicants.status.pending}}</span></div>
+                            <div class="col text-right">Rejected <span class="circle">{{this_year_applicants.status.rejected}}</span></div>
+                        </div>
+                    </h6>
+                </li>
+                <li class="list-group-item p-3">
+                    <h6>
+                        <div class="row">
+                            <div class="col">Married <span class="circle">{{this_year_applicants.marital_status.married}}</span></div>
+                            <div class="col text-right">Single <span class="circle">{{this_year_applicants.marital_status.single}}</span></div>
+                        </div>
+                    </h6>
+                </li>
+                <li class="list-group-item p-3">
+                    <h6>
+                        <div class="row">
+                            <div class="col">Adult <span class="circle">{{this_year_applicants.stature.above_25}}</span></div>
+                            <div class="col text-center">Youth <span class="circle">{{this_year_applicants.stature.between_18_and_25}}</span></div>
+                            <div class="col text-right">Minor <span class="circle">{{this_year_applicants.stature.less_than_18}}</span></div>
+                        </div>
+                    </h6>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-sm-6">
+            
+            <p class="text-muted">Since June 2021 </p>
+            <ul class="list-group"></ul>
+            <li class="list-group-item p-3">
+                <h6>
+                    <div class="row">
+                        <div class="col">Total Number of Applicants</div>
+                        <div class="col text-right"><span class="circle">{{applicants.count}}</span></div>
+                    </div>
+                </h6>
+            </li>
+            <li class="list-group-item p-3">
+                <h6>
+                    <div class="row">
+                        <div class="col"> Male <span class="circle">{{applicants.gender.male}}</span></div>
+                        <div class="col text-right">Female <span class="circle">{{applicants.gender.female}}</span></div>
+                    </div>
+                </h6>
+            </li>
+            <li class="list-group-item p-3">
+                <h6>
+                    <div class="row">
+                        <div class="col">Employed <span class="circle">{{applicants.status.employed}}</span></div>
+                        <div class="col text-center">Pending <span class="circle">{{applicants.status.pending}}</span></div>
+                        <div class="col text-right">Rejected <span class="circle">{{applicants.status.rejected}}</span></div>
+                    </div>
+                </h6>
+            </li>
+            <li class="list-group-item p-3">
+                <h6>
+                    <div class="row">
+                        <div class="col">Married <span class="circle">{{applicants.marital_status.married}}</span></div>
+                        <div class="col text-right">Single <span class="circle">{{applicants.marital_status.single}}</span></div>
+                    </div>
+                </h6>
+            </li>
+            <li class="list-group-item p-3">
+                <h6>
+                    <div class="row">
+                        <div class="col">Adult <span class="circle">{{applicants.stature.above_25}}</span></div>
+                        <div class="col text-center">Youth <span class="circle">{{applicants.stature.between_18_and_25}}</span></div>
+                        <div class="col text-right">Minor <span class="circle">{{applicants.stature.less_than_18}}</span></div>
+                    </div>
+                </h6>
+            </li>
+        </ul>
+    </div>
+        
+    </div>
+    <div class="row mt-3">
+        <div class="col d-flex justify-content-center">
+            <ul class="list-group list-group-horizontal">
+                <li class="list-group-item">Receive application letter <i class="fa fa-forward text-success"></i></li>
+                <li class="list-group-item">Applicant to apply online <i class="fa fa-forward text-success"></i></li>
+                <li class="list-group-item">Make decision <i class="fa fa-forward text-success"></i></li>
+                <li class="list-group-item">Contact Applicant</li>
+            </ul>
+        </div>
+    </div>
 </div>
 {% endblock %}

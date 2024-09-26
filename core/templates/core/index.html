@@ -69,17 +69,14 @@
                 </div>
                 <div class="row">
                     {% if user.is_authenticated %}
-                    <div class="col"> <i class="fa fa-home fa-1x"></i> <a href="{% url 'home' %}">Go to staff home
-                            page</a></div>
+                    <div class="col"> <i class="fa fa-home fa-1x"></i> <a href="{% url 'home' %}">Go to staff home page</a></div>
                     {% else %}
-                    <div class="col"><i class="fa fa-sign-in text-success"></i> <small class="text-muted">Only staff with sign
-                            in credentials can</small>
-                        <a class="btn btn-primary btn-sm" href="{% url 'login' %}">Log In </a>
-
+                    <div class="col ml-3"> 
+                        <a class="btn btn-primary btn-sm" href="{% url 'login' %}">Staff Log in </a>
+                        <i class="fa fa-sign-in text-success"></i>
                         {% if debug_mode %}
                         <p><a href="{% url 'developer' %}">Developer Express Access</a></p>
                         {% endif %}
-
                     </div>
                     {% endif %}
 

@@ -14,20 +14,51 @@
 {% block content %}
 <div class="container">
     <div class="row p-3 d-flex justify-content-center">
+        <div class="row">
+            <div class="col-auto">
+                <div class="card bg-warning">
+                    <div class="card-body shadow">
+                        <h5 class="card-title">
+                            <i class="fa fa-warning text-danger"></i>Caution
+                        </h5>
+                        <p class="card-text">
+                            Ensure that the information provided
+                            is correct. Any confirmation to the
+                            contrary will result in rejection of
+                            your application or termination
+                            of your employment without notice and benefits.
+                        </p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <h4 class="text-muted text-center ">Information provided to us is for employment
+                            purposes only.
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8 mt-3">
+            <div class="row">
+                <div class="col text-center">
+                    <img src="{% static 'customer/logo.png' %}" class="rounded-circle shadow" width="80px" alt=""> 
+                    <i class="text-danger display-big">F & L Trading Co Ltd <br> 
+                        <small class="text-info">(A Distribution Company)</small>
+                    </i>
+                    <br>
 
-        <div class="col-sm-8 shadow-lg">
-            <img src="{% static 'customer/logo.png' %}" class="rounded-circle shadow" width="80px" alt=""> 
-            <i class="text-danger display-big">F & L Trading Co Ltd <small class="text-info">(A Distribution Company)</small></i><br><br>
-            <i class="fa fa-info-circle text-info"></i>
+                    <address>GOB 1-4 Zamfara Plaza Opposite Kwara Plaza  BBA, Trade Fair, Lagos.</address>
+                </div>
+            </div>
             <i class="text-primary">
                 You will receive a confirmation email with the email address
-                provided to us on this form. Kindly ensure a valid email address
+                provided to us in this form. Kindly ensure a valid email address
                 is provided and do check your inbox soon after submission
             </i>
             <hr>
-            <form method="POST">{% csrf_token %}
+            <form method="POST">
+                {% csrf_token %}
                 {{form.errors}}
-                <fieldset class="form-group bg-light">
+                <fieldset class="p-3">
                     <legend class="text-info"><i>Application Form</i>
                         <small class="text-muted float-right">{% now 'd-m-Y@h:mA' %}</small>
                     </legend>
@@ -37,61 +68,54 @@
                             {{form.first_name}}
                         </div>
                         <div class="col-sm-4">
-                            <span class="form-label text-info">Second Name</span>
-                            <span class="text-muted">(optional)</span>
+                            <span class="form-label text-info">Second or middle Name</span>
                             {{form.second_name}}
                         </div>
                         <div class="col-sm-4">
-                            <span class="form-label text-info">Last Name<span class="text-danger">*</span></span>
-                            
+                            <span class="form-label text-info">Last Name (Surname)<span class="text-danger">*</span></span>
                             {{form.last_name}}
                         </div>
                     </div>
                     <hr>
                     <div class="form-row">
-                        <div class="col-sm-4">
-                            <div class="row">
-                                <div class="col">
-                                    <div class="form-label text-info">Gender<span class="text-danger">*</span></div>
-                                    <div class="form-check">{{form.gender}}</div>
-                                </div>
-                                <div class="col text-right mr-2">
-                                    <div class="form-label text-info">
-                                        Marital Status<span class="text-danger">*</span>
-                                    </div>
-                                    <div class="form-check">{{form.marital_status}}</div>
-                                </div>
-                            </div>
-
+                        <div class="col">
+                            <div class="form-label text-info">Gender<span class="text-danger">*</span></div>
+                            <div class="form-check">{{form.gender}}</div>
                         </div>
-
-                        <div class="col-sm-4">
+                        <div class="col text-right mr-2">
+                            <div class="form-label text-info">
+                                Marital Status<span class="text-danger">*</span>
+                            </div>
+                            <div class="form-check">{{form.marital_status}}</div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-row">
+                        <div class="col">
                             <div class="form-label text-info">
                                 Qualification<span class="text-danger">*</span>
                             </div>
                             <div class="mb-2">{{form.qualification}}</div>
                         </div>
-                        <div class="col-sm-4">
-                            <div class="form-label text-info">
-                                Date of Birth<span class="text-danger">*</span>
-                            </div>
-                            <div>{{ form.birth_date }}
-                                <small class="text-danger">Older than 18 and younger than 50</small>
-                            </div>
-                        </div>
+                        <div class="col">
+                    <div class="form-label text-info">
+                        Date of Birth<span class="text-danger">*</span>
+                    </div>
+                    <div>{{ form.birth_date }}</div>
+                    </div>
                     </div>
                     <hr>
                     <div class="form-row">
-                        <div class="col-sm-6">
+                        <div class="col">
                             <div class="form-label text-info">Course <span class="text-muted">(optional)</span></div>
                             <div>{{ form.course }}</div>
                         </div>
-                        <div class="col-sm-6">
+                        <div class="col">
                             <div class="form-label text-info">
                                 Mobile<span class="text-danger">*</span>
                             </div>
                             <div>{{ form.mobile }}
-                                <small class="text-danger">e.g nnn-nnnn-nnnn</small>
+                                <small class="text-secondary">format: XXX-XXXX-XXXX</small>
                             </div>
                         </div>
                     </div>
@@ -105,12 +129,12 @@
                         </div>
                         <div class="col-sm">
                             <div class="form-label text-info">
-                                Address<span class="text-danger">*</span>
+                                Residential address<span class="text-danger">*</span>
                             </div>
                             <div class="">{{ form.address }}</div>
                         </div>
                     </div>
-                    <hr>
+                    
                     <div class="row">
                         {% if title == 'Update' %}
                         <div class="col-auto">
@@ -153,29 +177,7 @@
                     </div>
                 </div>
             </form>
-            <div class="row">
-                <div class="col-auto">
-                    <div class="card bg-warning">
-                        <div class="card-body shadow">
-                            <h5 class="card-title">
-                                <i class="fa fa-warning text-danger"></i>Warning
-                            </h5>
-                            <p class="card-text">
-                                Ensure that the information provided
-                                is correct. Any confirmation to the
-                                contrary will result in rejection of
-                                your application or termination
-                                of your employment without notice and benefits.
-                            </p>
-                        </div>
-                        <div class="card-footer bg-white">
-                            <p class="text-muted text-center">Information provided to us is for employment
-                                purposes only and cannot be compromised.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
 </div>
