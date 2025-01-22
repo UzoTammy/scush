@@ -1,0 +1,53 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="row justify-content-center align-items-center vh-100">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <table class="table" data-toggle="table">
+                        <h3 class="text-center">Bank Statement - {{object}}</h3>
+            
+                        <thead>
+                            <tr>
+                                <th colspan="2">Account Number <span class="float-right">{{object.pk}}</span></th>
+                                <th></th>
+                                <th colspan="2" class="">Opening Balance as at {{object.opening_balance_date}} <span class="float-right">{{object.opening_balance}}</span></th>
+                            </tr>
+                            <tr>
+                                <th>Date</th>
+                                <th>Detail</th>
+                                <th class="text-center">DR</th>
+                                <th class="text-center">CR</th>
+                                <th class="text-center">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for object in transactions %}
+                            <tr>
+                                <td>{{object.timestamp}}</td>
+                                <td>{{object.description}}</td>
+                                {% if object.transaction_type == 'DR' %}
+                                <td class="text-right">{{object.amount}}</td>
+                                <td class="text-muted text-center">--</td>
+                                {% else %}
+                                <td class="text-muted text-center">--</td>
+                                <td class="text-right">{{object.amount}}</td>
+                                {% endif %}
+                                <td class="text-right">{{object.balance}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col">
+                    <a class="btn btn-outline-dark float-right" href="{% url 'cashflow-home' %}"><i class="fa fa-reply"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -37,7 +37,7 @@ class BankAccount(models.Model):
             description=description, timestamp=timestamp,
             initiated_by=user, approved_by=user
         )
-
+        
     def withdraw(self, amount, description, timestamp, user):
         self.current_balance -= amount
         self.save()
@@ -47,6 +47,9 @@ class BankAccount(models.Model):
             description=description, timestamp=timestamp,
             initiated_by=user, approved_by=user
         )
+
+        self.reset_current_balance()
+
 
     def reset_current_balance(self):
         balance = self.opening_balance
@@ -58,13 +61,8 @@ class BankAccount(models.Model):
                 balance += transaction.amount
             transaction.balance = balance
             transaction.save()
-
-        if balance == self.current_balance:
-            return True
-        return False
-
-
-
+        self.current_balance = balance
+        self.save()
 
 class CashCenter(models.Model):
     name = models.CharField(max_length=100)
@@ -102,6 +100,19 @@ class CashCenter(models.Model):
             description=description, timestamp=timestamp,
             initiated_by=user
         )
+    
+    def reset_current_balance(self):
+        balance = self.opening_balance
+        
+        for transaction in self.cash_transactions.all().order_by('timestamp'):
+            if transaction.transaction_type == 'DR':
+                balance -= transaction.amount
+            else:
+                balance += transaction.amount
+            transaction.balance = balance
+            transaction.save()
+        self.current_balance = balance
+        self.save()
 
 
 class BankTransaction(models.Model):
@@ -121,8 +132,7 @@ class BankTransaction(models.Model):
 
     def __str__(self):
         return f"{self.bank.account_number} - {self.transaction_type}: {self.amount} @ {self.timestamp}"
-    
-            
+       
 class CashTransaction(models.Model):
     TRANSACTION_TYPES = (
         ("CR", "Deposit"),
@@ -135,11 +145,11 @@ class CashTransaction(models.Model):
     description = models.TextField(blank=True)
     timestamp = models.DateTimeField(default=timezone.now)
     initiated_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    # approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approvals')
+    balance = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
+    
 
     def __str__(self):
-        return f"{self.name} - {self.transaction_type}: {self.amount} @ {self.timestamp}"
-
+        return f"{self.cash_center} - {self.transaction_type}: {self.amount} @ {self.timestamp}"
 
 
 

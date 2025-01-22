@@ -339,12 +339,13 @@ class BankChargesView(LoginRequiredMixin, FormView):
 
 class BankStatementView(LoginRequiredMixin, DetailView):
     model = BankAccount
-    template_name = 'cashflow/bank_statement.html'
+    template_name = 'cashflow/statement.html'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context['transactions'] = self.get_object().transactions.all().order_by('timestamp')
         
+        self.get_object().reset_current_balance()
         return context
     
 class CashCenterCreateView(LoginRequiredMixin, CreateView):
@@ -357,3 +358,16 @@ class CashCenterCreateView(LoginRequiredMixin, CreateView):
         form.save()
         messages.success(self.request, f'{form.cleaned_data["name"]} created successfully !!!')
         return super().form_valid(form)
+    
+
+class CashStatementView(LoginRequiredMixin, DetailView):
+    model = CashCenter
+    template_name = 'cashflow/statement.html'
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['transactions'] = self.get_object().cash_transactions.all().order_by('timestamp')
+        
+        self.get_object().reset_current_balance()
+        return context
+    

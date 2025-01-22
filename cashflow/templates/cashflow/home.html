@@ -53,9 +53,6 @@
         </div>
         <div class="row">
             <div class="col mt-3">
-                <!-- <a class="btn btn-outline-dark" href="{% url 'cash-center-create' %}"><i class="fa fa-plus"> Cash Center</i></a> -->
-                <!-- <a class="btn btn-outline-dark" href="{% url 'bank-account-new' %}"><i class="fa fa-plus"> Bank Account</i></a> -->
-                
                 <a class="btn btn-outline-dark" href="" data-toggle="modal" data-target="#actionHelper"><i class="fa fa-question"></i></a>
             </div>
         </div>
@@ -70,7 +67,6 @@
                         <th>Shortname</th>
                         <th>Opening balance</th>
                         <th>Current Balance</th>
-                        <!-- <th>Lien Value</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -88,8 +84,6 @@
                         <td>{{bank.short_name}}</td>
                         <td class="text-right">{{bank.opening_balance}}</td>
                         <td class="text-right">{{bank.current_balance}}</td>
-                        <!-- <td class="text-right">{{bank.lien_value}}</td> -->
-                        
                     </tr>
                     {% endfor %}
                     <tfoot>
@@ -138,16 +132,16 @@
                     <tr class="text-center">
                         <th>Name</th>
                         <th>Opening Balance</th>
-                        <th>Opening Date</th>
+                        <!-- <th>Opening Date</th> -->
                         <th>Current Balance</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for cash in cash_center %}
                     <tr>
-                        <td>{{cash.name}}</td>
-                        <td class="text-right">{{cash.opening_balance}}</td>
-                        <td class="text-center">{{cash.opening_balance_date}}</td>
+                        <td>{{cash.name}} <a class="float-right" href="{% url 'cash-statement' cash.pk %}"><i class="fa fa-paste"></i></a></td>
+                        <td class="text-right">{{cash.opening_balance}} </td>
+                        <!-- <td class="text-center">{{cash.opening_balance_date}}</td> -->
                         <td class="text-right">{{cash.current_balance}}</td>
                         
                     </tr>

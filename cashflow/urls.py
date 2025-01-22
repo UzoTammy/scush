@@ -16,9 +16,10 @@ urlpatterns = [
     path('administer/withdrawal/<int:pk>', views.AdministerWithdrawalView.as_view(), name='administer-withdrawal'),
     path('bank/transfer/', views.BankTransferView.as_view(), name='bank-transfer'),
     path('bank/charges', views.BankChargesView.as_view(), name='bank-charges'),
-    path('bank/statment/<str:pk>/', views.BankStatementView.as_view(), name='bank-statement'),
-    
+    path('bank-statment/<str:pk>/', views.BankStatementView.as_view(), name='bank-statement'),
+
     path('cash-center/create/', views.CashCenterCreateView.as_view(), name='cash-center-create'),
-     
+    path('cash-statement/<int:pk>/', views.CashStatementView.as_view(), name='cash-statement'),
+    
 ]
 
