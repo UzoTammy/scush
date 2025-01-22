@@ -20,7 +20,7 @@ from .forms import (BankAccountForm, CashCenterCreateForm, CashCollectForm, Cash
                     CurrentBalanceUpdateForm, RequestToWithdrawForm, InterbankTransferForm,
                     DisableAccountForm, ApproveWithdrawalForm, AdministerWithdrawalForm,
                     BankTransferForm)
-from .models import BankAccount, CashCenter, CashDepot, Withdrawal, CashDeposit, BankTransfer, InterbankTransfer, BankCharges
+from .models import BankAccount, BankTransaction, CashCenter, CashDepot, Withdrawal, CashDeposit, BankTransfer, InterbankTransfer, BankCharges
 from core.tools import QuerySum
 # Create your views here.
 
@@ -343,28 +343,8 @@ class BankStatementView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        # lets get the date
-        # date = self.get_object().opening_balance_date
-        # filter deposit
-        # deposits = CashDeposit.objects.filter(post_date__gte=date).filter(bank=self.get_object())
-        # inter_transfer_in = InterbankTransfer.objects.filter(transfer_date__gte=date).filter(receiver_bank=self.get_object())
-        # bank_transfer = BankTransfer.objects.filter(post_date__gte=date).filter(bank=self.get_object())
-        # bank_charges = BankCharges.objects.filter(post_date__gte=date).filter(bank=self.get_object())
-        # withdrawals = Withdrawal.objects.filter(post_date__gte=date).filter(bank=self.get_object()).filter(stage=2)
-        # inter_transfer_out = InterbankTransfer.objects.filter(transfer_date__gte=date).filter(sender_bank=self.get_object())
-        # pick out dates
-        # d1 = deposits.values_list('post_date', flat=True).distinct() if deposits else CashDeposit.objects.none()
-        # d2 = inter_transfer_in.values_list('transfer_date', flat=True).distinct() if inter_transfer_in else CashDeposit.objects.none()
-        # d3 = bank_transfer.values_list('post_date', flat=True).distinct() if bank_transfer else CashDeposit.objects.none()
-        # d4 = bank_charges.values_list('post_date', flat=True).distinct() if bank_charges else CashDeposit.objects.none()
-        # d5 = withdrawals.values_list('post_date', flat=True).distinct() if withdrawals else CashDeposit.objects.none()
-        # d6 = inter_transfer_out.values_list('post_date', flat=True).distinct() if inter_transfer_out else CashDeposit.objects.none()
+        context['statement'] = self.get_object().transactions.all()
         
-        # dates = set(chain(d1,  d2, d3, d4, d5, d6))
-        # dict_d1, dict_d2, dict_d3, dict_d4, dict_d5, dict_d6 = dict(), dict(), dict(), dict(), dict(), dict()
-        # for date in dates:
-        #     if deposits.exists():
-        #         deposits.objects.filter(post_date=date)
         return context
     
 class CashCenterCreateView(LoginRequiredMixin, CreateView):

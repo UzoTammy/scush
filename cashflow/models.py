@@ -104,6 +104,14 @@ class BankTransaction(models.Model):
     def __str__(self):
         return f"{self.bank.account_number} - {self.transaction_type}: {self.amount} @ {self.timestamp}"
     
+    # def get_balance(self, period=None):
+    #     if period is None:
+    #         balance = self.bank.opening_balance
+
+    #     if self.transaction_type == 'DR':
+    #         opening_balance =- self.amount
+    #     opening_balance += self.amount
+    #     return balance
     
 class CashTransaction(models.Model):
     TRANSACTION_TYPES = (

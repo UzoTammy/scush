@@ -21,7 +21,7 @@ def sales_stock_figure(x, y):
     plt.ylabel('Date')
     plt.xlabel('Sales vs Stock(%)')
     plt.tight_layout()
-    graph = get_graph()
+    graph = get_graph(plt)
     return graph
 
 def monthly_sales_revenue(x, y):

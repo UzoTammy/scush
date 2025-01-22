@@ -13,7 +13,7 @@ class ChoiceOrInputWidget(forms.MultiWidget):
     def __init__(self, choices=(), attrs=None):
         # Ensure choices are passed correctly to the Select widget
         widgets = [
-            forms.TextInput(attrs={'placeholder': 'Type correct value here if not listed'}),
+            forms.TextInput(attrs={'placeholder': 'Enter item not listed below'}),
             forms.Select(choices=choices),
             # forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='Cash Center (From)')
     

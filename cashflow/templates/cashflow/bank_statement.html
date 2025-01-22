@@ -2,10 +2,11 @@
 
 {% block content %}
 <div class="container mt-3">
-    <h3 class="text-center">Bank Statement - {{object}}</h3>
-    <div class="row">
+    <div class="row justify-content-center align-items-center vh-100">
         <div class="col">
             <table class="table" data-toggle="table">
+                <h3 class="text-center">Bank Statement - {{object}}</h3>
+    
                 <thead>
                     <tr>
                         <th colspan="2">Account Number <span class="float-right">{{object.pk}}</span></th>
@@ -15,19 +16,24 @@
                     <tr>
                         <th>Date</th>
                         <th>Detail</th>
-                        <th>DR</th>
-                        <th>CR</th>
+                        <th class="text-center">DR</th>
+                        <th class="text-center">CR</th>
                         <th>Balance</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for object in object_list %}
+                    {% for object in statement %}
                     <tr>
-                        <td>{{object}}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>{{object.timestamp.date}}</td>
+                        <td>{{object.description}}</td>
+                        {% if object.transaction_type == 'DR' %}
+                        <td class="text-right">{{object.amount}}</td>
+                        <td class="text-muted text-center">--</td>
+                        {% else %}
+                        <td class="text-muted text-center">--</td>
+                        <td class="text-right">{{object.amount}}</td>
+                        {% endif %}
+                        <td>{{object.balance}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
