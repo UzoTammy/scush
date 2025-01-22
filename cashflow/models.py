@@ -48,6 +48,23 @@ class BankAccount(models.Model):
             initiated_by=user, approved_by=user
         )
 
+    def reset_current_balance(self):
+        balance = self.opening_balance
+        
+        for transaction in self.transactions.all().order_by('timestamp'):
+            if transaction.transaction_type == 'DR':
+                balance -= transaction.amount
+            else:
+                balance += transaction.amount
+            transaction.balance = balance
+            transaction.save()
+
+        if balance == self.current_balance:
+            return True
+        return False
+
+
+
 
 class CashCenter(models.Model):
     name = models.CharField(max_length=100)
@@ -100,19 +117,12 @@ class BankTransaction(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     initiated_by = models.ForeignKey(User, on_delete=models.CASCADE)
     approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approvals')
+    balance = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
 
     def __str__(self):
         return f"{self.bank.account_number} - {self.transaction_type}: {self.amount} @ {self.timestamp}"
     
-    # def get_balance(self, period=None):
-    #     if period is None:
-    #         balance = self.bank.opening_balance
-
-    #     if self.transaction_type == 'DR':
-    #         opening_balance =- self.amount
-    #     opening_balance += self.amount
-    #     return balance
-    
+            
 class CashTransaction(models.Model):
     TRANSACTION_TYPES = (
         ("CR", "Deposit"),

@@ -343,7 +343,7 @@ class BankStatementView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context['statement'] = self.get_object().transactions.all()
+        context['transactions'] = self.get_object().transactions.all().order_by('timestamp')
         
         return context
     
