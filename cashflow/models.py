@@ -26,6 +26,107 @@ class BankAccount(models.Model):
 
     def __str__(self) -> str:
         return f'{self.short_name}-{self.account_number}'
+    
+    def deposit(self, amount, description, timestamp, user):
+
+        self.current_balance += amount
+        self.save()
+
+        BankTransaction.objects.create(
+            bank=self, transaction_type='CR', amount=amount, 
+            description=description, timestamp=timestamp,
+            initiated_by=user, approved_by=user
+        )
+
+    def withdraw(self, amount, description, timestamp, user):
+        self.current_balance -= amount
+        self.save()
+
+        BankTransaction.objects.create(
+            bank=self, transaction_type='DR', amount=amount, 
+            description=description, timestamp=timestamp,
+            initiated_by=user, approved_by=user
+        )
+
+
+class CashCenter(models.Model):
+    name = models.CharField(max_length=100)
+    opening_balance = MoneyField(max_digits=12, decimal_places=2)
+    opening_balance_date = models.DateField()
+    current_balance = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
+    status = models.BooleanField(default=True) # active
+    slug = models.SlugField(unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return f'{self.name}'
+    
+    def deposit(self, amount, description, timestamp, user):
+
+        self.current_balance += amount
+        self.save()
+
+        CashTransaction.objects.create(
+            cash_center=self, transaction_type='CR', amount=amount, 
+            description=description, timestamp=timestamp,
+            initiated_by=user
+        )
+
+    def withdraw(self, amount, description, timestamp, user):
+        self.current_balance -= amount
+        self.save()
+
+        CashTransaction.objects.create(
+            cash_center=self, transaction_type='DR', amount=amount, 
+            description=description, timestamp=timestamp,
+            initiated_by=user
+        )
+
+
+class BankTransaction(models.Model):
+    TRANSACTION_TYPES = (
+        ("CR", "Deposit"),
+        ("DR", "Withdraw"),
+    )
+
+    bank = models.ForeignKey(BankAccount, on_delete=models.CASCADE, related_name='transactions')
+    transaction_type = models.CharField(max_length=2, choices=TRANSACTION_TYPES)
+    amount = MoneyField(max_digits=12, decimal_places=2)  # Can be positive (Deposit) or negative (Withdrawal)
+    description = models.TextField(blank=True)
+    timestamp = models.DateTimeField(default=timezone.now)
+    initiated_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approvals')
+
+    def __str__(self):
+        return f"{self.bank.account_number} - {self.transaction_type}: {self.amount} @ {self.timestamp}"
+    
+    
+class CashTransaction(models.Model):
+    TRANSACTION_TYPES = (
+        ("CR", "Deposit"),
+        ("DR", "Withdraw"),
+    )
+
+    cash_center = models.ForeignKey(CashCenter, on_delete=models.CASCADE, related_name='cash_transactions')
+    transaction_type = models.CharField(max_length=2, choices=TRANSACTION_TYPES)
+    amount = MoneyField(max_digits=12, decimal_places=2)  # Can be positive (Deposit) or negative (Withdrawal)
+    description = models.TextField(blank=True)
+    timestamp = models.DateTimeField(default=timezone.now)
+    initiated_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    # approved_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='approvals')
+
+    def __str__(self):
+        return f"{self.name} - {self.transaction_type}: {self.amount} @ {self.timestamp}"
+
+
+
+
+## Will be discarded
+
 
 class CashDepot(models.Model):
     # affected by cash collection and deposit
@@ -54,6 +155,7 @@ class CashDeposit(models.Model):
 
     def __str__(self) -> str:
         return f'{self.bank.short_name}-{self.post_date}'
+    
 
 class Transaction(models.Model):
     data = models.JSONField(default=list)  # Stores a list of dictionaries
@@ -94,7 +196,7 @@ class InterbankTransfer(models.Model):
     def __str__(self) -> str:
         return f'{self.sender_bank.short_name} to {self.receiver_bank.short_name}: {self.amount}'
 
-class BankTransaction(models.Model):
+class BankTransact(models.Model):
     bank = models.ForeignKey(BankAccount, on_delete=models.CASCADE) 
     post_date = models.DateField()
     amount = MoneyField(max_digits=12, decimal_places=2)
@@ -103,14 +205,14 @@ class BankTransaction(models.Model):
     class Meta:
         abstract = True
 
-class BankTransfer(BankTransaction):
+class BankTransfer(BankTransact):
     
     def __str__(self) -> str:
         return f'Transfer {self.post_date} {self.amount}'
 
-class BankCharges(BankTransaction):
+class BankCharges(BankTransact):
     
     def __str__(self) -> str:
         return f'Charges {self.post_date} {self.amount}'
 
-
+    

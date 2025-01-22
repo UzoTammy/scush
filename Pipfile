@@ -28,6 +28,8 @@ crispy-bootstrap4 = "*"
 celery = "*"
 sphinx = "*"
 furo = "*"
+plotly = "*"
+pandas = "*"
 
 [requires]
 python_version = "3.10"

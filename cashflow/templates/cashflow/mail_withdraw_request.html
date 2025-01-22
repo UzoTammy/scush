@@ -1,29 +1,90 @@
-{% extends 'core/base.html' %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block content %}
-<div class="container mt-3">
-    <h3 class="text-center">Withdrawal Request</h3>
-    <div class="row justify-content-center">
-        <div class="col">
-            <ul class="list-group text-monospace flush">
-                <li class="list-group-item list-group-item-danger">Beneficiary<span
-                        class="float-right">{{withdraw_object.party}}</span></li>
-                <li class="list-group-item list-group-item-danger">Amount<span
-                        class="float-right">{{withdraw_object.amount}}</span></li>
-                <li class="list-group-item list-group-item-danger">Requested By<span
-                        class="float-right">{{withdraw_object.requested_by.first_name}}</span></li>
-                <li class="list-group-item list-group-item-danger">Request Date<span
-                        class="float-right">{{withdraw_object.post_date}}</span></li>
-                {% if withdraw_object.stage == 1 %}
-                <li class="list-group-item list-group-item-danger">Bank<span class="float-right"></span></li>
-                {% endif %}
-            </ul>
-            {% if request.user.username == 'Uzo-02' %}
-            <a class="mt-3" href="{{url_link}}">Click this link to approve on site</a>
-            {% endif %}
-        </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .list-group {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .styled-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .styled-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 5px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .styled-list li:last-child {
+            border-bottom: none;
+        }
+
+        .list-group-item {
+            font-weight: normal;
+            color: #555;
+        }
+
+        .item-value {
+            text-align: right;
+            color: #007bff;
+        }
+    </style>
+    <title>Admin email</title>
+</head>
+
+<body>
+    <div class="list-group">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="font-weight: bold; color: #555; padding: 15px 10px;">Beneficiary</td>
+                <td style="text-align: right; color: #007bff; padding: 15px 10px;">{{withdraw_object.party}}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="font-weight: bold; color: #555; padding: 15px 10px;">Funding From
+                    <br>
+                    <small>Bank balance before payment is {{withdraw_object.bank.current_balance}}</small>
+                </td>
+                <td style="text-align: right; color: #007bff; padding: 15px 10px;">{{withdraw_object.bank}}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="font-weight: bold; color: #555; padding: 15px 10px;">Amount</td>
+                <td style="text-align: right; color: #007bff; padding: 15px 10px;">{{withdraw_object.amount}}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="font-weight: bold; color: #555; padding: 15px 10px;">Requested by</td>
+                <td style="text-align: right; color: #007bff; padding: 15px 10px;">
+                    {{withdraw_object.requested_by.first_name}}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="font-weight: bold; color: #555; padding: 15px 10px;">Request date</td>
+                <td style="text-align: right; color: #007bff; padding: 15px 10px;">{{withdraw_object.post_date}}</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="font-weight: bold; color: #555; padding: 15px 10px;">Bonus Points</td>
+                <td style="text-align: right; color: #007bff; padding: 15px 10px;">{{bonus_points}}</td>
+            </tr>
+
+        </table>
+        <a class="mt-3" href="{{url_link}}">Click this link to approve on site</a>
     </div>
-</div>
+</body>
 
+</html>
 
-{% endblock %}

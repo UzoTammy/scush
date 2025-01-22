@@ -440,7 +440,7 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 items.append(possible_items[i])
                 legends.append(possible_legends[i])  
         
-        context['donut'] = plotter.donut(items, values, f'Categorized Inventory Sellout', 1, 
+        context['donut'] = plotter.donut(items, values, 'Categorized Inventory Sellout', 1, 
                                         legends, f'Total Value - {sum(values):,.2f}') if values else None
         
         """Business Growth trend in the last 10 days"""

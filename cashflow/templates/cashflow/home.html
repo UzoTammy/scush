@@ -4,12 +4,63 @@
 
 {% block content %}
 <div class="container mt-3">
-    <div class="row">
-        <div class="col">
-            <h3 class="text-center">Cashflow Manager</h3>
+    
+    <div class="container px-lg-5 mt-5">
+        <div class="row mx-lg-n5">
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
+                <a href="{% url 'cashflow-cash-collect' %}">
+                    <h3 class="text-center text-white">Cash <br> Collect</h3>
+                </a>
+                
+            </div>
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
+                <a href="{% url 'cashflow-deposit' %}">
+                    <h3 class="text-center text-white">Deposit To Bank</h3>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
+                <a href="{% url 'bank-transfer' %}">
+                    <h3 class="text-center text-white">Bank <br> Transfer</h3>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
+                <a href="{% url 'cashflow-disburse' %}">
+                    <h3 class="text-center text-white">Disburse <br>Cash</h3>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
+                <a href="{% url 'withdrawal-request' %}">
+                    <h3 class="text-center text-white">Request to Withdraw</h3>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
+                <a href="{% url 'interbank-transfer' %}">
+                    <h3 class="text-center text-white">Inter Bank Transfer</h3>
+                </a>
+            </div>
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
+                <a href="{% url 'bank-account-new' %}">
+                    <h3 class="text-center text-white">Create Bank Account</h3>
+                </a>
+            </div>
+            
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
+                <a href="{% url 'bank-charges' %}">
+                    <h3 class="text-center text-white">Bank <br> Charges</h3>
+                </a>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col mt-3">
+                <!-- <a class="btn btn-outline-dark" href="{% url 'cash-center-create' %}"><i class="fa fa-plus"> Cash Center</i></a> -->
+                <!-- <a class="btn btn-outline-dark" href="{% url 'bank-account-new' %}"><i class="fa fa-plus"> Bank Account</i></a> -->
+                
+                <a class="btn btn-outline-dark" href="" data-toggle="modal" data-target="#actionHelper"><i class="fa fa-question"></i></a>
+            </div>
         </div>
     </div>
-    
+
     <div class="row mt-3">
         <div class="col-sm-8">
             <table class="table" data-toggle="table">
@@ -19,7 +70,7 @@
                         <th>Shortname</th>
                         <th>Opening balance</th>
                         <th>Current Balance</th>
-                        <th>Lien Value</th>
+                        <!-- <th>Lien Value</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -37,7 +88,7 @@
                         <td>{{bank.short_name}}</td>
                         <td class="text-right">{{bank.opening_balance}}</td>
                         <td class="text-right">{{bank.current_balance}}</td>
-                        <td class="text-right">{{bank.lien_value}}</td>
+                        <!-- <td class="text-right">{{bank.lien_value}}</td> -->
                         
                     </tr>
                     {% endfor %}
@@ -81,13 +132,40 @@
                 </ul>
             </nav>
             {% endif %}
+
+            <table class="table mb-5" data-toggle="table">
+                <thead>
+                    <tr class="text-center">
+                        <th>Name</th>
+                        <th>Opening Balance</th>
+                        <th>Opening Date</th>
+                        <th>Current Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cash in cash_center %}
+                    <tr>
+                        <td>{{cash.name}}</td>
+                        <td class="text-right">{{cash.opening_balance}}</td>
+                        <td class="text-center">{{cash.opening_balance_date}}</td>
+                        <td class="text-right">{{cash.current_balance}}</td>
+                        
+                    </tr>
+                    {% endfor %}
+                    
+                </tbody>
+                
+            </table>
         </div>
         <div class="col-sm-4">
             <div class="row mt-2">
                 <div class="col">
                     <ul class="list-group">
-                        <li class="list-group-item list-group-item-primary">Available Cash 
-                            <span class="float-right">{{ cash }}</span>
+                        <li class="list-group-item list-group-item-primary">Cash Balance
+                            <ul>
+                                <li>Business <span class="float-right">{{ cash }}</span></li>
+                                <li>Imprest <span class="float-right">{{ imprest_cash }}</span></li>
+                            </ul>
                         </li>
                         <li class="list-group-item list-group-item-primary">Bank Balance 
                             <ul>
@@ -123,53 +201,7 @@
             </div>
         </div>
     </div>
-    
-    <div class="container px-lg-5 mt-5">
-        <div class="row mx-lg-n5">
-            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
-                <a href="{% url 'cashflow-cash-collect' %}">
-                    <h3 class="text-center text-white">Collect <br> Cash</h3>
-                </a>
-            </div>
-            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
-                <a href="{% url 'cashflow-deposit' %}">
-                    <h3 class="text-center text-white">Deposit To Bank</h3>
-                </a>
-            </div>
-            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
-                <a href="{% url 'bank-transfer' %}">
-                    <h3 class="text-center text-white">Bank <br> Transfer</h3>
-                </a>
-            </div>
-            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
-                <a href="{% url 'cashflow-disburse' %}">
-                    <h3 class="text-center text-white">Disburse <br>Cash</h3>
-                </a>
-            </div>
-            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
-                <a href="{% url 'withdrawal-request' %}">
-                    <h3 class="text-center text-white">Request to Withdraw</h3>
-                </a>
-            </div>
-            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
-                <a href="{% url 'interbank-transfer' %}">
-                    <h3 class="text-center text-white">Inter Bank Transfer</h3>
-                </a>
-            </div>
-            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
-                <a href="{% url 'bank-account-new' %}">
-                    <h3 class="text-center text-white">Create Bank Account</h3>
-                </a>
-            </div>
-            
-            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
-                <a href="{% url 'bank-charges' %}">
-                    <h3 class="text-center text-white">Bank <br> Charges</h3>
-                </a>
-            </div>
 
-        </div>
-    </div>
 </div>
 
   
@@ -210,6 +242,37 @@
       </div>
     </div>
   
-</div>
+    </div>
   {% endfor %}
+
+  
+  <!-- Modal -->
+  <div class="modal fade" 
+  id="actionHelper" 
+  data-backdrop="static" 
+  data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel">Help</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><h4>Collect Cash</h4>: Cash from branch into main cash center <span class="float-right text-success">Inflow</span></li>
+                <li class="list-group-item"><h4>Bank Transfer</h4>: Transfer into bank account. E.g. payment from customer <span class="float-right text-success">Inflow</span></li>
+                <li class="list-group-item"><h4>Deposit to bank </h4>: Cash from cash center to bank <span class="float-right text-warning">Interflow</span></li>
+                <li class="list-group-item"><h4>Inter Bank Transfer</h4>: Move Fund from bank to bank <span class="float-right text-warning">Interflow</span></li>
+                <li class="list-group-item"><h4>Disburse cash</h4>: Move cash from main cash center to imprest <span class="float-right text-danger">Outflow</span></li>
+                <li class="list-group-item"><h4>Request to withdraw</h4>: Fund business partners from bank account <span class="float-right text-danger">Outflow</span></li>
+              </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
