@@ -26,7 +26,7 @@
                         <tbody>
                             {% for object in transactions %}
                             <tr>
-                                <td>{{object.timestamp}}</td>
+                                <td>{{object.timestamp.date}}</td>
                                 <td>{{object.description}}</td>
                                 {% if object.transaction_type == 'DR' %}
                                 <td class="text-right">{{object.amount}}</td>

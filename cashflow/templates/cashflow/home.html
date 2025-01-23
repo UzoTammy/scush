@@ -7,45 +7,53 @@
     
     <div class="container px-lg-5 mt-5">
         <div class="row mx-lg-n5">
-            <div class="col-6 col-md-3 py-3 px-lg-5 border border-success bg-dark shadow">
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
                 <a href="{% url 'cashflow-cash-collect' %}">
+                    <span class="rounded-circle bg-success float-right p-2"></span>
                     <h3 class="text-center text-white">Cash <br> Collect</h3>
                 </a>
                 
             </div>
-            <div class="col-6 col-md-3 py-3 px-lg-5 border border-success bg-dark shadow">
-                <a href="{% url 'cashflow-deposit' %}">
-                    <h3 class="text-center text-white">Deposit To Bank</h3>
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
+                <a class="text-center" href="{% url 'cashflow-deposit' %}">
+                    <span class="rounded-circle bg-success float-right p-2"></span>
+                    <h3 class="text-white">Deposit To Bank </h3>
                 </a>
             </div>
-            <div class="col-6 col-md-3 py-3 px-lg-5 border broder-success bg-dark shadow">
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
                 <a href="{% url 'bank-transfer' %}">
+                    <span class="rounded-circle bg-success float-right p-2"></span>
                     <h3 class="text-center text-white">Bank <br> Transfer</h3>
                 </a>
             </div>
-            <div class="col-6 col-md-3 py-3 px-lg-5 border border-danger bg-dark shadow">
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
                 <a href="{% url 'disburse-cash' %}">
+                    <span class="rounded-circle bg-danger float-right p-2 shadow"></span>
                     <h3 class="text-center text-white">Disburse <br>Cash</h3>
                 </a>
             </div>
-            <div class="col-6 col-md-3 py-3 px-lg-5 border border-danger bg-dark shadow">
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
                 <a href="{% url 'withdrawal-request' %}">
+                    <span class="rounded-circle bg-danger float-right p-2"></span>
                     <h3 class="text-center text-white">Request to Withdraw</h3>
                 </a>
             </div>
             <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
                 <a href="{% url 'interbank-transfer' %}">
+                    <span class="rounded-circle bg-warning float-right p-2"></span>
                     <h3 class="text-center text-white">Inter Bank Transfer</h3>
                 </a>
             </div>
             <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
                 <a href="{% url 'cashflow-intercash' %}">
+                    <span class="rounded-circle bg-warning float-right p-2"></span>
                     <h3 class="text-center text-white">Inter Cash Transfer</h3>
                 </a>
             </div>
             
-            <div class="col-6 col-md-3 py-3 px-lg-5 border border-danger bg-dark shadow">
+            <div class="col-6 col-md-3 py-3 px-lg-5 border bg-dark shadow">
                 <a href="{% url 'bank-charges' %}">
+                    <span class="rounded-circle bg-danger float-right p-2"></span>
                     <h3 class="text-center text-white">Bank <br> Charges</h3>
                 </a>
             </div>
@@ -198,7 +206,7 @@
 
     <div class="row mb-3 mt-3">
         <div class="col">
-            <a class="btn btn-outline-dark" href="{{ request.META.HTTP_REFERER}}">Back</a>
+            <a class="btn btn-outline-dark float-right" href="{% url 'home' %}">Back</a>
         </div>
     </div>
 </div>
@@ -262,10 +270,11 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"><h4>Collect Cash</h4>: Cash from branch into main cash center <span class="float-right text-success">Inflow</span></li>
                 <li class="list-group-item"><h4>Bank Transfer</h4>: Transfer into bank account. E.g. payment from customer <span class="float-right text-success">Inflow</span></li>
-                <li class="list-group-item"><h4>Deposit to bank </h4>: Cash from cash center to bank <span class="float-right text-warning">Interflow</span></li>
+                <li class="list-group-item"><h4>Deposit to bank </h4>: Cash from cash center to bank <span class="float-right text-success">Inflow</span></li>
                 <li class="list-group-item"><h4>Inter Bank Transfer</h4>: Move fund from bank to bank <span class="float-right text-warning">Interflow</span></li>
                 <li class="list-group-item"><h4>Inter Cash Transfer</h4>: Move cash from cash center to cash center <span class="float-right text-warning">Interflow</span></li>
                 <li class="list-group-item"><h4>Disburse cash</h4>: Move cash out of cash center <span class="float-right text-danger">Outflow</span></li>
+                <li class="list-group-item"><h4>Bank Charges</h4>: Transfer fund from bank to reconcile account <span class="float-right text-danger">Outflow</span></li>
                 <li class="list-group-item"><h4>Request to withdraw</h4>: Fund business partners from bank account <span class="float-right text-danger">Outflow</span></li>
               </ul>
         </div>

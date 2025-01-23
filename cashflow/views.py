@@ -183,18 +183,18 @@ class WithdrawalRequestView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         form.cleaned_data['requested_by'] = self.request.user
          # send mail
-        email = EmailMessage(
-        subject=f'Withdrawal Request {form.cleaned_data["amount"]}',
-        body = loader.render_to_string('cashflow/mail_withdraw_request.html', 
-                                       context={'withdraw_object': form.cleaned_data, 'url_link':f"{self.request.META['HTTP_ORIGIN']}/cashflow/" }
-                                    ),
-        from_email='noreply@scush.com.ng',
-        to=['uzo.nwokoro@ozonefl.com'],
-        cc=[self.request.user.email, 'abasiama.ibanga@ozonefl.com'],
-        headers={'message-id': 'tiger'}
-        )
-        email.content_subtype='html'
-        email.send(fail_silently=True)
+        # email = EmailMessage(
+        # subject=f'Withdrawal Request {form.cleaned_data["amount"]}',
+        # body = loader.render_to_string('cashflow/mail_withdraw_request.html', 
+        #                                context={'withdraw_object': form.cleaned_data, 'url_link':f"{self.request.META['HTTP_ORIGIN']}/cashflow/" }
+        #                             ),
+        # from_email='noreply@scush.com.ng',
+        # to=['uzo.nwokoro@ozonefl.com'],
+        # cc=[self.request.user.email, 'abasiama.ibanga@ozonefl.com'],
+        # headers={'message-id': 'tiger'}
+        # )
+        # email.content_subtype='html'
+        # email.send(fail_silently=True)
 
         bank: BankAccount  = form.cleaned_data['bank']
         bank.withdraw(form.cleaned_data['amount'], form.cleaned_data['description'], form.cleaned_data['post_date'], self.request.user)

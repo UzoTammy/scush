@@ -130,7 +130,9 @@ class RequestToWithdrawForm(forms.Form):
     party = ChoiceOrInputField(choices=[
         ('GN', 'Guinness'), 
         ('NB', 'Nigerian Breweries'), 
-        ('IB', 'International Breweries')])
+        ('IB', 'International Breweries'),
+        ('AVAA', 'AVAA'),
+        ('REDBULL', 'Redbull')])
     bank = forms.ModelChoiceField(queryset=BankAccount.objects.filter(status=True))
     amount = MoneyField(max_digits=12, decimal_places=2)
     post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=datetime.date.today)
