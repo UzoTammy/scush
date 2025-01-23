@@ -96,7 +96,7 @@ class CashDepositForm(forms.Form):
         if self.cleaned_data['amount'] > self.cleaned_data['cash_center'].current_balance:
             raise forms.ValidationError('Insufficient Cash to Deposit !!!')
 
-class DisburseForm(forms.Form):
+class InterCashTransferForm(forms.Form):
     donor = forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='From')
     receiver = forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='To')
     amount = MoneyField(max_digits=12, decimal_places=2) 
@@ -105,7 +105,19 @@ class DisburseForm(forms.Form):
     
     def clean(self):
         if self.cleaned_data['amount'] > self.cleaned_data['donor'].current_balance:
+            raise forms.ValidationError('Not enough cash to transfer !!!')
+
+class DisburseCashForm(forms.Form):
+    receiver = forms.CharField(max_length=50)
+    donor = forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='Cash Center')
+    amount = MoneyField(max_digits=12, decimal_places=2) 
+    post_date = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
+    description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
+    
+    def clean(self):
+        if self.cleaned_data['amount'] > self.cleaned_data['donor'].current_balance:
             raise forms.ValidationError('Not enough cash to disburse !!!')
+
 
 class CurrentBalanceUpdateForm(forms.Form):
     current_balance = MoneyField(max_digits=12, decimal_places=2, min_value=0)

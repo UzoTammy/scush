@@ -16,10 +16,11 @@ from django.utils.html import format_html
 
 from djmoney.money import Money
 
-from .forms import (BankAccountForm, CashCenterCreateForm, CashCollectForm, CashDepositForm, DisburseForm, 
+from .forms import (BankAccountForm, CashCenterCreateForm, CashCollectForm, CashDepositForm,
                     CurrentBalanceUpdateForm, RequestToWithdrawForm, InterbankTransferForm,
                     DisableAccountForm, ApproveWithdrawalForm, AdministerWithdrawalForm,
-                    BankTransferForm)
+                    BankTransferForm, InterCashTransferForm, DisburseCashForm)
+
 from .models import BankAccount, BankTransaction, CashCenter, CashDepot, Withdrawal, CashDeposit, BankTransfer, InterbankTransfer, BankCharges
 from core.tools import QuerySum
 # Create your views here.
@@ -150,9 +151,9 @@ class CashDepositCreateView(LoginRequiredMixin, FormView):
         messages.success(self.request, 'Cash Deposited Successfully !!!')
         return super().form_valid(form)
         
-class DisburseView(LoginRequiredMixin, FormView):
+class InterCashTransferView(LoginRequiredMixin, FormView):
     template_name = 'cashflow/create_form.html'
-    form_class = DisburseForm
+    form_class = InterCashTransferForm
     success_url = reverse_lazy('cashflow-home')
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
@@ -163,10 +164,10 @@ class DisburseView(LoginRequiredMixin, FormView):
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         donor: CashCenter = form.cleaned_data['donor']
         receiver: CashCenter = form.cleaned_data['receiver']
-        description = form.cleaned_data['description'] or 'Cash for expenses'
+        description = form.cleaned_data['description'] or f'From {donor} to {receiver}'
         donor.withdraw(form.cleaned_data['amount'], description, form.cleaned_data['post_date'], self.request.user)
         receiver.deposit(form.cleaned_data['amount'], description, form.cleaned_data['post_date'], self.request.user)
-        messages.success(self.request, 'Cash Disbursed Successfully !!!')
+        messages.success(self.request, 'Cash exchanged Successfully !!!')
         return super().form_valid(form)
 
 class WithdrawalRequestView(LoginRequiredMixin, FormView):
@@ -221,6 +222,25 @@ class InterbankTransferView(LoginRequiredMixin, FormView):
         messages.success(self.request, 'Transfer made successfully !!!')
         return super().form_valid(form)
     
+    
+class DisburseCashView(LoginRequiredMixin, FormView):
+    template_name = 'cashflow/create_form.html'
+    form_class = DisburseCashForm
+    success_url = reverse_lazy('cashflow-home')
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context['heading'] = 'Disburse Cash Form'
+        return context
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        donor: BankAccount = form.cleaned_data['donor']
+        description = form.cleaned_data['description'] or f'Cash disbursed to {form.cleaned_data["receiver"]}'
+        donor.withdraw(form.cleaned_data['amount'], description, form.cleaned_data['post_date'], self.request.user)
+        
+        messages.success(self.request, 'Cash disbursed successfully !!!')
+        return super().form_valid(form)
+
 class CurrentBalanceUpdateView(LoginRequiredMixin, FormView):
     template_name = 'cashflow/create_form.html'
     form_class = CurrentBalanceUpdateForm
@@ -357,8 +377,7 @@ class CashCenterCreateView(LoginRequiredMixin, CreateView):
         form.instance.current_balance = form.instance.opening_balance
         form.save()
         messages.success(self.request, f'{form.cleaned_data["name"]} created successfully !!!')
-        return super().form_valid(form)
-    
+        return super().form_valid(form) 
 
 class CashStatementView(LoginRequiredMixin, DetailView):
     model = CashCenter
