@@ -146,7 +146,6 @@ class CashTransaction(models.Model):
     timestamp = models.DateTimeField(default=timezone.now)
     initiated_by = models.ForeignKey(User, on_delete=models.CASCADE)
     balance = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
-    
 
     def __str__(self):
         return f"{self.cash_center} - {self.transaction_type}: {self.amount} @ {self.timestamp}"

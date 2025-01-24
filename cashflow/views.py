@@ -108,10 +108,10 @@ class CashCollectCreateView(LoginRequiredMixin, FormView):
         context['heading'] = 'Cash Collection Form'
         return context
 
-    def get_initial(self) -> dict[str, Any]:
-        initial = super().get_initial()
-        initial['post_date'] = datetime.date.today() - datetime.timedelta(days=1) # yesterday
-        return initial
+    # def get_initial(self) -> dict[str, Any]:
+    #     initial = super().get_initial()
+    #     initial['post_date'] = datetime.date.today() - datetime.timedelta(days=1) # yesterday
+    #     return initial
 
     def form_valid(self, form: Any) -> HttpResponse:
         source = form.cleaned_data['source']
@@ -133,7 +133,7 @@ class CashDepositCreateView(LoginRequiredMixin, FormView):
 
     def get_initial(self) -> dict[str, Any]:
         initial = super().get_initial()
-        initial['post_date'] = datetime.date.today() - datetime.timedelta(days=1) # yesterday
+        # initial['post_date'] = datetime.date.today() - datetime.timedelta(days=1) # yesterday
         initial['cash_center'] = CashCenter.objects.get(pk=1)
         # initial['bank'] = BankAccount.objects.get(pk='')
         return initial

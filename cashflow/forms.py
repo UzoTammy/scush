@@ -88,7 +88,7 @@ class CashCollectForm(forms.Form):
 class CashDepositForm(forms.Form):
     cash_center = forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='Cash Center (From)')
     bank = forms.ModelChoiceField(queryset=BankAccount.objects.all(), label='Bank (To)')
-    post_date = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
+    post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     amount = MoneyField(max_digits=12, decimal_places=2)
     description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
     
@@ -100,7 +100,7 @@ class InterCashTransferForm(forms.Form):
     donor = forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='From')
     receiver = forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='To')
     amount = MoneyField(max_digits=12, decimal_places=2) 
-    post_date = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
+    post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
     
     def clean(self):
@@ -111,7 +111,7 @@ class DisburseCashForm(forms.Form):
     receiver = forms.CharField(max_length=50)
     donor = forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='Cash Center')
     amount = MoneyField(max_digits=12, decimal_places=2) 
-    post_date = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
+    post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
     
     def clean(self):
@@ -135,20 +135,19 @@ class RequestToWithdrawForm(forms.Form):
         ('REDBULL', 'Redbull')])
     bank = forms.ModelChoiceField(queryset=BankAccount.objects.filter(status=True))
     amount = MoneyField(max_digits=12, decimal_places=2)
-    post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=datetime.date.today)
+    post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
     
     def clean(self):
         if self.cleaned_data['amount'] > self.cleaned_data['bank'].current_balance:
             raise forms.ValidationError('Not enough balance to fund')
-    
 
 class InterbankTransferForm(forms.Form):
 
     donor = forms.ModelChoiceField(queryset=BankAccount.objects.filter(status=True), label='From')
     receiver = forms.ModelChoiceField(queryset=BankAccount.objects.filter(status=True), label='To')
     amount = MoneyField(max_digits=12, decimal_places=2) 
-    post_date = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
+    post_date = forms.DateField(widget=forms.DateTimeInput(attrs={'type': 'date'}))
     description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
     
     def clean(self):
@@ -181,7 +180,7 @@ class AdministerWithdrawalForm(forms.ModelForm):
 
 class BankTransferForm(forms.Form):
     bank = forms.ModelChoiceField(queryset=BankAccount.objects.filter(status=True))
-    post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=datetime.date.today)
+    post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     amount = MoneyField(max_digits=12, decimal_places=2)
     description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
     
