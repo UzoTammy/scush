@@ -868,8 +868,9 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
                 business_summary[key] = value*dollar_rate
 
         # fetching info from cashflow
-        bank_transactions_business = BankTransaction.objects.filter(bank__category='Business')
-        current_bank_balance = QSum.to_currency(bank_transactions_business, 'balance')
+        
+        bank_transactions_business = BankAccount.objects.filter(category='Business')
+        current_bank_balance = QSum.to_currency(bank_transactions_business, 'current_balance')
         business_summary['Bank Balance'] = current_bank_balance
 
         cash_transactions_main = CashCenter.objects.filter(pk=1)
