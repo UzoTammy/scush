@@ -44,7 +44,7 @@ from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
 from apply.models import Applicant
 from trade.models import TradeDaily, BalanceSheet, BankBalance
-from cashflow.models import BankAccount, BankTransaction, CashCenter, CashTransaction
+from cashflow.models import BankAccount, CashCenter
 from warehouse.models import Renewal, StoreLevy, Stores
 from .forms import JsonDatasetForm
 from .models import JsonDataset
@@ -824,30 +824,29 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
         current_year = datetime.date.today().year
         p_and_l = TradeDaily.objects.filter(date__year=current_year)
         indirect_expenses = QSum.to_currency(p_and_l, 'indirect_expenses')
-        qs = Stores.active.all()
+        rents = Renewal.objects.filter(date__year=datetime.date.today().year)
+        stores = Stores.objects.filter(disabled=False)
+        rent_payable = QSum.to_currency(stores, 'rent_amount')
         qs_self = Stores.active.filter(owner='Self')
         self_rent = QSum.to_currency(qs_self, 'rent_amount')
 
+        levies = StoreLevy.objects.filter(payment_date__year=datetime.date.today().year)
+        levy_payable = QSum.to_currency(stores, 'allocated_levy_amount')
+        
         payout = QSum.to_currency(Payroll.objects.filter(period__contains=str(current_year)), 'net_pay')
         welfare = Welfare.objects.filter(date__year=current_year)
         
         business_summary = {
             'Sales': QSum.to_currency(p_and_l, 'sales'),
             'Profit': QSum.to_currency(p_and_l, 'gross_profit') - indirect_expenses,
-            'Rent': QSum.to_currency(qs, 'rent_amount') - self_rent,
-            'Levy': QSum.to_currency(qs, 'allocated_levy_amount'),
+            'Rent': (QSum.to_currency(rents, 'amount_paid'), rent_payable),
+            'Levy': (QSum.to_currency(levies, 'amount_paid'), levy_payable),
             'Admin Expenses': indirect_expenses,
             'Self Rent': self_rent,
             'Payout': payout,
             'Welfare': QSum.to_currency(welfare, 'amount'),
         }
         
-        latest_date = BankBalance.objects.latest('date').date
-        fund_qs = BankBalance.objects.filter(date=latest_date)
-        context['fund_date'] = latest_date
-
-        business_summary['Fund'] = QSum.to_currency(fund_qs, 'bank_balance')  
-
         latest_date = TradeDaily.objects.latest('date').date
         stock_qs = TradeDaily.objects.filter(date=latest_date)
         context['stock_date'] = latest_date
@@ -862,21 +861,26 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
         business_summary['Current Asset'] = bs.current_asset.amount if bs else decimal.Decimal(0)
         business_summary['Capital'] = bs.capital.amount if bs else decimal.Decimal(0)
 
-        if self.request.GET.get('currency') == 'dollars':
-            dollar_rate = decimal.Decimal(1/1540)
-            for key, value in business_summary.items():
-                business_summary[key] = value*dollar_rate
-
         # fetching info from cashflow
-        
         bank_transactions_business = BankAccount.objects.filter(category='Business')
-        current_bank_balance = QSum.to_currency(bank_transactions_business, 'current_balance')
-        business_summary['Bank Balance'] = current_bank_balance
+        bank_transactions_admin = BankAccount.objects.filter(category='Admin')
+
+        business_summary['Bank Balance'] = QSum.to_currency(bank_transactions_business, 'current_balance')
+        business_summary['Admin Balance'] = QSum.to_currency(bank_transactions_admin, 'current_balance')
 
         cash_transactions_main = CashCenter.objects.filter(pk=1)
         current_cash_balance = QSum.to_currency(cash_transactions_main, 'current_balance')
         business_summary['Cash'] = current_cash_balance
         
+
+        if self.request.GET.get('currency') == 'dollars':
+            dollar_rate = decimal.Decimal(1/1540)
+            for key, value in business_summary.items():
+                if key == 'Rent' or key == 'Levy':
+                    business_summary[key] = (value[0]*dollar_rate, value[1]*dollar_rate)
+                else:
+                    business_summary[key] = value*dollar_rate
+
         context['business_summary'] = business_summary
         return context
     

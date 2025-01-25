@@ -45,9 +45,14 @@
                 <li class="list-group-item text-center rounded-circle bg-light">{{key}} 
                   {% if key == 'Fund' %} (<small class="text-muted">{{fund_date|date:'dS N'}}</small>) {% endif %}
                   {% if key == 'Stock' %} (<small class="text-muted">{{stock_date|date:'dS N'}}</small>) {% endif %}
-                  
                 </li>
+                {% if key == 'Rent' or key == 'Levy' %}
+                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{value|first|myriad}} 
+                  <small class="text-muted"> of {{value|last|myriad}}</small>
+                </li>
+                {% else %}
                 <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{value|myriad}}</li>
+                {% endif %}
               </ul>
           </div>
 

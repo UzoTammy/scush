@@ -19,8 +19,10 @@ class ActiveBankAccountManager(models.Manager):
 
 class Stores(models.Model):
     today = datetime.date.today()
+
     TYPES = [('Lock-up', 'Lock-up'), ('Suite', 'Suite'), ('Warehouse', 'Warehouse'), ('Quarters', 'Quarters')]
     USAGE = [('Storage', 'Storage'), ('Sell-out', 'Sell-out'), ('Office', 'Office'), ('Apartment', 'Apartment')]
+    
     name = models.CharField(max_length=50)
     store_type = models.CharField(max_length=30, choices=TYPES)
     usage = models.CharField(max_length=30, choices=USAGE)
