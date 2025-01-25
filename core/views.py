@@ -39,12 +39,12 @@ from django.views.generic import (View, TemplateView, ListView, CreateView, Deta
 from django.db.models import F, Sum, Q
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import authenticate, login
-
 from staff.models import Employee, Permit, Payroll, Welfare
 from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
 from apply.models import Applicant
 from trade.models import TradeDaily, BalanceSheet, BankBalance
+from cashflow.models import BankAccount, BankTransaction, CashCenter, CashTransaction
 from warehouse.models import Renewal, StoreLevy, Stores
 from .forms import JsonDatasetForm
 from .models import JsonDataset
@@ -866,7 +866,16 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
             dollar_rate = decimal.Decimal(1/1540)
             for key, value in business_summary.items():
                 business_summary[key] = value*dollar_rate
-            
+
+        # fetching info from cashflow
+        bank_transactions_business = BankTransaction.objects.filter(bank__category='Business')
+        current_bank_balance = QSum.to_currency(bank_transactions_business, 'balance')
+        business_summary['Bank Balance'] = current_bank_balance
+
+        cash_transactions_main = CashCenter.objects.filter(pk=1)
+        current_cash_balance = QSum.to_currency(cash_transactions_main, 'current_balance')
+        business_summary['Cash'] = current_cash_balance
+        
         context['business_summary'] = business_summary
         return context
     
