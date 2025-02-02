@@ -35,7 +35,7 @@ def monthly_sales_revenue(x, y):
     plt.ylabel('month')
     plt.xlabel('Sales (N)')
     plt.tight_layout()
-    graph = get_graph()
+    graph = get_graph(plt)
     return graph
 
 def margin_graph(x, y):

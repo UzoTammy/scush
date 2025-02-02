@@ -50,7 +50,6 @@ class BankAccount(models.Model):
 
         self.reset_current_balance()
 
-
     def reset_current_balance(self):
         balance = self.opening_balance
         
@@ -114,7 +113,6 @@ class CashCenter(models.Model):
         self.current_balance = balance
         self.save()
 
-
 class BankTransaction(models.Model):
     TRANSACTION_TYPES = (
         ("CR", "Deposit"),
@@ -150,11 +148,7 @@ class CashTransaction(models.Model):
     def __str__(self):
         return f"{self.cash_center} - {self.transaction_type}: {self.amount} @ {self.timestamp}"
 
-
-
 ## Will be discarded
-
-
 class CashDepot(models.Model):
     # affected by cash collection and deposit
     date = models.DateField()
@@ -183,7 +177,6 @@ class CashDeposit(models.Model):
     def __str__(self) -> str:
         return f'{self.bank.short_name}-{self.post_date}'
     
-
 class Transaction(models.Model):
     data = models.JSONField(default=list)  # Stores a list of dictionaries
 
