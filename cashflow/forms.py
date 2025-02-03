@@ -7,7 +7,8 @@ from djmoney.forms import MoneyField
 from djmoney.money import Money
 
 from .models import (BankAccount, CashCenter, CashCollect, CashDeposit, Disburse, Withdrawal, 
-                     InterbankTransfer, CashDepot, BankTransfer, BankCharges)
+                     InterbankTransfer, CashDepot, BankTransfer, BankCharges,
+                     BankTransaction, CashTransaction)
 
 class ChoiceOrInputWidget(forms.MultiWidget):
     def __init__(self, choices=(), attrs=None):
@@ -64,38 +65,6 @@ class BankAccountForm(forms.ModelForm):
         model = BankAccount
         fields = ('account_number', 'name', 'short_name', 'opening_balance', 'opening_balance_date', 'category')
 
-class CashCollectForm(forms.Form):
-    CASHCENTERS = [
-        ("Kwara One", "Kwara One"),
-        ("Kwara Two", "kwara Two"),
-        ("Kwara Three", "Kwara Three"),
-        ("Front Gate", "Front Gate")
-    ]
-
-    source = ChoiceOrInputField(choices=CASHCENTERS, label='Cash Center or Customer')
-    amount = MoneyField(max_digits=12, decimal_places=2)
-    post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
-    
-    def clean_source(self):
-        data = self.cleaned_data['source']
-        return data
-    
-    # class Meta:
-    #     model = CashCollect
-    #     fields = ('cash_center', 'amount', 'post_date')
-
-class CashDepositForm(forms.Form):
-    cash_center = forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='Cash Center (From)')
-    bank = forms.ModelChoiceField(queryset=BankAccount.objects.all(), label='Bank (To)')
-    post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    amount = MoneyField(max_digits=12, decimal_places=2)
-    description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
-    
-    def clean(self):
-        if self.cleaned_data['amount'] > self.cleaned_data['cash_center'].current_balance:
-            raise forms.ValidationError('Insufficient Cash to Deposit !!!')
-
 class InterCashTransferForm(forms.Form):
     donor = forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='From')
     receiver = forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='To')
@@ -117,7 +86,13 @@ class DisburseCashForm(forms.Form):
     def clean(self):
         if self.cleaned_data['amount'] > self.cleaned_data['donor'].current_balance:
             raise forms.ValidationError('Not enough cash to disburse !!!')
-
+        
+        if CashTransaction.objects.filter(
+                                amount=self.cleaned_data['amount'],
+                                timestamp__date=self.cleaned_data['post_date'],
+                                description=self.cleaned_data['description']).exists():
+            
+            raise forms.ValidationError("A similar transaction with this date and amount already exist.")
 
 class CurrentBalanceUpdateForm(forms.Form):
     current_balance = MoneyField(max_digits=12, decimal_places=2, min_value=0)
@@ -141,6 +116,15 @@ class RequestToWithdrawForm(forms.Form):
     def clean(self):
         if self.cleaned_data['amount'] > self.cleaned_data['bank'].current_balance:
             raise forms.ValidationError('Not enough balance to fund')
+        
+        if BankTransaction.objects.filter(
+                                bank=self.cleaned_data['bank'],
+                                amount=self.cleaned_data['amount'],
+                                timestamp__date=self.cleaned_data['post_date'],
+                                description=self.cleaned_data['description']).exists():
+            
+            raise forms.ValidationError("A transaction on this bank with this date and amount already exist.")
+            
 
 class InterbankTransferForm(forms.Form):
 
@@ -187,10 +171,65 @@ class BankTransferForm(forms.Form):
     def clean(self):
         if self.cleaned_data['amount'] > self.cleaned_data['bank'].current_balance:
             raise forms.ValidationError('Insufficient balance')
-
+        
+        if BankTransaction.objects.filter(
+                                bank=self.cleaned_data['bank'],
+                                amount=self.cleaned_data['amount'],
+                                timestamp__date=self.cleaned_data['post_date'],
+                                description=self.cleaned_data['description']).exists():
+            
+            raise forms.ValidationError("A transaction on this bank with this date and amount already exist.")
+        
 class CashCenterCreateForm(forms.ModelForm):
+
     opening_balance_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     
     class Meta:
         model = CashCenter
         fields = ['name', 'opening_balance_date', 'opening_balance']
+
+class CashCollectForm(forms.Form):
+    CASHCENTERS = [
+        ("Kwara One", "Kwara One"),
+        ("Kwara Two", "kwara Two"),
+        ("Kwara Three", "Kwara Three"),
+        ("Front Gate", "Front Gate")
+    ]
+
+    source = ChoiceOrInputField(choices=CASHCENTERS, label='Cash Center or Customer')
+    amount = MoneyField(max_digits=12, decimal_places=2)
+    post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
+    
+    def clean_source(self):
+        data = self.cleaned_data['source']
+        return data
+    
+    def clean(self):
+        
+        if CashTransaction.objects.filter(
+                                amount=self.cleaned_data['amount'],
+                                timestamp__date=self.cleaned_data['post_date'],
+                                description=self.cleaned_data['description']).exists():
+            
+            raise forms.ValidationError("A similar transaction with this date and amount already exist.")
+    
+class CashDepositForm(forms.Form):
+    cash_center = forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='Cash Center (From)')
+    bank = forms.ModelChoiceField(queryset=BankAccount.objects.all(), label='Bank (To)')
+    post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    amount = MoneyField(max_digits=12, decimal_places=2)
+    description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
+    
+    def clean(self):
+        if self.cleaned_data['amount'] > self.cleaned_data['cash_center'].current_balance:
+            raise forms.ValidationError('Insufficient Cash to Deposit !!!')
+
+        if BankTransaction.objects.filter(
+                                bank=self.cleaned_data['bank'],
+                                amount=self.cleaned_data['amount'],
+                                timestamp__date=self.cleaned_data['post_date'],
+                                description=self.cleaned_data['description']).exists():
+            
+            raise forms.ValidationError("A transaction on this bank with this date and amount already exist.")
+        

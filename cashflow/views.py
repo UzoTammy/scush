@@ -112,47 +112,14 @@ class CashCollectCreateView(LoginRequiredMixin, FormView):
         context = super().get_context_data(**kwargs)
         context['heading'] = 'Cash Collection Form'
         return context
-    
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        # Dynamically set initial data based on some logic
-        form_data = self.request.session.get('form_data', None)
-        
-        if form_data:
-            form.initial['source'] = form_data['source']
-            form.initial['cash_center'] = CashCenter.objects.get(pk=form_data['pk'])
-            form.initial['post_date'] = datetime.datetime.strptime(form_data['post_date'], "%d-%m-%Y")
-            form.initial['amount'] =  Money(form_data['value'], 'NGN')
-            form.initial['description'] = form_data['description']
-        return form
-
 
     def form_valid(self, form: Any) -> HttpResponse:
         source = form.cleaned_data['source']
         description = form.cleaned_data['description'] or f'Cash received from {source}'
         receiver = CashCenter.objects.get(name='Main Cash Center')
 
-        if 'form_data' not in self.request.session:
-            if CashTransaction.objects.filter(cash_center=receiver, amount=form.cleaned_data['amount'], timestamp__date=form.cleaned_data['post_date']).exists():
-                self.request.session['form_data'] = {
-                    'source': source,
-                    'subject': receiver.name,
-                    'amount': format_currency(form.cleaned_data['amount'].amount, 'NGN', locale='en_US'),
-                    'value': str(form.cleaned_data['amount'].amount),
-                    'post_date': form.cleaned_data['post_date'].strftime("%d-%m-%Y"),
-                    'description': description,
-                    'pk': receiver.pk,
-                    'route': 'cashflow-cash-collect'
-                }
-                return redirect('confirm-duplicate')
-            else:
-                messages.success(self.request, 'Cash record successfully saved !!!')
-        else:
-            messages.info(self.request, 'Similar Cash record successfully saved !!!')
-            del self.request.session['form_data']
-
         receiver.deposit(form.cleaned_data['amount'], description, form.cleaned_data['post_date'], self.request.user)
-        
+        messages.success(self.request, 'Cash record successfully saved !!!')
         return super().form_valid(form)
 
 class CashDepositCreateView(LoginRequiredMixin, FormView):
@@ -214,50 +181,17 @@ class WithdrawalRequestView(LoginRequiredMixin, FormView):
         context['heading'] = 'Withdrawal Request Form'
         return context
     
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        # Dynamically set initial data based on some logic
-        form_data = self.request.session.get('form_data', None)
-
-        if form_data:
-            form.initial['bank'] = BankAccount.objects.get(pk=form_data['bank_id'])
-            form.initial['post_date'] = datetime.datetime.strptime(form_data['post_date'], "%d-%m-%Y")
-            form.initial['amount'] =  Money(form_data['value'], 'NGN')
-            form.initial['description'] = form_data['description']
-        return form
-
     def form_valid(self, form):
         form.cleaned_data['requested_by'] = self.request.user
         
         bank: BankAccount  = form.cleaned_data['bank']
         amount = form.cleaned_data['amount']
         post_date = form.cleaned_data['post_date']
-        form_data = self.request.session.get('form_data', None)
-        if form_data is None:
-            if BankTransaction.objects.filter(bank=bank, amount=amount, timestamp__date=post_date).exists():
-                
-                self.request.session['form_data'] = {
-                    'party': form.cleaned_data['party'],
-                    'subject': bank.short_name,
-                    'amount': format_currency(amount.amount, currency='NGN', locale='en_US'),
-                    'post_date': post_date.strftime("%d-%m-%Y"),
-                    'description': form.cleaned_data['description'],
-                    'bank_id': bank.pk,
-                    'value': str(amount.amount),
-                    'route': 'withdrawal-request'
-                    
-                }
-                return redirect('confirm-duplicate')
-            else:
-                messages.success(self.request, 'Your request is submitted !!!')
-        else:
-            messages.info(self.request, 'Similar record created !!! ')
-
+        
         bank.withdraw(amount, form.cleaned_data['description'], post_date, self.request.user)
-        if 'form_data' in self.request.session:
-            del self.request.session['form_data']
+        messages.success(self.request, 'Your request is submitted !!!')
         return super().form_valid(form)
-    
+  
 class InterbankTransferView(LoginRequiredMixin, FormView):
     template_name = 'cashflow/create_form.html'
     form_class = InterbankTransferForm
@@ -277,8 +211,7 @@ class InterbankTransferView(LoginRequiredMixin, FormView):
         
         messages.success(self.request, 'Transfer made successfully !!!')
         return super().form_valid(form)
-    
-    
+     
 class DisburseCashView(LoginRequiredMixin, FormView):
     template_name = 'cashflow/create_form.html'
     form_class = DisburseCashForm
@@ -446,25 +379,3 @@ class CashStatementView(LoginRequiredMixin, DetailView):
         self.get_object().reset_current_balance()
         return context
 
-
-class ConfirmDuplicateView(View):
-    template_name = 'cashflow/confirm_duplicate.html'
-
-    def get(self, request):
-        return render(request, self.template_name, {
-            'existing_object': self.request.session.get('form_data', None),
-        })
-
-    def post(self, request):
-        # Check the user's decision
-        if 'action' in request.POST:
-            if request.POST['action'] == 'accept':
-                return redirect(self.request.session['form_data'].get('route'))
-        
-        messages.info(request, 'Duplicate creation rejected.')
-        # Clear the session data
-        if 'form_data' in request.session:
-            del request.session['form_data']
-        return redirect('cashflow-home')
-
-        

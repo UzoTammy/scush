@@ -21,8 +21,5 @@ urlpatterns = [
     path('cash-center/create/', views.CashCenterCreateView.as_view(), name='cash-center-create'),
     path('cash-statement/<int:pk>/', views.CashStatementView.as_view(), name='cash-statement'),
 
-    path('confirm-duplicate/', views.ConfirmDuplicateView.as_view(), name='confirm-duplicate'),
-    
-    
 ]
 
