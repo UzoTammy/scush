@@ -169,8 +169,6 @@ class BankTransferForm(forms.Form):
     description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
     
     def clean(self):
-        if self.cleaned_data['amount'] > self.cleaned_data['bank'].current_balance:
-            raise forms.ValidationError('Insufficient balance')
         
         if BankTransaction.objects.filter(
                                 bank=self.cleaned_data['bank'],
@@ -232,4 +230,9 @@ class CashDepositForm(forms.Form):
                                 description=self.cleaned_data['description']).exists():
             
             raise forms.ValidationError("A transaction on this bank with this date and amount already exist.")
+        
+
+
+# if self.cleaned_data['amount'] > self.cleaned_data['bank'].current_balance:
+    # raise forms.ValidationError('Insufficient balance')
         
