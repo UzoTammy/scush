@@ -222,6 +222,12 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
             context['years'] = (str(latest_year-2), str(latest_year-1), str(latest_year))
             context['monthly_trade'] = trade_data
+            context['sum_monthly_trade'] = [
+                'Total',
+                Money(trade_data[1].aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN'),
+                Money(trade_data[2].aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN'),
+                Money(trade_data[3].aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN'),
+            ]
         return context
 
 
