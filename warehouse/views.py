@@ -35,7 +35,6 @@ class CacheControlMixin:
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-
 class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, TemplateView):
     template_name = 'warehouse/home.html'
     rented_stores = Stores.active.exclude(owner='Self')
@@ -134,7 +133,6 @@ class HomeView(LoginRequiredMixin, UserPassesTestMixin, CacheControlMixin, Templ
             }
         return context
 
-
 class PayRentView(LoginRequiredMixin, TemplateView):
     template_name = 'warehouse/pay_rent_form.html'
 
@@ -176,8 +174,7 @@ class PayAnyRentView(LoginRequiredMixin, CreateView):
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         signal_renew_store.send(sender=None, instance=form.instance.store, extra_data={'month': int(form.cleaned_data['month']), 'year': int(form.cleaned_data['year'])})
         messages.success(self.request, 'Update of Rent is successful!!') 
-        return super().form_valid(form)
-    
+        return super().form_valid(form)   
 
 class UpdateRentView(LoginRequiredMixin, TemplateView):
     template_name = 'warehouse/pay_rent_form.html'
@@ -218,7 +215,6 @@ class StoresListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def get_queryset(self):
         return super().get_queryset().filter(disabled=False)
 
-
 class StoreHelpView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'warehouse/help.html'
 
@@ -227,7 +223,6 @@ class StoreHelpView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         if self.request.user.groups.filter(name='HRD').exists():
             return True
         return False
-
 
 class StoresDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Stores
@@ -245,7 +240,6 @@ class StoresDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         
         return context
 
-
 class StoresCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     form_class = StoreForm
     template_name = 'warehouse/stores_form.html'
@@ -261,8 +255,7 @@ class StoresCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Add New'
         return context
-
-    
+ 
 class StoresUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Stores
     template_name = 'warehouse/stores_form.html'
@@ -285,8 +278,6 @@ class StoresUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         messages.success(request, 'Changes Made Successfully !!!')
         return super().post(request, *args, **kwargs)
 
-    
-
 class BankAccountCreate(LoginRequiredMixin, CreateView):
     form_class = BankAccountForm
     template_name = 'warehouse/bankaccount_form.html'
@@ -307,7 +298,6 @@ class BankAccountCreate(LoginRequiredMixin, CreateView):
             messages.info(self.request, f'{form.instance.store} already have existing bank account !!!')
             return redirect('warehouse-list-all')   
 
-
 class BankAccountUpdate(LoginRequiredMixin, UpdateView):
     model = BankAccount
     fields = '__all__'
@@ -317,11 +307,9 @@ class BankAccountUpdate(LoginRequiredMixin, UpdateView):
         context['title'] = 'Update'
         return context
 
-
 class BankAccountDetail(LoginRequiredMixin, DetailView):
     model = BankAccount
     
-
 class DisableStoreAndAccount(LoginRequiredMixin, View):
 
     def get(self, request, **kwargs):
@@ -334,17 +322,15 @@ class DisableStoreAndAccount(LoginRequiredMixin, View):
         messages.info(request, 'This Store and its Bank Account is disabled')
         return redirect('warehouse-detail', kwargs['pk'])
 
-
 class StoreLevyCreateView(LoginRequiredMixin, CreateView):
     form_class = StoreLevyForm
     template_name = 'warehouse/storelevy_form.html'
     success_url = reverse_lazy('warehouse-home')
 
-
 class StoreLevyListView(LoginRequiredMixin, ListView):
     model = StoreLevy
+    ordering = '-payment_date'
 
- 
 class StoreLevyUpdateView(LoginRequiredMixin, UpdateView):
     form_class = StoreLevyForm
     model = StoreLevy

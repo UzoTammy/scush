@@ -17,8 +17,6 @@ class ChoiceOrInputWidget(forms.MultiWidget):
             forms.TextInput(attrs={'placeholder': 'Enter item not listed below'}),
             forms.Select(choices=choices),
             # forms.ModelChoiceField(queryset=CashCenter.objects.filter(status=True), label='Cash Center (From)')
-    
-
         ]
         super().__init__(widgets, attrs)
 
@@ -59,7 +57,6 @@ class ChoiceOrInputField(forms.MultiValueField):
 class BankAccountForm(forms.ModelForm):
     category = forms.ChoiceField(choices=[('Business', 'Business'), ('Admin', 'Admin')])
     opening_balance_date = forms.DateField(widget=forms.DateInput({'type': 'date'}), initial=datetime.date.today)
-
 
     class Meta:
         model = BankAccount
@@ -125,7 +122,6 @@ class RequestToWithdrawForm(forms.Form):
             
             raise forms.ValidationError("A transaction on this bank with this date and amount already exist.")
             
-
 class InterbankTransferForm(forms.Form):
 
     donor = forms.ModelChoiceField(queryset=BankAccount.objects.filter(status=True), label='From')
