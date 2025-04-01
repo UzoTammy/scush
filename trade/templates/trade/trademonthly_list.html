@@ -55,6 +55,30 @@
         <div class="col">
             <img src="data:image/png;base64, {{chart|safe}}" alt="">
         </div>
+        {% if monthly_trade %}
+        <div class="col">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        {% for year in years %}
+                            <th>{{year}}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trade in monthly_trade %}
+                    <tr>
+                        <td>{% with trade|array_index:0 as x %} {{x.gross_profit}} {% endwith %}</td>
+                        <td>{% with trade|array_index:1 as x %} {{x.gross_profit}} {% endwith %}</td>
+                        <td>{% with trade|array_index:2 as x %} {{x.gross_profit}} {% endwith %}</td>
+                        <td>{% with trade|array_index:3 as x %} {{x.gross_profit}} {% endwith %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
     </div>
     <div class="row mt-3">
         <div class="col text-right">

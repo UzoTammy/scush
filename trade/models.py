@@ -44,6 +44,9 @@ class TradeMonthly(models.Model):
 
     def get_absolute_url(self):
         return reverse('trade-detail', kwargs={'pk': self.pk})
+    
+    def net_p(self):
+        self.gross_profit - self.direct_expenses - self.indirect_expenses
 
 
 class TradeDaily(models.Model):

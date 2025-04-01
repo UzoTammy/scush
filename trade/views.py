@@ -1,5 +1,6 @@
 import calendar
 import datetime
+import itertools as itools
 from typing import Any
 from datetime import timedelta
 
@@ -202,6 +203,26 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             sales.append(pl_obj['sales'].amount)    
             context['chart'] = plotter.monthly_sales_revenue(month, sales)
         
+        latest = TradeMonthly.objects.last()
+        # trades = TradeMonthly.objects.all().order_by('year', 'month')
+        trade = TradeMonthly.objects.filter(year=latest.year-2)
+
+        if trade.exists():
+            latest_month = latest.month
+            latest_year = latest.year
+            current_year_trade = TradeMonthly.objects.filter(year=latest_year)
+            current_year_trade_size = current_year_trade.count()
+
+            trade_data = [
+                trade for trade in itools.zip_longest(
+                ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')[:current_year_trade_size],
+                TradeMonthly.objects.filter(year=latest_year-2).filter(month__lte=latest_month),
+                TradeMonthly.objects.filter(year=latest_year-1).filter(month__lte=latest_month),
+                current_year_trade
+                )]
+
+            context['years'] = (str(latest_year-2), str(latest_year-1), str(latest_year))
+            context['monthly_trade'] = trade_data
         return context
 
 
