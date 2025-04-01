@@ -1,6 +1,5 @@
 import calendar
 import datetime
-import itertools as itools
 from typing import Any
 from datetime import timedelta
 
@@ -214,7 +213,7 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             current_year_trade_size = current_year_trade.count()
 
             trade_data = [
-                trade for trade in itools.zip_longest(
+                trade for trade in zip(
                 ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')[:current_year_trade_size],
                 TradeMonthly.objects.filter(year=latest_year-2).filter(month__lte=latest_month),
                 TradeMonthly.objects.filter(year=latest_year-1).filter(month__lte=latest_month),
