@@ -77,10 +77,10 @@
                     </tr>
                     {% endfor %}
                     <tr>
-                        <td>{{sum_monthly_trade|first}}</td>
-                        <td>{{sum_monthly_trade|array_index:1}}</td>
-                        <td>{{sum_monthly_trade|array_index:2}}</td>
-                        <td>{{sum_monthly_trade|array_index:3}}</td>
+                        <td>Total</td>
+                        <td>{{sum_monthly_trade.first_year}}</td>
+                        <td>{{sum_monthly_trade.second_year}}</td>
+                        <td>{{sum_monthly_trade.current_year}}</td>
                     </tr>
                 </tbody>
             </table>

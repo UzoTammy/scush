@@ -109,7 +109,10 @@ def multiply(value, arg):
 
 @register.filter
 def array_index(value, index):
-    return value[index]
+    try:
+        return value[index]
+    except IndexError:
+        return None
 
 @register.filter
 def make_list(value, separator):

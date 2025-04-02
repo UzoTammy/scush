@@ -1,5 +1,6 @@
 import calendar
 import datetime
+import itertools as it
 from typing import Any
 from datetime import timedelta
 
@@ -203,31 +204,33 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             context['chart'] = plotter.monthly_sales_revenue(month, sales)
         
         latest = TradeMonthly.objects.last()
-        # trades = TradeMonthly.objects.all().order_by('year', 'month')
         trade = TradeMonthly.objects.filter(year=latest.year-2)
 
-        if trade.exists():
+        if not trade.exists():
             latest_month = latest.month
             latest_year = latest.year
             current_year_trade = TradeMonthly.objects.filter(year=latest_year)
             current_year_trade_size = current_year_trade.count()
 
             trade_data = [
-                trade for trade in zip(
+                trade for trade in it.zip_longest(
                 ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')[:current_year_trade_size],
                 TradeMonthly.objects.filter(year=latest_year-2).filter(month__lte=latest_month),
                 TradeMonthly.objects.filter(year=latest_year-1).filter(month__lte=latest_month),
                 current_year_trade
                 )]
+            
+            first_year = TradeMonthly.objects.filter(year=latest_year-2)
+            second_year = TradeMonthly.objects.filter(year=latest_year-1)
+            current_year = TradeMonthly.objects.filter(year=latest_year)
 
             context['years'] = (str(latest_year-2), str(latest_year-1), str(latest_year))
             context['monthly_trade'] = trade_data
-            context['sum_monthly_trade'] = [
-                'Total',
-                Money(trade_data[1].aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN'),
-                Money(trade_data[2].aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN'),
-                Money(trade_data[3].aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN'),
-            ]
+            context['sum_monthly_trade'] = {
+                'first_year': Money(first_year.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN') if first_year.exists() else Money(0, 'NGN'),
+                'second_year': Money(second_year.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN') if second_year.exists() else Money(0, 'NGN'),
+                'current_year': Money(current_year.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN') if current_year.exists() else Money(0, 'NGN')
+            }
         return context
 
 
