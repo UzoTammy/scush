@@ -13,6 +13,7 @@ from pathlib import Path
 import os
 import django_on_heroku
 from decouple import config
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +32,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG_VALUE', default=False, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 # DEBUG = True
 
 ALLOWED_HOSTS = ['https://scush.com.ng', 'scush.herokuapp.com', '127.0.0.1', '.localhost']
@@ -114,12 +115,19 @@ WSGI_APPLICATION = 'ozone.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+       'default': dj_database_url.config(
+           default='sqlite:///db.sqlite3',
+           conn_max_age=600,
+           ssl_require=False
+       )
+   }
 
 
 # Password validation
@@ -219,7 +227,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 CURRENCIES = ('NGN',)
 DEFAULT_CURRENCY = 'NGN'
 
-django_on_heroku.settings(locals())
+if not DEBUG:
+    django_on_heroku.settings(locals())
 
 del STATICFILES_STORAGE
 
