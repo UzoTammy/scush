@@ -20,7 +20,7 @@ gunicorn = "*"
 matplotlib = "*"
 requests = "*"
 xhtml2pdf = "*"
-reportlab = "==3.6.6"
+reportlab = "*"
 pytest-django = "*"
 coverage = "*"
 pytest-cov = "*"
@@ -32,7 +32,7 @@ plotly = "*"
 pandas = "*"
 
 [requires]
-python_version = "3.10"
+python_version = "3.14"
 
 [pipenv]
 allow_prereleases = true
