@@ -28,6 +28,7 @@ import os
 import decimal
 from pathlib import Path
 from typing import Any, Dict
+from decouple import config
 
 from django.conf import settings
 from django.core.mail import EmailMessage
@@ -57,8 +58,8 @@ from .tools import get_directory_size, count_files_and_directories
 def index(request):
     """
     Summary:The debug mode will define the mode we are in. If it is production, debug is True and 
-            will display a link to authenticate the site. A way of allowing the developer to have direct
-            access without logging in. 
+    will display a link to authenticate the site. A way of allowing the developer to have direct
+    access without logging in. 
     """
     context = {
         'debug_mode': settings.DEBUG,
@@ -71,13 +72,13 @@ def developer_login(request):
     The developer is logged in automatically with his credentials.
     if authenticate is successful it becomes the logged in user object and if not it is none
     """
-    user = authenticate(username='Uzo-02', password='Zebra.,/Ozone')
+    user = authenticate(username=config('DEVELOPER_USERNAME'), password=config('DEVELOPER_PASSWORD'))
+
     if user is not None:
         login(request, user)
         return redirect('home')
     return redirect('index')
     
-
 
 class HomeView(LoginRequiredMixin, DateTimeMixin, TemplateView):
     """Summary
