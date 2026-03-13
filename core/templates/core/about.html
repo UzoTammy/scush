@@ -12,80 +12,60 @@
 
 {% block content %}
 <div class="container">
-    <div class="row">
+    <div class="row mt-3">
+      <div class="col text-center">
         <img src="{% static 'customer/logo.png' %}"
-             class="card-img-top rounded-circle shadow"
-             style="max-width:200px"
-             alt="...">
+        class="card-img-top rounded-circle shadow"
+        style="max-width:200px"
+        alt="...">
+      </div>
     </div>
     <div class="row mt-3">
       <div class="col">
-        <h3>Welcome to Ozone F & L</h3>
         <hr>
-        <h4>Our Mission & Values:</h4>
+        <h4>Our Mission & Values</h4>
         <p>
-          At Ozone, we have worked hard to become the most reliable and relevant one-way pack 
-          distribution company in Lagos. Going forward, we remain committed to maintaining this status 
-          by continuing to prioritize transparency and support for our business partners. Our goal is to 
-          build on our reputation and further enhance our position as the trusted partner of choice 
-          for businesses in need to partner with a distributor in Lagos.
+          To remain Lagos’s most trusted distributor of one-way packaging by fostering 
+          transparent partnerships and delivering unparalleled reliability to every business we serve.
         </p>
         <h4>Our Story</h4>
         <p>
-          In 2009, We set out on a mission to provide to Nigerians the more convinient made-in-Nigeria canned 
-          beer and malt products, this resulted to a unique partnership with first Nigerian Breweries
-          and later with Guinness Nigeria and finally International Breweries. These three gaints control
-          more than 95% of the market and our role in the one-way pack is so significant to them that we share a 
-          special relationship which we have extended to our customers. Our initial effort and passion
-          to distribute beer and malt in this format resulted to all three investing heavily in scale-up. The volume
-          we push to the market today has resulted in billions of naira turnover and has made us a house hold name. 
-          Leveraging on the good name, we seek to pursue our ultimate goal of spreading to other parts of the country
-          through our online platform and physical expansion beyond Lagos. Our trust in our relationship with you, gives
-          us the confidence to keep moving.
+          Founded in 2009 with a vision to revolutionize the accessibility of premium Nigerian beverages, 
+          Ozone has evolved into a strategic cornerstone for the nation’s brewing industry. 
+          Our pioneering focus on one-way packaging fostered landmark partnerships with Nigerian Breweries, 
+          Guinness Nigeria, and International Breweries—collectively representing over 95% of the market. 
+          By driving the initial demand that sparked industry-wide scaling, we have converted passion into 
+          a multi-billion naira enterprise. Today, we are leveraging this legacy of trust to expand our 
+          footprint beyond Lagos, utilizing both digital innovation and physical expansion to serve 
+          the entire nation and beyond.
         </p>
-        <h4>Snippet of our Team</h4>
+        <h4>Our Team</h4>
         <div class="row">
-          <div class="col-2">
-            {% for obj in objects|slice:':3' %}
-          <img src="{{obj.image.url }}" class="rounded-circle ml-2" width="70px">
-          <p><span>{{obj.staff.first_name}}</span></p>
+            {% for obj in objects %}
+            {% if obj.is_management %}
+            {% if obj.staff.first_name != 'Uzo' %}
+            <div class="col">
+              <img src="{{obj.image.url }}" class="rounded-circle ml-2" width="120px">
+              <i class="ml-2">{{obj.staff.first_name}}</i>
+            </div>
+            {% endif %}
+          {% endif %}
           {% endfor %}
-          </div>
-          <div class="col-10">
-              <p>Building a successful team requires a combination of talent, hard work, and a shared sense 
-                of purpose. At our company, we are proud of our team's ability to come together, collaborate, 
-                and achieve our goals.
-              </p>
-              <p>Our team is made up of individuals from diverse backgrounds and with different skill sets, 
-                but we are united in our dedication to our work. Each team member brings their unique strengths 
-                and perspectives to the table, and we are all committed to working together to achieve success.
-              </p>
-              <p>From our early days as a small team, we have always believed in the power of collaboration. 
-                We make a point to listen to each other's ideas, and we work together to find solutions to the 
-                challenges we face. Our team culture is built on mutual respect, trust, and a commitment to 
-                continuous improvement. As we have grown, our team has faced new challenges and opportunities, 
-                but we have always remained focused on our shared mission. We celebrate our successes together, 
-                and we learn from our failures as a team.
-              </p>
-              <p>We are proud of the work we have accomplished as a team, and we are excited about the future. 
-                We know that the road ahead will not always be easy, but we are confident that with our shared 
-                sense of purpose and our commitment to each other, we can overcome any obstacle.At the end of 
-                the day, our success as a team is not measured by individual achievements, but by the collective 
-                impact we have on our organization and our customers. We are honored to be structured in this form 
-                and it has given us the strength to meet the needs of our customers.
-              </p>
-              <div class="row">
-                {% for obj in objects|slice:'3:6'%}
-                <div class="col text-center">
-                  <img src="{{obj.image.url }}" class="rounded-circle ml-2" width="70px">
-                  <p><span>{{obj.staff.first_name}}</span></p>
-                </div>
-                {% endfor %}
-              </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-12">
+            <p>
+                At our core, we believe talent wins games, but teamwork wins championships. 
+                We’ve built a culture where diverse perspectives meet a shared sense of purpose. 
+                By listening, learning, and evolving together, we’ve turned every challenge into 
+                a milestone for growth. For us, success isn't measured in individual accolades, 
+                but in the collective impact we deliver to our partners and the beverage industry. 
+                We are proud of our history and even more excited for the future we are building together.
+            </p>
           </div>
           <div class="row">
             <div class="col-8">
-              <h4>Our Achievements:</h4>
+              <h4>Our Achievements</h4>
               <p>We are proud of our achievements and the recognition we have received for our work.
                 Some of our accomplishments include:
               </p>
@@ -94,8 +74,8 @@
                   <li>Nigerian Breweries 2020 distributors award: Funding Performance Award</li>
                 </ul>
             </div>
-            <div class="col-4">
-              <h4>Contact Us:</h4>
+            <div class="col-4 text-right">
+              <h4>Contact Us</h4>
               <p>
                   Mobile: +234-(803)-3769-440<br> Email: <span class="text-info">contact@ozonefl.com</span> <br>
                   Website: <a target="_blank" href="https://www.ozonefl.com">https://www.ozonefl.com</a>
@@ -106,7 +86,7 @@
       </div> 
     </div>
     <hr>
-    <div class="row m-3 text-center">
+    <div class="row mb-3 text-center">
         <div class="col">
             <a href="{% url 'index' %}">
             <i class="fa fa-home fa-2x text-info"></i></a>

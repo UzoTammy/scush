@@ -111,23 +111,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ozone.wsgi.application'
 
+# Read DATABASE_URL from .env using decouple (like we do for SECRET_KEY)
+DATABASE_URL = config('DATABASE_URL', default='sqlite:///db.sqlite3')
 
-# Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
 DATABASES = {
-       'default': dj_database_url.config(
-           default='sqlite:///db.sqlite3',
-           conn_max_age=600,
-           ssl_require=False
-       )
-   }
+    'default': dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600,
+        ssl_require=False
+    )
+}
+
 
 
 # Password validation
