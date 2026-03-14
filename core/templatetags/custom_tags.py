@@ -94,7 +94,7 @@ def myriad(value):
             return f"{round(value/1e9, 3)}B"
         return round(value, 1)
     except Exception:
-        return None
+        return decimal.Decimal('0.00')
 
 @register.filter
 def array(value, arg):

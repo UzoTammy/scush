@@ -3,10 +3,15 @@
 
 {% block head %}
 <style>
+
+    body {
+        background-color: rgb(255, 255, 255);
+    }
+
     .oval {
-        max-width: 5rem;
-        border-radius: 50px 50px 50px 50px;
-        background-color: rgb(133, 186, 239);
+        max-width: 10rem;
+        border-radius: 50px;
+        background-color: rgb(214, 230, 247);
         padding: 5px;
     }
     .circle {
@@ -45,7 +50,9 @@
         </div>
         <div class="col-sm-3">
             <div class="card">
-                <a href="#" data-target="#tradeDonut" data-toggle="modal"><img src="data:image/png;base64, {{trade_donut|safe}}" class="card-img-top" alt=""></a>
+                <a href="#" data-target="#tradeDonut" data-toggle="modal">
+                    <img src="data:image/png;base64, {{trade_donut|safe}}" class="card-img-top" alt="">
+                </a>
             </div>
         </div>
         <div class="col-sm-3">

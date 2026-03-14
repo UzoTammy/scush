@@ -1,7 +1,7 @@
 from django.urls import path
 from django.views.generic import TemplateView
 from .views import (HomeView, CompanyPageView, AboutView,
-                    DashBoardView,PoliciesView, ManagementProfileView, DailyReportView,
+                    DashBoardView, DBoardView, PoliciesView, ManagementProfileView, DailyReportView,
                     JsonListView, JsonDetailView, JsonCreateView, JsonUpdateView,
                     JsonCategoryKeyView, JsonCategoryKeyValueUpdateView, JsonCategoryKeyValueCreateView,
                     KPIMailSend, ImportCSVView, SaveCSVFile, BusinessSummaryView, ScushProfileView)
@@ -17,6 +17,7 @@ urlpatterns = [
     path('about/', AboutView.as_view(), name='about'),
     path('company/', CompanyPageView.as_view(), name='company'),
     path('dashboard/', DashBoardView.as_view(), name='dashboard'),
+    path('dashb/', DBoardView.as_view(), name='dboard'),
     path('policies/', PoliciesView.as_view(), name='policies'),
     path('management/', ManagementProfileView.as_view(), name='management'),
     path('daily_report/', DailyReportView.as_view(), name='daily-report'),

@@ -26,6 +26,7 @@ import csv
 import json
 import os
 import decimal
+import pandas as pd
 from pathlib import Path
 from typing import Any, Dict
 from decouple import config
@@ -198,6 +199,8 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+
         if Employee.objects.none() or TradeDaily.objects.none() or BalanceSheet.objects.none():
             context['empty_record'] = True
             return context
@@ -373,7 +376,7 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['date_of_record'] = latest_date
         context['color'] = ['success', 'info', 'warning']
         context['basics'] = (product_count, customer_base, workforce, application)
-        context['ytd'] = (sales, purchase, credit_balance, rent_paid)
+        context['ytd'] = (sales, purchase, credit_balance, rent_paid) 
         context['monthly_kpi'] = (growth,margin,expenses,man_hour_kpi)
 
         """Inventory Turnover Ratio"""  
@@ -452,11 +455,11 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         profits = [record.growth_ratio() for record in qs if qs.exists()]
         dates_str = [record.date.strftime('%d-%b-%y') for record in qs if qs.exists()]
         
-        context['growth_plot'] = plotter.line_plot([str(record.date.day) for record in qs if qs.exists()], 
-                                                   profits, title='Growth Ratio', y_axis='Ratio', 
+        context['growth_plot'] = plotter.line_plot(
+            [str(record.date.day) for record in qs if qs.exists()], 
+            profits, title='Growth Ratio', y_axis='Ratio', 
                                                    x_axis=f'{dates_str[0]} to {dates_str[-1]}',
                                                 )
-            
             
         """Margin trend in the last 10 days"""
         qs = TradeDaily.objects.all().order_by('date')
@@ -514,6 +517,46 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         
         finish = time.perf_counter()
         
+        return context
+
+
+class DBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'core/dashb.html'
+
+    def test_func(self):
+        # customer = self.get_object()
+        if self.request.user.is_staff:
+            return True
+        return False
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        latest_date = TradeDaily.objects.latest('date').date if TradeDaily.objects.all().exists() else datetime.date.today()
+
+        current_year, current_month = latest_date.year, latest_date.month
+        
+        # Sales 
+        current_trade_qs = TradeDaily.objects.filter(date__year=current_year)
+
+        total_sales = current_trade_qs.aggregate(Sum('sales'))['sales__sum']
+        current_month_sales = current_trade_qs.filter(date__month=current_month).aggregate(Sum('sales'))['sales__sum']
+
+        context['total_sales'] = total_sales
+        context['current_month'] = latest_date.strftime('%B')
+        context['current_month_sales'] = current_month_sales
+
+        # Stock
+        closing_stock = current_trade_qs.latest('date').closing_value.amount
+        context['current_stock_value'] = closing_stock
+
+        # Growth
+        growth_ratio = BalanceSheet.objects.latest('date').growth_ratio()
+        context['growth_ratio'] = growth_ratio
+
+        context['revenue'] = [1200,1900,3000,2500,4200,3800,5000]
+        context['months'] = ["Jan","Feb","Mar","Apr","May","Jun","Jul"]
+
         return context
 
 

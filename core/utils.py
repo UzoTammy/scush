@@ -101,8 +101,10 @@ def donut(items, values, title, legend=0, legends=None, text=""):
         return None
     colors = ('#FF0000', '#ADD8E6', '#FFFF00', '#ADFF2F', '#FFA500', '#90EE90')
     explode = list(0.05 for _ in range(0, n))
+
     plt.pie(values, colors=colors, labels=items, pctdistance=0.85, explode=explode)
-    centre_circle = plt.Circle((0, 0), 0.90, fc='white')
+    
+    centre_circle = plt.Circle((0, 0), 0.80, fc='white')
     fig = plt.gcf()
     fig.gca().add_artist(centre_circle)
     plt.title(title)
