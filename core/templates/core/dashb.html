@@ -216,62 +216,61 @@
         </div>
 
         <!-- TABLE -->
-        <div class="row table-box">
-            <div class="col">
-                <h3>Daily</h3>
-                <table>
-                    <thead>
-                        <tr class="">
-                            <th>Date</th>
-                            <th>Sales</th>
-                            <th>Admin Expenses</th>
-                            <th>Ops Expenses</th>
-                            <th>Margin(%)</th>
-                        </tr>
-                    </thead>
+        <div class="table-box">
+            <h3>Daily</h3>
+            <table>
+                <thead>
+                    <tr class="">
+                        <th>Date</th>
+                        <th>Sales</th>
+                        <th>Admin Expenses</th>
+                        <th>Ops Expenses</th>
+                        <th>Margin(%)</th>
+                    </tr>
+                </thead>
 
-                    <tbody>
-                        {% for obj in trade_seven_days_ago %}
-                        <tr>
-                            <td>{{ obj.date }}</td>
-                            <td>{{obj.sales.amount|myriad}}</td>
-                            <td>{{obj.indirect_expenses}}</td>
-                            <td>{{obj.direct_expenses}}</td>
-                            <td>{{obj.margin_ratio}}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
+                <tbody>
+                    {% for obj in trade_seven_days_ago %}
+                    <tr>
+                        <td>{{ obj.date }}</td>
+                        <td>{{obj.sales.amount|myriad}}</td>
+                        <td>{{obj.indirect_expenses.amount|myriad}}</td>
+                        <td>{{obj.direct_expenses.amount|myriad}}</td>
+                        <td>{{obj.margin_ratio}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
 
-                </table>
+            </table>
+            <h3>Monthly</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Rent Paid</th>
+                        <th>Payout</th>
+                        <th>Admin Expenses</th>
+                        <th>Ops Expenses</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for data in monthly_record %}
+                    <tr>
+                        <td>{{ data.month }}</td>
+                        <td>{{ data.rent_paid|myriad }}</td>
+                        <td>{{ data.payout|myriad }}</td>
+                        <td>{{ data.admin_expenses|myriad }}</td>
+                        <td>{{ data.ops_expenses|myriad }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
             </div>
-            <div class="col">
-                <h3>Monthly</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Month</th>
-                            <th>Rent Paid</th>
-                            <th>Payout</th>
-                            <th>Admin Expenses</th>
-                            <th>Ops Expenses</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for data in monthly_record %}
-                        <tr>
-                            <td>{{ data.month }}</td>
-                            <td>{{ data.rent_paid|myriad }}</td>
-                            <td>{{ data.payout|myriad }}</td>
-                            <td>{{ data.admin_expenses|myriad }}</td>
-                            <td>{{ data.ops_expenses|myriad }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-
-                </table>
-                <a class="btn btn-primary float-right" href="{% url 'home' %}">Return</a>
-            </div>
+        </div>
+        <div class="card m-1">
+            <a class="btn btn-info float-right" href="{% url 'home' %}">Return to Home</a>
         </div>
         <script>
             const growthRatioCtx = document.getElementById('growthRatioChart');

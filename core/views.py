@@ -576,11 +576,9 @@ class DBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['trade_seven_days_ago'] = trade_seven_days_ago.order_by('-date')
 
         # table - monthly
-        # current_month - latest month .aggregate(Sum('amount_paid'))['amount_paid__sum']
         rent_qs = Renewal.objects.filter(date__year=current_year)
         payroll_qs = Payroll.objects.filter(date_paid__year=current_year)
         trade_month = TradeMonthly.objects.filter(year=current_year)
-        # trade_current = TradeDaily.pbjects.latest('date').date.month
         record = []
         for month in range(current_month, 0, -1):
             data = {}
