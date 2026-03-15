@@ -594,8 +594,8 @@ class DBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             data['payout'] = payout
 
             trade = trade_month.filter(month=datetime.date(current_year, month, 1).strftime('%B'))
-            data['admin_expenses'] = trade.get().indirect_expenses if trade.exists() else decimal.Decimal('0.00')
-            data['ops_expenses'] = trade.get().direct_expenses if trade.exists() else decimal.Decimal('0.00')
+            data['admin_expenses'] = trade.get().indirect_expenses.amount if trade.exists() else decimal.Decimal('0.00')
+            data['ops_expenses'] = trade.get().direct_expenses.amount if trade.exists() else decimal.Decimal('0.00')
             if month == current_month:
                 qs = TradeDaily.objects.filter(date__year=current_year).filter(date__month=month)
                 if qs.exists():
