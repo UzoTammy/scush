@@ -36,8 +36,8 @@ class Stores(models.Model):
     allocated_levy_amount = MoneyField(max_digits=10, decimal_places=2, default_currency='NGN', default=Money(0, 'NGN'))
     capacity = models.IntegerField(help_text='How many 33cl Cans?')
     expiry_date = models.DateField(default=timezone.now)
-    status = models.BooleanField(default=False)  # paid & not paid
-    disabled = models.BooleanField(default=False)  # quit & still in use
+    status = models.BooleanField(default=False)  # paid or not paid
+    disabled = models.BooleanField(default=False)  # quit or still in use
 
     objects = models.Manager()
     active = ActiveStoreManager()

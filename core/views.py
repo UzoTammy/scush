@@ -30,6 +30,7 @@ import pandas as pd
 from pathlib import Path
 from typing import Any, Dict
 from decouple import config
+import itertools
 
 from django.conf import settings
 from django.core.mail import EmailMessage
@@ -45,7 +46,7 @@ from staff.models import Employee, Permit, Payroll, Welfare
 from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
 from apply.models import Applicant
-from trade.models import TradeDaily, BalanceSheet, BankBalance
+from trade.models import TradeDaily, BalanceSheet, BankBalance,TradeMonthly
 from cashflow.models import BankAccount, CashCenter
 from warehouse.models import Renewal, StoreLevy, Stores
 from .forms import JsonDatasetForm
@@ -554,9 +555,54 @@ class DBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         growth_ratio = BalanceSheet.objects.latest('date').growth_ratio()
         context['growth_ratio'] = growth_ratio
 
-        context['revenue'] = [1200,1900,3000,2500,4200,3800,5000]
-        context['months'] = ["Jan","Feb","Mar","Apr","May","Jun","Jul"]
+        # growth ratio trend
+        bs = BalanceSheet.objects.filter(date__year=current_year)
+        months_in_current_year = list(date.month for date in bs.dates('date', 'month'))
+        
+        context['growth_trend'] = list(float(bs.filter(date__month=month).latest('date').growth_ratio()) for month in months_in_current_year)
+        context['months'] = [date.strftime('%b') for date in bs.dates('date', 'month')]
 
+        # Sales bar
+        sales = []
+        for month in months_in_current_year:
+            monthly_sales = current_trade_qs.filter(date__month=month).aggregate(Sum('sales'))['sales__sum']
+            sales.append(float(monthly_sales))
+        context['sales'] = sales
+
+        # Table - daily
+        latest_date_in_trade = TradeDaily.objects.latest('date').date
+        seven_days_ago = pd.to_datetime(latest_date_in_trade) - datetime.timedelta(days=7)
+        trade_seven_days_ago = TradeDaily.objects.filter(date__gte=seven_days_ago)
+        context['trade_seven_days_ago'] = trade_seven_days_ago.order_by('-date')
+
+        # table - monthly
+        # current_month - latest month .aggregate(Sum('amount_paid'))['amount_paid__sum']
+        rent_qs = Renewal.objects.filter(date__year=current_year)
+        payroll_qs = Payroll.objects.filter(date_paid__year=current_year)
+        trade_month = TradeMonthly.objects.filter(year=current_year)
+        # trade_current = TradeDaily.pbjects.latest('date').date.month
+        record = []
+        for month in range(current_month, 0, -1):
+            data = {}
+            data['month'] = datetime.date(current_year, month, 1).strftime('%b')
+            qs = rent_qs.filter(date__month=month)
+            rent = qs.aggregate(Sum('amount_paid'))['amount_paid__sum'] if qs.exists() else decimal.Decimal('0.00')
+            data['rent_paid'] = rent
+
+            qs = payroll_qs.filter(date_paid__month=month)
+            payout = qs.aggregate(Sum('net_pay'))['net_pay__sum'] if qs.exists() else decimal.Decimal('0.00')
+            data['payout'] = payout
+
+            trade = trade_month.filter(month=datetime.date(current_year, month, 1).strftime('%B'))
+            data['admin_expenses'] = trade.get().indirect_expenses if trade.exists() else decimal.Decimal('0.00')
+            data['ops_expenses'] = trade.get().direct_expenses if trade.exists() else decimal.Decimal('0.00')
+            if month == current_month:
+                qs = TradeDaily.objects.filter(date__year=current_year).filter(date__month=month)
+                if qs.exists():
+                    data['admin_expenses'] = qs.aggregate(Sum('indirect_expenses'))['indirect_expenses__sum']
+                    data['ops_expenses'] = qs.aggregate(Sum('direct_expenses'))['direct_expenses__sum']
+            record.append(data)
+        context['monthly_record'] = record
         return context
 
 

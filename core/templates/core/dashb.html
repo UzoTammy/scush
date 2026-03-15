@@ -1,4 +1,4 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 
 {% block head %}
@@ -14,6 +14,8 @@
         background: #323131;
         color: #fff;
         height: 100vh;
+        /* overflow-x: hidden;
+        overflow-y: auto; */
     }
 
     /* SIDEBAR */
@@ -84,7 +86,6 @@
 
     .content {
         padding: 30px;
-        overflow-y: auto;
     }
 
     /* KPI CARDS */
@@ -130,6 +131,7 @@
         border-radius: 8px;
         border: 1px solid #222;
         height: 300px;
+        position: relative;
     }
 
     /* TABLE */
@@ -162,18 +164,12 @@
         background: #111;
     }
 
-    .chart-box {
-        background: #0b0b0b;
-        padding: 20px;
-        border-radius: 8px;
-        border: 1px solid #222;
-        height: 300px;
-        position: relative;
-    }
 </style>
 
 {% endblock %}
 
+
+<div class="topbar"></div>
 
 <!-- MAIN -->
 
@@ -211,77 +207,89 @@
         <!-- CHARTS -->
         <div class="charts">
             <div class="chart-box">
-                <canvas id="revenueChart"></canvas>
+                <canvas id="growthRatioChart"></canvas>
             </div>
 
             <div class="chart-box">
-                Sales Breakdown
+                <canvas id="salesChart"></canvas>
             </div>
-
         </div>
 
         <!-- TABLE -->
+        <div class="row table-box">
+            <div class="col">
+                <h3>Daily</h3>
+                <table>
+                    <thead>
+                        <tr class="">
+                            <th>Date</th>
+                            <th>Sales</th>
+                            <th>Admin Expenses</th>
+                            <th>Ops Expenses</th>
+                            <th>Margin(%)</th>
+                        </tr>
+                    </thead>
 
-        <div class="table-box">
+                    <tbody>
+                        {% for obj in trade_seven_days_ago %}
+                        <tr>
+                            <td>{{ obj.date }}</td>
+                            <td>{{obj.sales.amount|myriad}}</td>
+                            <td>{{obj.indirect_expenses}}</td>
+                            <td>{{obj.direct_expenses}}</td>
+                            <td>{{obj.margin_ratio}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
 
-            <h3>Recent Transactions</h3>
+                </table>
+            </div>
+            <div class="col">
+                <h3>Monthly</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Rent Paid</th>
+                            <th>Payout</th>
+                            <th>Admin Expenses</th>
+                            <th>Ops Expenses</th>
+                        </tr>
+                    </thead>
 
-            <table>
+                    <tbody>
+                        {% for data in monthly_record %}
+                        <tr>
+                            <td>{{ data.month }}</td>
+                            <td>{{ data.rent_paid|myriad }}</td>
+                            <td>{{ data.payout|myriad }}</td>
+                            <td>{{ data.admin_expenses|myriad }}</td>
+                            <td>{{ data.ops_expenses|myriad }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
 
-                <thead>
-                    <tr>
-                        <th>Customer</th>
-                        <th>Product</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    <tr>
-                        <td>John Doe</td>
-                        <td>Subscription</td>
-                        <td>$120</td>
-                        <td>Paid</td>
-                    </tr>
-
-                    <tr>
-                        <td>Jane Smith</td>
-                        <td>Consulting</td>
-                        <td>$450</td>
-                        <td>Pending</td>
-                    </tr>
-
-                    <tr>
-                        <td>Alex Brown</td>
-                        <td>License</td>
-                        <td>$99</td>
-                        <td>Paid</td>
-                    </tr>
-
-                </tbody>
-
-            </table>
-
+                </table>
+                <a class="btn btn-primary float-right" href="{% url 'home' %}">Return</a>
+            </div>
         </div>
-
         <script>
-            const ctx = document.getElementById('revenueChart');
+            const growthRatioCtx = document.getElementById('growthRatioChart');
+            const salesCtx = document.getElementById('salesChart');
 
-            new Chart(ctx, {
+            new Chart(growthRatioCtx, {
                 type: 'line',
                 data: {
-                    labels: {{ months| safe }},
-                datasets: [{
-                    label: 'Revenue',
-                    data: {{ revenue| safe }},
-                borderColor: '#00c8ff',
-                backgroundColor: 'rgba(0,200,255,0.2)',
-                tension: 0.4,
-                fill: true
-                }]
-            },
+                    labels: {{ months|safe }},
+                    datasets: [{
+                        label: 'Growth Rate Trend',
+                        data: {{ growth_trend|safe }},
+                        borderColor: '#00c8ff',
+                        backgroundColor: 'rgba(0,200,255,0.2)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
                 options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -303,10 +311,64 @@
                     }
                 }
             }
-        });
+            });
+
+
+            new Chart(salesCtx, {
+                type: 'bar',
+
+                data: {
+                    labels: {{months|safe}},
+                    datasets: [{
+                        label: 'Sales',
+                        data: {{sales|safe}},
+                        backgroundColor: 'rgba(0, 200, 255, 0.6)',
+                        borderColor: '#00c8ff',
+                        borderWidth: 1
+                    }]
+                },
+
+                options: {
+
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ccc'
+                            }
+                        }
+                    },
+
+                    scales: {
+
+                        x: {
+                            ticks: {
+                                color: '#aaa'
+                            },
+                            grid: {
+                                color: '#222'
+                            }
+                        },
+
+                        y: {
+                            ticks: {
+                                color: '#aaa'
+                            },
+                            grid: {
+                                color: '#222'
+                            },
+                            beginAtZero: true
+                        }
+
+                    }
+                }
+            });
+
 
         </script>
-    {% endblock %}
+        {% endblock %}
 
     </div>
 
