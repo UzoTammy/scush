@@ -3,19 +3,42 @@
 {% load custom_tags %}
 <style>
     body {
-        font-family: monospace;
-        font-size: medium;
+        font-size: large;
+        /* background-color: black; */
+        background: #323131;
+    }
+
+    
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .card {
+        background: #0b0b0b;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #222;
+    }
+
+    .card h3 {
+        font-size: 16px;
+        color: #00c8ff;
+
+    }
+
+    .card p {
+        font-size: 28px;
+        margin-top: 10px;
+        color: #f6db0d;
     }
 </style>
 {% endblock %}
 
 {% block content%}
-<div class="container">
-    <div class="row mt-3">
-        <div class="col">
-            <h3 class="text-center">Business Summary Page</h3>
-        </div>
-    </div>
+<div class="container mt-3">
     <div class="row mt-2 mb-3">
       <div class="col">
         <a href="?currency=dollars">
@@ -36,32 +59,25 @@
         </a>
       </div>
     </div>
-    <div class="container px-lg-5">
-        <div class="row mx-lg-n5">
+    <div class="cards">
+      {% for key, value in business_summary.items %}
+      <div class="card">
+          <h3>{{key}} </h3>
+          {% if key == 'Rent' or key == 'Levy' %}
+          <p>{{value|first|myriad}}</p>
+          <small class="text-muted"> of {{value|last|myriad}}</small>
+          {% else %}
+          <p>{{value|myriad}}{% if key == 'Stock' %} </p>
+          <small class="text-muted">({{stock_date|date:'dS N'}})</small> {% endif %}
+          {% endif %}
 
-        {% for key, value in business_summary.items %}
-          <div class="col-6 col-md-3 py-3 px-lg-5 border bg-light">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-center rounded-circle bg-light">{{key}} 
-                  {% if key == 'Fund' %} (<small class="text-muted">{{fund_date|date:'dS N'}}</small>) {% endif %}
-                  {% if key == 'Stock' %} (<small class="text-muted">{{stock_date|date:'dS N'}}</small>) {% endif %}
-                </li>
-                {% if key == 'Rent' or key == 'Levy' %}
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{value|first|myriad}} 
-                  <small class="text-muted"> of {{value|last|myriad}}</small>
-                </li>
-                {% else %}
-                <li class="list-group-item text-center bg-light text-monospace">{{naira}}{{value|myriad}}</li>
-                {% endif %}
-              </ul>
-          </div>
-
+      </div>
       {% endfor %}
-        </div>
     </div>
+    
     <div class="row mt-3">
         <div class="col">
-            <a class="btn btn-outline-dark float-right" href="{% url 'home' %}"><i class="fa fa-reply"></i> Return</a>
+            <a class="btn btn-outline-light float-right" href="{% url 'home' %}"><i class="fa fa-reply"></i> Return</a>
         </div>
     </div>
 </div>
