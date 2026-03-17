@@ -15,10 +15,44 @@
     <!--icon font awesome    -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
         body {
-            background-color: white;
-            /* background-color:#313029; */
-            color: dimgray
+            /* background-color: white; */
+            background: #000;
+            color: #fff;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #0b0b0b;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #222;
+        }
+
+        .small-box {
+            background: #0b0b0b;
+            padding: 10px 3px;
+            border-radius: 8px;
+            border: 1px solid #faf5f5;
+        }
+
+        .card p {
+            font-size: 28px;
+            margin-top: 10px;
+            color: #f6db0d;
         }
 
         a:hover {
@@ -56,53 +90,74 @@
                 </div>
                 <div class="row">
                     <h3>
-                        <font face="cursive">Welcome to Ozone F & L
+                        <span style="font-family: cursive;">Welcome to Ozone F & L
                             <span class="text-danger">(Happy Zone)</span>
                             A Distribution Company {{ custom_data }}
-                        </font>
+                        </span>
                     </h3>
                 </div>
                 <div class="row">
                     <h5><i>We add value to other businesses</i>
                         <i class="fa fa-pagelines fa-2x text-success"></i>
                     </h5>
-                </div>
-                <div class="row">
                     {% if user.is_authenticated %}
-                    <div class="col"> <i class="fa fa-home fa-1x"></i> <a href="{% url 'home' %}">Go to staff home page</a></div>
+                    <div class="col mt-3"> <i class="fa fa-home fa-1x"></i> <a href="{% url 'home' %}">Staff home page</a></div>
                     {% else %}
-                    <div class="col ml-3"> 
-                        <a class="btn btn-primary btn-sm" href="{% url 'login' %}">Staff Log in </a>
-                        <i class="fa fa-sign-in text-success"></i>
+                    <div class="col mt-3 ml-3">
+                        <a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">Staff <i class="fa fa-sign-in text-success"></i> </a>
+                        
                         {% if debug_mode %}
-                        <p><a href="{% url 'developer' %}">Developer Express Access</a></p>
+                        <a href="{% url 'developer' %}">Developer Express Access</a>
                         {% endif %}
                     </div>
                     {% endif %}
 
                 </div>
             </div>
-            <div class="col-sm bg-white text-center">
-                <img src="{% static 'customer/background/team.jpeg' %}" height="auto" alt="">
+            <div class="col-sm mt-3">
+
+            </div>
+        </div>
+        <div class="cards">
+            <div class="card">
                 <div class="row">
-                    <div class="col">
-                        <img src="{% static 'customer/photo/redbull.jpeg' %}" height="100px" alt="">
+                    <div class="col text-center">
+                        <img class="rounded-circle" src="{% static 'customer/photo/redbull.jpeg' %}" height="200px"
+                            width="200px" alt="">
                     </div>
-                    <div class="col">
-                        <img src="{% static 'customer/brands/malta-guinness.jpeg' %}" height="100px" alt="">
+                    <div class="col text-center">
+                        <img class="rounded-circle" src="{% static 'customer/brands/malta-guinness.jpeg' %}"
+                            height="200px" width="200px" alt="">
                     </div>
-                    <div class="col">
-                        <img src="{% static 'customer/brands/jonnywalker.jpeg' %}" height="100px" alt="">
+                    <div class="col text-center">
+                        <img class="rounded-circle" src="{% static 'customer/background/team.jpeg' %}" height="200px"
+                            width="200px" alt="">
                     </div>
-                    <div class="col">
-                        <img src="{% static 'customer/brands/amstel-malta.jpeg' %}" height="100px" alt="">
+                    <div class="col text-center">
+                        <img class="rounded-circle" src="{% static 'customer/background/customer.png' %}" height="200px"
+                            width="200px" alt="">
+                    </div>
+
+                    <div class="col text-center">
+                        <img class="rounded-circle" src="{% static 'customer/brands/jonnywalker.jpeg' %}" height="200px"
+                            width="200px" alt="">
+                    </div>
+                    <div class="col text-center">
+                        <img class="rounded-circle" src="{% static 'customer/brands/amstel-malta.jpeg' %}"
+                            height="200px" width="200px" alt="">
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <img src="{% static 'customer/background/customer.png' %}" height="auto" alt="">
-                    </div>
-                </div>
+            </div>
+        </div>
+        <div class="cards text-center">
+            <div class="card">
+                <h2 class="font-italic"><i class="fa fa-square text-danger mr-2"> </i> Products</h2>
+            </div>
+            <div class="card">
+                <h2 class="font-italic"><i class="fa fa-square text-warning mr-2"> </i> Market</h2>
+            </div>
+            <div class="card">
+                <h2 class="font-italic"><i class="fa fa-square text-success mr-2"> </i> People</h2>
             </div>
         </div>
     </div>
@@ -110,8 +165,8 @@
     <nav class="navbar fixed-bottom navbar-light bg-light">
         <a class="navbar-brand" href="{% url 'about' %}">About <img class="rounded-circle"
                 src="{% static 'customer/logo.ico' %}" width="20%" alt=""></a>
-        <button class="navbar-toggler navbar-brand bg-primary" type="button" data-toggle="collapse" data-target="#navbarText"
-            aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler navbar-dark bg-dark" type="button" data-toggle="collapse"
+            data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarText">
@@ -141,7 +196,7 @@
                         <i class="fa fa-sign-in text-danger"></i> Log Out</a>
                     {% else %}
                     <a class="nav-link text-dark" href="{% url 'login' %}">
-                        <i class="fa fa-sign-in text-success"></i> Log In</a>
+                        <i class="fa fa-sign-in text-success"></i> Staff</a>
                     {% endif %}
                 </li>
 
@@ -163,4 +218,5 @@
         crossorigin="anonymous"></script>
 
 </body>
+
 </html>
