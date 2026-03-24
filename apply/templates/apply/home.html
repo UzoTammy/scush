@@ -9,129 +9,188 @@
         border-radius: 50%;
         padding: 10px;
     }
+
+    body {
+        font-size: large;
+        /* background-color: black; */
+        background: #323131;
+    }
+
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .card {
+        background: #0b0b0b;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #222;
+    }
+
+    .card h3 {
+        font-size: 16px;
+        color: #00c8ff;
+
+    }
+
+    .card p {
+        font-size: 28px;
+        margin-top: 10px;
+        color: #f6db0d;
+    }
 </style>
 
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col mt-3">
-            <h3 class="text-center">Application Home Page</h3>
-            <p><img class="rounded-circle shadow-lg" height="90px" src="{% static 'customer/logo.png' %}" alt=""></p>
+<div class="container mt-3">
+    
+    <div class="card p-0 mb-1">
+        <p class="ml-2">Application Statistics: {{this_year}}</p>
+    </div>
 
+    <div class="cards">
+        <div class="card text-center">
+            <h3>Total Number of Applicants</h3>
+            <p>{{this_year_applicants.count}}</p>
         </div>
+        <div class="card text-center">
+            <h3>Employed</h3>
+            <p>{{this_year_applicants.status.employed}}</p>
+        </div>
+        <div class="card">
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-center">Male</h3>
+                    <p class="text-center">{{this_year_applicants.gender.male}}</p>
+                </div>
+                <div class="col">
+                    <h3 class="text-center">Female</h3>
+                    <p class="text-center">{{this_year_applicants.gender.female}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-center">Married</h3>
+                    <p class="text-center">{{this_year_applicants.marital_status.married}}</p>
+                </div>
+                <div class="col">
+                    <h3 class="text-center">Single</h3>
+                    <p class="text-center">{{this_year_applicants.marital_status.single}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-center">Pending</h3>
+                    <p class="text-center">{{this_year_applicants.status.pending}}</p>
+                </div>
+                <div class="col">
+                    <h3 class="text-center">Rejected</h3>
+                    <p class="text-center">{{this_year_applicants.status.rejected}}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-center">Adult</h3>
+                    <p class="text-center">{{this_year_applicants.stature.above_25}}</p>
+                </div>
+                <div class="col">
+                    <h3 class="text-center">Youth</h3>
+                    <p class="text-center">{{this_year_applicants.stature.between_18_and_25}}</p>
+                </div>
+                <div class="col">
+                    <h3 class="text-center">Teen</h3>
+                    <p class="text-center">{{this_year_applicants.stature.less_than_18}}</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card p-0 mb-1">
+        <p class="ml-2">Since June 2021</p>
+    </div>
+    <div class="cards">
+        <div class="card text-center">
+            <h3>Total Number of Applicants</h3>
+            <p>{{applicants.count}}</p>
+        </div>
+        <div class="card text-center">
+            <h3>Employed</h3>
+            <p>{{applicants.status.employed}}</p>
+        </div>
+        <div class="card">
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-center">Male</h3>
+                    <p class="text-center">{{applicants.gender.male}}</p>
+                </div>
+                <div class="col">
+                    <h3 class="text-center">Female</h3>
+                    <p class="text-center">{{applicants.gender.female}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-center">Married</h3>
+                    <p class="text-center">{{applicants.marital_status.married}}</p>
+                </div>
+                <div class="col">
+                    <h3 class="text-center">Single</h3>
+                    <p class="text-center">{{applicants.marital_status.single}}</p>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="card">
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-center">Pending</h3>
+                    <p class="text-center">{{applicants.status.pending}}</p>
+                </div>
+                <div class="col">
+                    <h3 class="text-center">Rejected</h3>
+                    <p class="text-center">{{applicants.status.rejected}}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="row">
+                <div class="col">
+                    <h3 class="text-center">Adult</h3>
+                    <p class="text-center">{{applicants.stature.above_25}}</p>
+                </div>
+                <div class="col">
+                    <h3 class="text-center">Youth</h3>
+                    <p class="text-center">{{applicants.stature.between_18_and_25}}</p>
+                </div>
+                <div class="col">
+                    <h3 class="text-center">Teen</h3>
+                    <p class="text-center">{{applicants.stature.less_than_18}}</p>
+                </div>
+            </div>
+        </div>
+
     </div>
     
-    <div class="row">
-        
-        <div class="col-sm-6">
-            <p class="text-muted">{{this_year}}</p>
-            <ul class="list-group">
-                <li class="list-group-item p-3">
-                     <h6>
-                        <div class="row">
-                            <div class="col">Total Number of Applicants</div>
-                            <div class="col text-right"><span class="circle">{{this_year_applicants.count}}</span></div>
-                        </div>
-                     </h6>
-                </li>
-                <li class="list-group-item p-3">
-                    <h6>
-                        <div class="row">
-                            <div class="col"> Male <span class="circle">{{this_year_applicants.gender.male}}</span></div>
-                            <div class="col text-right">Female <span class="circle">{{this_year_applicants.gender.female}}</span></div>
-                        </div>
-                    </h6>
-                </li>
-                <li class="list-group-item p-3">
-                    <h6>
-                        <div class="row">
-                            <div class="col">Employed <span class="circle">{{this_year_applicants.status.employed}}</span></div>
-                            <div class="col text-center">Pending <span class="circle">{{this_year_applicants.status.pending}}</span></div>
-                            <div class="col text-right">Rejected <span class="circle">{{this_year_applicants.status.rejected}}</span></div>
-                        </div>
-                    </h6>
-                </li>
-                <li class="list-group-item p-3">
-                    <h6>
-                        <div class="row">
-                            <div class="col">Married <span class="circle">{{this_year_applicants.marital_status.married}}</span></div>
-                            <div class="col text-right">Single <span class="circle">{{this_year_applicants.marital_status.single}}</span></div>
-                        </div>
-                    </h6>
-                </li>
-                <li class="list-group-item p-3">
-                    <h6>
-                        <div class="row">
-                            <div class="col">Adult <span class="circle">{{this_year_applicants.stature.above_25}}</span></div>
-                            <div class="col text-center">Youth <span class="circle">{{this_year_applicants.stature.between_18_and_25}}</span></div>
-                            <div class="col text-right">Minor <span class="circle">{{this_year_applicants.stature.less_than_18}}</span></div>
-                        </div>
-                    </h6>
-                </li>
-            </ul>
-        </div>
+    <div class="card p-0">
+        <a class="btn btn-info" href="{% url 'home' %}"><i class="fa fa-reply"></i> Return</a>
+    </div>
 
-        <div class="col-sm-6">
-            
-            <p class="text-muted">Since June 2021 </p>
-            <ul class="list-group"></ul>
-            <li class="list-group-item p-3">
-                <h6>
-                    <div class="row">
-                        <div class="col">Total Number of Applicants</div>
-                        <div class="col text-right"><span class="circle">{{applicants.count}}</span></div>
-                    </div>
-                </h6>
-            </li>
-            <li class="list-group-item p-3">
-                <h6>
-                    <div class="row">
-                        <div class="col"> Male <span class="circle">{{applicants.gender.male}}</span></div>
-                        <div class="col text-right">Female <span class="circle">{{applicants.gender.female}}</span></div>
-                    </div>
-                </h6>
-            </li>
-            <li class="list-group-item p-3">
-                <h6>
-                    <div class="row">
-                        <div class="col">Employed <span class="circle">{{applicants.status.employed}}</span></div>
-                        <div class="col text-center">Pending <span class="circle">{{applicants.status.pending}}</span></div>
-                        <div class="col text-right">Rejected <span class="circle">{{applicants.status.rejected}}</span></div>
-                    </div>
-                </h6>
-            </li>
-            <li class="list-group-item p-3">
-                <h6>
-                    <div class="row">
-                        <div class="col">Married <span class="circle">{{applicants.marital_status.married}}</span></div>
-                        <div class="col text-right">Single <span class="circle">{{applicants.marital_status.single}}</span></div>
-                    </div>
-                </h6>
-            </li>
-            <li class="list-group-item p-3">
-                <h6>
-                    <div class="row">
-                        <div class="col">Adult <span class="circle">{{applicants.stature.above_25}}</span></div>
-                        <div class="col text-center">Youth <span class="circle">{{applicants.stature.between_18_and_25}}</span></div>
-                        <div class="col text-right">Minor <span class="circle">{{applicants.stature.less_than_18}}</span></div>
-                    </div>
-                </h6>
-            </li>
-        </ul>
-    </div>
-        
-    </div>
-    <div class="row mt-3">
-        <div class="col d-flex justify-content-center">
-            <ul class="list-group list-group-horizontal">
-                <li class="list-group-item">Receive application letter <i class="fa fa-forward text-success"></i></li>
-                <li class="list-group-item">Applicant to apply online <i class="fa fa-forward text-success"></i></li>
-                <li class="list-group-item">Make decision <i class="fa fa-forward text-success"></i></li>
-                <li class="list-group-item">Contact Applicant</li>
-            </ul>
-        </div>
-    </div>
 </div>
 {% endblock %}
