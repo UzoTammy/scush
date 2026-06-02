@@ -56,6 +56,18 @@
                             {{ form.indirect_income|as_crispy_field }}
                         </div>
                     </div>
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-warning mt-3">
+                        {% for error in form.non_field_errors %}
+                        <p class="mb-1"><i class="fa fa-exclamation-triangle"></i> {{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="form-row mt-2">
+                        <div class="form-group col-12 mb-0">
+                            {{ form.confirm_anomaly|as_crispy_field }}
+                        </div>
+                    </div>
                 </fieldset>
                 <div class="form-row mb-5">
                     <div class="form-group">

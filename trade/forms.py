@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 from typing import Any, Mapping
 
 from django import forms
@@ -6,31 +7,126 @@ from django.forms.renderers import BaseRenderer
 from django.forms.utils import ErrorList
 from django.forms.widgets import DateInput
 from core.models import JsonDataset
-from .models import (BalanceSheet, 
-                    TradeMonthly, 
-                    TradeDaily, 
-                    BankAccount, 
+from .models import (BalanceSheet,
+                    TradeMonthly,
+                    TradeDaily,
+                    BankAccount,
                     BankBalance,
                     Creditor
                     )
 
 # from djmoney.models.fields import MoneyField, Money
 from djmoney.forms import MoneyField
+from djmoney.money import Money
+
+# Gross profit is allowed to diverge from (Sales - Purchase) by up to this
+# fraction before an anomaly warning is raised. Accounting software may include
+# adjustments (write-offs, stock corrections) that cause a legitimate divergence.
+_GP_DIVERGENCE_THRESHOLD = Decimal('0.10')  # 10%
+
+
+def _validate_pl(form, cleaned_data):
+    """
+    Shared P&L validation for daily and monthly trade forms.
+    Hard blocks: impossible values (rejected outright).
+    Soft anomalies: unusual but possible; require confirm_anomaly to proceed.
+    """
+    zero = Money(0, 'NGN')
+
+    sales            = cleaned_data.get('sales')
+    purchase         = cleaned_data.get('purchase')
+    gross_profit     = cleaned_data.get('gross_profit')
+    direct_expenses  = cleaned_data.get('direct_expenses')
+    indirect_expenses= cleaned_data.get('indirect_expenses')
+    opening_value    = cleaned_data.get('opening_value')
+    closing_value    = cleaned_data.get('closing_value')
+    confirm          = cleaned_data.get('confirm_anomaly', False)
+
+    # --- Hard blocks ---
+    if sales is not None and sales <= zero:
+        form.add_error('sales', 'Sales must be greater than zero.')
+    if purchase is not None and purchase < zero:
+        form.add_error('purchase', 'Purchase cannot be negative.')
+    if gross_profit is not None and gross_profit < zero:
+        form.add_error('gross_profit', 'Gross profit cannot be negative.')
+    if gross_profit is not None and sales is not None and sales > zero and gross_profit > sales:
+        form.add_error('gross_profit', 'Gross profit cannot exceed sales.')
+    if direct_expenses is not None and direct_expenses < zero:
+        form.add_error('direct_expenses', 'Direct expenses cannot be negative.')
+    if indirect_expenses is not None and indirect_expenses < zero:
+        form.add_error('indirect_expenses', 'Indirect expenses cannot be negative.')
+    if opening_value is not None and opening_value < zero:
+        form.add_error('opening_value', 'Opening stock value cannot be negative.')
+    if closing_value is not None and closing_value < zero:
+        form.add_error('closing_value', 'Closing stock value cannot be negative.')
+
+    # Stop here if hard errors already exist — anomaly checks on bad data are misleading.
+    if form.errors:
+        return cleaned_data
+
+    # --- Soft anomalies (require explicit acknowledgement) ---
+    anomalies = []
+
+    if purchase is not None and sales is not None and purchase > sales:
+        anomalies.append(
+            f'Purchase ({purchase}) exceeds sales ({sales}) — cost is higher than revenue.'
+        )
+
+    if gross_profit is not None and indirect_expenses is not None:
+        net_profit = gross_profit - indirect_expenses
+        if net_profit < zero:
+            anomalies.append(
+                f'Net profit is negative ({net_profit}) — this records a net loss for the period.'
+            )
+
+    if all(v is not None for v in [sales, purchase, gross_profit]) and sales > zero:
+        expected_gp = sales - purchase
+        if expected_gp > zero:
+            divergence = abs(gross_profit.amount - expected_gp.amount) / expected_gp.amount
+            if divergence > _GP_DIVERGENCE_THRESHOLD:
+                anomalies.append(
+                    f'Gross profit ({gross_profit}) differs from Sales − Purchase '
+                    f'({expected_gp}) by {round(100 * divergence, 1)} %. '
+                    f'Verify this matches the accounting software output.'
+                )
+
+    if anomalies and not confirm:
+        for msg in anomalies:
+            form.add_error(None, msg)
+        form.add_error(None, 'Tick “Confirm anomaly” below to acknowledge and proceed.')
+
+    return cleaned_data
+
 
 class TradeMonthlyForm(forms.ModelForm):
     year = forms.IntegerField(required=False)
     month = forms.CharField(max_length=20, required=False)
-    
+    confirm_anomaly = forms.BooleanField(
+        required=False,
+        label='Confirm anomaly — I have reviewed the flagged figures and confirm they are correct.',
+    )
+
     class Meta:
         model = TradeMonthly
         fields = '__all__'
 
+    def clean(self):
+        return _validate_pl(self, super().clean())
+
+
 class TradeDailyForm(forms.ModelForm):
     date = forms.DateField(widget=DateInput(attrs={'type':'date'}))
-    
+    confirm_anomaly = forms.BooleanField(
+        required=False,
+        label='Confirm anomaly — I have reviewed the flagged figures and confirm they are correct.',
+    )
+
     class Meta:
         model = TradeDaily
         fields = '__all__'
+
+    def clean(self):
+        return _validate_pl(self, super().clean())
  
 class BSForm(forms.ModelForm):
 
