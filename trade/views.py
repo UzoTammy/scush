@@ -479,17 +479,28 @@ class TradeDailyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
 class TradeDailyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = TradeDaily
-    
+
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
             return True
         return False
-    
+
     def get_queryset(self):
         pl = TradeDaily.objects.last()
         year = pl.date.year
         return super().get_queryset().filter(date__year=year).order_by('-pk')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pl = TradeDaily.objects.last()
+        year = pl.date.year
+        records = list(TradeDaily.objects.filter(date__year=year).order_by('date'))
+        gap_pks = set()
+        for i in range(1, len(records)):
+            if records[i].opening_value != records[i - 1].closing_value:
+                gap_pks.add(records[i].pk)
+        context['gap_pks'] = gap_pks
+        return context
 
 
 class TradeDailyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):

@@ -126,7 +126,33 @@ class TradeDailyForm(forms.ModelForm):
         fields = '__all__'
 
     def clean(self):
-        return _validate_pl(self, super().clean())
+        cleaned_data = _validate_pl(self, super().clean())
+
+        opening_value = cleaned_data.get('opening_value')
+        date = cleaned_data.get('date')
+        confirm = cleaned_data.get('confirm_anomaly', False)
+
+        # Stock continuity: opening value must match prior record's closing value.
+        if opening_value is not None and date is not None and 'opening_value' not in self.errors:
+            prior_qs = TradeDaily.objects.filter(date__lt=date)
+            if self.instance.pk:
+                prior_qs = prior_qs.exclude(pk=self.instance.pk)
+
+            if prior_qs.exists():
+                prior = prior_qs.latest('date')
+                if prior.closing_value != opening_value:
+                    gap = opening_value - prior.closing_value
+                    sign = '+' if gap.amount >= 0 else ''
+                    if not confirm:
+                        self.add_error(
+                            'opening_value',
+                            f'Stock gap: opening value ({opening_value}) does not match '
+                            f'closing stock ({prior.closing_value}) from {prior.date}. '
+                            f'Difference: {sign}{gap}. '
+                            f'Tick "Confirm anomaly" to acknowledge and proceed.'
+                        )
+
+        return cleaned_data
  
 class BSForm(forms.ModelForm):
 

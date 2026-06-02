@@ -22,23 +22,36 @@
                     <th>Closing Stock</th>
                     <th>Gross Profit</th>
                     <th>Net Profit</th>
-                    <th>Check</th>
+                    <th>P&amp;L Check</th>
+                    <th>Stock</th>
                 </tr>
             </thead>
             <tbody>
                 {% for object in object_list %}
-                <tr class="text-right">
+                <tr class="text-right{% if object.pk in gap_pks %} table-danger{% endif %}">
                     <td><a href="{% url 'trade-daily-detail' object.pk %}">{{object.id|zeropadding:3}}</a></td>
                     <td style="white-space: nowrap;">{{object.date|date:'d-m-Y'}}</td>
-                    <td>{{object.opening_value}}</td>
+                    <td>
+                        {{object.opening_value}}
+                        {% if object.pk in gap_pks %}
+                        <span class="text-danger" title="Opening stock does not match prior closing stock">&#9888;</span>
+                        {% endif %}
+                    </td>
                     <td>{{object.sales}}</td>
                     <td>{{object.purchase}}</td>
-                    <td>{{object.direct_expenses}} </td>
+                    <td>{{object.direct_expenses}}</td>
                     <td>{{object.indirect_expenses}}</td>
                     <td>{{object.closing_value}}</td>
                     <td>{{object.gross_profit}}</td>
                     <td>{{object.gross_profit|minus:object.indirect_expenses}}</td>
                     <td>{{object.opening_value|minus:object.sales|add:object.purchase|add:object.gross_profit|add:object.direct_expenses|minus:object.closing_value}}</td>
+                    <td class="text-center">
+                        {% if object.pk in gap_pks %}
+                        <span class="badge badge-danger" title="Opening stock gap">Gap</span>
+                        {% else %}
+                        <span class="badge badge-success">OK</span>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -48,7 +61,7 @@
     
     <div class="row mt-3">
         <div class="col text-right">
-            <a class="btn btn-outline-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply fa-2x"></i></a>
+            <a class="btn btn-outline-dark" href="{% url 'trade-home' %}" title="Trade Home"><i class="fa fa-reply fa-2x"></i></a>
         </div>
     </div>
 </div>
