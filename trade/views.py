@@ -23,7 +23,8 @@ from core import utils as plotter
 from stock.models import ProductExtension
 from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm,
                     BankBalanceCopyForm, CreditorAccountForm, FinancialForm, BankDepositForm)
-from .models import TradeDaily, TradeMonthly, BalanceSheet, BankAccount, BankBalance, Creditor, TradeAuditLog
+from .models import (TradeDaily, TradeMonthly, BalanceSheet, BankAccount, BankBalance,
+                     Creditor, TradeAuditLog, TradeAdjustmentRequest)
 
 
 def _capture_changes(form):
@@ -38,6 +39,55 @@ def _capture_changes(form):
         if old_str != new_str:
             changes[field_name] = {'old': old_str, 'new': new_str}
     return changes
+
+
+def _capture_proposed_changes(form):
+    """Like _capture_changes but stores type metadata so changes can be applied later."""
+    changes = {}
+    for field_name, new_value in form.cleaned_data.items():
+        if field_name in ('confirm_anomaly',) or field_name.endswith('_currency'):
+            continue
+        old_value = form.initial.get(field_name)
+        if str(old_value) == str(new_value):
+            continue
+        if hasattr(new_value, 'amount') and hasattr(new_value, 'currency'):
+            new_data = {'type': 'money', 'amount': str(new_value.amount), 'currency': str(new_value.currency)}
+        elif isinstance(new_value, datetime.date):
+            new_data = {'type': 'date', 'value': new_value.isoformat()}
+        elif isinstance(new_value, bool):
+            new_data = {'type': 'bool', 'value': new_value}
+        elif isinstance(new_value, int):
+            new_data = {'type': 'int', 'value': new_value}
+        else:
+            new_data = {'type': 'str', 'value': str(new_value) if new_value is not None else ''}
+        changes[field_name] = {
+            'old_display': str(old_value) if old_value is not None else '',
+            'new_display': str(new_value) if new_value is not None else '',
+            'new_data': new_data,
+        }
+    return changes
+
+
+def _apply_proposed_changes(instance, proposed_changes):
+    """Apply type-aware proposed changes to a model instance and save."""
+    for field_name, change in proposed_changes.items():
+        nd = change['new_data']
+        if nd['type'] == 'money':
+            value = Money(Decimal(nd['amount']), nd['currency'])
+        elif nd['type'] == 'date':
+            value = datetime.date.fromisoformat(nd['value'])
+        elif nd['type'] == 'bool':
+            value = bool(nd['value'])
+        elif nd['type'] == 'int':
+            value = int(nd['value'])
+        else:
+            try:
+                model_field = instance._meta.get_field(field_name)
+                value = model_field.to_python(nd['value'])
+            except Exception:
+                value = nd['value']
+        setattr(instance, field_name, value)
+    instance.save()
 
 
 def _log_update(request, instance, changes):
@@ -128,6 +178,10 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             dates.reverse()
             sales.reverse()
             context['chart'] = plotter.sales_stock_figure(dates, sales)
+        if self.request.user.is_superuser:
+            context['pending_adjustments'] = TradeAdjustmentRequest.objects.filter(
+                status=TradeAdjustmentRequest.STATUS_PENDING
+            ).count()
         return context
   
 
@@ -287,6 +341,19 @@ class TradeMonthlyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView
         return context
 
     def form_valid(self, form):
+        if not self.request.user.is_superuser:
+            proposed = _capture_proposed_changes(form)
+            if proposed:
+                TradeAdjustmentRequest.objects.create(
+                    model_name=self.model.__name__,
+                    record_id=self.object.pk,
+                    record_str=str(self.object),
+                    requester=self.request.user,
+                    proposed_changes=proposed,
+                )
+                messages.info(self.request, 'Your adjustment has been submitted for superuser approval.')
+                return redirect(self.object.get_absolute_url())
+            return redirect(self.object.get_absolute_url())
         changes = _capture_changes(form)
         response = super().form_valid(form)
         _log_update(self.request, self.object, changes)
@@ -571,6 +638,19 @@ class TradeDailyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context
 
     def form_valid(self, form):
+        if not self.request.user.is_superuser:
+            proposed = _capture_proposed_changes(form)
+            if proposed:
+                TradeAdjustmentRequest.objects.create(
+                    model_name=self.model.__name__,
+                    record_id=self.object.pk,
+                    record_str=str(self.object),
+                    requester=self.request.user,
+                    proposed_changes=proposed,
+                )
+                messages.info(self.request, 'Your adjustment has been submitted for superuser approval.')
+                return redirect(self.object.get_absolute_url())
+            return redirect(self.object.get_absolute_url())
         changes = _capture_changes(form)
         response = super().form_valid(form)
         _log_update(self.request, self.object, changes)
@@ -850,6 +930,19 @@ class BSUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context
 
     def form_valid(self, form):
+        if not self.request.user.is_superuser:
+            proposed = _capture_proposed_changes(form)
+            if proposed:
+                TradeAdjustmentRequest.objects.create(
+                    model_name=self.model.__name__,
+                    record_id=self.object.pk,
+                    record_str=str(self.object),
+                    requester=self.request.user,
+                    proposed_changes=proposed,
+                )
+                messages.info(self.request, 'Your adjustment has been submitted for superuser approval.')
+                return redirect(self.object.get_absolute_url())
+            return redirect(self.object.get_absolute_url())
         changes = _capture_changes(form)
         response = super().form_valid(form)
         _log_update(self.request, self.object, changes)
@@ -1054,6 +1147,19 @@ class BankBalanceUpdateView(LoginRequiredMixin, UpdateView):
     form_class = BankBalanceForm
 
     def form_valid(self, form):
+        if not self.request.user.is_superuser:
+            proposed = _capture_proposed_changes(form)
+            if proposed:
+                TradeAdjustmentRequest.objects.create(
+                    model_name=self.model.__name__,
+                    record_id=self.object.pk,
+                    record_str=str(self.object),
+                    requester=self.request.user,
+                    proposed_changes=proposed,
+                )
+                messages.info(self.request, 'Your adjustment has been submitted for superuser approval.')
+                return redirect(self.object.get_absolute_url())
+            return redirect(self.object.get_absolute_url())
         changes = _capture_changes(form)
         response = super().form_valid(form)
         _log_update(self.request, self.object, changes)
@@ -1168,6 +1274,82 @@ class TradeAuditLogListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def test_func(self):
         return self.request.user.groups.filter(name=GROUP_NAME).exists()
+
+
+class TradeAdjustmentListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = TradeAdjustmentRequest
+    template_name = 'trade/adjustment_list.html'
+    paginate_by = 30
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_queryset(self):
+        status = self.request.GET.get('status', TradeAdjustmentRequest.STATUS_PENDING)
+        return TradeAdjustmentRequest.objects.filter(status=status)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_status'] = self.request.GET.get('status', TradeAdjustmentRequest.STATUS_PENDING)
+        context['pending_count'] = TradeAdjustmentRequest.objects.filter(
+            status=TradeAdjustmentRequest.STATUS_PENDING
+        ).count()
+        return context
+
+
+class TradeAdjustmentReviewView(LoginRequiredMixin, UserPassesTestMixin, View):
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def post(self, request, pk):
+        adj = get_object_or_404(TradeAdjustmentRequest, pk=pk)
+        if adj.status != TradeAdjustmentRequest.STATUS_PENDING:
+            messages.warning(request, 'This request has already been reviewed.')
+            return redirect('trade-adjustment-list')
+
+        action = request.POST.get('action')
+        review_note = request.POST.get('review_note', '')
+
+        adj.reviewer = request.user
+        adj.reviewed_at = datetime.datetime.now()
+        adj.review_note = review_note
+
+        if action == 'approve':
+            from django.apps import apps
+            model_class = apps.get_model('trade', adj.model_name)
+            try:
+                instance = model_class.objects.get(pk=adj.record_id)
+                _apply_proposed_changes(instance, adj.proposed_changes)
+                adj.status = TradeAdjustmentRequest.STATUS_APPROVED
+                adj.save()
+                audit_changes = {k: {'old': v['old_display'], 'new': v['new_display']}
+                                 for k, v in adj.proposed_changes.items()}
+                TradeAuditLog.objects.create(
+                    model_name=adj.model_name,
+                    record_id=adj.record_id,
+                    record_str=adj.record_str,
+                    user=request.user,
+                    changes=audit_changes,
+                )
+                messages.success(request, f'Adjustment approved and applied to {adj.record_str}.')
+            except Exception as e:
+                messages.error(request, f'Could not apply changes: {e}')
+                return redirect('trade-adjustment-list')
+
+        elif action == 'reject':
+            adj.status = TradeAdjustmentRequest.STATUS_REJECTED
+            adj.save()
+            TradeAuditLog.objects.create(
+                model_name=adj.model_name,
+                record_id=adj.record_id,
+                record_str=adj.record_str,
+                user=request.user,
+                changes={'adjustment_rejected': {'old': 'pending', 'new': f'rejected — {review_note}'}},
+            )
+            messages.warning(request, f'Adjustment request for {adj.record_str} rejected.')
+
+        return redirect('trade-adjustment-list')
 
 
 class BankDepositView(LoginRequiredMixin, FormView):

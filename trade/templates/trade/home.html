@@ -100,6 +100,16 @@
                         </a>
                     </li>
                     <li class="nav-item">
+                        {% if request.user.is_superuser %}
+                        <a class="nav-link" href="{% url 'trade-adjustment-list' %}">
+                            <i class="fa fa-inbox text-warning"></i> Adjustments
+                            {% if pending_adjustments %}
+                            <span class="badge badge-danger">{{ pending_adjustments }}</span>
+                            {% endif %}
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'financial-create' %}">
                             <i class="fa fa-plus text-warning"></i> Add Both
                         </a>

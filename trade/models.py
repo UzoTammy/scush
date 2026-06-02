@@ -184,6 +184,45 @@ class Creditor(models.Model):
         unique_together = (("account", "date"),)
 
 
+class TradeAdjustmentRequest(models.Model):
+    STATUS_PENDING = 'pending'
+    STATUS_APPROVED = 'approved'
+    STATUS_REJECTED = 'rejected'
+    STATUS_CHOICES = [
+        (STATUS_PENDING, 'Pending'),
+        (STATUS_APPROVED, 'Approved'),
+        (STATUS_REJECTED, 'Rejected'),
+    ]
+
+    model_name = models.CharField(max_length=50)
+    record_id = models.PositiveIntegerField()
+    record_str = models.CharField(max_length=100)
+    requester = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='adjustment_requests',
+    )
+    requested_at = models.DateTimeField(auto_now_add=True)
+    proposed_changes = models.JSONField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    reviewer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='reviewed_adjustments',
+    )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    review_note = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['-requested_at']
+        verbose_name = 'Adjustment Request'
+        verbose_name_plural = 'Adjustment Requests'
+
+    def __str__(self):
+        return f'{self.model_name} #{self.record_id} — {self.requester} ({self.status})'
+
+
 class TradeAuditLog(models.Model):
     model_name = models.CharField(max_length=50)
     record_id = models.PositiveIntegerField()
