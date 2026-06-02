@@ -1,13 +1,14 @@
 from django.urls import path
 from .views import (EmailSample, TradeHome, TradeTradingReport, TradeMonthlyCreateView,
                     TradeMonthlyListView, TradeMonthlyDetailView, TradeMonthlyUpdateView,
-                    TradeDailyCreateView, TradeDailyListView, TradeDailyDetailView, TradeDailyUpdateView, 
+                    TradeDailyCreateView, TradeDailyListView, TradeDailyDetailView, TradeDailyUpdateView,
                     PLDailyReportView, TradeWeekly, AuditorView,
                     BSCreateView, BSListView, BSUpdateView, BSDetailView,
                     BankAccountHomeView, BankAccountDetailView, BankAccountListView, BankAccountUpdateView,
-                    BankAccountCreateView,BankBalanceCreateView, BankBalanceDetailView, BankBalanceUpdateView,
+                    BankAccountCreateView, BankBalanceCreateView, BankBalanceDetailView, BankBalanceUpdateView,
                     BankBalanceListView, BankBalanceListViewAdmin, BankBalanceCopyView,
-                    CreditorHomeView, CreditorCreateView, FinancialsCreateView, BankDepositView)
+                    CreditorHomeView, CreditorCreateView, FinancialsCreateView, BankDepositView,
+                    TradeAuditLogListView, TradePeriodLockView)
                     
 
 urlpatterns = [
@@ -64,5 +65,7 @@ urlpatterns += [
 
 urlpatterns += [
     path('financial/create/', FinancialsCreateView.as_view(), name='financial-create'),
-    path('bank/deposit/', BankDepositView.as_view(), name='bank-deposit')
+    path('bank/deposit/', BankDepositView.as_view(), name='bank-deposit'),
+    path('audit-log/', TradeAuditLogListView.as_view(), name='trade-audit-log'),
+    path('monthly/<int:pk>/lock/', TradePeriodLockView.as_view(), name='trade-period-lock'),
 ]

@@ -21,6 +21,7 @@
                     <th>Indirect Expenses</th>
                     <th>Closing Stock</th>
                     <th>Gross Profit</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,9 +34,10 @@
                     <th>{{current_pl.indirect_expenses}}</th>
                     <th>{{current_pl.closing_stock}}</th>
                     <th>{{current_pl.gross_profit}}</th>
+                    <th>—</th>
                 </tr>
                 {% for object in object_list %}
-                <tr class="text-right">
+                <tr class="text-right{% if object.locked %} table-warning{% endif %}">
                     <td><a href="{% url 'trade-detail' object.pk %}">{{object.id|zeropadding:3}}</a></td>
                     <td>{{object.month}}</td>
                     <td>{{object.opening_value}}</td>
@@ -45,6 +47,24 @@
                     <td>{{object.indirect_expenses}}</td>
                     <td>{{object.closing_value}}</td>
                     <td>{{object.gross_profit}}</td>
+                    <td class="text-center">
+                        {% if object.locked %}
+                            <span class="badge badge-warning" title="Locked by {{object.locked_by}} on {{object.locked_at|date:'d-m-Y'}}">
+                                <i class="fa fa-lock"></i> Locked
+                            </span>
+                        {% else %}
+                            <span class="badge badge-light"><i class="fa fa-unlock"></i> Open</span>
+                        {% endif %}
+                        {% if request.user.is_superuser %}
+                        <form method="POST" action="{% url 'trade-period-lock' object.pk %}" class="d-inline ml-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link btn-sm p-0"
+                                title="{% if object.locked %}Unlock this period{% else %}Lock this period{% endif %}">
+                                {% if object.locked %}Unlock{% else %}Lock{% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.conf import settings
 from django.db import models
 from djmoney.models.fields import MoneyField, Money
 from django.urls.base import reverse
@@ -35,9 +36,17 @@ class TradeMonthly(models.Model):
     direct_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
     indirect_income = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
 
+    locked = models.BooleanField(default=False)
+    locked_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='locked_periods',
+    )
+    locked_at = models.DateTimeField(null=True, blank=True)
+
     class Meta:
         verbose_name_plural = 'Monthly'
-
 
     def __str__(self):
         return f'{self.month}, {self.year}'
@@ -173,3 +182,25 @@ class Creditor(models.Model):
 
     class Meta:
         unique_together = (("account", "date"),)
+
+
+class TradeAuditLog(models.Model):
+    model_name = models.CharField(max_length=50)
+    record_id = models.PositiveIntegerField()
+    record_str = models.CharField(max_length=100)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='trade_audit_logs',
+    )
+    timestamp = models.DateTimeField(auto_now_add=True)
+    changes = models.JSONField()
+
+    class Meta:
+        ordering = ['-timestamp']
+        verbose_name = 'Audit Log'
+        verbose_name_plural = 'Audit Logs'
+
+    def __str__(self):
+        return f'{self.model_name} #{self.record_id} — {self.user} @ {self.timestamp:%Y-%m-%d %H:%M}'

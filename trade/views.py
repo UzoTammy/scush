@@ -4,14 +4,15 @@ import itertools as it
 from typing import Any
 from datetime import timedelta
 
+from django.contrib import messages
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls.base import reverse_lazy
 from django.db.models import (Sum, F, Avg, ExpressionWrapper, DecimalField)
-from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView, FormView)                            
+from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView, FormView, View)                            
 
 from djmoney.money import Money
 from matplotlib import pyplot as plt
@@ -19,9 +20,34 @@ from matplotlib import pyplot as plt
 from ozone import mytools
 from core import utils as plotter
 from stock.models import ProductExtension
-from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm, 
+from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm,
                     BankBalanceCopyForm, CreditorAccountForm, FinancialForm, BankDepositForm)
-from .models import TradeDaily, TradeMonthly, BalanceSheet, BankAccount, BankBalance, Creditor
+from .models import TradeDaily, TradeMonthly, BalanceSheet, BankAccount, BankBalance, Creditor, TradeAuditLog
+
+
+def _capture_changes(form):
+    """Return {field: {old, new}} for every field whose value changed on an update form."""
+    changes = {}
+    for field_name, new_value in form.cleaned_data.items():
+        if field_name in ('confirm_anomaly',) or field_name.endswith('_currency'):
+            continue
+        old_value = form.initial.get(field_name)
+        old_str = str(old_value) if old_value is not None else ''
+        new_str = str(new_value) if new_value is not None else ''
+        if old_str != new_str:
+            changes[field_name] = {'old': old_str, 'new': new_str}
+    return changes
+
+
+def _log_update(request, instance, changes):
+    if changes:
+        TradeAuditLog.objects.create(
+            model_name=type(instance).__name__,
+            record_id=instance.pk,
+            record_str=str(instance),
+            user=request.user,
+            changes=changes,
+        )
 
 
 GROUP_NAME = 'Administrator'
@@ -236,18 +262,30 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 class TradeMonthlyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = TradeMonthly
-    fields = '__all__'
+    form_class = TradeMonthlyForm
 
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
             return True
         return False
+
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.locked:
+            messages.error(request, f'{obj} is locked and cannot be edited. Contact a superuser to unlock it.')
+            return redirect(obj.get_absolute_url())
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Update'
         return context
+
+    def form_valid(self, form):
+        changes = _capture_changes(form)
+        response = super().form_valid(form)
+        _log_update(self.request, self.object, changes)
+        return response
 
 
 class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -508,15 +546,30 @@ class TradeDailyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = TradeDailyForm
 
     def test_func(self):
-        """if user is a member of the group HRD then grant access to this view"""
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
             return True
         return False
+
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        monthly = TradeMonthly.objects.filter(
+            month=obj.date.strftime('%B'), year=obj.date.year
+        ).first()
+        if monthly and monthly.locked:
+            messages.error(request, f'Period {monthly} is locked. Contact a superuser to unlock it.')
+            return redirect(obj.get_absolute_url())
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Daily Update'
         return context
+
+    def form_valid(self, form):
+        changes = _capture_changes(form)
+        response = super().form_valid(form)
+        _log_update(self.request, self.object, changes)
+        return response
 
 
 class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -782,16 +835,20 @@ class BSUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = BSForm
 
     def test_func(self):
-        """if user is a member of the group Admin then grant access to this view"""
         if self.request.user.groups.filter(name=GROUP_NAME).exists():
             return True
         return False
 
-        
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Update"
+        context['title'] = 'Update'
         return context
+
+    def form_valid(self, form):
+        changes = _capture_changes(form)
+        response = super().form_valid(form)
+        _log_update(self.request, self.object, changes)
+        return response
 
 
 class TradeWeekly(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -987,6 +1044,12 @@ class BankBalanceUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'trade/bank_account/bank_balance_form.html'
     form_class = BankBalanceForm
 
+    def form_valid(self, form):
+        changes = _capture_changes(form)
+        response = super().form_valid(form)
+        _log_update(self.request, self.object, changes)
+        return response
+
 
 class BankBalanceListView(LoginRequiredMixin, ListView):
     model = BankBalance
@@ -1047,6 +1110,43 @@ class FinancialsCreateView(LoginRequiredMixin, FormView):
         context['difference'] = bs.difference
         return context
     
+
+class TradePeriodLockView(LoginRequiredMixin, UserPassesTestMixin, View):
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def post(self, request, pk):
+        obj = get_object_or_404(TradeMonthly, pk=pk)
+        obj.locked = not obj.locked
+        if obj.locked:
+            obj.locked_by = request.user
+            obj.locked_at = datetime.datetime.now()
+            action_label = 'locked'
+        else:
+            obj.locked_by = None
+            obj.locked_at = None
+            action_label = 'unlocked'
+        obj.save()
+        TradeAuditLog.objects.create(
+            model_name='TradeMonthly',
+            record_id=obj.pk,
+            record_str=str(obj),
+            user=request.user,
+            changes={'period_lock': {'old': 'unlocked' if obj.locked else 'locked', 'new': action_label}},
+        )
+        messages.success(request, f'{obj} has been {action_label}.')
+        return redirect('trade-list')
+
+
+class TradeAuditLogListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = TradeAuditLog
+    template_name = 'trade/audit_log.html'
+    paginate_by = 50
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=GROUP_NAME).exists()
+
 
 class BankDepositView(LoginRequiredMixin, FormView):
     template_name = 'trade/bank_deposit_form.html'

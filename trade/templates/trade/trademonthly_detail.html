@@ -54,9 +54,33 @@
             </ul>
         </div>
     </div>
+    {% if object.locked %}
+    <div class="row mt-2">
+        <div class="col">
+            <div class="alert alert-warning py-2">
+                <i class="fa fa-lock"></i>
+                <strong>Period locked</strong> by {{object.locked_by}} on {{object.locked_at|date:"d-m-Y H:i"}}.
+                Editing is disabled.
+            </div>
+        </div>
+    </div>
+    {% endif %}
     <div class="row mt-3">
         <div class="col">
+            {% if not object.locked %}
             <a class="btn btn-outline-dark" href="{% url 'trade-update' object.pk %}">Update</a>
+            {% else %}
+            <button type="button" class="btn btn-outline-secondary" disabled title="Period is locked">Update</button>
+            {% endif %}
+            {% if request.user.is_superuser %}
+            <form method="POST" action="{% url 'trade-period-lock' object.pk %}" class="d-inline ml-2">
+                {% csrf_token %}
+                <button type="submit" class="btn {% if object.locked %}btn-success{% else %}btn-warning{% endif %} btn-sm">
+                    <i class="fa {% if object.locked %}fa-unlock{% else %}fa-lock{% endif %}"></i>
+                    {% if object.locked %}Unlock Period{% else %}Lock Period{% endif %}
+                </button>
+            </form>
+            {% endif %}
         </div>
         <div class="col text-right">
             <a class="btn btn-outline-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i> Trade Home</a>
