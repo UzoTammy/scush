@@ -8,7 +8,7 @@ from .views import (EmailSample, TradeHome, TradeTradingReport, TradeMonthlyCrea
                     BankAccountCreateView, BankBalanceCreateView, BankBalanceDetailView, BankBalanceUpdateView,
                     BankBalanceListView, BankBalanceListViewAdmin, BankBalanceCopyView,
                     CreditorHomeView, CreditorCreateView, FinancialsCreateView, BankDepositView,
-                    TradeAuditLogListView, TradePeriodLockView)
+                    TradeAuditLogListView, TradePeriodLockView, BankDeltaVarianceView)
                     
 
 urlpatterns = [
@@ -68,4 +68,5 @@ urlpatterns += [
     path('bank/deposit/', BankDepositView.as_view(), name='bank-deposit'),
     path('audit-log/', TradeAuditLogListView.as_view(), name='trade-audit-log'),
     path('monthly/<int:pk>/lock/', TradePeriodLockView.as_view(), name='trade-period-lock'),
+    path('bank/variance/', BankDeltaVarianceView.as_view(), name='bank-delta-variance'),
 ]

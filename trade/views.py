@@ -1,5 +1,6 @@
 import calendar
 import datetime
+from decimal import Decimal
 import itertools as it
 from typing import Any
 from datetime import timedelta
@@ -51,6 +52,10 @@ def _log_update(request, instance, changes):
 
 
 GROUP_NAME = 'Administrator'
+
+# Any bank account whose |delta| exceeds this amount triggers a visible alert.
+# Adjust as the business tolerance changes.
+BANK_DELTA_THRESHOLD = Decimal('1000')
 
 class EmailSample(TemplateView):
     template_name = 'mail/sample.html'
@@ -969,6 +974,10 @@ class BankAccountHomeView(LoginRequiredMixin, TemplateView):
             context['total_package'] = qs.aggregate(Sum('account_package_balance'))['account_package_balance__sum']
             context['bank_accounts_business'] = BankAccount.objects.filter(account_group='Business')
             context['bank_accounts_admin'] = BankAccount.objects.filter(account_group='Admin')
+            context['alert_pks'] = {
+                obj.pk for obj in qs if abs(obj.delta().amount) > BANK_DELTA_THRESHOLD
+            }
+            context['delta_threshold'] = BANK_DELTA_THRESHOLD
         else:
             context['no_object'] = True
         return context
@@ -1110,6 +1119,19 @@ class FinancialsCreateView(LoginRequiredMixin, FormView):
         context['difference'] = bs.difference
         return context
     
+
+class BankDeltaVarianceView(LoginRequiredMixin, TemplateView):
+    template_name = 'trade/bank_account/bank_delta_variance.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cutoff = datetime.date.today() - datetime.timedelta(days=90)
+        qs = BankBalance.objects.filter(date__gte=cutoff).order_by('-date', 'bank__nickname')
+        context['variance_records'] = [obj for obj in qs if abs(obj.delta().amount) > BANK_DELTA_THRESHOLD]
+        context['threshold'] = BANK_DELTA_THRESHOLD
+        context['cutoff'] = cutoff
+        return context
+
 
 class TradePeriodLockView(LoginRequiredMixin, UserPassesTestMixin, View):
 

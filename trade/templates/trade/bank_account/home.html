@@ -72,7 +72,12 @@
                     </li>
                     <li class="nav-item">
                         <a href="{% url 'bank-balance-list-admin' %}" class="nav-link">
-                            <i class="fa fa-bank text-warning"></i> Admin Account 
+                            <i class="fa fa-bank text-warning"></i> Admin Account
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'bank-delta-variance' %}" class="nav-link">
+                            <i class="fa fa-exclamation-triangle text-warning"></i> Variance Report
                         </a>
                     </li>
                     <li class="nav-item">
@@ -93,6 +98,16 @@
             <h3 class="ml-3">No Record yet</h3>
             <a class="btn btn-primary btn-sm" href="{% url 'bank-balance-create' %}">Add Bank Balance</a>
             {% else %}
+
+            {% if alert_pks %}
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-triangle"></i>
+                <strong>{{ alert_pks|length }} account{{ alert_pks|length|pluralize }} with unexplained variance</strong>
+                — delta exceeds NGN {{ delta_threshold|floatformat:"2g" }}.
+                <a href="{% url 'bank-delta-variance' %}" class="alert-link ml-2">View full variance report &rarr;</a>
+            </div>
+            {% endif %}
+
             <table class="table table-bordered" data-toggle="table">
                 <caption>Business Account Balance as at {{current_date}}</caption>
                 <thead class="">
@@ -107,16 +122,20 @@
                 </thead>
                 <tbody>
                     {% for object in object_list %}
-                    <tr>
-                        <td><a href="{% url 'bank-balance-detail' object.pk %}">{{object.bank.nickname}}</a></td>
+                    <tr{% if object.pk in alert_pks %} class="table-danger"{% endif %}>
+                        <td><a href="{% url 'bank-balance-detail' object.pk %}">{{object.bank.nickname}}</a>
+                            {% if object.pk in alert_pks %}
+                            <i class="fa fa-exclamation-triangle text-danger ml-1" title="Variance exceeds threshold"></i>
+                            {% endif %}
+                        </td>
                         <td>{{object.bank.account_number}}</td>
                         <td>{{object.bank.bank}}</td>
                         <td class="text-right">{{object.bank_balance}}</td>
                         <td class="text-right">{{object.account_package_balance}}</td>
                         {% if object.delta.amount >= 0 %}
-                        <td class="text-right">{{object.delta}}</td>
+                        <td class="text-right {% if object.pk in alert_pks %}font-weight-bold{% endif %}">{{object.delta}}</td>
                         {% else %}
-                        <td class="text-right text-danger">{{object.delta|abs}}</td>
+                        <td class="text-right text-danger {% if object.pk in alert_pks %}font-weight-bold{% endif %}">{{object.delta|abs}}</td>
                         {% endif %}
                     </tr>
                     {% endfor %}
@@ -134,7 +153,7 @@
                     </tr>
                 </tbody>
             </table>
-            <p class="mt-3 mr-2 text-danger float-right">AP - Account Package, BB - Bank balance</p>
+            <p class="mt-3 mr-2 text-muted float-right"><small>AP — Account Package &nbsp;|&nbsp; BB — Bank Balance &nbsp;|&nbsp; Threshold: NGN {{delta_threshold|floatformat:"2g"}}</small></p>
             {% endif %}
         </div>
         

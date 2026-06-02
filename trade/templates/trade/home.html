@@ -75,6 +75,20 @@
                 <hr class="dropdown-divider">
 
                 <ul class="nav flex-column">
+                    <li class="text-white">Bank</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'bank-account-home' %}">
+                            <i class="fa fa-bank text-warning"></i> Bank Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'bank-delta-variance' %}">
+                            <i class="fa fa-exclamation-triangle text-warning"></i> Variance Report
+                        </a>
+                    </li>
+                </ul>
+                <hr class="dropdown-divider">
+                <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'audit' %}">
                             <i class="fa fa-sticky-note text-warning"></i> General Report
@@ -113,141 +127,132 @@
             <h5 class="text-primary"><i>Profit & Loss Account - {{daily.date}}</i></h5>
             <div class="row">
                 <div class="col-sm-6">
-                    <ul style="list-style-type: none;">
-                        <h3 class="text-center">Daily</h3> 
+                    <h3 class="text-center">Daily</h3>
+                    <ul class="list-unstyled">
                         <li class="ml-3">Opening Stock: <span class="float-right">{{daily.opening_value}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Purchase: <span class="float-right">{{daily.purchase}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Direct Expenses: <span class="float-right">{{daily.direct_expenses}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Direct Income: <span class="float-right">{{daily.direct_income}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Sales: <span class="float-right">{{daily.sales}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Indirect Expenses: <span class="float-right">{{daily.indirect_expenses}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Indirect Income: <span class="float-right">{{daily.indirect_income}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Closing Stock: <span class="float-right">{{daily.closing_value}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Gross Profit: <span class="float-right">{{daily.gross_profit}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Net Profit: <span class="float-right">{{daily.net_profit}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li>Margin Ratio: <span class="float-right">{{100|multiply:daily.net_profit|div:daily.sales.amount|floatformat:2}}%</span></li>
-                        <hr>
-                        <li>Delivery Expenses Ratio: 
-                            <span class="float-right">
-                                {{100|multiply:daily.direct_expenses.amount|div:daily.purchase.amount|floatformat:2}}%
-                            </span>
+                        <li><hr></li>
+                        <li>Delivery Expenses Ratio:
+                            <span class="float-right">{{100|multiply:daily.direct_expenses.amount|div:daily.purchase.amount|floatformat:2}}%</span>
                         </li>
-                        <hr>
-                        <li>Admin Expenses Ratio: 
-                            <span class="float-right">
-                                {{100|multiply:daily.indirect_expenses.amount|div:daily.sales.amount|floatformat:2}}%
-                            </span>
+                        <li><hr></li>
+                        <li>Admin Expenses Ratio:
+                            <span class="float-right">{{100|multiply:daily.indirect_expenses.amount|div:daily.sales.amount|floatformat:2}}%</span>
                         </li>
-                        <hr>
                     </ul>
                 </div>
                 <div class="col-sm-6">
-                    <ul style="list-style-type: none;">
-                        <h3 class="text-center">Cummulative for {{month_string}}</h3> 
+                    <h3 class="text-center">Cumulative for {{month_string}}</h3>
+                    <ul class="list-unstyled">
                         <li class="ml-3">Opening Stock: <span class="float-right">{{daily_monthly.opening_stock}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Purchase: <span class="float-right">{{daily_monthly.purchase|floatformat:2}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Direct Expenses: <span class="float-right">{{daily_monthly.direct_expenses|floatformat:2}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Direct Income: <span class="float-right">{{daily_monthly.direct_income|floatformat:2}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Sales: <span class="float-right">{{daily_monthly.sales|floatformat:2}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Indirect Expenses: <span class="float-right">{{daily_monthly.indirect_expenses|floatformat:2}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Indirect Income: <span class="float-right">{{daily_monthly.indirect_income|floatformat:2}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Closing Stock: <span class="float-right">{{daily.closing_value}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Gross Profit: <span class="float-right">{{daily_monthly.gross_profit|floatformat:2}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="ml-3">Net Profit: <span class="float-right">{{daily_monthly.net_profit}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li>Margin Ratio: <span class="float-right">{{100|multiply:daily_monthly.net_profit|div:daily_monthly.sales|floatformat:2}}%</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li>Delivery Expenses Ratio: <span class="float-right">{{100|multiply:daily_monthly.direct_expenses|div:daily_monthly.purchase|floatformat:2}}%</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li>Admin Expenses Ratio: <span class="float-right">{{100|multiply:daily_monthly.indirect_expenses|div:daily_monthly.sales|floatformat:2}}%</span></li>
-                        <hr>
                     </ul>
                 </div>
             </div>
 
-            <h5 class="text-primary"> <i>Balance Sheet as at {{object.date}}</i> </h5>
+            <h5 class="text-primary"><i>Balance Sheet as at {{object.date}}</i></h5>
             <div class="row mt-3">
                 <div class="col-md-6">
-                    <ul style="list-style-type: none;">
+                    <ul class="list-unstyled">
                         <li>Profit: <span class="float-right">{{object.profit}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li>Adjusted Profit: <span class="float-right">{{object.adjusted_profit}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li>Equity: <span class="float-right">{{object.capital}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li>Current Liability: <span class="float-right">{{object.liability}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li class="text-danger">Total: <span class="float-right">{{object.profit|add:object.adjusted_profit|add:object.capital|add:object.liability}}</span></li>
                     </ul>
                 </div>
                 <div class="col-md-6">
-                    <ul style="list-style-type: none;">
-                        {% with object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense as total %}
-                        <li>Fixed Asset: 
+                    {% with object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense as total %}
+                    <ul class="list-unstyled">
+                        <li>Fixed Asset:
                             <span class="float-right">{{object.fixed_asset}}</span>
-                            <span class="float-right text-muted">({{100|multiply:object.fixed_asset|div:total|floatformat:2}}%)</span> 
+                            <span class="float-right text-muted">({{100|multiply:object.fixed_asset|div:total|floatformat:2}}%)</span>
                         </li>
-                        <hr>
-                        <li>Current Asset: 
+                        <li><hr></li>
+                        <li>Current Asset:
                             <span class="float-right">{{object.current_asset}}</span>
-                            <span class="float-right text-muted">({{100|multiply:object.current_asset|div:total|floatformat:2}}%)</span> 
+                            <span class="float-right text-muted">({{100|multiply:object.current_asset|div:total|floatformat:2}}%)</span>
                         </li>
-                        <hr>
+                        <li><hr></li>
                         <li>Investment: <span class="float-right">{{object.investment}}</span>
-                            <span class="float-right text-muted">({{100|multiply:object.investment|div:total|floatformat:2}}%)</span> 
+                            <span class="float-right text-muted">({{100|multiply:object.investment|div:total|floatformat:2}}%)</span>
                         </li>
-                        <hr>
+                        <li><hr></li>
                         <li>Suspense: <span class="float-right">{{object.suspense}}</span>
-                        <span class="float-right text-muted">({{100|multiply:object.suspense|div:total|floatformat:2}}%)</span> 
+                            <span class="float-right text-muted">({{100|multiply:object.suspense|div:total|floatformat:2}}%)</span>
                         </li>
-                        <hr>
-                        {% endwith %}
+                        <li><hr></li>
                         <li class="text-danger">Total: <span class="float-right">{{object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense}}</span></li>
                     </ul>
+                    {% endwith %}
                 </div>
             </div>
             <hr>
             <div class="row">
                 <div class="col-sm-6">
-                    <ul class="p-0" style="list-style-type: none;">
-                        <li><img src="data:image/png;base64, {{chart|safe}}" alt=""></li>
+                    <ul class="list-unstyled p-0">
+                        <li><img src="data:image/png;base64, {{chart|safe}}" alt="Sales to stock ratio chart"></li>
                     </ul>
-                    <p><i class="fa fa-braille text-warning"></i>Sales to Stock Ratio - last five days</p>
+                    <p><i class="fa fa-braille text-warning"></i> Sales to Stock Ratio — last five days</p>
                 </div>
-                <div class="col-sm-6"> 
-                    <ul style="list-style-type: none;">
-                        <li>Growth Ratio: <span class="float-right">{{object.growth_ratio}}%</span> </li>
-                        <hr>
+                <div class="col-sm-6">
+                    <ul class="list-unstyled">
+                        <li>Growth Ratio: <span class="float-right">{{object.growth_ratio}}%</span></li>
+                        <li><hr></li>
                         <li>Debt to Equity Ratio: <span class="float-right">{{object.debt_to_equity_ratio}}%</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li>Current Ratio: <span class="float-right">{{object.current_ratio}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li>Quick Ratio: <span class="float-right">{{object.quick_ratio}}</span></li>
-                        <hr>
+                        <li><hr></li>
                         <li>Working Capital: <span class="float-right">{{object.current_asset|minus:object.sundry_debtor|add:object.liability}}</span></li>
-                        
                     </ul>
-                    
-                    
                 </div>
             </div>
 
