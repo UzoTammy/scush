@@ -1,12 +1,20 @@
 from django.contrib import admin
 from .models import (TradeDaily, TradeMonthly, BalanceSheet,
-                     BankAccount, BankBalance, TradeAuditLog, TradeAdjustmentRequest)
+                     BankAccount, BankBalance, TradeAuditLog, TradeAdjustmentRequest, Creditor)
 
 admin.site.register(TradeDaily)
 admin.site.register(TradeMonthly)
 admin.site.register(BalanceSheet)
 admin.site.register(BankAccount)
 admin.site.register(BankBalance)
+
+
+@admin.register(Creditor)
+class CreditorAdmin(admin.ModelAdmin):
+    list_display = ('account', 'date', 'amount', 'ledger', 'account_type', 'status')
+    list_filter = ('ledger', 'account_type', 'status')
+    search_fields = ('account',)
+    date_hierarchy = 'date'
 
 
 @admin.register(TradeAdjustmentRequest)

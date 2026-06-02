@@ -75,6 +75,23 @@
                 <hr class="dropdown-divider">
 
                 <ul class="nav flex-column">
+                    <li class="text-white">Debtors</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'creditor-home' %}">
+                            <i class="fa fa-users text-warning"></i> Partner Receivables
+                            {% if creditor_outstanding %}
+                            <span class="badge badge-warning">{{ creditor_outstanding }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'creditor-create' %}">
+                            <i class="fa fa-plus text-warning"></i> Add Entry
+                        </a>
+                    </li>
+                </ul>
+                <hr class="dropdown-divider">
+                <ul class="nav flex-column">
                     <li class="text-white">Bank</li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'bank-account-home' %}">

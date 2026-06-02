@@ -1,0 +1,98 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+
+    <div class="row mb-3">
+        <div class="col">
+            <h5>{{ account }}</h5>
+            <small class="text-muted">Debtor transaction history — amounts owed to the company</small>
+        </div>
+        <div class="col text-right">
+            <a href="{% url 'creditor-create' %}" class="btn btn-outline-primary btn-sm">
+                <i class="fa fa-plus"></i> Add Entry
+            </a>
+            <a href="{% url 'creditor-home' %}" class="btn btn-outline-dark btn-sm ml-1" title="Creditors Home">
+                <i class="fa fa-reply"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-sm-3">
+            <div class="card text-center">
+                <div class="card-body py-2">
+                    <small class="text-muted">Total CR</small>
+                    <h6 class="mb-0 text-primary">{{ cr_total }}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card text-center">
+                <div class="card-body py-2">
+                    <small class="text-muted">Total DR (Paid)</small>
+                    <h6 class="mb-0 text-success">{{ dr_total }}</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card text-center {% if balance.amount > 0 %}border-warning{% elif balance.amount < 0 %}border-danger{% else %}border-success{% endif %}">
+                <div class="card-body py-2">
+                    <small class="text-muted">Outstanding Balance</small>
+                    <h6 class="mb-0 font-weight-bold
+                        {% if balance.amount > 0 %}text-warning
+                        {% elif balance.amount < 0 %}text-danger
+                        {% else %}text-success{% endif %}">
+                        {{ balance }}
+                    </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if transactions %}
+    <table class="table table-bordered table-sm table-hover">
+        <thead class="bg-dark text-white text-center">
+            <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Ledger</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in transactions %}
+            <tr class="text-right {% if obj.ledger == 'CR' %}table-light{% else %}table-success{% endif %}">
+                <td class="text-left">{{ obj.date|date:"d-m-Y" }}</td>
+                <td>{{ obj.amount }}</td>
+                <td class="text-center">
+                    <span class="badge {% if obj.ledger == 'CR' %}badge-warning{% else %}badge-success{% endif %}">
+                        {{ obj.ledger }}
+                    </span>
+                </td>
+                <td class="text-center">{{ obj.account_type }}</td>
+                <td class="text-center">
+                    {% if obj.status %}
+                    <span class="badge badge-success">Active</span>
+                    {% else %}
+                    <span class="badge badge-secondary">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    <a href="{% url 'creditor-update' obj.pk %}" class="btn btn-link btn-sm p-0" title="Edit entry">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted">No transactions found for this account.</p>
+    {% endif %}
+
+</div>
+{% endblock content %}

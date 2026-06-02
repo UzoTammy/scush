@@ -182,6 +182,17 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['pending_adjustments'] = TradeAdjustmentRequest.objects.filter(
                 status=TradeAdjustmentRequest.STATUS_PENDING
             ).count()
+        if Creditor.objects.exists():
+            zero = Money(0, 'NGN')
+            cr_sum = sum(
+                (obj.amount for obj in Creditor.objects.filter(ledger='CR')), zero
+            )
+            dr_sum = sum(
+                (obj.amount for obj in Creditor.objects.filter(ledger='DR')), zero
+            )
+            outstanding = cr_sum - dr_sum
+            if outstanding > zero:
+                context['creditor_outstanding'] = outstanding
         return context
   
 
@@ -1182,15 +1193,70 @@ class BankBalanceCopyView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class CreditorHomeView(LoginRequiredMixin,TemplateView ):
+class CreditorHomeView(LoginRequiredMixin, TemplateView):
     template_name = 'trade/creditors/home.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['partners'] = Creditor.objects.filter(account_type='Ext')
-        
+        all_entries = Creditor.objects.all().order_by('account', '-date')
+
+        summaries = {}
+        for obj in all_entries:
+            if obj.account not in summaries:
+                summaries[obj.account] = {
+                    'account': obj.account,
+                    'account_type': obj.account_type,
+                    'cr_total': Money(0, 'NGN'),
+                    'dr_total': Money(0, 'NGN'),
+                    'last_entry': obj.date,
+                    'entry_count': 0,
+                }
+            entry = summaries[obj.account]
+            if obj.ledger == 'CR':
+                entry['cr_total'] += obj.amount
+            else:
+                entry['dr_total'] += obj.amount
+            if obj.date > entry['last_entry']:
+                entry['last_entry'] = obj.date
+            entry['entry_count'] += 1
+
+        zero = Money(0, 'NGN')
+        for entry in summaries.values():
+            entry['balance'] = entry['cr_total'] - entry['dr_total']
+
+        summaries_list = sorted(summaries.values(), key=lambda x: x['balance'].amount, reverse=True)
+        context['summaries'] = summaries_list
+        context['total_outstanding'] = sum(
+            (s['balance'] for s in summaries_list if s['balance'] > zero), zero
+        )
+        context['has_records'] = bool(summaries_list)
         return context
-    
+
+
+class CreditorDetailView(LoginRequiredMixin, TemplateView):
+    template_name = 'trade/creditors/creditor_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        account = kwargs['account']
+        qs = Creditor.objects.filter(account=account).order_by('-date')
+        zero = Money(0, 'NGN')
+        cr_total = sum((obj.amount for obj in qs if obj.ledger == 'CR'), zero)
+        dr_total = sum((obj.amount for obj in qs if obj.ledger == 'DR'), zero)
+        context['account'] = account
+        context['transactions'] = qs
+        context['cr_total'] = cr_total
+        context['dr_total'] = dr_total
+        context['balance'] = cr_total - dr_total
+        return context
+
+
+class CreditorUpdateView(LoginRequiredMixin, UpdateView):
+    model = Creditor
+    form_class = CreditorAccountForm
+    template_name = 'trade/creditors/creditor_form.html'
+    success_url = reverse_lazy('creditor-home')
+
 
 class CreditorCreateView(LoginRequiredMixin, CreateView):
     model = Creditor

@@ -1,135 +1,94 @@
 {% extends 'users/base.html' %}
 {% load custom_tags %}
-{% load static %}
 
 {% block content %}
 <div class="container-fluid">
     <div class="row">
         <nav class="col-sm-2 bg-dark">
-            <button class="navbar-toggler bg-light mt-1 mb-1 float-right myBtn" type="button" data-toggle="collapse"
-                data-target="#Dropdown2" aria-controls="Dropdown2" aria-expanded="true" aria-label="toggle navigation">
+            <button class="navbar-toggler bg-light mt-1 mb-1 float-right myBtn" type="button"
+                data-toggle="collapse" data-target="#Dropdown2" aria-controls="Dropdown2"
+                aria-expanded="true" aria-label="toggle navigation">
                 <i class="fa fa-navicon fa-1x text-primary"></i>
             </button>
             <div class="collapse collapse-sm" id="Dropdown2">
                 <ul class="nav flex-column mt-3">
-                    <li class="text-white"><i class="fa fa-minus text-warning"></i> Partners</li>
+                    <li class="text-white"><i class="fa fa-minus text-warning"></i> Debtors</li>
                     <li class="nav-item">
-                        <a href="{% url 'creditor-create' %}" class="nav-link"><i
-                                class="fa fa-plus text-warning"></i>
-                            Add
+                        <a href="{% url 'creditor-create' %}" class="nav-link">
+                            <i class="fa fa-plus text-warning"></i> Add Entry
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'bank-balance-list' %}">
-                            <i class="fa fa-edit text-warning"></i>
-                            View & Update
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
-                            aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-navicon text-warning"></i> Archive</a>
-                        <div class="dropdown-menu">
-                            {% for obj in bank_accounts_business %}
-                            <a class="dropdown-item" href="{% url 'bank-account-detail' obj.pk %}">{{obj}}</a>
-                            {% endfor %}
-                            <hr class="dropdown-divider">
-                            {% for obj in bank_accounts_admin %}
-                            <a class="dropdown-item" href="{% url 'bank-account-detail' obj.pk %}">{{obj}}</a>
-                            {% endfor %}
-
-
-                        </div>
-                    </li>
-
-
                     <hr class="dropdown-divider">
                     <li class="nav-item">
-                        <a href="{% url 'bank-balance-list-admin' %}" class="nav-link">
-                            <i class="fa fa-bank text-warning"></i> Internal Account
+                        <a class="nav-link" href="{% url 'trade-home' %}">
+                            <i class="fa fa-reply text-warning"></i> Trade Home
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{% url 'pdf-daily-bank-balance' %}" class="nav-link">
-                            <i class="fa fa-file-pdf-o text-warning"></i> PDF
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a data-toggle="modal" data-target="#exampleModal" class="nav-link">
-                            <i class="fa fa-question text-warning"></i> Help
-                        </a>
-                    </li>
-                    <li class="nav-item mb-2">
-                        <a class="nav-link" href="{% url 'home' %}">
-                            <i class="fa fa-reply text-warning"></i> Return</a>
                     </li>
                 </ul>
             </div>
         </nav>
+
         <div class="col mt-3">
-            <h3 class="text-center">Creditors Home Page</h3>
-            {% if partners %}
-            <p>Coming soon !!!</p>
+            <div class="row mb-2">
+                <div class="col">
+                    <h5>Debtors — Partner Receivables</h5>
+                    <small class="text-muted">Amounts owed <strong>to the company</strong> by partners.</small>
+                </div>
+                {% if total_outstanding %}
+                <div class="col text-right">
+                    <span class="badge badge-warning p-2">
+                        Total Receivable: {{ total_outstanding }}
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if has_records %}
+            <table class="table table-bordered table-sm table-hover">
+                <thead class="bg-dark text-white text-center">
+                    <tr>
+                        <th>Account</th>
+                        <th>Type</th>
+                        <th>Total CR</th>
+                        <th>Total DR</th>
+                        <th>Balance (CR &minus; DR)</th>
+                        <th>Entries</th>
+                        <th>Last Entry</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in summaries %}
+                    <tr class="text-right {% if s.balance.amount > 0 %}table-warning{% elif s.balance.amount < 0 %}table-danger{% endif %}">
+                        <td class="text-left">
+                            <a href="{% url 'creditor-detail' s.account %}">{{ s.account }}</a>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge {% if s.account_type == 'Ext' %}badge-secondary{% else %}badge-info{% endif %}">
+                                {{ s.account_type }}
+                            </span>
+                        </td>
+                        <td>{{ s.cr_total }}</td>
+                        <td>{{ s.dr_total }}</td>
+                        <td class="font-weight-bold {% if s.balance.amount > 0 %}text-warning{% elif s.balance.amount < 0 %}text-danger{% else %}text-success{% endif %}">
+                            {{ s.balance }}
+                        </td>
+                        <td class="text-center">{{ s.entry_count }}</td>
+                        <td class="text-left">{{ s.last_entry|date:"d-m-Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <small class="text-muted">
+                CR = amount billed / owed to us &nbsp;|&nbsp; DR = payment received from debtor &nbsp;|&nbsp;
+                Amber = still receivable &nbsp;|&nbsp; Red = overpayment (DR &gt; CR).
+            </small>
             {% else %}
-            <h4>No Record in Database</h4>
-            <p class="ml-3">You can click <a href="#">here</a> to add creditor's record</p>
+            <div class="mt-4">
+                <h6 class="text-muted">No debtor records yet.</h6>
+                <a href="{% url 'creditor-create' %}" class="btn btn-primary btn-sm mt-2">Add First Entry</a>
+            </div>
             {% endif %}
         </div>
     </div>
-
 </div>
-
-<!-- Modal -->
-<section>
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-question text-success"></i> Help with
-                        this Page</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col">
-                            <h6>This page is the Bank Account Home page</h6>
-                            <p class="ml-3">It displays the bank balance for the date at the table's title.
-                                The Bank Account information is divided into two sections. The bank account section
-                                and the bank balance section. The bank account section is used to capture all bank
-                                account
-                                details while bank balance is used to capture only the balance of the account both at
-                                the Bank
-                                and in the accounting package.
-                            </p>
-                            <h6>To view and update bank account</h6>
-                            <p class="ml-3">By the left-side of this page, on the menu in black,
-                                click the view & update link to view the list of all bank accounts stored
-                                from that page you can update any of the acount listed.
-                            </p>
-                            <h6>To add bank account and balance</h6>
-                            <p class="ml-3">By the left-side of this page, on the menu in black,
-                                click the <i class="text-danger fa fa-plus"> add</i> link access the form for bank
-                                balance details and at the top of the form is <i class="text-danger fa fa-plus"> add</i>
-                                link for the bank account form.
-                            </p>
-                            <h6>To view and update bank balance</h6>
-                            <p class="ml-3">By the left-side of this page, on the menu in black,
-                                click the view & update link to view the list of all bank balance stored
-                                from that page you can update any of the balance listed.
-                            </p>
-                            <h6 class="text-danger">Contact the admin to delete a record. If neccesary</h6>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-{% endblock%}
+{% endblock %}

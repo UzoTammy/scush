@@ -7,7 +7,8 @@ from .views import (EmailSample, TradeHome, TradeTradingReport, TradeMonthlyCrea
                     BankAccountHomeView, BankAccountDetailView, BankAccountListView, BankAccountUpdateView,
                     BankAccountCreateView, BankBalanceCreateView, BankBalanceDetailView, BankBalanceUpdateView,
                     BankBalanceListView, BankBalanceListViewAdmin, BankBalanceCopyView,
-                    CreditorHomeView, CreditorCreateView, FinancialsCreateView, BankDepositView,
+                    CreditorHomeView, CreditorDetailView, CreditorUpdateView,
+                    CreditorCreateView, FinancialsCreateView, BankDepositView,
                     TradeAuditLogListView, TradePeriodLockView, BankDeltaVarianceView,
                     TradeAdjustmentListView, TradeAdjustmentReviewView)
                     
@@ -62,6 +63,8 @@ urlpatterns += [
 urlpatterns += [
     path('creditors/', CreditorHomeView.as_view(), name='creditor-home'),
     path('creditors/create/', CreditorCreateView.as_view(), name='creditor-create'),
+    path('creditors/<str:account>/', CreditorDetailView.as_view(), name='creditor-detail'),
+    path('creditors/<int:pk>/update/', CreditorUpdateView.as_view(), name='creditor-update'),
 ]
 
 urlpatterns += [
