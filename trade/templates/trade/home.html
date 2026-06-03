@@ -23,14 +23,17 @@
                     <li class="text-white">Trading, P & L</li>
                     
                     <li class="text-success ml-2">Monthly</li>
-                    
+
                     <li class="nav-item">
-                        <a class="nav-link"
-                            href="{% url 'trade-list' %}">
+                        <a class="nav-link" href="{% url 'trade-list' %}">
                             <i class="fa fa-eye-slash text-warning"></i> View
                         </a>
                     </li>
-                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'trade-trading-account' %}">
+                            <i class="fa fa-bar-chart text-warning"></i> Trading Account
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'trade-create' %}">
                             <i class="fa fa-plus text-warning"></i> Add
@@ -38,12 +41,15 @@
                     </li>
                     <li class="text-success ml-2">Daily</li>
                     <li class="nav-item">
-                        <a class="nav-link"
-                            href="{% url 'trade-daily-list' %}">
+                        <a class="nav-link" href="{% url 'trade-daily-list' %}">
                             <i class="fa fa-eye-slash text-warning"></i> View
                         </a>
                     </li>
-                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'daily-pl-report' %}">
+                            <i class="fa fa-bar-chart text-warning"></i> Daily Report
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'trade-daily-create' %}">
                             <i class="fa fa-plus text-warning"></i> Add
@@ -109,6 +115,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'audit' %}">
                             <i class="fa fa-sticky-note text-warning"></i> General Report
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'trade-break-even' %}">
+                            <i class="fa fa-balance-scale text-warning"></i> Break-Even
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'cash-projection-list' %}">
+                            <i class="fa fa-calendar text-warning"></i> Cash Projection
                         </a>
                     </li>
                     <li class="nav-item">
@@ -280,6 +296,35 @@
                         <li><hr></li>
                         <li>Working Capital: <span class="float-right">{{object.current_asset|minus:object.sundry_debtor|add:object.liability}}</span></li>
                     </ul>
+                    {% if kpi_data %}
+                    <h6 class="text-primary mt-3">KPI vs Target</h6>
+                    <table class="table table-sm table-borderless">
+                        <thead class="text-muted small">
+                            <tr>
+                                <th>KPI</th>
+                                <th class="text-center">Target</th>
+                                <th class="text-center">Actual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in kpi_data.items %}
+                            <tr>
+                                <td class="small">{{ item.name }}</td>
+                                <td class="text-center small">{{ item.target }}%</td>
+                                <td class="text-center small font-weight-bold
+                                    {% if item.on_target %}text-success{% else %}text-danger{% endif %}">
+                                    {{ item.actual }}%
+                                    {% if item.on_target %}
+                                    <i class="fa fa-caret-up text-success"></i>
+                                    {% else %}
+                                    <i class="fa fa-caret-down text-danger"></i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
                 </div>
             </div>
 

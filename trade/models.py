@@ -184,6 +184,43 @@ class Creditor(models.Model):
         unique_together = (("account", "date"),)
 
 
+class CashProjection(models.Model):
+    FLOW_OUT = 'OUT'
+    FLOW_IN  = 'IN'
+    FLOW_CHOICES = [('IN', 'Inflow'), ('OUT', 'Outflow')]
+
+    CATEGORY_CHOICES = [
+        ('salary',   'Salary / Payroll'),
+        ('rent',     'Rent'),
+        ('loan',     'Loan Repayment'),
+        ('tax',      'Tax'),
+        ('supplier', 'Supplier Payment'),
+        ('utility',  'Utility'),
+        ('other',    'Other'),
+    ]
+
+    description   = models.CharField(max_length=100)
+    amount        = MoneyField(max_digits=12, decimal_places=2)
+    expected_date = models.DateField()
+    flow_type     = models.CharField(max_length=3, choices=FLOW_CHOICES, default=FLOW_OUT)
+    category      = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='other')
+    is_recurring  = models.BooleanField(default=False, help_text='Tick if this repeats monthly')
+    notes         = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['expected_date']
+
+    def __str__(self):
+        sign = '+' if self.flow_type == self.FLOW_IN else '-'
+        return f'{self.expected_date} {sign}{self.amount} — {self.description}'
+
+    def get_absolute_url(self):
+        return reverse('cash-projection-list')
+
+    def signed_amount(self):
+        return self.amount if self.flow_type == self.FLOW_IN else -self.amount
+
+
 class TradeAdjustmentRequest(models.Model):
     STATUS_PENDING = 'pending'
     STATUS_APPROVED = 'approved'

@@ -12,7 +12,8 @@ from .models import (BalanceSheet,
                     TradeDaily,
                     BankAccount,
                     BankBalance,
-                    Creditor
+                    Creditor,
+                    CashProjection
                     )
 
 # from djmoney.models.fields import MoneyField, Money
@@ -239,6 +240,14 @@ class FinancialForm(forms.ModelForm):
             # trade_instance.save()
             # balance_sheet_instance.save()
         return trade_instance, balance_sheet_instance
+
+class CashProjectionForm(forms.ModelForm):
+    expected_date = forms.DateField(widget=DateInput(attrs={'type': 'date'}))
+
+    class Meta:
+        model = CashProjection
+        fields = ('description', 'amount', 'expected_date', 'flow_type', 'category', 'is_recurring', 'notes')
+
 
 class BankDepositForm(forms.Form):
     

@@ -65,7 +65,7 @@ def join(value, arg):
 def divide(value, arg):
     try:
         return value/arg
-    except (ValueError, ZeroDivisionError, decimal.InvalidOperation):
+    except (ValueError, ZeroDivisionError, TypeError, decimal.InvalidOperation):
         return None
 
 @register.filter
@@ -77,7 +77,10 @@ def minus(value, arg):
 
 @register.filter
 def dividedby(value, arg):
-    return value/arg
+    try:
+        return value / arg
+    except (TypeError, ZeroDivisionError, decimal.InvalidOperation):
+        return None
 
 @register.filter
 def myriad(value):
@@ -105,7 +108,10 @@ def array(value, arg):
 
 @register.filter
 def multiply(value, arg):
-    return value * arg
+    try:
+        return value * arg
+    except (TypeError, decimal.InvalidOperation):
+        return None
 
 @register.filter
 def array_index(value, index):

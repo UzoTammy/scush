@@ -1,0 +1,144 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+
+    <div class="row mb-3">
+        <div class="col">
+            <h5>Cash Flow Projection</h5>
+            <small class="text-muted">
+                Starting from bank balance as at
+                {% if balance_date %}{{ balance_date|date:"d-m-Y" }}{% else %}today{% endif %}.
+            </small>
+        </div>
+        <div class="col text-right">
+            <a href="{% url 'cash-projection-create' %}" class="btn btn-primary btn-sm">
+                <i class="fa fa-plus"></i> Add Entry
+            </a>
+            <a href="{% url 'trade-home' %}" class="btn btn-outline-dark btn-sm ml-1" title="Trade Home">
+                <i class="fa fa-reply"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Starting balance card -->
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body py-2 text-center">
+                    <small class="text-muted">Current Bank Balance</small>
+                    <h4 class="text-primary mb-0">{{ starting_balance }}</h4>
+                </div>
+            </div>
+        </div>
+        {% if projected %}
+        <div class="col-md-3">
+            <div class="card border-{% if projected.last.positive %}success{% else %}danger{% endif %}">
+                <div class="card-body py-2 text-center">
+                    <small class="text-muted">Projected End Balance</small>
+                    <h4 class="mb-0 {% if projected.last.positive %}text-success{% else %}text-danger{% endif %}">
+                        {{ projected|last }}
+                    </h4>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Future projections table -->
+    {% if projected %}
+    <h6 class="text-muted">Upcoming Cash Flows</h6>
+    <table class="table table-sm table-bordered table-hover">
+        <thead class="bg-dark text-white text-center">
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Flow</th>
+                <th>Amount</th>
+                <th>Running Balance</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in projected %}
+            <tr class="text-right {% if not entry.positive %}table-danger{% endif %}">
+                <td class="text-left">{{ entry.item.expected_date|date:"d-m-Y" }}</td>
+                <td class="text-left">
+                    {{ entry.item.description }}
+                    {% if entry.item.is_recurring %}
+                    <span class="badge badge-secondary ml-1" title="Recurring">↻</span>
+                    {% endif %}
+                </td>
+                <td class="text-center">{{ entry.item.get_category_display }}</td>
+                <td class="text-center">
+                    {% if entry.item.flow_type == 'IN' %}
+                    <span class="badge badge-success">IN</span>
+                    {% else %}
+                    <span class="badge badge-danger">OUT</span>
+                    {% endif %}
+                </td>
+                <td class="{% if entry.item.flow_type == 'IN' %}text-success{% else %}text-danger{% endif %} font-weight-bold">
+                    {% if entry.item.flow_type == 'IN' %}+{% else %}-{% endif %}{{ entry.item.amount }}
+                </td>
+                <td class="font-weight-bold {% if entry.positive %}text-success{% else %}text-danger{% endif %}">
+                    {{ entry.running_balance }}
+                </td>
+                <td class="text-center">
+                    <a href="{% url 'cash-projection-update' entry.item.pk %}" class="btn btn-link btn-sm p-0" title="Edit">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                    <form method="POST" action="{% url 'cash-projection-delete' entry.item.pk %}" class="d-inline ml-1">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-link btn-sm p-0 text-danger"
+                            title="Delete" onclick="return confirm('Delete this entry?')">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-light">
+        No future cash flow entries. <a href="{% url 'cash-projection-create' %}">Add the first one &rarr;</a>
+    </div>
+    {% endif %}
+
+    <!-- Recent past entries -->
+    {% if past_items %}
+    <h6 class="text-muted mt-4">Recent Past Entries (last 10)</h6>
+    <table class="table table-sm table-borderless table-hover">
+        <thead class="text-muted small">
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th class="text-right">Amount</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in past_items %}
+            <tr class="text-muted small text-right">
+                <td class="text-left">{{ item.expected_date|date:"d-m-Y" }}</td>
+                <td class="text-left">{{ item.description }}</td>
+                <td class="text-center">{{ item.get_category_display }}</td>
+                <td class="{% if item.flow_type == 'IN' %}text-success{% else %}text-danger{% endif %}">
+                    {% if item.flow_type == 'IN' %}+{% else %}-{% endif %}{{ item.amount }}
+                </td>
+                <td class="text-center">
+                    <a href="{% url 'cash-projection-update' item.pk %}" class="btn btn-link btn-sm p-0" title="Edit">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+</div>
+{% endblock content %}

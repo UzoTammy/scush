@@ -8,7 +8,9 @@ from .views import (EmailSample, TradeHome, TradeTradingReport, TradeMonthlyCrea
                     BankAccountCreateView, BankBalanceCreateView, BankBalanceDetailView, BankBalanceUpdateView,
                     BankBalanceListView, BankBalanceListViewAdmin, BankBalanceCopyView,
                     CreditorHomeView, CreditorDetailView, CreditorUpdateView,
-                    CreditorCreateView, FinancialsCreateView, BankDepositView,
+                    CreditorCreateView, FinancialsCreateView, BankDepositView, BreakEvenView,
+                    CashProjectionListView, CashProjectionCreateView,
+                    CashProjectionUpdateView, CashProjectionDeleteView,
                     TradeAuditLogListView, TradePeriodLockView, BankDeltaVarianceView,
                     TradeAdjustmentListView, TradeAdjustmentReviewView)
                     
@@ -75,4 +77,9 @@ urlpatterns += [
     path('bank/variance/', BankDeltaVarianceView.as_view(), name='bank-delta-variance'),
     path('adjustments/', TradeAdjustmentListView.as_view(), name='trade-adjustment-list'),
     path('adjustments/<int:pk>/review/', TradeAdjustmentReviewView.as_view(), name='trade-adjustment-review'),
+    path('break-even/', BreakEvenView.as_view(), name='trade-break-even'),
+    path('cash-projection/', CashProjectionListView.as_view(), name='cash-projection-list'),
+    path('cash-projection/add/', CashProjectionCreateView.as_view(), name='cash-projection-create'),
+    path('cash-projection/<int:pk>/update/', CashProjectionUpdateView.as_view(), name='cash-projection-update'),
+    path('cash-projection/<int:pk>/delete/', CashProjectionDeleteView.as_view(), name='cash-projection-delete'),
 ]

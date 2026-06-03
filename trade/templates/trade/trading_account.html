@@ -112,103 +112,168 @@
         </div>
     </div>
     
-     <div class="row">
-               <!-- body of page -->
-        <div class="col">
-            <div class="row">
-                {% if monthly %} 
-                
-                {% for record in recordset %}
-                
-                <div class="col-md-4 mt-2">    
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-info text-center">{{record.heading}}</li>
-                        <li class="list-group-item">
-                            <p>Opening Stock: {{record.opening_stock.amount|floatformat:'2g'}}</p> 
-                            <p>Purchases: {{record.purchase|floatformat:'2g'}}</p>
-                            <p>Direct Expenses: {{record.direct_expenses|floatformat:'2g'}}</p>
-                            <p>Gross Profit: {{record.gross_profit|floatformat:'2g'}}</p>    
-                        </li>
+    <div class="row mt-2">
+        {% if monthly %}
 
-                        <li class="list-group-item list-group-item-secondary text-right">
-                            Total: {{record.first_total|floatformat:'2g'}}
-                        </li>
-                        <li class="list-group-item">
-                            <p>Sales: {{record.sales|floatformat:'2g'}}</p> 
-                            <p>Direct Income: {{record.direct_income|floatformat:'2g'}}</p>
-                            <p>Closing Stock:{{record.closing_stock|floatformat:'2g'}}</p>
-                        </li>
-                        <li class="list-group-item list-group-item-secondary text-right">Total: {{record.second_total|floatformat:'2g'}}</li>
-                        
-                        <li class="list-group-item"> 
-                            <p>Indirect Expenses: {{record.indirect_expenses|floatformat:'2g'}}</p>
-                            <p>Net Profit: {{record.net_profit|floatformat:'2g'}}</p> 
-                            <p>Indirect Income: {{record.indirect_income|floatformat:'2g'}}</p> 
-                        </li>
-                        <li class="list-group-item">Gross Margin: {{record.percent_margin|floatformat:'3'}}%
-                            {% if record.gross_margin_arrow %}
-                                <i class="fa fa-long-arrow-up text-success"></i>
-                            {% elif record.gross_margin_arrow == False %}
-                                <i class="fa fa-long-arrow-down text-danger"></i>
-                            {% else %}{% endif %}
-                        </li>
-                        <li class="list-group-item">Total Expenses: {{record.expenses|floatformat:'2g'}}</li>
-                        
-                        <li class="list-group-item">
-                            Percent Expenses WRT
-                            <ul>
-                                <li>Sales: {{record.percent_sales|floatformat:'3'}}%
-                                    {% if record.sales_arrow %}
-                                        <i class="fa fa-long-arrow-up text-danger"></i>
-                                    {% elif record.sales_arrow == False %}
-                                        <i class="fa fa-long-arrow-down text-success"></i>
-                                    {% else %}{% endif %}
-                                </li>
-                                <li>Gross: {{record.percent_gross|floatformat:'3'}}%
-                                    {% if record.gross_arrow %}
-                                        <i class="fa fa-long-arrow-up text-danger"></i>
-                                    {% elif record.gross_arrow == False %}
-                                        <i class="fa fa-long-arrow-down text-success"></i>
-                                    {% else %}{% endif %}
-                                </li> 
-                                <li>Purchase: {{record.percent_purchase|floatformat:'3'}}%
-                                    {% if record.purchase_arrow %}
-                                        <i class="fa fa-long-arrow-up text-danger"></i>
-                                    {% elif record.purchase_arrow == False %}
-                                        <i class="fa fa-long-arrow-down text-success"></i>
-                                    {% else %}{% endif %}
-                                </li>
-                            </ul> 
-                        </li>
-                        
-                    </ul>
-                </div>
-                {% endfor %}
-                {% else %}
-                    <div class="col mt-2">
-                        <h3>No Record Available</h3>
-                    </div>
-                {% endif %}
-                
-            </div>
+        {% for record in recordset %}
+        <div class="col-lg-3 col-md-6 mt-2">
+            <ul class="list-group list-group-flush border rounded small">
+                <li class="list-group-item list-group-item-info text-center font-weight-bold py-1">{{record.heading}}</li>
+                <li class="list-group-item py-1">
+                    Opening Stock: <span class="float-right">{{record.opening_stock.amount|floatformat:'2g'}}</span>
+                </li>
+                <li class="list-group-item py-1">
+                    Purchases: <span class="float-right">{{record.purchase|floatformat:'2g'}}</span>
+                </li>
+                <li class="list-group-item py-1">
+                    Direct Expenses: <span class="float-right">{{record.direct_expenses|floatformat:'2g'}}</span>
+                </li>
+                <li class="list-group-item py-1">
+                    Gross Profit: <span class="float-right">{{record.gross_profit|floatformat:'2g'}}</span>
+                </li>
+                <li class="list-group-item list-group-item-secondary text-right py-1">
+                    <strong>Total: {{record.first_total|floatformat:'2g'}}</strong>
+                </li>
+                <li class="list-group-item py-1">
+                    Sales: <span class="float-right">{{record.sales|floatformat:'2g'}}</span>
+                </li>
+                <li class="list-group-item py-1">
+                    Direct Income: <span class="float-right">{{record.direct_income|floatformat:'2g'}}</span>
+                </li>
+                <li class="list-group-item py-1">
+                    Closing Stock: <span class="float-right">{{record.closing_stock|floatformat:'2g'}}</span>
+                </li>
+                <li class="list-group-item list-group-item-secondary text-right py-1">
+                    <strong>Total: {{record.second_total|floatformat:'2g'}}</strong>
+                </li>
+                <li class="list-group-item py-1">
+                    Indirect Expenses: <span class="float-right">{{record.indirect_expenses|floatformat:'2g'}}</span>
+                </li>
+                <li class="list-group-item py-1">
+                    Net Profit: <span class="float-right font-weight-bold">{{record.net_profit|floatformat:'2g'}}</span>
+                </li>
+                <li class="list-group-item py-1">
+                    Indirect Income: <span class="float-right">{{record.indirect_income|floatformat:'2g'}}</span>
+                </li>
+                <li class="list-group-item py-1">
+                    Gross Margin: <span class="float-right">{{record.percent_margin|floatformat:'3'}}%</span>
+                </li>
+                <li class="list-group-item py-1">
+                    Total Expenses: <span class="float-right">{{record.expenses|floatformat:'2g'}}</span>
+                </li>
+            </ul>
         </div>
-    </div> 
-    
+        {% endfor %}
+
+        <!-- Analytics panel: YoY + KPI occupies the 4th column -->
+        <div class="col-lg-3 col-md-6 mt-2">
+            {% if yoy_summary %}
+            <div class="card mb-2">
+                <div class="card-header bg-dark text-white py-1 small font-weight-bold">
+                    YoY vs {{ yoy_summary.prior_year|stringformat:'d' }}
+                </div>
+                <div class="card-body p-2">
+                    <table class="table table-sm table-borderless mb-0 small">
+                        <tbody>
+                            <tr>
+                                <td>Sales</td>
+                                <td class="text-right font-weight-bold {% if yoy_summary.sales_growth and yoy_summary.sales_growth >= 0 %}text-success{% elif yoy_summary.sales_growth %}text-danger{% endif %}">
+                                    {% if yoy_summary.sales_growth is not None %}
+                                        {% if yoy_summary.sales_growth >= 0 %}<i class="fa fa-caret-up"></i>{% else %}<i class="fa fa-caret-down"></i>{% endif %}
+                                        {{ yoy_summary.sales_growth|abs }}%
+                                    {% else %}&mdash;{% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Gross Profit</td>
+                                <td class="text-right font-weight-bold {% if yoy_summary.gp_growth and yoy_summary.gp_growth >= 0 %}text-success{% elif yoy_summary.gp_growth %}text-danger{% endif %}">
+                                    {% if yoy_summary.gp_growth is not None %}
+                                        {% if yoy_summary.gp_growth >= 0 %}<i class="fa fa-caret-up"></i>{% else %}<i class="fa fa-caret-down"></i>{% endif %}
+                                        {{ yoy_summary.gp_growth|abs }}%
+                                    {% else %}&mdash;{% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Net Profit</td>
+                                <td class="text-right font-weight-bold {% if yoy_summary.np_growth and yoy_summary.np_growth >= 0 %}text-success{% elif yoy_summary.np_growth %}text-danger{% endif %}">
+                                    {% if yoy_summary.np_growth is not None %}
+                                        {% if yoy_summary.np_growth >= 0 %}<i class="fa fa-caret-up"></i>{% else %}<i class="fa fa-caret-down"></i>{% endif %}
+                                        {{ yoy_summary.np_growth|abs }}%
+                                    {% else %}&mdash;{% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if kpi_data %}
+            <div class="card">
+                <div class="card-header bg-dark text-white py-1 small font-weight-bold">
+                    KPI vs Target — {{ kpi_data.period }}
+                </div>
+                <div class="card-body p-2">
+                    <table class="table table-sm table-borderless mb-0 small">
+                        <thead class="text-muted">
+                            <tr>
+                                <th>KPI</th>
+                                <th class="text-center">Target</th>
+                                <th class="text-center">Actual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in kpi_data.items %}
+                            <tr class="{% if item.on_target %}text-success{% else %}text-danger{% endif %}">
+                                <td>{{ item.name }}</td>
+                                <td class="text-center text-muted">{{ item.target }}%</td>
+                                <td class="text-center font-weight-bold">
+                                    {% if item.on_target %}<i class="fa fa-check"></i>{% else %}<i class="fa fa-times"></i>{% endif %}
+                                    {{ item.actual }}%
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <small class="text-muted">↓ Landing/Admin &nbsp;|&nbsp; ↑ Margin/Growth</small>
+                </div>
+            </div>
+            {% else %}
+            <div class="small text-muted mt-2">
+                <i class="fa fa-info-circle"></i> No KPI targets for this period.
+                <a href="{% url 'kpi-create' %}">Add &rarr;</a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% else %}
+        <div class="col mt-2">
+            <h3>No Record Available</h3>
+        </div>
+        {% endif %}
+    </div>
+
     <div class="row">
         <div class="col-9 mt-2">
-            <form class="form-inline">
+            <form class="form-inline" method="GET">
                 <div class="form-group mb-2 mr-2">
-                    <select type="text" name="year" class="form-control" placeholder="year">
-                        <option value="2021"><--2021--></option>
-                        <option value="2020"><--2020--></option>
+                    <label for="year-select" class="sr-only">Select year</label>
+                    <select id="year-select" name="year" class="form-control" title="Select year">
+                        {% for yr in available_years %}
+                        <option value="{{ yr|stringformat:'d' }}"
+                            {% if yr|stringformat:'d' == monthly %}selected{% endif %}>
+                            {{ yr|stringformat:'d' }}
+                        </option>
+                        {% endfor %}
                     </select>
                 </div>
                 <button type="submit" class="btn btn-outline-primary mb-2">OK</button>
             </form>
         </div>
-        
         <div class="col-3 text-right">
-            <a class="btn btn-dark mt-2" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i></a>
+            <a class="btn btn-dark mt-2" href="{% url 'trade-home' %}" title="Trade Home">
+                <i class="fa fa-reply"></i>
+            </a>
         </div>
     </div>
 <script>

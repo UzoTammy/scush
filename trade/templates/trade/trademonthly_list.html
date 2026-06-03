@@ -9,7 +9,7 @@
                     data-pagination="true"
                     data-search="true"
                     class="table table-bordered">
-                <caption>Monthly Trading, Profit & Loss Account - {{object_list.last.year|lower}}</caption>
+                <caption>Monthly Trading, Profit & Loss Account - {{object_list.last.year|stringformat:'d'}}</caption>
             <thead class="text-center">
                 <tr class="text-white bg-dark">
                     <th>ID</th>
@@ -21,6 +21,10 @@
                     <th>Indirect Expenses</th>
                     <th>Closing Stock</th>
                     <th>Gross Profit</th>
+                    <th title="Month-on-month sales growth">MoM Sales</th>
+                    <th title="Month-on-month net profit growth">MoM NP</th>
+                    <th title="Year-on-year sales growth vs same month last year">YoY Sales</th>
+                    <th title="Year-on-year net profit growth vs same month last year">YoY NP</th>
                     <th>Status</th>
                 </tr>
             </thead>
@@ -34,9 +38,10 @@
                     <th>{{current_pl.indirect_expenses}}</th>
                     <th>{{current_pl.closing_stock}}</th>
                     <th>{{current_pl.gross_profit}}</th>
+                    <th colspan="4">—</th>
                     <th>—</th>
                 </tr>
-                {% for object in object_list %}
+                {% for object, growth in growth_list %}
                 <tr class="text-right{% if object.locked %} table-warning{% endif %}">
                     <td><a href="{% url 'trade-detail' object.pk %}">{{object.id|zeropadding:3}}</a></td>
                     <td>{{object.month}}</td>
@@ -47,6 +52,38 @@
                     <td>{{object.indirect_expenses}}</td>
                     <td>{{object.closing_value}}</td>
                     <td>{{object.gross_profit}}</td>
+                    {% with growth.mom_sales as v %}
+                    <td class="text-center small {% if v %}{% if v >= 0 %}text-success{% else %}text-danger{% endif %}{% endif %}">
+                        {% if v is not None %}
+                            {% if v >= 0 %}<i class="fa fa-caret-up"></i>{% else %}<i class="fa fa-caret-down"></i>{% endif %}
+                            {{v|abs}}%
+                        {% else %}&mdash;{% endif %}
+                    </td>
+                    {% endwith %}
+                    {% with growth.mom_np as v %}
+                    <td class="text-center small {% if v %}{% if v >= 0 %}text-success{% else %}text-danger{% endif %}{% endif %}">
+                        {% if v is not None %}
+                            {% if v >= 0 %}<i class="fa fa-caret-up"></i>{% else %}<i class="fa fa-caret-down"></i>{% endif %}
+                            {{v|abs}}%
+                        {% else %}&mdash;{% endif %}
+                    </td>
+                    {% endwith %}
+                    {% with growth.yoy_sales as v %}
+                    <td class="text-center small {% if v %}{% if v >= 0 %}text-success{% else %}text-danger{% endif %}{% endif %}">
+                        {% if v is not None %}
+                            {% if v >= 0 %}<i class="fa fa-caret-up"></i>{% else %}<i class="fa fa-caret-down"></i>{% endif %}
+                            {{v|abs}}%
+                        {% else %}&mdash;{% endif %}
+                    </td>
+                    {% endwith %}
+                    {% with growth.yoy_np as v %}
+                    <td class="text-center small {% if v %}{% if v >= 0 %}text-success{% else %}text-danger{% endif %}{% endif %}">
+                        {% if v is not None %}
+                            {% if v >= 0 %}<i class="fa fa-caret-up"></i>{% else %}<i class="fa fa-caret-down"></i>{% endif %}
+                            {{v|abs}}%
+                        {% else %}&mdash;{% endif %}
+                    </td>
+                    {% endwith %}
                     <td class="text-center">
                         {% if object.locked %}
                             <span class="badge badge-warning" title="Locked by {{object.locked_by}} on {{object.locked_at|date:'d-m-Y'}}">
@@ -96,11 +133,27 @@
                         <td>{% with trade|array_index:3 as x %} {{x.gross_profit}} {% endwith %}</td>
                     </tr>
                     {% endfor %}
-                    <tr>
-                        <td>Total</td>
+                    <tr class="font-weight-bold">
+                        <td>Total GP</td>
                         <td>{{sum_monthly_trade.first_year}}</td>
                         <td>{{sum_monthly_trade.second_year}}</td>
                         <td>{{sum_monthly_trade.current_year}}</td>
+                    </tr>
+                    <tr class="text-center small">
+                        <td>YoY Growth</td>
+                        <td>—</td>
+                        <td class="{% if sum_monthly_trade.yoy_fy_sy %}{% if sum_monthly_trade.yoy_fy_sy >= 0 %}text-success{% else %}text-danger{% endif %}{% endif %}">
+                            {% if sum_monthly_trade.yoy_fy_sy is not None %}
+                                {% if sum_monthly_trade.yoy_fy_sy >= 0 %}<i class="fa fa-caret-up"></i>{% else %}<i class="fa fa-caret-down"></i>{% endif %}
+                                {{sum_monthly_trade.yoy_fy_sy|abs}}%
+                            {% else %}—{% endif %}
+                        </td>
+                        <td class="{% if sum_monthly_trade.yoy_sy_cy %}{% if sum_monthly_trade.yoy_sy_cy >= 0 %}text-success{% else %}text-danger{% endif %}{% endif %}">
+                            {% if sum_monthly_trade.yoy_sy_cy is not None %}
+                                {% if sum_monthly_trade.yoy_sy_cy >= 0 %}<i class="fa fa-caret-up"></i>{% else %}<i class="fa fa-caret-down"></i>{% endif %}
+                                {{sum_monthly_trade.yoy_sy_cy|abs}}%
+                            {% else %}—{% endif %}
+                        </td>
                     </tr>
                 </tbody>
             </table>

@@ -1,6 +1,8 @@
+import base64
 import calendar
 import datetime
 from decimal import Decimal
+import io
 import itertools as it
 from typing import Any
 from datetime import timedelta
@@ -12,19 +14,22 @@ from django.db.models.fields import FloatField
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls.base import reverse_lazy
-from django.db.models import (Sum, F, Avg, ExpressionWrapper, DecimalField)
+from django.db.models import (Sum, F, Avg, ExpressionWrapper, DecimalField, Value)
 from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView, FormView, View)                            
 
 from djmoney.money import Money
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 from ozone import mytools
 from core import utils as plotter
 from stock.models import ProductExtension
 from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm,
-                    BankBalanceCopyForm, CreditorAccountForm, FinancialForm, BankDepositForm)
+                    BankBalanceCopyForm, CreditorAccountForm, FinancialForm, BankDepositForm,
+                    CashProjectionForm)
 from .models import (TradeDaily, TradeMonthly, BalanceSheet, BankAccount, BankBalance,
-                     Creditor, TradeAuditLog, TradeAdjustmentRequest)
+                     Creditor, TradeAuditLog, TradeAdjustmentRequest, CashProjection)
 
 
 def _capture_changes(form):
@@ -39,6 +44,37 @@ def _capture_changes(form):
         if old_str != new_str:
             changes[field_name] = {'old': old_str, 'new': new_str}
     return changes
+
+
+def _growth_pct(current, previous):
+    """Return % change from previous to current, or None if previous is zero."""
+    try:
+        prev = float(previous)
+        if not prev:
+            return None
+        return round(100 * (float(current) / prev - 1), 1)
+    except (TypeError, ZeroDivisionError):
+        return None
+
+
+def _build_kpi_comparison(year, month_num, actual_margin, actual_lc, actual_ac, actual_growth=None):
+    """Return a structured target-vs-actual KPI list for the given period, or None if no target exists."""
+    from target.models import PositionKPIMonthly
+    qs = PositionKPIMonthly.objects.filter(year=year, month=month_num)
+    if not qs.exists():
+        return None
+    kpi = qs.first()
+    items = [
+        {'name': 'Gross Margin',   'target': kpi.margin,   'actual': round(float(actual_margin), 2), 'higher_is_better': True},
+        {'name': 'Landing Cost',   'target': kpi.delivery, 'actual': round(float(actual_lc), 2),     'higher_is_better': False},
+        {'name': 'Admin Cost',     'target': kpi.admin,    'actual': round(float(actual_ac), 2),     'higher_is_better': False},
+    ]
+    if actual_growth is not None:
+        items.append({'name': 'Growth', 'target': kpi.growth, 'actual': round(float(actual_growth), 2), 'higher_is_better': True})
+    for item in items:
+        item['gap'] = round(item['actual'] - item['target'], 2)
+        item['on_target'] = item['actual'] >= item['target'] if item['higher_is_better'] else item['actual'] <= item['target']
+    return {'items': items, 'period': str(kpi)}
 
 
 def _capture_proposed_changes(form):
@@ -182,6 +218,21 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             context['pending_adjustments'] = TradeAdjustmentRequest.objects.filter(
                 status=TradeAdjustmentRequest.STATUS_PENDING
             ).count()
+        if daily_qs.exists():
+            dm = context.get('daily_monthly', {})
+            def _safe_pct(num, den):
+                try:
+                    n = num.amount if hasattr(num, 'amount') else float(num or 0)
+                    d = den.amount if hasattr(den, 'amount') else float(den or 0)
+                    return round(100 * n / d, 2) if d else 0
+                except Exception:
+                    return 0
+            actual_margin = _safe_pct(dm.get('net_profit', 0), dm.get('sales', 0))
+            actual_lc     = _safe_pct(dm.get('indirect_expenses', 0), dm.get('purchase', 0))
+            actual_ac     = _safe_pct(dm.get('direct_expenses', 0), dm.get('sales', 0))
+            bs_qs = BalanceSheet.objects.filter(date__year=year, date__month=month)
+            actual_growth = float(bs_qs.latest('date').growth_ratio()) if bs_qs.exists() else None
+            context['kpi_data'] = _build_kpi_comparison(year, month, actual_margin, actual_lc, actual_ac, actual_growth)
         if Creditor.objects.exists():
             zero = Money(0, 'NGN')
             cr_sum = sum(
@@ -300,11 +351,11 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             context['chart'] = plotter.monthly_sales_revenue(month, sales)
         
         latest = TradeMonthly.objects.last()
-        trade = TradeMonthly.objects.filter(year=latest.year-2)
+        latest_year = latest.year
+        trade = TradeMonthly.objects.filter(year=latest_year - 2)
 
         if not trade.exists():
             latest_month = latest.month
-            latest_year = latest.year
             current_year_trade = TradeMonthly.objects.filter(year=latest_year)
             current_year_trade_size = current_year_trade.count()
 
@@ -322,11 +373,36 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
             context['years'] = (str(latest_year-2), str(latest_year-1), str(latest_year))
             context['monthly_trade'] = trade_data
+            sy_gp  = second_year.aggregate(Sum('gross_profit'))['gross_profit__sum'] or Decimal('0')
+            cy_gp  = current_year.aggregate(Sum('gross_profit'))['gross_profit__sum'] or Decimal('0')
+            fy_gp  = first_year.aggregate(Sum('gross_profit'))['gross_profit__sum']   or Decimal('0')
             context['sum_monthly_trade'] = {
-                'first_year': Money(first_year.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN') if first_year.exists() else Money(0, 'NGN'),
-                'second_year': Money(second_year.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN') if second_year.exists() else Money(0, 'NGN'),
-                'current_year': Money(current_year.aggregate(Sum('gross_profit'))['gross_profit__sum'], 'NGN') if current_year.exists() else Money(0, 'NGN')
+                'first_year':   Money(fy_gp, 'NGN'),
+                'second_year':  Money(sy_gp, 'NGN'),
+                'current_year': Money(cy_gp, 'NGN'),
+                'yoy_fy_sy':  _growth_pct(sy_gp, fy_gp),
+                'yoy_sy_cy':  _growth_pct(cy_gp, sy_gp),
             }
+
+        # MoM and YoY growth per monthly record
+        records_asc = list(TradeMonthly.objects.filter(year=latest_year).order_by('pk'))
+        growth = {}
+        for i, rec in enumerate(records_asc):
+            net_p = rec.gross_profit.amount - rec.indirect_expenses.amount
+            mom_s = mom_n = yoy_s = yoy_n = None
+            if i > 0:
+                prev = records_asc[i - 1]
+                prev_np = prev.gross_profit.amount - prev.indirect_expenses.amount
+                mom_s = _growth_pct(rec.sales.amount, prev.sales.amount)
+                mom_n = _growth_pct(net_p, prev_np)
+            prior = TradeMonthly.objects.filter(year=latest_year - 1, month=rec.month).first()
+            if prior:
+                prior_np = prior.gross_profit.amount - prior.indirect_expenses.amount
+                yoy_s = _growth_pct(rec.sales.amount, prior.sales.amount)
+                yoy_n = _growth_pct(net_p, prior_np)
+            growth[rec.pk] = {'mom_sales': mom_s, 'mom_np': mom_n, 'yoy_sales': yoy_s, 'yoy_np': yoy_n}
+
+        context['growth_list'] = [(obj, growth.get(obj.pk, {})) for obj in self.get_queryset()]
         return context
 
 
@@ -394,7 +470,10 @@ class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         monthly_trade = TradeMonthly.objects.filter(year=current_year)
         
         context['monthly'] = str(current_year)
-        
+        context['available_years'] = (
+            TradeMonthly.objects.values_list('year', flat=True).distinct().order_by('-year')
+        )
+
         if monthly_trade.exists():
         
             """Adding derivatives: direct expenses, net Profit, percent margin"""
@@ -405,23 +484,30 @@ class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
             template = '%(function)s(%(expressions)s AS FLOAT)'
 
-            gp = Func(F('gross_profit'), function='CAST', template=template)
-            ide = Func(F('gross_profit'), function='CAST', template=template)
-            sales = Func(F('sales'), function='CAST', template=template)
-            
-            qs = qs.annotate(gross_margin_ratio=ExpressionWrapper(100* self.df* gp/sales, output_field=FloatField()))
-            
-            qs = qs.annotate(sales_ratio=ExpressionWrapper(100* self.df* ide/sales, output_field=FloatField()))
-            
-            qs = qs.annotate(gross_ratio=ExpressionWrapper(100*self.df*(F('indirect_expenses') + F('direct_expenses')) / F('gross_profit'), 
-                                                        output_field=DecimalField()
-                                                        ))
-            qs = qs.annotate(purchase_ratio=ExpressionWrapper(100*self.df*F('indirect_expenses') / F('purchase'), 
-                                                        output_field=DecimalField()
-                                                        ))
-            qs = qs.annotate(trade_ratio=ExpressionWrapper(100*self.df*F('expenses') / (F('purchase') + F('sales')), 
-                                                        output_field=DecimalField()
-                                                        ))
+            gp   = Func(F('gross_profit'), function='CAST', template=template)
+            ide  = Func(F('gross_profit'), function='CAST', template=template)
+            raw_sales = Func(F('sales'), function='CAST', template=template)
+
+            # Wrap every denominator with NULLIF so zero-value records return NULL
+            # instead of raising a database division-by-zero error.
+            safe_sales    = Func(raw_sales, Value(0.0), function='NULLIF')
+            safe_gp       = Func(F('gross_profit'), Value(0), function='NULLIF')
+            safe_purchase = Func(F('purchase'),     Value(0), function='NULLIF')
+            safe_trade_base = Func(F('purchase') + F('sales'), Value(0), function='NULLIF')
+
+            qs = qs.annotate(gross_margin_ratio=ExpressionWrapper(
+                100 * self.df * gp / safe_sales, output_field=FloatField()))
+            qs = qs.annotate(sales_ratio=ExpressionWrapper(
+                100 * self.df * ide / safe_sales, output_field=FloatField()))
+            qs = qs.annotate(gross_ratio=ExpressionWrapper(
+                100 * self.df * (F('indirect_expenses') + F('direct_expenses')) / safe_gp,
+                output_field=DecimalField()))
+            qs = qs.annotate(purchase_ratio=ExpressionWrapper(
+                100 * self.df * F('indirect_expenses') / safe_purchase,
+                output_field=DecimalField()))
+            qs = qs.annotate(trade_ratio=ExpressionWrapper(
+                100 * self.df * F('expenses') / safe_trade_base,
+                output_field=DecimalField()))
             # qs.exclude(sales=Money(0, 'NGN'))
             qs.order_by('id')
                 
@@ -429,19 +515,21 @@ class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             period_label = list(i[0:3] for i in period)
             sales = monthly_trade.values_list('sales', flat=True)
 
-            current_month = qs.last().month
-            current_month_qs = qs.get(month=current_month)
-        
+            current_month_qs = qs.order_by('pk').last()
+            current_month = current_month_qs.month
+
+            first_record = qs.filter(month='January').first() or qs.order_by('pk').first()
+
             current_year_total = {
                 'heading': f"Current Year Total ({naira}) as at {current_month}, {current_year}",
-                'opening_stock': qs.get(month='January').opening_value,
+                'opening_stock': first_record.opening_value,
                 'purchase': qs.aggregate(total=Sum('purchase'))['total'],
                 'direct_expenses': qs.aggregate(total=Sum('direct_expenses'))['total'],
                 'gross_profit': qs.aggregate(total=Sum('gross_profit'))['total'],
-                
-                'first_total': qs.get(month='January').opening_value.amount + 
-                qs.aggregate(total=Sum('purchase'))['total'] + 
-                qs.aggregate(total=Sum('direct_expenses'))['total'] + 
+
+                'first_total': first_record.opening_value.amount +
+                qs.aggregate(total=Sum('purchase'))['total'] +
+                qs.aggregate(total=Sum('direct_expenses'))['total'] +
                 qs.aggregate(total=Sum('gross_profit'))['total'],
                 
                 'sales': qs.aggregate(total=Sum('sales'))['total'],
@@ -465,9 +553,7 @@ class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 }
             
             if qs.count() >= 2:
-                last_record_id = qs.last().id
-                previous_record_id = last_record_id - 1
-                previous_month_qs = qs.get(id=previous_record_id)
+                previous_month_qs = qs.order_by('pk').filter(pk__lt=current_month_qs.pk).last()
 
                 previous_month = {
                 'heading': f'Previous Month {previous_month_qs.month} ({naira})',
@@ -544,9 +630,35 @@ class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 context['lc_ratio'] = 100*(current_month['indirect_expenses']/current_month['purchase']) # landing cost ratio
                 context['ac_ratio'] = 100*(current_month['direct_expenses']/current_month['sales']) # administrative cost ratio
                 context['gp_ratio'] = current_month.get('percent_margin')
-                
-                context['recordset'] = (current_year_total,) # previous_month, current_month)
+
+                # KPI target vs actual
+                month_to_num = {name: num for num, name in enumerate(calendar.month_name) if name}
+                current_month_num = month_to_num.get(current_month_qs.month, 0)
+                bs_qs = BalanceSheet.objects.filter(date__year=current_year, date__month=current_month_num)
+                actual_growth = float(bs_qs.latest('date').growth_ratio()) if bs_qs.exists() else None
+                context['kpi_data'] = _build_kpi_comparison(
+                    current_year, current_month_num,
+                    context['gp_ratio'], context['lc_ratio'], context['ac_ratio'], actual_growth
+                )
+
+                context['recordset'] = (previous_month, current_month, current_year_total)
                 context['dataset'] = qs.order_by('pk')
+
+                # YoY summary — compare current year totals against prior year
+                prior_year_qs = TradeMonthly.objects.filter(year=current_year - 1)
+                if prior_year_qs.exists():
+                    cy_sales = qs.aggregate(total=Sum('sales'))['total'] or Decimal('0')
+                    cy_gp    = qs.aggregate(total=Sum('gross_profit'))['total'] or Decimal('0')
+                    cy_np    = sum(o.gross_profit.amount - o.indirect_expenses.amount for o in qs)
+                    py_sales = prior_year_qs.aggregate(total=Sum('sales'))['total'] or Decimal('0')
+                    py_gp    = prior_year_qs.aggregate(total=Sum('gross_profit'))['total'] or Decimal('0')
+                    py_np    = sum(o.gross_profit.amount - o.indirect_expenses.amount for o in prior_year_qs)
+                    context['yoy_summary'] = {
+                        'prior_year': current_year - 1,
+                        'sales_growth': _growth_pct(cy_sales, py_sales),
+                        'gp_growth':    _growth_pct(cy_gp,    py_gp),
+                        'np_growth':    _growth_pct(cy_np,    py_np),
+                    }
 
             # context['sales_graph'] = sales_graph
             # context['purchase_graph'] = purchase_graph
@@ -680,23 +792,30 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return False
 
     def get(self, request, *args, **kwargs):
-        
         context = dict()
-        # today is three days ago
-        if request.GET == {}:
-            today = self.queryset.latest('date').date
-            end_date = today.strftime('%Y-%m-%d')    
-        else:
-            end_date = request.GET['date']
-            today = datetime.datetime.strptime(end_date, "%Y-%m-%d").date()
-            
-        start_date = (today - timedelta(days=15)).strftime('%Y-%m-%d')
-        
-        qs = TradeDaily.objects.filter(date__range=[start_date, end_date]) 
+        latest = self.queryset.latest('date').date
 
-        from_date = (today - timedelta(days=15)).strftime('%d-%b-%Y')
-        to_date = today.strftime('%d-%b-%Y')
-        context['date_range'] = f'{from_date} and {to_date}'    
+        end_str   = request.GET.get('end_date') or request.GET.get('date')
+        start_str = request.GET.get('start_date')
+
+        end_date   = datetime.datetime.strptime(end_str,   '%Y-%m-%d').date() if end_str   else latest
+        start_date = datetime.datetime.strptime(start_str, '%Y-%m-%d').date() if start_str else end_date - timedelta(days=15)
+
+        if start_date > end_date:
+            start_date, end_date = end_date, start_date
+
+        qs = TradeDaily.objects.filter(date__range=[start_date, end_date])
+
+        context['date_range']  = f'{start_date.strftime("%d-%b-%Y")} to {end_date.strftime("%d-%b-%Y")}'
+        context['start_date']  = start_date.strftime('%Y-%m-%d')
+        context['end_date']    = end_date.strftime('%Y-%m-%d')
+        context['quick_ranges'] = [
+            ('7 days',    (latest - timedelta(days=7)).strftime('%Y-%m-%d'),  latest.strftime('%Y-%m-%d')),
+            ('15 days',   (latest - timedelta(days=15)).strftime('%Y-%m-%d'), latest.strftime('%Y-%m-%d')),
+            ('30 days',   (latest - timedelta(days=30)).strftime('%Y-%m-%d'), latest.strftime('%Y-%m-%d')),
+            ('60 days',   (latest - timedelta(days=60)).strftime('%Y-%m-%d'), latest.strftime('%Y-%m-%d')),
+            ('This month', datetime.date(latest.year, latest.month, 1).strftime('%Y-%m-%d'), latest.strftime('%Y-%m-%d')),
+        ]
         
         if qs.exists():
             qs = qs.annotate(expenses=F('direct_expenses') + F('indirect_expenses'))
@@ -712,17 +831,17 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             gross_profit_ratio = 100 * latest_record.gross_profit/latest_record.sales if latest_record.sales.amount != 0 else 0
 
             days = [str(i.day) for i in qs.values_list('date', flat=True)]
-            
-            sales = qs.values_list('sales', flat=True)
-            purchase = qs.values_list('purchase', flat=True)
-            expenses = qs.values_list('expenses', flat=True)
-            gross_profit = qs.values_list('gross_profit', flat=True)
-            np_plot = qs.values_list('net_ratio', flat=True)
-            gp_plot = qs.values_list('gp_ratio', flat=True)
+
+            sales        = [float(v) for v in qs.values_list('sales',        flat=True)]
+            purchase     = [float(v) for v in qs.values_list('purchase',     flat=True)]
+            expenses     = [float(v) for v in qs.values_list('expenses',     flat=True)]
+            gross_profit = [float(v) for v in qs.values_list('gross_profit', flat=True)]
+            np_plot      = [float(v) if v is not None else 0.0 for v in qs.values_list('net_ratio', flat=True)]
+            gp_plot      = [float(v) if v is not None else 0.0 for v in qs.values_list('gp_ratio',  flat=True)]
             
             plt.bar(days, sales, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             
-            plt.xlabel(f"{today.strftime('%B')}")
+            plt.xlabel(f"{end_date.strftime('%B')}")
             plt.ylabel(f'Sales Value')
             plt.figtext(.5, .9, f'Sales Volume ({chr(8358)})', fontsize=20, ha='center')
             
@@ -735,7 +854,7 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
             plt.bar(days, purchase, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             
-            plt.xlabel(f"{today.strftime('%B')}")
+            plt.xlabel(f"{end_date.strftime('%B')}")
             plt.ylabel(f'Purchase Value')
             plt.figtext(.5, .9, f'Purchase Volume ({chr(8358)})', fontsize=20, ha='center')
             
@@ -748,7 +867,7 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             
             plt.bar(days, expenses, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             
-            plt.xlabel(f"{today.strftime('%B')}")
+            plt.xlabel(f"{end_date.strftime('%B')}")
             plt.ylabel('Expenses Value')
             plt.figtext(.5, .9, f'Expenses Incurred ({chr(8358)})', fontsize=20, ha='center')
             
@@ -761,7 +880,7 @@ class PLDailyReportView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             
             plt.bar(days, gross_profit, width=0.4, color=('#addba5', '#efef9c', '#addfef'))
             
-            plt.xlabel(f"{today.strftime('%B')}")
+            plt.xlabel(f"{end_date.strftime('%B')}")
             plt.ylabel('Gross Profit Value')
             plt.figtext(.5, .9, f'Gross Profit ({chr(8358)})', fontsize=20, ha='center')
             
@@ -1342,6 +1461,57 @@ class TradeAuditLogListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return self.request.user.groups.filter(name=GROUP_NAME).exists()
 
 
+class BreakEvenView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'trade/break_even.html'
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=GROUP_NAME).exists()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        lookback = max(1, min(int(self.request.GET.get('months', 3)), 24))
+
+        # Average gross margin % from the last N completed monthly records
+        recent = list(TradeMonthly.objects.order_by('-pk')[:lookback])
+        gp_margins = [
+            float(r.gross_profit.amount / r.sales.amount) * 100
+            for r in recent if r.sales.amount > 0
+        ]
+        avg_margin_pct = round(sum(gp_margins) / len(gp_margins), 3) if gp_margins else None
+
+        if avg_margin_pct is None:
+            context['no_data'] = True
+            return context
+
+        # Per-month analysis for the current year
+        latest = TradeMonthly.objects.last()
+        current_year_qs = TradeMonthly.objects.filter(year=latest.year).order_by('pk')
+
+        monthly_analysis = []
+        for rec in current_year_qs:
+            fixed = float(rec.indirect_expenses.amount)
+            actual = float(rec.sales.amount)
+            be = round(fixed / (avg_margin_pct / 100), 2) if avg_margin_pct else None
+            gap = round(actual - be, 2) if be is not None else None
+            safety = round(100 * gap / actual, 1) if (gap is not None and actual > 0) else None
+            monthly_analysis.append({
+                'month': rec.month,
+                'fixed_costs': fixed,
+                'actual_sales': actual,
+                'break_even': be,
+                'gap': gap,
+                'safety_pct': safety,
+                'above': gap >= 0 if gap is not None else None,
+            })
+
+        context['avg_margin_pct'] = avg_margin_pct
+        context['lookback'] = lookback
+        context['monthly_analysis'] = monthly_analysis
+        context['current_year'] = latest.year
+        return context
+
+
 class TradeAdjustmentListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = TradeAdjustmentRequest
     template_name = 'trade/adjustment_list.html'
@@ -1416,6 +1586,79 @@ class TradeAdjustmentReviewView(LoginRequiredMixin, UserPassesTestMixin, View):
             messages.warning(request, f'Adjustment request for {adj.record_str} rejected.')
 
         return redirect('trade-adjustment-list')
+
+
+class CashProjectionListView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'trade/cash_projection.html'
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=GROUP_NAME).exists()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = datetime.date.today()
+
+        # Current bank balance as the starting point
+        starting_balance = Money(0, 'NGN')
+        if BankBalance.objects.exists():
+            latest_date = BankBalance.objects.latest('date').date
+            qs_bal = BankBalance.objects.filter(date=latest_date, bank__account_group='Business')
+            total = qs_bal.aggregate(Sum('bank_balance'))['bank_balance__sum']
+            if total:
+                starting_balance = Money(total, 'NGN')
+            context['balance_date'] = latest_date
+
+        # All future (and today's) projections ordered by date
+        items = list(CashProjection.objects.filter(expected_date__gte=today))
+        past_items = list(CashProjection.objects.filter(expected_date__lt=today).order_by('-expected_date')[:10])
+
+        # Build running balance
+        running = starting_balance
+        projected = []
+        for item in items:
+            running = running + item.signed_amount()
+            projected.append({
+                'item': item,
+                'running_balance': running,
+                'positive': running.amount >= 0,
+            })
+
+        context['starting_balance'] = starting_balance
+        context['projected'] = projected
+        context['past_items'] = past_items
+        context['today'] = today
+        return context
+
+
+class CashProjectionCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = CashProjection
+    form_class = CashProjectionForm
+    template_name = 'trade/cash_projection_form.html'
+    success_url = reverse_lazy('cash-projection-list')
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=GROUP_NAME).exists()
+
+
+class CashProjectionUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = CashProjection
+    form_class = CashProjectionForm
+    template_name = 'trade/cash_projection_form.html'
+    success_url = reverse_lazy('cash-projection-list')
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=GROUP_NAME).exists()
+
+
+class CashProjectionDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
+    template_name = 'trade/cash_projection_form.html'
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=GROUP_NAME).exists()
+
+    def post(self, request, pk):
+        get_object_or_404(CashProjection, pk=pk).delete()
+        return redirect('cash-projection-list')
 
 
 class BankDepositView(LoginRequiredMixin, FormView):

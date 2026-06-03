@@ -1,0 +1,116 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+
+    <div class="row mb-3">
+        <div class="col">
+            <h5>Break-Even Analysis — {{ current_year|stringformat:'d' }}</h5>
+            <small class="text-muted">
+                At what sales volume does the business cover its fixed (indirect) costs?
+            </small>
+        </div>
+        <div class="col text-right">
+            <a class="btn btn-outline-dark btn-sm" href="{% url 'trade-home' %}" title="Trade Home">
+                <i class="fa fa-reply"></i> Trade Home
+            </a>
+        </div>
+    </div>
+
+    {% if no_data %}
+    <div class="alert alert-warning">No monthly P&amp;L records found.</div>
+    {% else %}
+
+    <!-- Summary card + lookback selector -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <h6 class="card-title text-muted">Average Gross Margin Used</h6>
+                    <h2 class="text-primary">{{ avg_margin_pct }}%</h2>
+                    <small class="text-muted">Based on last {{ lookback }} completed month{{ lookback|pluralize }}</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 d-flex align-items-center">
+            <form method="GET" class="form-inline">
+                <label class="mr-2 text-muted small">Lookback period:</label>
+                <select name="months" class="form-control form-control-sm mr-2" title="Months lookback">
+                    <option value="1"  {% if lookback == 1  %}selected{% endif %}>1 month</option>
+                    <option value="3"  {% if lookback == 3  %}selected{% endif %}>3 months</option>
+                    <option value="6"  {% if lookback == 6  %}selected{% endif %}>6 months</option>
+                    <option value="12" {% if lookback == 12 %}selected{% endif %}>12 months</option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body py-2">
+                    <small class="text-muted d-block">Break-Even Formula</small>
+                    <code>Break-Even Sales = Indirect Expenses ÷ Gross Margin %</code>
+                    <br>
+                    <small class="text-muted">Safety Margin = (Actual − Break-Even) ÷ Actual × 100</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monthly analysis table -->
+    <div class="row">
+        <div class="col">
+            <table class="table table-bordered table-sm table-hover">
+                <thead class="bg-dark text-white text-center">
+                    <tr>
+                        <th>Month</th>
+                        <th>Fixed Costs (Indirect Exp.)</th>
+                        <th>Break-Even Sales</th>
+                        <th>Actual Sales</th>
+                        <th>Gap (Actual − B/E)</th>
+                        <th>Safety Margin %</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in monthly_analysis %}
+                    <tr class="text-right {% if row.above %}table-success{% elif row.above == False %}table-danger{% endif %}">
+                        <td class="text-left font-weight-bold">{{ row.month }}</td>
+                        <td>{{ row.fixed_costs|floatformat:'2g' }}</td>
+                        <td>{{ row.break_even|floatformat:'2g' }}</td>
+                        <td>{{ row.actual_sales|floatformat:'2g' }}</td>
+                        <td class="font-weight-bold {% if row.gap and row.gap >= 0 %}text-success{% elif row.gap %}text-danger{% endif %}">
+                            {% if row.gap is not None %}
+                                {% if row.gap >= 0 %}+{% endif %}{{ row.gap|floatformat:'2g' }}
+                            {% else %}&mdash;{% endif %}
+                        </td>
+                        <td class="font-weight-bold {% if row.safety_pct and row.safety_pct >= 0 %}text-success{% elif row.safety_pct %}text-danger{% endif %}">
+                            {% if row.safety_pct is not None %}
+                                {% if row.safety_pct >= 0 %}<i class="fa fa-check-circle"></i>{% else %}<i class="fa fa-exclamation-circle"></i>{% endif %}
+                                {{ row.safety_pct }}%
+                            {% else %}&mdash;{% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if row.above %}
+                                <span class="badge badge-success">Above B/E</span>
+                            {% elif row.above == False %}
+                                <span class="badge badge-danger">Below B/E</span>
+                            {% else %}
+                                <span class="badge badge-secondary">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <small class="text-muted">
+                Green rows = sales exceeded break-even point. &nbsp;|&nbsp;
+                Red rows = sales did not cover fixed costs. &nbsp;|&nbsp;
+                Fixed costs proxy = indirect expenses (admin/overhead).
+            </small>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock content %}

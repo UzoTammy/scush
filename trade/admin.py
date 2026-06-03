@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import (TradeDaily, TradeMonthly, BalanceSheet,
-                     BankAccount, BankBalance, TradeAuditLog, TradeAdjustmentRequest, Creditor)
+                     BankAccount, BankBalance, TradeAuditLog, TradeAdjustmentRequest,
+                     Creditor, CashProjection)
 
 admin.site.register(TradeDaily)
 admin.site.register(TradeMonthly)
@@ -15,6 +16,13 @@ class CreditorAdmin(admin.ModelAdmin):
     list_filter = ('ledger', 'account_type', 'status')
     search_fields = ('account',)
     date_hierarchy = 'date'
+
+
+@admin.register(CashProjection)
+class CashProjectionAdmin(admin.ModelAdmin):
+    list_display = ('expected_date', 'description', 'amount', 'flow_type', 'category', 'is_recurring')
+    list_filter = ('flow_type', 'category', 'is_recurring')
+    date_hierarchy = 'expected_date'
 
 
 @admin.register(TradeAdjustmentRequest)

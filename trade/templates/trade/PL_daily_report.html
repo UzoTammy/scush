@@ -8,15 +8,27 @@
 
             <h3 class="text-center">Daily Business Report between {{date_range}}</h3>
 
-            <form action="#">
-                <div class="row">
+            <form method="GET" action="">
+                <div class="row align-items-end mb-2">
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <input id="entry_date" name="date" class="form-control" type="date" onfocusout=myFunction()>
-                        </div>
+                        <label for="start_date" class="small text-muted mb-0">From</label>
+                        <input id="start_date" name="start_date" class="form-control form-control-sm"
+                               type="date" value="{{ start_date }}">
                     </div>
-                    <div class="col">
-                        <input id="ok" class="btn btn-outline-secondary" type="submit" value="OK" disabled>
+                    <div class="col-md-3">
+                        <label for="end_date" class="small text-muted mb-0">To</label>
+                        <input id="end_date" name="end_date" class="form-control form-control-sm"
+                               type="date" value="{{ end_date }}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <small class="text-muted mr-1">Quick:</small>
+                        {% for label, s, e in quick_ranges %}
+                        <a href="?start_date={{ s }}&end_date={{ e }}"
+                           class="btn btn-sm btn-outline-secondary mr-1">{{ label }}</a>
+                        {% endfor %}
                     </div>
                 </div>
             </form>    
@@ -140,21 +152,8 @@
     </div>
     <div class="row mb-3">
         <div class="col text-right">
-            <a class="btn btn-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i></a>
+            <a class="btn btn-dark" href="{% url 'trade-home' %}" title="Trade Home"><i class="fa fa-reply"></i></a>
         </div>
     </div>
 </div>
-<script>
-    function myFunction() {
-        let OK = document.getElementById('ok')
-        let entryDate = document.getElementById('entry_date')
-        if (OK.disabled == true && entryDate.value != '') {
-            OK.disabled = false;
-        } else {
-                OK.disabled = true;
-            }
-        }
-        
-    
-</script>
 {% endblock content %}
