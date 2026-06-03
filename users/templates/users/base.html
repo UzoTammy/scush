@@ -1,330 +1,147 @@
 <!doctype html>
-{% load static %}
-{% load custom_tags %}
-
 <html lang="en">
 <head>
-    <!-- Required meta tags -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
- 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
-          integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
-    <!--icon font awesome    -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  {% load static %}
+  {% load custom_tags %}
 
-    <!-- Bootstrap table -->
-    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.css">
-    
-    <!--    custom styles-->
-    <link rel="stylesheet" href="{% static 'customer/css/main.css' %}">
-    
+  <!-- Bootstrap 4 -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+        crossorigin="anonymous">
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Design System -->
+  <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
 
-    <!--    hoverable toggling menu-->
-    <style>
-        .dropbtn {
-          background-color: #04AA6D;
-          color: white;
-          padding: 16px;
-          font-size: 16px;
-          border: none;
-        }
+  <style>
+    /* Auth-specific layout overrides */
+    body {
+      background-color: var(--color-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
 
-        .dropbutton {
-          position: relative;
-          display: inline-block;
-        }
+    .auth-card {
+      background: var(--color-card);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.22);
+      width: 100%;
+      max-width: 420px;
+    }
 
-        .dropdown-content {
-          display: none;
-          position: absolute;
-          background-color: #ceefef;
-          min-width: 160px;
-          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-          z-index: 1;
-        }
+    .auth-card__header {
+      background-color: var(--color-accent);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: 1.5rem;
+      text-align: center;
+    }
 
-        .dropdown-content a {
-          color: black;
-          padding: 10px 16px;
-          text-decoration: none;
-          display: block;
-        }
+    .auth-card__logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255,255,255,0.5);
+      margin-bottom: 0.5rem;
+    }
 
-        .dropdown-content a:hover {background-color: #ddd;}
+    .auth-card__app-name {
+      font-size: 1.375rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 0;
+      letter-spacing: 0.04em;
+    }
 
-        .dropbutton:hover .dropdown-content {display: block;}
+    .auth-card__body {
+      padding: 1.75rem;
+    }
 
-        .dropbutton:hover .dropbtn {background-color: #3e8e41;}
+    .auth-card__title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 1.25rem;
+      text-align: center;
+    }
 
-        .container-grid {
-            place-content: center;
-            display: grid;
-        }
+    .auth-card .btn-primary {
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 0.9375rem;
+    }
 
-        .curved-edge {
-            max-width: 32rem; 
-            border-radius: 50px 50px 50px 50px;
-            background-color: lightblue;
-        }
+    .auth-footer {
+      margin-top: 1rem;
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+    }
 
-        .footer {
-            position: fixed;
-            width: 100%;
-            background-color: rgb(60, 53, 53);
-            bottom: 0;
-        /* Additional styling for the footer */
-        }
-        
-        @media (min-width: 996px) {
-            .collapse.collapse-sm {
-                display: block;
-                height: auto !important;
-                visibility: visible;
-            }
-            .myBtn {
-                visibility:visible;
-            } 
-        }
-        
-        @media (min-width: 1200px) {
-            .myBtn {
-                visibility: hidden;
-            }
-        }
+    .auth-footer a {
+      color: rgba(255,255,255,0.9);
+      font-weight: 600;
+    }
 
-    </style>
+    .auth-footer a:hover { color: #fff; }
+  </style>
 
-    {% block head %} {% endblock %}
+  {% block head %}{% endblock %}
 
-    {% if title %}
-    <title>SCusH | {{title}}</title>
-    {% else %}
+  {% if title %}
+    <title>SCusH | {{ title }}</title>
+  {% else %}
     <title>SCusH</title>
-    {% endif %}
-    <link rel="icon" class="shadow-xl" href="{% static 'customer/logo.ico' %}">
-    
-    
+  {% endif %}
+  <link rel="icon" href="{% static 'customer/logo.ico' %}">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav id="navmain"
-        class="navbar sticky-top navbar-expand-md navbar-white bg-primary">
-        <button
-                class="navbar-toggler bg-light"
-                type="button"
-                data-toggle="collapse"
-                data-target="#Dropdown"
-                aria-controls="Dropdown"
-                aria-expanded="false"
-                aria-label="Toggle navigation">
-            <i class="fa fa-navicon fa-1x text-secondary"></i>
-        </button>
-        <a class="navbar-brand text-success"
-        href="{% url 'about' %}"
-        data-toggle="tooltip"
-        title="About Ozone">
-            <span class="text-danger"></span>
-            <img src="{% static 'customer/logo.png' %}" height="30" class="rounded-circle" alt="#" ️>
-        </a>
-        <div class="collapse navbar-collapse" id="Dropdown">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'index' %}">
-                        <i class="fa fa-home text-white fa-2x"></i><span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light" href="{% url 'apply-home' %}">
-                        <i class="fa fa-pencil-square text-white"></i> Applicants</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'staff-home' %}">
-                        <i class="fa fa-user text-white"></i> Staff</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'customer-home' %}">
-                        <i class="fa fa-users bg-dark text-white"></i> Customers</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'product-home' %}">
-                        <i class="fa fa-cubes text-white"></i> Stocks</a>
-                </li>
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-light"
-                    data-toggle="dropdown"
-                    href="#"
-                    role="button"
-                    aria-haspopup="true"
-                    aria-expanded="false">
-                        <i class="fa fa-play-circle text-white"></i>
-                        More
-                    </a>
-                    <div class="dropdown-menu">
-                        <!-- <a class="dropdown-item" href="{% url 'bank-account-home' %}">Funds</a>   -->
-                        <!-- <hr class="dropdown-divider"> -->
-                        <a class="dropdown-item" href="{% url 'cashflow-home' %}">Cashflow</a>  
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'post-list' %}">Briefs</a>  
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'creditor-home' %}">Creditors</a>  
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'article-list' %}">Materials</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'sales-center-list' %}">Outlets</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'warehouse-home' %}">Stores</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'target-home' %}">Target & Budget</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'trade-home' %}">Trade</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'business-summary' %}">Business Summary</a>      
-                    </div>
-
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'request-home' %}">
-                        <i class="fa fa-list-alt text-white"></i> Requests</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
-                    aria-haspopup="true"
-                    aria-expanded="false">
-                        <i class="fa fa-file-pdf-o text-white"></i> Report</a>
-                    <div class="dropdown-menu">
-                        
-                        <a class="dropdown-item" href="{% url 'daily-report' %}">Daily Report</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'policies-docs' %}">Policies and Procedures</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'pdf-staff-summary' %}">Company Summary</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'delivery-home' %}">
-                        <i class="fa fa-truck text-white"></i> Delivery</a>
-                </li>
-                {% if user.is_superuser %}
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'json-list' %}">
-                        <i class="fa fa-gears text-white"></i> Settings</a>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-light" data-toggle="dropdown" href="#" role="button"
-                    aria-haspopup="true"
-                    aria-expanded="false">
-                        <i class="fa fa-gears text-white"></i> Administration</a>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="{% url 'import-csv'%}">Import CSV</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'apply-index' %}">Employ</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'payroll-process'%}">Create Payroll</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item" href="{% url 'json-new' %}">Add to Settings</a>
-                        <hr class="dropdown-divider">
-                        <a class="dropdown-item text-light" href="{% url 'register' %}">Register</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light" 
-                    href="http://doc.scush.com.ng.s3-website-us-west-2.amazonaws.com">
-                    <i class="fa fa-book"></i> Documentation</a>
-                </li>
-                {% endif %}
-            </ul>
-            <ul class="navbar-nav">
-                
-                {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'profile' %}">
-                        <img src="{{user.profile.staff.image.url}}"
-                            height="30"
-                            class="rounded-circle bg-white"
-                            alt="">
-                        {{user.username|title}} | Your Info
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'users-list' %}">
-                        <i class="fa fa-users"></i> Users
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'dboard' %}">
-                        <i class="fa fa-tachometer text-white"></i> Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active text-light" href="{% url 'do-logout' %}">
-                        <i class="fa fa-sign-out text-white"></i> Sign Out</a>
-                </li>
-                {% else %}
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'login' %}">
-                        <i class="fa fa-sign-in text-dark"></i> Sign In</a>
-                </li>
-                <li class="nav-item">
-                    <button type="button"
-                            class="btn btn-danger btn-sm"
-                            data-toggle="modal"
-                            data-target="#registerModal">
-                        Register
-                    </button>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col text-center">
-                {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-                {% endif %}
-            </div>
-        </div>
+  <div class="auth-card">
+    <div class="auth-card__header">
+      <img src="{% static 'customer/logo.png' %}" class="auth-card__logo" alt="SCusH">
+      <p class="auth-card__app-name">SCusH</p>
     </div>
-    {{development}}
-    {% block content %} {% endblock %}
 
-    <!-- <div class="container-fluid footer"> -->
-        <!-- <div class="row"> -->
-            <!-- <div class="col-sm text-white"> -->
-                   <!-- Social Media and key partners -->
-                <!-- <div class="ml-3 mt-2"> -->
-            
-                    <!-- <a href="{% url 'home' %}"><i class="fa fa-2x fa-home ml-3 mt-2"></i></a> -->
-                
-                    <!-- <span class="ml-2"> -->
-                        <!-- Mobile: <a href="tel:+2348033759440">+234-(803)-375-9440</a> || -->
-                        <!-- Email: <span><a href="mailto:">contact@ozonefl.com</a></span> || -->
-                        <!-- Website: <a href="https://www.ozonefl.com" target="_blank">https://www.ozonefl.com</a> -->
-                    <!-- </span> -->
-                    <!-- <div class="float-right"> -->
-                        <!-- <a class="ml-2" href="#"><i class="fa fa-facebook fa-2x p-2"></i></a> -->
-                        <!-- <a class="ml-2" href="#"><i class="fa fa-twitter fa-2x p-2"></i></a> -->
-                        <!-- <a class="ml-2" href="#"><i class="fa fa-instagram fa-2x p-2"></i></a> -->
-                    <!-- </div> -->
-                <!-- </div> -->
-            <!-- </div> -->
-        <!-- </div> -->
-    <!-- </div> -->
+    <div class="auth-card__body">
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-    crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-    crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"
-    integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF"
-    crossorigin="anonymous"></script>
-    <!-- Bootstrap Table -->
-    <script src="https://unpkg.com/bootstrap-table@1.19.1/dist/bootstrap-table.min.js"></script>
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %}
+      {% endif %}
+
+      {{ development }}
+      {% block content %}{% endblock %}
+
+    </div>
+  </div>
+
+  <p class="auth-footer">
+    Ozone F &amp; L Trading Co. Ltd &mdash; &copy; {% now "Y" %}
+  </p>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+          integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+          crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+          integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+          crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"
+          integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF"
+          crossorigin="anonymous"></script>
 </body>
 </html>
