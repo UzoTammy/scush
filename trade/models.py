@@ -184,6 +184,42 @@ class Creditor(models.Model):
         unique_together = (("account", "date"),)
 
 
+_MONTH_CHOICES = [
+    ('January', 'January'), ('February', 'February'), ('March', 'March'),
+    ('April', 'April'), ('May', 'May'), ('June', 'June'),
+    ('July', 'July'), ('August', 'August'), ('September', 'September'),
+    ('October', 'October'), ('November', 'November'), ('December', 'December'),
+]
+
+
+class TradeBudget(models.Model):
+    month                      = models.CharField(max_length=20, choices=_MONTH_CHOICES)
+    year                       = models.PositiveSmallIntegerField(default=date.today().year)
+    budgeted_sales             = MoneyField(max_digits=12, decimal_places=2)
+    budgeted_purchase          = MoneyField(max_digits=12, decimal_places=2)
+    budgeted_direct_expenses   = MoneyField(max_digits=12, decimal_places=2)
+    budgeted_indirect_expenses = MoneyField(max_digits=12, decimal_places=2)
+    budgeted_gross_profit      = MoneyField(max_digits=12, decimal_places=2, default=Money(0, 'NGN'))
+
+    class Meta:
+        unique_together = (('month', 'year'),)
+        ordering = ['year', 'month']
+        verbose_name = 'Budget'
+        verbose_name_plural = 'Budgets'
+
+    def __str__(self):
+        return f'Budget — {self.month} {self.year}'
+
+    def get_absolute_url(self):
+        return reverse('trade-budget-list')
+
+    def utilisation(self, actual, budgeted):
+        try:
+            return round(100 * float(actual) / float(budgeted), 1) if float(budgeted) else None
+        except (TypeError, ZeroDivisionError):
+            return None
+
+
 class CashProjection(models.Model):
     FLOW_OUT = 'OUT'
     FLOW_IN  = 'IN'

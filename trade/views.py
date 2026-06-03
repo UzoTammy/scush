@@ -27,9 +27,10 @@ from core import utils as plotter
 from stock.models import ProductExtension
 from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, BankBalanceForm,
                     BankBalanceCopyForm, CreditorAccountForm, FinancialForm, BankDepositForm,
-                    CashProjectionForm)
+                    CashProjectionForm, TradeBudgetForm)
 from .models import (TradeDaily, TradeMonthly, BalanceSheet, BankAccount, BankBalance,
-                     Creditor, TradeAuditLog, TradeAdjustmentRequest, CashProjection)
+                     Creditor, TradeAuditLog, TradeAdjustmentRequest, CashProjection,
+                     TradeBudget)
 
 
 def _capture_changes(form):
@@ -643,6 +644,32 @@ class TradeTradingReport(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
                 context['recordset'] = (previous_month, current_month, current_year_total)
                 context['dataset'] = qs.order_by('pk')
+
+                # Budget vs actual for each month in the current year
+                budgets = {b.month: b for b in TradeBudget.objects.filter(year=current_year)}
+                if budgets:
+                    budget_comparison = []
+                    for record in qs.order_by('pk'):
+                        b = budgets.get(record.month)
+                        if not b:
+                            continue
+                        net_p = record.gross_profit.amount - record.indirect_expenses.amount
+                        budget_comparison.append({
+                            'month':       record.month,
+                            'sales':       {'actual': record.sales.amount,             'budget': b.budgeted_sales.amount},
+                            'purchase':    {'actual': record.purchase.amount,          'budget': b.budgeted_purchase.amount},
+                            'direct_exp':  {'actual': record.direct_expenses.amount,   'budget': b.budgeted_direct_expenses.amount},
+                            'indirect_exp':{'actual': record.indirect_expenses.amount, 'budget': b.budgeted_indirect_expenses.amount},
+                            'gross_profit':{'actual': record.gross_profit.amount,      'budget': b.budgeted_gross_profit.amount},
+                        })
+                        # Add utilisation to each line
+                        for line in budget_comparison[-1].values():
+                            if isinstance(line, dict):
+                                try:
+                                    line['util'] = round(100 * float(line['actual']) / float(line['budget']), 1) if line['budget'] else None
+                                except (TypeError, ZeroDivisionError):
+                                    line['util'] = None
+                    context['budget_comparison'] = budget_comparison
 
                 # YoY summary — compare current year totals against prior year
                 prior_year_qs = TradeMonthly.objects.filter(year=current_year - 1)
@@ -1456,6 +1483,75 @@ class TradeAuditLogListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = TradeAuditLog
     template_name = 'trade/audit_log.html'
     paginate_by = 50
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=GROUP_NAME).exists()
+
+
+class TradeBudgetListView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'trade/budget_list.html'
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=GROUP_NAME).exists()
+
+    @staticmethod
+    def _util(actual, budget, higher_better):
+        try:
+            util = round(100 * float(actual) / float(budget), 1) if budget else None
+        except (TypeError, ZeroDivisionError):
+            return None, None
+        on_target = (util >= 100) if higher_better else (util <= 100)
+        return util, on_target
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        latest = TradeMonthly.objects.last()
+        if not latest:
+            context['no_data'] = True
+            return context
+
+        available_years = list(
+            TradeBudget.objects.values_list('year', flat=True).distinct().order_by('-year')
+        )
+        year = int(self.request.GET.get('year', latest.year))
+        actuals = {obj.month: obj for obj in TradeMonthly.objects.filter(year=year)}
+
+        comparison = []
+        for b in TradeBudget.objects.filter(year=year).order_by('pk'):
+            act = actuals.get(b.month)
+            lines = [
+                ('Sales',            b.budgeted_sales.amount,             act.sales.amount             if act else None, True),
+                ('Purchase',         b.budgeted_purchase.amount,          act.purchase.amount          if act else None, False),
+                ('Direct Expenses',  b.budgeted_direct_expenses.amount,   act.direct_expenses.amount   if act else None, False),
+                ('Indirect Expenses',b.budgeted_indirect_expenses.amount, act.indirect_expenses.amount if act else None, False),
+                ('Gross Profit',     b.budgeted_gross_profit.amount,      act.gross_profit.amount      if act else None, True),
+            ]
+            rows = []
+            for label, bval, aval, hb in lines:
+                util, on_target = self._util(aval, bval, hb)
+                rows.append({'label': label, 'budget': bval, 'actual': aval,
+                             'util': util, 'on_target': on_target})
+            comparison.append({'month': b.month, 'pk': b.pk, 'rows': rows})
+
+        context['comparison'] = comparison
+        context['selected_year'] = year
+        context['available_years'] = available_years
+        return context
+
+
+class TradeBudgetCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = TradeBudget
+    form_class = TradeBudgetForm
+    template_name = 'trade/budget_form.html'
+
+    def test_func(self):
+        return self.request.user.groups.filter(name=GROUP_NAME).exists()
+
+
+class TradeBudgetUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = TradeBudget
+    form_class = TradeBudgetForm
+    template_name = 'trade/budget_form.html'
 
     def test_func(self):
         return self.request.user.groups.filter(name=GROUP_NAME).exists()

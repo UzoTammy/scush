@@ -253,6 +253,45 @@
         {% endif %}
     </div>
 
+    {% if budget_comparison %}
+    <div class="row mt-4">
+        <div class="col">
+            <h6 class="text-muted">Budget vs Actual — {{ monthly }}</h6>
+            <table class="table table-sm table-bordered">
+                <thead class="bg-secondary text-white text-center">
+                    <tr>
+                        <th>Month</th>
+                        <th>Line</th>
+                        <th>Budget</th>
+                        <th>Actual</th>
+                        <th>Utilisation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in budget_comparison %}
+                    {% for row in entry.rows %}
+                    <tr class="text-right small {% if row.on_target == True %}table-success{% elif row.on_target == False %}table-danger{% endif %}">
+                        {% if forloop.first %}<td rowspan="{{ entry.rows|length }}" class="text-left align-middle font-weight-bold">{{ entry.month }}</td>{% endif %}
+                        <td class="text-left">{{ row.label }}</td>
+                        <td>{{ row.budget|floatformat:'2g' }}</td>
+                        <td>{% if row.actual is not None %}{{ row.actual|floatformat:'2g' }}{% else %}—{% endif %}</td>
+                        <td class="font-weight-bold">
+                            {% if row.util is not None %}{{ row.util }}%{% else %}—{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            <small class="text-muted">
+                Sales &amp; Gross Profit: green when actual ≥ budget.
+                Expenses: green when actual ≤ budget.
+                <a href="{% url 'trade-budget-list' %}" class="ml-2">Manage budgets &rarr;</a>
+            </small>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="row">
         <div class="col-9 mt-2">
             <form class="form-inline" method="GET">

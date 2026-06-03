@@ -13,7 +13,8 @@ from .models import (BalanceSheet,
                     BankAccount,
                     BankBalance,
                     Creditor,
-                    CashProjection
+                    CashProjection,
+                    TradeBudget
                     )
 
 # from djmoney.models.fields import MoneyField, Money
@@ -240,6 +241,14 @@ class FinancialForm(forms.ModelForm):
             # trade_instance.save()
             # balance_sheet_instance.save()
         return trade_instance, balance_sheet_instance
+
+class TradeBudgetForm(forms.ModelForm):
+    class Meta:
+        model = TradeBudget
+        fields = ('month', 'year', 'budgeted_sales', 'budgeted_purchase',
+                  'budgeted_direct_expenses', 'budgeted_indirect_expenses',
+                  'budgeted_gross_profit')
+
 
 class CashProjectionForm(forms.ModelForm):
     expected_date = forms.DateField(widget=DateInput(attrs={'type': 'date'}))

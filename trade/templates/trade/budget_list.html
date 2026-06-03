@@ -1,0 +1,88 @@
+{% extends 'users/base.html' %}
+{% load custom_tags %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+
+    <div class="row mb-3">
+        <div class="col">
+            <h5>Budget vs Actual — {{ selected_year|stringformat:'d' }}</h5>
+            <small class="text-muted">Monthly budget targets compared against actual P&amp;L figures.</small>
+        </div>
+        <div class="col text-right">
+            <a href="{% url 'trade-budget-create' %}" class="btn btn-primary btn-sm">
+                <i class="fa fa-plus"></i> Add Budget
+            </a>
+            <a href="{% url 'trade-home' %}" class="btn btn-outline-dark btn-sm ml-1" title="Trade Home">
+                <i class="fa fa-reply"></i>
+            </a>
+        </div>
+    </div>
+
+    {% if available_years %}
+    <form method="GET" class="form-inline mb-3">
+        <label class="mr-2 small text-muted">Year:</label>
+        <select name="year" class="form-control form-control-sm mr-2" title="Select year">
+            {% for yr in available_years %}
+            <option value="{{ yr|stringformat:'d' }}"
+                {% if yr == selected_year %}selected{% endif %}>
+                {{ yr|stringformat:'d' }}
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-sm btn-outline-secondary">Go</button>
+    </form>
+    {% endif %}
+
+    {% if comparison %}
+    {% for entry in comparison %}
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center py-1">
+            <strong>{{ entry.month }}</strong>
+            <a href="{% url 'trade-budget-update' entry.pk %}" class="btn btn-link btn-sm p-0" title="Edit budget">
+                <i class="fa fa-pencil"></i> Edit
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-sm table-bordered mb-0">
+                <thead class="bg-secondary text-white text-center small">
+                    <tr>
+                        <th>Line Item</th>
+                        <th>Budget</th>
+                        <th>Actual</th>
+                        <th>Utilisation %</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in entry.rows %}
+                    <tr class="text-right small {% if row.on_target == True %}table-success{% elif row.on_target == False %}table-danger{% endif %}">
+                        <td class="text-left">{{ row.label }}</td>
+                        <td>{{ row.budget|floatformat:'2g' }}</td>
+                        <td>{% if row.actual is not None %}{{ row.actual|floatformat:'2g' }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                        <td class="font-weight-bold">
+                            {% if row.util is not None %}{{ row.util }}%{% else %}—{% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if row.on_target == True %}
+                            <i class="fa fa-check-circle text-success"></i>
+                            {% elif row.on_target == False %}
+                            <i class="fa fa-times-circle text-danger"></i>
+                            {% else %}—{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="alert alert-light">
+        No budgets set for {{ selected_year|stringformat:'d' }}.
+        <a href="{% url 'trade-budget-create' %}">Add the first one &rarr;</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock content %}

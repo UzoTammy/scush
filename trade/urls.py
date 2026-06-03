@@ -11,6 +11,7 @@ from .views import (EmailSample, TradeHome, TradeTradingReport, TradeMonthlyCrea
                     CreditorCreateView, FinancialsCreateView, BankDepositView, BreakEvenView,
                     CashProjectionListView, CashProjectionCreateView,
                     CashProjectionUpdateView, CashProjectionDeleteView,
+                    TradeBudgetListView, TradeBudgetCreateView, TradeBudgetUpdateView,
                     TradeAuditLogListView, TradePeriodLockView, BankDeltaVarianceView,
                     TradeAdjustmentListView, TradeAdjustmentReviewView)
                     
@@ -82,4 +83,7 @@ urlpatterns += [
     path('cash-projection/add/', CashProjectionCreateView.as_view(), name='cash-projection-create'),
     path('cash-projection/<int:pk>/update/', CashProjectionUpdateView.as_view(), name='cash-projection-update'),
     path('cash-projection/<int:pk>/delete/', CashProjectionDeleteView.as_view(), name='cash-projection-delete'),
+    path('budget/', TradeBudgetListView.as_view(), name='trade-budget-list'),
+    path('budget/add/', TradeBudgetCreateView.as_view(), name='trade-budget-create'),
+    path('budget/<int:pk>/update/', TradeBudgetUpdateView.as_view(), name='trade-budget-update'),
 ]
