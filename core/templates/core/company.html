@@ -3,59 +3,107 @@
 
 {% block page_title %}Company Team{% endblock %}
 
+{% block head %}
+<style>
+  .profile-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .profile-card:last-child { border-bottom: none; }
+
+  .profile-card__photo {
+    width: 90px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--color-border);
+    flex-shrink: 0;
+  }
+
+  .profile-card__photo--lg {
+    width: 120px;
+    height: 93px;
+  }
+
+  .profile-card__name { font-size: 1rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.2rem; }
+  .profile-card__role { font-size: 0.8125rem; color: var(--color-muted); }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-3">
-  <div class="ds-page-header">
-    <h2 class="ds-page-header__title">The Team</h2>
-    <a class="btn btn-secondary btn-sm" href="{% url 'about' %}"><i class="fa fa-backward mr-1"></i> Back</a>
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-users mr-2"></i>Company Team</span>
+      <a class="staff-nav-link" href="{% url 'about' %}">
+        <i class="fa fa-times-circle"></i> Back
+      </a>
+    </div>
   </div>
 
   <div class="row">
-    <div class="col-md-6">
-      {% if md.first %}
-      <div class="ds-card mb-3">
-        <div class="ds-card__body">
-          <div class="d-flex align-items-center gap-3">
-            <img width="120" src="{{ md.first.image.url }}" class="rounded-circle mr-3" alt="{{ md.first }}">
-            <div>
-              <h5 class="mb-1">{{ md.first }}</h5>
-              <p class="text-muted mb-0">{{ md.first.position }}</p>
-            </div>
+
+    <!-- ── Leadership ─────────────────────────────────── -->
+    <div class="col-md-5 mb-4">
+      <div class="ds-card h-100">
+        <div class="ds-card__header">
+          <span><i class="fa fa-star mr-2"></i>Leadership</span>
+        </div>
+
+        {% if md.first %}
+        <div class="profile-card">
+          <img src="{{ md.first.image.url }}"
+               class="profile-card__photo profile-card__photo--lg ozone-logo"
+               alt="{{ md.first }}">
+          <div>
+            <div class="profile-card__name">{{ md.first }}</div>
+            <div class="profile-card__role">{{ md.first.position }}</div>
           </div>
         </div>
-      </div>
-      {% endif %}
-      {% if gsm.first %}
-      <div class="ds-card mb-3">
-        <div class="ds-card__body">
-          <div class="d-flex align-items-center">
-            <img width="120" src="{{ gsm.first.image.url }}" class="rounded-circle mr-3" alt="{{ gsm.first }}">
-            <div>
-              <h5 class="mb-1">{{ gsm.first }}</h5>
-              <p class="text-muted mb-0">{{ gsm.first.position }}</p>
-            </div>
+        {% endif %}
+
+        {% if gsm.first %}
+        <div class="profile-card">
+          <img src="{{ gsm.first.image.url }}"
+               class="profile-card__photo profile-card__photo--lg ozone-logo"
+               alt="{{ gsm.first }}">
+          <div>
+            <div class="profile-card__name">{{ gsm.first }}</div>
+            <div class="profile-card__role">{{ gsm.first.position }}</div>
           </div>
         </div>
-      </div>
-      {% endif %}
-    </div>
-    <div class="col-md-6">
-      <div class="ds-card">
-        <div class="ds-card__header"><span>Staff</span></div>
-        <div class="ds-card__body mb-0">
-          {% for staff in team %}
-          <div class="d-flex align-items-center mb-3">
-            <img src="{{ staff.image.url }}" width="48" class="rounded-circle mr-3" alt="{{ staff }}">
-            <div>
-              <strong>{{ staff }}</strong><br>
-              <small class="text-muted">{{ staff.position }}</small>
-            </div>
-          </div>
-          {% if not forloop.last %}<hr class="my-1">{% endif %}
-          {% endfor %}
-        </div>
+        {% endif %}
       </div>
     </div>
+
+    <!-- ── Management team ────────────────────────────── -->
+    <div class="col-md-7 mb-4">
+      <div class="ds-card h-100">
+        <div class="ds-card__header">
+          <span><i class="fa fa-id-badge mr-2"></i>Management Team</span>
+        </div>
+
+        {% for staff in team %}
+        <div class="profile-card">
+          <img src="{{ staff.image.url }}"
+               class="profile-card__photo ozone-logo"
+               alt="{{ staff }}">
+          <div>
+            <div class="profile-card__name">{{ staff }}</div>
+            <div class="profile-card__role">{{ staff.position }}</div>
+          </div>
+        </div>
+        {% endfor %}
+
+      </div>
+    </div>
+
   </div>
 </div>
 {% endblock %}

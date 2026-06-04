@@ -19,12 +19,21 @@
 {% endblock %}
 
 {% block content %}
+
+<!-- ── Top strip ──────────────────────────────────── -->
+<div class="ds-card mb-4">
+  <div class="ds-card__header d-flex justify-content-between align-items-center">
+    <span><i class="fa fa-tachometer mr-2"></i>Dashboard</span>
+    <a class="staff-nav-link" href="{% url 'home' %}">
+      <i class="fa fa-times-circle"></i> Return
+    </a>
+  </div>
+</div>
+
 {% if empty_record %}
 <div class="ds-card">
-  <div class="ds-card__header"><span>Dashboard</span></div>
   <div class="ds-card__body">
     <p>Record(s) must be in the database to view the dashboard.</p>
-    <a href="{% url 'home' %}"><i class="fa fa-times-circle"></i> Home</a>
   </div>
 </div>
 {% else %}
@@ -137,11 +146,6 @@
   </div>
 </div>
 
-<div class="row mb-3">
-  <div class="col text-right">
-    <a href="{% url 'home' %}" aria-label="Home"><i class="fa fa-times-circle"></i></a>
-  </div>
-</div>
 {% endif %}
 
 <!-- Modals -->

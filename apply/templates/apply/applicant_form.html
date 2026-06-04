@@ -1,183 +1,165 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% block head %}
-<style>
-    .display-big {
-        font-size: x-large;
-    }
-</style>
-{% endblock %}
 
-{% block page_title %}Applicant Form{% endblock %}
+{% block page_title %}{% if title == 'Update' %}Update Application{% else %}Application Form{% endif %}{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row p-3 d-flex justify-content-center">
-        <div class="row">
-            <div class="col-auto">
-                <div class="card bg-warning">
-                    <div class="card-body shadow">
-                        <h5 class="card-title">
-                            <i class="fa fa-warning text-danger"></i>Caution
-                        </h5>
-                        <p class="card-text">
-                            Ensure that the information provided
-                            is correct. Any confirmation to the
-                            contrary will result in rejection of
-                            your application or termination
-                            of your employment without notice and benefits.
-                        </p>
-                    </div>
-                    <div class="card-footer bg-white">
-                        <h4 class="text-muted text-center ">Information provided to us is for employment
-                            purposes only.
-                        </h4>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-8 mt-3">
-            <div class="row">
-                <div class="col text-center">
-                    <img src="{% static 'customer/logo.png' %}" class="ozone-logo shadow" width="80" height="62" alt="Ozone Logo">
-                    <i class="text-danger display-big">F & L Trading Co Ltd <br> 
-                        <small class="text-primary">(A Distribution Company)</small>
-                    </i>
-                    <br>
+<div class="container-fluid">
 
-                    <address>GOB 1-4 Zamfara Plaza Opposite Kwara Plaza  BBA, Trade Fair, Lagos.</address>
-                </div>
-            </div>
-            <i class="text-primary">
-                You will receive a confirmation email with the email address
-                provided to us in this form. Kindly ensure a valid email address
-                is provided and do check your inbox soon after submission
-            </i>
-            <hr>
-            <form method="POST">
-                {% csrf_token %}
-                {{form.errors}}
-                <fieldset class="p-3">
-                    <legend class="text-primary"><i>Application Form</i>
-                        <small class="text-muted float-right">{% now 'd-m-Y@h:mA' %}</small>
-                    </legend>
-                    <div class="form-row">
-                        <div class="col-sm-4">
-                            <span class="form-label text-primary">First Name</span><span class="text-danger">*</span>
-                            {{form.first_name}}
-                        </div>
-                        <div class="col-sm-4">
-                            <span class="form-label text-primary">Second or middle Name</span>
-                            {{form.second_name}}
-                        </div>
-                        <div class="col-sm-4">
-                            <span class="form-label text-primary">Last Name (Surname)<span class="text-danger">*</span></span>
-                            {{form.last_name}}
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="form-row">
-                        <div class="col">
-                            <div class="form-label text-primary">Gender<span class="text-danger">*</span></div>
-                            <div class="form-check">{{form.gender}}</div>
-                        </div>
-                        <div class="col text-right mr-2">
-                            <div class="form-label text-primary">
-                                Marital Status<span class="text-danger">*</span>
-                            </div>
-                            <div class="form-check">{{form.marital_status}}</div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="form-row">
-                        <div class="col">
-                            <div class="form-label text-primary">
-                                Qualification<span class="text-danger">*</span>
-                            </div>
-                            <div class="mb-2">{{form.qualification}}</div>
-                        </div>
-                        <div class="col">
-                    <div class="form-label text-primary">
-                        Date of Birth<span class="text-danger">*</span>
-                    </div>
-                    <div>{{ form.birth_date }}</div>
-                    </div>
-                    </div>
-                    <hr>
-                    <div class="form-row">
-                        <div class="col">
-                            <div class="form-label text-primary">Course <span class="text-muted">(optional)</span></div>
-                            <div>{{ form.course }}</div>
-                        </div>
-                        <div class="col">
-                            <div class="form-label text-primary">
-                                Mobile<span class="text-danger">*</span>
-                            </div>
-                            <div>{{ form.mobile }}
-                                <small class="text-secondary">format: XXX-XXXX-XXXX</small>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="form-row">
-                        <div class="col-sm">
-                            <div class="form-label text-primary">Email
-                                <span class="text-muted">(highly recommended, but optional)</span>
-                            </div>
-                            <div>{{ form.email }}</div>
-                        </div>
-                        <div class="col-sm">
-                            <div class="form-label text-primary">
-                                Residential address<span class="text-danger">*</span>
-                            </div>
-                            <div class="">{{ form.address }}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        {% if title == 'Update' %}
-                        <div class="col-auto">
-                            <div class="form-label text-secondary">
-                                <b>Application Date</b>
-                                <small class="text-danger">(readonly)</small>
-                            </div>
-                            <div class="bg-dark text-white text-center shadow">
-                                {{ application_date }}
-                            </div>
-                        </div>
-                        <hr>
-                        {% endif %}
-                    </div>
-
-                </fieldset>
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col ml-5">
-                            <button class="btn btn-primary" type="submit">
-                                <small>
-                                    {% if title == 'Update' %}
-                                    {{ title }}
-                                    {% else %}
-                                    Submit
-                                    {% endif %}
-                                </small>
-                            </button>
-                        </div>
-                        
-                        <div class="col d-flex justify-content-end mr-5">
-                            {% if title == 'Update' %}
-                            <a class="btn btn-outline-secondary" type="button" href="{% url 'apply-detail' form.instance.id %}">
-                                <i class="fa fa-times-circle"></i> Cancel</a>
-                            {% else %}
-                            <a class="btn btn-outline-secondary" type="button" href="{% url 'index' %}">
-                                <i class="fa fa-times-circle"></i> Cancel</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </form>
-            
-        </div>
+  <!-- ── Header ─────────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span>
+        <img src="{% static 'customer/logo.png' %}" class="ozone-logo mr-2" width="50" height="39" alt="Ozone Logo">
+        <strong>Ozone F &amp; L Trading Co. Ltd.</strong>
+        <small class="text-white ml-2 opacity-75">A Distribution Company</small>
+      </span>
+      <small class="text-white opacity-75">{% now 'd-m-Y @ h:mA' %}</small>
     </div>
+    <div class="ds-card__body">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h5 class="mb-1">
+            {% if title == 'Update' %}Update Your Application{% else %}Employment Application Form{% endif %}
+          </h5>
+          <p class="text-muted small mb-0">
+            GOB 1–4 Zamfara Plaza, Opposite Kwara Plaza, BBA, Trade Fair, Lagos.
+          </p>
+        </div>
+        <div class="col-md-4 text-right">
+          <p class="text-muted small mb-0">
+            <i class="fa fa-envelope mr-1"></i>
+            You will receive a confirmation email upon submission. Ensure your email address is valid.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Caution notice ─────────────────────────────── -->
+  <div class="alert alert-warning d-flex align-items-start mb-4" role="alert">
+    <i class="fa fa-exclamation-triangle fa-lg mr-3 mt-1"></i>
+    <div>
+      <strong>Caution:</strong> Ensure all information provided is accurate and truthful.
+      Any false declaration will result in rejection of your application or termination of employment
+      without notice or benefits.
+      <div class="mt-1 text-muted small">Information provided is used for employment purposes only.</div>
+    </div>
+  </div>
+
+  <!-- ── Form ───────────────────────────────────────── -->
+  <div class="ds-card">
+    <div class="ds-card__header">
+      <span><i class="fa fa-edit mr-2"></i>Application Details</span>
+    </div>
+    <div class="ds-card__body">
+
+      <form method="POST">
+        {% csrf_token %}
+        {% if form.errors %}
+        <div class="alert alert-danger">
+          <i class="fa fa-times-circle mr-1"></i>
+          Please correct the errors below before submitting.
+        </div>
+        {% endif %}
+
+        <!-- Name -->
+        <div class="form-row mb-3">
+          <div class="col-sm-4">
+            <label class="font-weight-600">First Name <span class="text-danger">*</span></label>
+            {{ form.first_name }}
+          </div>
+          <div class="col-sm-4">
+            <label class="font-weight-600">Second / Middle Name</label>
+            {{ form.second_name }}
+          </div>
+          <div class="col-sm-4">
+            <label class="font-weight-600">Last Name (Surname) <span class="text-danger">*</span></label>
+            {{ form.last_name }}
+          </div>
+        </div>
+        <hr>
+
+        <!-- Personal -->
+        <div class="form-row mb-3">
+          <div class="col-sm-4">
+            <label class="font-weight-600">Gender <span class="text-danger">*</span></label>
+            <div>{{ form.gender }}</div>
+          </div>
+          <div class="col-sm-4">
+            <label class="font-weight-600">Marital Status <span class="text-danger">*</span></label>
+            <div>{{ form.marital_status }}</div>
+          </div>
+          <div class="col-sm-4">
+            <label class="font-weight-600">Date of Birth <span class="text-danger">*</span></label>
+            {{ form.birth_date }}
+          </div>
+        </div>
+        <hr>
+
+        <!-- Education & Contact -->
+        <div class="form-row mb-3">
+          <div class="col-sm-4">
+            <label class="font-weight-600">Qualification <span class="text-danger">*</span></label>
+            {{ form.qualification }}
+          </div>
+          <div class="col-sm-4">
+            <label class="font-weight-600">Course of Study <span class="text-muted small">(optional)</span></label>
+            {{ form.course }}
+          </div>
+          <div class="col-sm-4">
+            <label class="font-weight-600">Mobile <span class="text-danger">*</span></label>
+            {{ form.mobile }}
+            <small class="text-muted">Format: XXX-XXXX-XXXX</small>
+          </div>
+        </div>
+        <hr>
+
+        <!-- Email & Address -->
+        <div class="form-row mb-3">
+          <div class="col-sm-6">
+            <label class="font-weight-600">
+              Email <span class="text-muted small">(highly recommended, but optional)</span>
+            </label>
+            {{ form.email }}
+          </div>
+          <div class="col-sm-6">
+            <label class="font-weight-600">Residential Address <span class="text-danger">*</span></label>
+            {{ form.address }}
+          </div>
+        </div>
+
+        <!-- Application date (update mode) -->
+        {% if title == 'Update' %}
+        <hr>
+        <div class="form-group mb-3">
+          <label class="font-weight-600 text-muted">Application Date <small class="text-danger">(readonly)</small></label>
+          <div class="form-control bg-light text-muted">{{ application_date }}</div>
+        </div>
+        {% endif %}
+
+        <hr>
+
+        <!-- Actions -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          {% if title == 'Update' %}
+          <a class="btn btn-secondary" href="{% url 'apply-detail' form.instance.id %}">
+            <i class="fa fa-times-circle mr-1"></i> Cancel
+          </a>
+          {% else %}
+          <a class="btn btn-secondary" href="{% url 'index' %}">
+            <i class="fa fa-times-circle mr-1"></i> Cancel
+          </a>
+          {% endif %}
+          <button class="btn btn-primary" type="submit">
+            <i class="fa fa-check mr-1"></i>
+            {% if title == 'Update' %}Update{% else %}Submit Application{% endif %}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

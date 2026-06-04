@@ -3,92 +3,189 @@
 
 {% block page_title %}About Ozone{% endblock %}
 
+{% block head %}
+<style>
+  .team-photo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--color-border);
+    display: block;
+    margin: 0 auto 0.5rem;
+  }
+
+  .team-name {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-align: center;
+    display: block;
+  }
+
+  .about-section { margin-bottom: 1.75rem; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
-    <div class="row mt-3">
-      <div class="col text-center">
-        <img src="{% static 'customer/logo.png' %}"
-             class="ozone-logo shadow"
-             width="200" height="155"
-             alt="Ozone Logo">
+<div class="container-fluid">
+
+  <!-- ── Hero banner ────────────────────────────────── -->
+  <div class="ds-hero mb-4">
+    <img src="{% static 'customer/logo.png' %}"
+         class="ozone-logo shadow mb-3"
+         width="140" height="108"
+         alt="Ozone Logo">
+    <h2 class="mb-1">Ozone F &amp; L Trading Co. Ltd.</h2>
+    <p class="mb-0">A Distribution Company &mdash; Lagos, Nigeria</p>
+  </div>
+
+  <div class="row">
+
+    <!-- ── Left column: story ─────────────────────── -->
+    <div class="col-md-8">
+
+      <!-- Mission -->
+      <div class="ds-card mb-4">
+        <div class="ds-card__header">
+          <span><i class="fa fa-bullseye mr-2"></i>Our Mission &amp; Values</span>
+        </div>
+        <div class="ds-card__body">
+          <p class="mb-0">
+            To remain Lagos's most trusted distributor of one-way packaging by fostering
+            transparent partnerships and delivering unparalleled reliability to every business we serve.
+          </p>
+        </div>
       </div>
-    </div>
-    <div class="row mt-3">
-      <div class="col">
-        <hr>
-        <h4>Our Mission &amp; Values</h4>
-        <p>
-          To remain Lagos's most trusted distributor of one-way packaging by fostering
-          transparent partnerships and delivering unparalleled reliability to every business we serve.
-        </p>
-        <h4>Our Story</h4>
-        <p>
-          Founded in 2009 with a vision to revolutionize the accessibility of premium Nigerian beverages,
-          Ozone has evolved into a strategic cornerstone for the nation's brewing industry.
-          Our pioneering focus on one-way packaging fostered landmark partnerships with Nigerian Breweries,
-          Guinness Nigeria, and International Breweries—collectively representing over 95% of the market.
-          By driving the initial demand that sparked industry-wide scaling, we have converted passion into
-          a multi-billion naira enterprise. Today, we are leveraging this legacy of trust to expand our
-          footprint beyond Lagos, utilizing both digital innovation and physical expansion to serve
-          the entire nation and beyond.
-        </p>
-        <h4>Our Team</h4>
-        <div class="row">
+
+      <!-- Team -->
+      <div class="ds-card mb-4">
+        <div class="ds-card__header">
+          <span><i class="fa fa-users mr-2"></i>Our Team</span>
+        </div>
+        <div class="ds-card__body">
+          <p class="text-muted small mb-3">
+            At our core, we believe talent wins games, but teamwork wins championships.
+            We've built a culture where diverse perspectives meet a shared sense of purpose.
+          </p>
+          <div class="row row-cols-3 row-cols-sm-4 row-cols-md-5">
             {% for obj in objects %}
             {% if obj.is_management %}
             {% if obj.staff.first_name != 'Uzo' %}
-            <div class="col-auto text-center mb-3">
-              <img src="{{ obj.image.url }}" class="rounded-circle" width="100px" alt="{{ obj.staff.first_name }}">
-              <br><small class="text-muted">{{ obj.staff.first_name }}</small>
+            <div class="col mb-4 text-center">
+              <img src="{{ obj.image.url }}"
+                   class="team-photo"
+                   alt="{{ obj.staff.first_name }}">
+              <span class="team-name">{{ obj.staff.first_name }}</span>
             </div>
             {% endif %}
-          {% endif %}
-          {% endfor %}
-        </div>
-        <div class="row mt-3">
-          <div class="col-12">
-            <p>
-                At our core, we believe talent wins games, but teamwork wins championships.
-                We've built a culture where diverse perspectives meet a shared sense of purpose.
-            </p>
+            {% endif %}
+            {% endfor %}
           </div>
-          <div class="row w-100 mx-0">
-            <div class="col-md-8">
-              <h4>Our Achievements</h4>
-              <ul>
-                <li>Guinness 2015 Distributors Award: Highest Volume on MSS (National)</li>
-                <li>Nigerian Breweries 2020 distributors award: Funding Performance Award</li>
-              </ul>
+        </div>
+      </div>
+
+      <!-- Story -->
+      <div class="ds-card mb-4">
+        <div class="ds-card__header">
+          <span><i class="fa fa-book mr-2"></i>Our Story</span>
+        </div>
+        <div class="ds-card__body">
+          <p class="mb-0">
+            Founded in 2009 with a vision to revolutionise the accessibility of premium Nigerian beverages,
+            Ozone has evolved into a strategic cornerstone for the nation's brewing industry.
+            Our pioneering focus on one-way packaging fostered landmark partnerships with Nigerian Breweries,
+            Guinness Nigeria, and International Breweries — collectively representing over 95% of the market.
+            By driving the initial demand that sparked industry-wide scaling, we have converted passion into
+            a multi-billion naira enterprise. Today, we are leveraging this legacy of trust to expand our
+            footprint beyond Lagos, utilising both digital innovation and physical expansion to serve
+            the entire nation and beyond.
+          </p>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="ds-card mb-4">
+        <div class="ds-card__header">
+          <span><i class="fa fa-trophy mr-2"></i>Our Achievements</span>
+        </div>
+        <div class="ds-card__body">
+          <ul class="mb-0">
+            <li class="mb-2">
+              <strong>Guinness Nigeria 2015</strong> — Highest Volume on MSS (National Distributors Award)
+            </li>
+            <li>
+              <strong>Nigerian Breweries 2020</strong> — Funding Performance Award
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Right column: contact + links ─────────── -->
+    <div class="col-md-4">
+
+      <div class="ds-card mb-4">
+        <div class="ds-card__header">
+          <span><i class="fa fa-phone mr-2"></i>Contact Us</span>
+        </div>
+        <div class="ds-card__body p-0">
+          <div class="list-group list-group-flush">
+            <div class="list-group-item">
+              <i class="fa fa-phone mr-2 text-muted"></i>
+              <a href="tel:+2348033769440">+234-(803)-3769-440</a>
             </div>
-            <div class="col-md-4">
-              <h4>Contact Us</h4>
-              <p>
-                Mobile: +234-(803)-3769-440<br>
-                Email: <span class="text-accent">contact@ozonefl.com</span><br>
-                Website: <a href="https://www.ozonefl.com" target="_blank" rel="noopener noreferrer">ozonefl.com</a>
-              </p>
+            <div class="list-group-item">
+              <i class="fa fa-envelope mr-2 text-muted"></i>
+              <a href="mailto:contact@ozonefl.com">contact@ozonefl.com</a>
+            </div>
+            <div class="list-group-item">
+              <i class="fa fa-globe mr-2 text-muted"></i>
+              <a href="https://www.ozonefl.com" target="_blank" rel="noopener noreferrer">www.ozonefl.com</a>
+            </div>
+            <div class="list-group-item text-muted small">
+              <i class="fa fa-map-marker mr-2"></i>
+              GOB 1–4 Zamfara Plaza, Opposite Kwara Plaza,<br>
+              BBA, Trade Fair, Lagos.
             </div>
           </div>
         </div>
       </div>
+
+      <div class="ds-card mb-4">
+        <div class="ds-card__header">
+          <span><i class="fa fa-link mr-2"></i>Quick Links</span>
+        </div>
+        <div class="ds-card__body p-0">
+          <div class="list-group list-group-flush">
+            <a href="{% url 'apply-create' %}" class="list-group-item list-group-item-action">
+              <i class="fa fa-pencil mr-2"></i> Apply for a Position
+            </a>
+            <a href="{% url 'policies' %}" class="list-group-item list-group-item-action">
+              <i class="fa fa-book mr-2"></i> Policies &amp; Procedures
+            </a>
+            <a href="model-link" class="list-group-item list-group-item-action"
+               data-toggle="modal" data-target="#tcModal">
+              <i class="fa fa-file-text mr-2"></i> Terms &amp; Conditions
+            </a>
+            <a href="model-link" class="list-group-item list-group-item-action"
+               data-toggle="modal" data-target="#ppdModal">
+              <i class="fa fa-shield mr-2"></i> Privacy Policy &amp; Disclaimer
+            </a>
+            <a href="{% url 'index' %}" class="list-group-item list-group-item-action">
+              <i class="fa fa-home mr-2"></i> Home Page
+            </a>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <hr>
-    <div class="row mb-3 text-center">
-        <div class="col">
-            <a href="{% url 'index' %}" aria-label="Home"><i class="fa fa-home fa-2x"></i></a>
-        </div>
-        <div class="col">
-            <a href="model-link" data-toggle="modal" data-target="#tcModal">Terms &amp; Conditions</a>
-        </div>
-        <div class="col">
-            <a href="model-link" data-toggle="modal" data-target="#ppdModal">Privacy Policy &amp; Disclaimer</a>
-        </div>
-        <div class="col">
-            <a href="{% url 'apply-create' %}">Apply</a>
-        </div>
-    </div>
+  </div>
+
 </div>
 
+<!-- ── Modals ──────────────────────────────────────────── -->
 <div class="modal fade" id="tcModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -97,7 +194,7 @@
         <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
-        <p class="text-muted"><i class="fa fa-info-circle"></i> Coming soon.</p>
+        <p class="text-muted"><i class="fa fa-info-circle mr-1"></i> Coming soon.</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -114,7 +211,7 @@
         <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
-        <p class="text-muted"><i class="fa fa-info-circle"></i> Coming soon.</p>
+        <p class="text-muted"><i class="fa fa-info-circle mr-1"></i> Coming soon.</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

@@ -6,6 +6,16 @@
 {% block content %}
 <div class="container-fluid">
 
+  <!-- ── Top strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-tachometer mr-2"></i>Dashboard</span>
+      <a class="staff-nav-link" href="{% url 'home' %}">
+        <i class="fa fa-times-circle"></i> Return
+      </a>
+    </div>
+  </div>
+
   <!-- KPI tiles -->
   <div class="row mb-3">
     <div class="col-sm-3 mb-3">
@@ -116,9 +126,6 @@
     </div>
   </div>
 
-  <a class="btn btn-secondary" href="{% url 'home' %}">
-    <i class="fa fa-times-circle mr-1"></i> Return to Home
-  </a>
 
 </div>
 
