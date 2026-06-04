@@ -91,8 +91,10 @@ MIDDLEWARE = [
     # 'user_agents.middleware.UserAgentMiddleware',
 
     'core.middleware.CustomMiddleware',
-    'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
+
+if DEBUG:
+    MIDDLEWARE += ['django_browser_reload.middleware.BrowserReloadMiddleware']
 
 ROOT_URLCONF = 'ozone.urls'
 
