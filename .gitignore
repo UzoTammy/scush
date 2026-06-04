@@ -167,5 +167,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+/process-documentation
 TradeReadMe.md
 FRONTEND_REDESIGN.md

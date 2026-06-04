@@ -32,6 +32,7 @@
 </head>
 <body>
 
+{% if user.is_authenticated %}
 <!-- ── Sidebar overlay (mobile tap-to-close) ── -->
 <div class="ds-sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -163,7 +164,9 @@
 
   </div><!-- /ds-sidebar__nav -->
 </nav>
+{% endif %}
 
+{% if user.is_authenticated %}
 <!-- ════════════════════════════════════════════
      TOP BAR
 ════════════════════════════════════════════ -->
@@ -195,11 +198,12 @@
     {% endif %}
   </div>
 </header>
+{% endif %}
 
 <!-- ════════════════════════════════════════════
      MAIN CONTENT
 ════════════════════════════════════════════ -->
-<main class="ds-content">
+<main class="ds-content {% if not user.is_authenticated %}ds-content--full{% endif %}">
 
   <!-- Flash messages -->
   {% if messages %}

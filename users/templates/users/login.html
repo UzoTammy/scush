@@ -10,21 +10,18 @@
   <div class="form-group">
     {{ form|crispy }}
   </div>
-  <div class="d-flex justify-content-end align-items-center mt-3">
+  <div class="d-flex align-items-center mt-3">
     <a href="{% url 'index' %}" class="btn btn-secondary mr-2 text-nowrap">
       <i class="fa fa-home mr-1"></i> Home
     </a>
-    <button class="btn btn-primary" type="submit">Log In</button>
+    <button class="btn btn-primary flex-grow-1" type="submit">Log In</button>
   </div>
   <hr>
   <p class="text-center mb-0">
     <small class="text-muted">
       <i class="fa fa-info-circle mr-1"></i>
-      Forgot password? Contact your company administrator.
+      Forgot password? Contact Ozone Management
     </small>
-  </p>
-  <p class="text-center mt-2 mb-0">
-    <small class="text-muted">Users admitted: {{ users.count }}</small>
   </p>
 </form>
 {% endblock %}

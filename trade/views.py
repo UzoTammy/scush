@@ -382,6 +382,17 @@ class TradeMonthlyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             sales = [obj.sales.amount for obj in self.get_queryset().order_by('pk')]
             sales.append(pl_obj['sales'].amount)    
             context['chart'] = plotter.monthly_sales_revenue(month, sales)
+            context['chart_months'] = json.dumps(month)
+            context['chart_sales']  = json.dumps([float(s) for s in sales])
+            net_profit = [
+                float(obj.gross_profit.amount - obj.indirect_expenses.amount)
+                for obj in self.get_queryset().order_by('pk')
+            ]
+            net_profit.append(
+                float(pl_obj['gross_profit'].amount) -
+                float(pl_obj['indirect_expenses'].amount)
+            )
+            context['chart_net_profit'] = json.dumps(net_profit)
         
         latest = TradeMonthly.objects.last()
         latest_year = latest.year
