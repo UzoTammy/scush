@@ -1421,7 +1421,7 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             recipient_list=['uzo.nwokoro@ozonefl.com'],
             html_message=mail_message
             )
-        return render(request, 'staff/payroll/payroll_reports.html', context)
+        return redirect(reverse('payroll-view', kwargs={'period': context['period']}))
 
 
 class ModifyGeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):

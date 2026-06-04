@@ -47,7 +47,7 @@ class Employee(models.Model):
                                MinMoneyValidator(0),
                                MaxMoneyValidator(300000),
                            ])
-    tax_amount = MoneyField(max_digits=6,
+    tax_amount = MoneyField(max_digits=10,
                             decimal_places=2,
                             default_currency='NGN',
                             default=Money(0, 'NGN'),
