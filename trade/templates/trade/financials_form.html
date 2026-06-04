@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Financials Form{% endblock %}
 
 {% block content %}
 <div class="container mt-3">
@@ -41,7 +43,7 @@
                 with the data you tend to enter against these fields, either you go ahead and update
                 the record thereafter or you add P & L and Balance sheet on their respective forms.
             </p> 
-            <a class="btn btn-dark float-right mr-2" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i></a> 
+            <a class="btn btn-secondary float-right mr-2" href="{% url 'trade-home' %}"><i class="fa fa-times-circle"></i></a> 
         </div>
         <div class="col-6">
             <form method="post">
@@ -50,7 +52,7 @@
                 {{ form|crispy }}
                 <div class="m-3">
                     <input class="btn btn-primary" type="submit" value="Submit">
-                    <a class="btn btn-dark float-right" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i></a>
+                    <a class="btn btn-secondary float-right" href="{% url 'trade-home' %}"><i class="fa fa-times-circle"></i></a>
                 </div>
                 
             </form>

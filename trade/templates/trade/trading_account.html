@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Trading Account{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -310,8 +312,8 @@
             </form>
         </div>
         <div class="col-3 text-right">
-            <a class="btn btn-dark mt-2" href="{% url 'trade-home' %}" title="Trade Home">
-                <i class="fa fa-reply"></i>
+            <a class="btn btn-secondary mt-2" href="{% url 'trade-home' %}" title="Trade Home">
+                <i class="fa fa-times-circle"></i>
             </a>
         </div>
     </div>

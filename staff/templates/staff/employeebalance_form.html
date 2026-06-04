@@ -1,4 +1,4 @@
-{% extends 'users/base.html'%}
+{% extends 'core/base.html'%}
 {% load crispy_forms_tags %}
 
 {% block content %}
@@ -13,8 +13,8 @@
                 </div>
                 <div class="form-group text-right">
                     <button class="btn btn-primary" type="submit">Submit</button>
-                    <a class="btn btn-outline-dark" href="{% url 'employee-balance-detail' object.pk %}">
-                        <i class="fa fa-reply"></i>
+                    <a class="btn btn-secondary" href="{% url 'employee-balance-detail' object.pk %}">
+                        <i class="fa fa-times-circle"></i>
                     </a>
                 </div>
             </form>

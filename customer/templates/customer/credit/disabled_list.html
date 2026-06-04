@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+{% block page_title %}Disabled List{% endblock %}
+
 {% block content %}
 <div class="container">
     {% if object_list %}
@@ -81,8 +83,8 @@
         </div>
         {% endif %}
         <div class="col">
-            <a href="{% url 'customer-home' %}" class="btn btn-dark btn-sm float-right ml-1">
-                <i class="fa fa-reply"></i>
+            <a href="{% url 'customer-home' %}" class="btn btn-secondary float-right ml-1">
+                <i class="fa fa-times-circle"></i>
                 Home
             </a>
         </div>

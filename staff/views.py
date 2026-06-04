@@ -75,23 +75,31 @@ class StaffMainPageView(LoginRequiredMixin, UserPassesTestMixin, View):
         return False
 
     template_name = 'staff/home_page.html'
-    messages_one = """Employees remain the most important asset of this company.
-Their combined effort is the result of what we have today. However, for the purpose of leadership and direction,
-we must provide policies and procedures to guide everyone towards expected result. We believe in their collaborative
-effort, integrity, punctuality and passion as they carry out their various assigned tasks. Therefore, whatever we do,
-our staff comes first and only with them can we pride ourselves in what we have achieved. As a company, we believe every
-staff deserves respect from one another irrespective of position and status and also from our clients while they 
-discharge their duty to them. In as much as we have groomed them to treat our customers as Kings and Queens. The 
-happiness of our staff is important, that is what we expect them to transfer to our customers and their fellow staff. 
-"""
-    messages_two = """The most important parameter we measure is employee engagement. Those who are discretionary,
-    committed, enthusiastic and involved. They don't work just for a paycheck or just for the next promotion, but work 
-    on behalf of the organisation's goals. These workers are exceptional, productive and contented. 
-    On the other, and unfortunately, their exist employees who chose not to be engaged, they are toxic, complaining 
-    frequently, works against policies and procedures and kill the enthusiasm of engaged employees. Even though they are
-    aware of their behaviour, they often tend to conceal it, making it difficult for the organisation to identify them.
-    We cherish and count on your engagement as we continue to spend time together working as a team. 
-"""
+    messages_one = """At Ozone, our people are not just our greatest asset — they are the reason we exist as a \
+company. Every crate delivered, every customer served, every naira earned is the direct result of the effort, \
+dedication and character of our team. We do not take that lightly.
+
+In return, we commit to treating every member of our team with dignity, fairness and respect — regardless of \
+position, tenure or background. We will invest in your growth, listen when you speak, celebrate your wins and \
+stand by you when things are hard. Our policies and procedures exist not to restrict you, but to give everyone a \
+clear and equal framework within which to thrive.
+
+We ask of you what we offer in return: integrity in every action, punctuality as a mark of professionalism, \
+passion for the work you do, and genuine care for the people around you — your colleagues and your customers alike. \
+A happy team creates happy customers. That cycle begins with how we treat one another every single day."""
+
+    messages_two = """The single most important measure of a great workplace is not sales, not profit, not even \
+customer satisfaction — it is employee engagement. An engaged employee does not simply show up; they bring their \
+whole self to work. They are curious, committed, proactive and proud to be part of what we are building together. \
+They go beyond what is asked because they believe in where we are going.
+
+Engaged employees are not born — they are built through the right environment, the right recognition and the right \
+leadership. That is what we are committed to creating here. We want every person on this team to feel that their \
+work matters, that their voice is heard and that their growth is our priority.
+
+We ask you to bring your best every day — not for us, but for yourself, for your colleagues and for the customers \
+who depend on this team to show up with excellence. If something is not right, speak up. If someone is struggling, \
+reach out. We rise together or not at all. That is the Ozone way."""
 
     @staticmethod
     def confirm_staff():

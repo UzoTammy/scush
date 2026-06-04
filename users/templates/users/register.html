@@ -1,32 +1,29 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block head %}
-<style>
-    #sidebar {
-        display: none;
-    }
-</style>
-{% endblock %}
+{% block page_title %}Register User{% endblock %}
 
 {% block content %}
 <div class="container">
-    <div class="row">
-        <div class="col-8">
-            <form method="POST">{% csrf_token %}
+  <div class="ds-card ds-card--narrow">
+    <div class="ds-card__header"><span>Register New User</span></div>
+    <div class="ds-card__body">
+      <form method="POST">
+        {% csrf_token %}
         <fieldset class="form-group">
-            <legend class="text-info mb-3">Register User</legend>
-            {{ form|crispy }}
+          {{ form|crispy }}
         </fieldset>
-        <div class="form-group">
-            <button class="btn btn-outline-info" type="submit">Sign Up</button>
-            <a class="btn btn-outline-dark float-right" href="{% url 'home' %}">Cancel</a>
+        <div class="d-flex justify-content-between mt-3">
+          <button class="btn btn-primary" type="submit">
+            <i class="fa fa-user-plus mr-1"></i> Create Account
+          </button>
+          <a class="btn btn-secondary" href="{% url 'home' %}">Cancel</a>
         </div>
-    </form>
-            <div class="border-top pt-3">
-        <small class="text-muted">already have an account? <a href="{% url 'login' %}">Sign In</a></small>
+      </form>
+      <div class="border-top pt-3 mt-3">
+        <small class="text-muted">Already have an account? <a href="{% url 'login' %}">Sign In</a></small>
+      </div>
     </div>
-        </div>
-    </div>
+  </div>
 </div>
 {% endblock %}

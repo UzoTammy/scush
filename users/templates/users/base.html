@@ -45,11 +45,11 @@
     }
 
     .auth-card__logo {
-      width: 48px;
-      height: 48px;
+      width: 64px;
+      height: 50px;
       border-radius: 50%;
       object-fit: cover;
-      border: 3px solid rgba(255,255,255,0.5);
+      border: 3px solid #ffffff;
       margin-bottom: 0.5rem;
     }
 
@@ -73,10 +73,20 @@
       text-align: center;
     }
 
-    .auth-card .btn-primary {
-      width: 100%;
-      padding: 0.6rem;
-      font-size: 0.9375rem;
+    /* Normalise <a> and <button> to the same height */
+    .auth-card .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 38px;
+      padding: 0 0.75rem;
+      line-height: 1;
+    }
+
+    /* Full-width buttons (e.g. password reset) override the fixed height */
+    .auth-card .btn.w-100 {
+      height: auto;
+      padding: 0.6rem 0.75rem;
     }
 
     .auth-footer {

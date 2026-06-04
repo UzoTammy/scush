@@ -1,100 +1,101 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 {% load djmoney %}
 
+{% block page_title %}Tax Update{% endblock %}
 
 {% block content %}
-<div class="container p-2">
-    <div class="row">
-        <div class="col text-center mt-3">
-            <h3>Tax Update Page</h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <p>Personal Income Tax law as stated by the tax body FIRS on the front page of their website <a
-                    href="https://www.firs.gov.ng/personal-income-tax-pit/">you can check it out</a></p>
-            <ul>
-                <li>Personal Income Tax is guided by the Personal Income Tax Act Cap P8 LFN 2004 (as amended)</li>
-                <li>The tax is imposed on income of Individuals, Corporate sole or body of individuals, Communities,
-                    Families and Trustees or Executors of any settlement- An individual is entitled to a
-                    Consolidated Relief Allowance of N200,000 or 1% of gross income whichever is higher plus 20% of
-                    gross income</li>
-                <li>The rate of the tax ranges from 7% to 24%, depending on the amount of chargeable income-
-                    Individuals are subject to minimum tax of 1% of gross income where the income is less than N300,000
-                    per annum</li>
-                <li>The tax is administered by FCT/States Internal Revenue Service(IRS) in respect of their residents</li>
-                <li>The tax is also administered by FIRS on non-residents, members of the Armed Forces, Police,
-                    Officers of Nigerian Foreign Service</li>
-                <li>The due date for filing returns of the tax is 31st March of every year</li>
-                <li>The due date for remittance of PAYE is 10th day of every succeeding month</li>
-                <li>An employer shall file return of emoluments and tax deducted from the employees in the preceding
-                    year not later than 31st January of every year</li>
-                <li>A person who fails to file a return shall be liable on conviction to a fine of N5,000 and a further
-                    sum of N100 for every day during which the failure continues or imprisonment of six (6) months
-                    or both</li>
-                <li>Any employer who fails to file a return, shall be liable on conviction to a penalty of N500,000 for
-                    body corporate (corporate body they meant) and N50,000 in the case of individual</li>
-            </ul>
-<!--            The tax rate table-->
-            <div class="bg-light row d-flex justify-content-center">
-                <div class="col-6 text-center">
-                    <table class="table table-bordered">
-                        <caption>The Tax Rate Table</caption>
-                <thead>
-                <tr>
-                    <th>Subject</th>
-                    <th>Rate</th>
-                </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Less than N300,000.00</td>
-                        <td>01%</td>
-                    </tr>
-                    <tr>
-                        <td>First N300,000.00</td>
-                        <td>07%</td>
-                    </tr>
-                    <tr>
-                        <td>Next NGN300,000.00</td>
-                        <td>11%</td>
-                    </tr>
-                    <tr>
-                        <td>Next NGN500,000.00</td>
-                        <td>15%</td>
-                    </tr>
-                    <tr>
-                        <td>Next NGN500,000.00</td>
-                        <td>19%</td>
-                    </tr>
-                    <tr>
-                        <td>Next NGN1, 600,000.00</td>
-                        <td>21%</td>
-                    </tr>
-                    <tr>
-                        <td>Above NGN3,200,000.00</td>
-                        <td>24%</td>
-                    </tr>
-                </tbody>
-            </table>
-                </div>
-            </div>
+<div class="container-fluid">
 
-        </div>
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-percent mr-2"></i>Tax Update</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'tax-list' %}">
+          <i class="fa fa-list"></i> View Tax List
+        </a>
+        <a class="staff-nav-link" href="{% url 'salary' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
-    <div class="row p-3">
-        <form action="" method="post">
+  </div>
+
+  <div class="row">
+
+    <!-- ── PIT notes ──────────────────────────────── -->
+    <div class="col-md-7 mb-4">
+      <div class="ds-card h-100">
+        <div class="ds-card__header">
+          <span><i class="fa fa-info-circle mr-2"></i>Personal Income Tax (PIT) — Key Notes</span>
+        </div>
+        <div class="ds-card__body">
+          <p class="text-muted mb-2">
+            Source: FIRS — governed by the Personal Income Tax Act Cap P8 LFN 2004 (as amended).
+          </p>
+          <ul>
+            <li class="mb-1">Imposed on income of individuals, corporate soles, communities, families, and trustees.</li>
+            <li class="mb-1">Consolidated Relief Allowance: <strong>₦200,000 or 1% of gross income</strong> (whichever is higher), plus 20% of gross income.</li>
+            <li class="mb-1">Rates range from <strong>7% to 24%</strong> depending on chargeable income.</li>
+            <li class="mb-1">Minimum tax of <strong>1%</strong> of gross income applies where annual income is below ₦300,000.</li>
+            <li class="mb-1">Administered by FCT/State IRS for residents; FIRS for non-residents, Armed Forces, Police, and Foreign Service officers.</li>
+            <li class="mb-1">Annual return filing deadline: <strong>31st March</strong> each year.</li>
+            <li class="mb-1">PAYE remittance deadline: <strong>10th day</strong> of every succeeding month.</li>
+            <li class="mb-1">Employer must file emolument returns not later than <strong>31st January</strong> annually.</li>
+            <li class="mb-1 text-danger">Failure to file: fine of <strong>₦5,000</strong> plus ₦100/day or 6 months imprisonment.</li>
+            <li class="mb-1 text-danger">Employer failure to file: <strong>₦500,000</strong> (corporate) or <strong>₦50,000</strong> (individual).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tax rate table + action ────────────────── -->
+    <div class="col-md-5 mb-4">
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-table mr-2"></i>Tax Rate Table</span>
+        </div>
+        <div class="ds-card__body p-0">
+          <table class="table table-striped mb-0">
+            <thead class="thead-warning">
+              <tr>
+                <th>Income Band</th>
+                <th class="text-right">Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Less than ₦300,000</td><td class="text-right font-weight-bold">1%</td></tr>
+              <tr><td>First ₦300,000</td><td class="text-right font-weight-bold">7%</td></tr>
+              <tr><td>Next ₦300,000</td><td class="text-right font-weight-bold">11%</td></tr>
+              <tr><td>Next ₦500,000</td><td class="text-right font-weight-bold">15%</td></tr>
+              <tr><td>Next ₦500,000</td><td class="text-right font-weight-bold">19%</td></tr>
+              <tr><td>Next ₦1,600,000</td><td class="text-right font-weight-bold">21%</td></tr>
+              <tr><td>Above ₦3,200,000</td><td class="text-right font-weight-bold">24%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="ds-card">
+        <div class="ds-card__header">
+          <span><i class="fa fa-refresh mr-2"></i>Validate &amp; Update</span>
+        </div>
+        <div class="ds-card__body">
+          <p class="text-muted small mb-3">
+            Click <strong>Validate Tax</strong> to recalculate and update each employee's tax amount based on current salary and the rates above.
+          </p>
+          <form action="" method="post">
             {% csrf_token %}
-        <div class="col">
-            <input class="btn btn-outline-primary" type="submit" value="Validate Tax">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fa fa-check mr-1"></i> Validate Tax
+            </button>
+          </form>
         </div>
-        </form>
-        <div class="col text-right">
-            <a class="btn btn-outline-dark"
-               href="{% url 'salary' %}"><i class="fa fa-reply"></i> Return</a>
-        </div>
+      </div>
     </div>
-</div>
 
+  </div>
+
+</div>
 {% endblock %}

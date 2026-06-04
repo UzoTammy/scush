@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Applicant List Employed{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -16,13 +18,13 @@
                         <p>List Of Employed Applicants</p>
                     </div>
                     <div class="col text-right">
-                        <a class="btn btn-dark btn-sm"
+                        <a class="btn btn-secondary"
                            href="{% url 'apply-pending' %}">
                              Pending</a>
-                        <a class="btn btn-dark btn-sm"
+                        <a class="btn btn-secondary"
                            href="{% url 'apply-rejected' %}">
                             Rejected</a>
-                        <a class="btn btn-dark btn-sm"
+                        <a class="btn btn-secondary"
                            href="{% url 'apply' %}">
                             All
                         </a>
@@ -66,9 +68,9 @@
 </div>
     <div class="row m-1">
         <div class="col text-right">
-        <a class="btn btn-outline-dark"
+        <a class="btn btn-secondary"
            href="{% url 'home' %}">
-            <i class="fa fa-reply"></i> Home
+            <i class="fa fa-times-circle"></i> Home
         </a>
     </div>
     </div>

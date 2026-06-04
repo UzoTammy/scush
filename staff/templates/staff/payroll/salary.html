@@ -1,232 +1,215 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Payroll{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-3" style="background-color: #080000;">
-            <p class="m-2 text-white">
-                <i class="fa fa-plus text-warning"></i>
-                    Credit
-            </p>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{%url 'credit-list' %}">
-                        View
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'credit-create' %}">
-                        Add
-                    </a>
-                </li>
-            </ul>
-            <p class="text-white m-2">
-                <i class="fa fa-minus text-warning"></i> Debit
-            </p>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{%url 'debit-list' %}">
-                        View
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'debit-create' %}">
-                        Add
-                    </a>
-                </li>
-            </ul>
-            <p class="text-white m-2">
-                <i class="fa fa-minus text-warning"></i> Tax
-            </p>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'tax-list' %}">
-                        View
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'update-tax' %}">
-                        Update
-                    </a>
-                </li>
-            </ul>
 
-            <p class="m-2 text-white">
-                <i class="fa fa-bank text-warning"></i>
-                Payroll
-            </p>
-            {% if last_period_generated %}
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    {% if payroll_current_period != '' %}
-                    <a class="nav-link" href="{% url 'payroll-view' payroll_current_period %}">
-                        View
-                    </a>
-                    {% endif %}
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link"
-                       data-toggle="modal"
-                       data-target="#initialModal"
-                       href="#">
-                        Generate
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'regenerate-payroll' %}">
-                        Regenerate
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'payroll-modify' %}" hidden>
-                        Modify
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'start-pay' %}">
-                        Pay
-                    </a>
-                </li>
-            </ul>
-            {% else %}
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link"
-                       data-toggle="modal"
-                       data-target="#initialModal"
-                       href="#">
-                        Generate
-                    </a>
-                </li>
-            </ul>
-            {% endif %}
-            
-            <hr class="dropdown-divider">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="{% url 'staff-home' %}">
-                        <i class="fa fa-reply"></i>
-                        Staff Home
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <div class="col-9 mt-3">
-            <div class="row">
-                <div class="col">
-                    <h3 class="text-center">Payroll Page</h3>
-                    <p class="text-danger float-right">Current Date: {% now 'jS \o\f M, Y' %}</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm">
-                    <h5>The Payroll Process</h5>
-                    <p>This is established to manage payroll effectively by the Human Resource Department (HRD).</p>
-                    <p>The Payroll is of two parts: Salaries and Gratuity</p>
-                    <p>Salaries are processed every calendar month and includes:</p>
-                    <ul>
-                        <li>Taxes (PIT)</li>
-                        <li>Credit, Incentives and Bonus if any</li>
-                        <li>Salary</li>
-                        <li>Debit and Shortages and Repayments</li>
-                    </ul>
-                    <p>Meanwhile, Gratuity (Money accrued for a staff pending resignation or retirement) is a reserve earned 
-                        from performance and kept in a seperate database. Even though, it is recorded during salary payment, it is a seperated
-                        account but can only be processed under the payroll system. 
-                    </p>
-                </div>
-                <div class="col-sm">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                          Total Payout
-                          <span class="badge badge-danger badge-pill">{{payout_total|myriad}}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                          Payout in {{payout_year|str}}
-                          <span class="badge badge-danger badge-pill">{{payout_current_year|myriad}}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                          Gratuity
-                          <span class="badge badge-danger badge-pill">{{gratuity|myriad}}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            Welfare
-                            <span class="badge badge-danger badge-pill">{{welfare|myriad}}</span>
-                        </li>
-                      </ul>
-                </div>
-            </div>
-            
-            {% if last_period_generated %}
-            <p class="text-danger text-right">Last Period Generated: {{last_period_generated}}</p>
-            {% else %}
-            <h4 class="text-primary">No Record in Payroll Database</h4>
-            <hr>
-            {% endif %}
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap staff-nav-bar">
+      <span><i class="fa fa-money mr-2"></i>Payroll Management</span>
+      <div class="d-flex staff-nav-bar">
 
-            <p>Steps required for a successful payroll implementation</p>
-            <ol>
-                <li>Ensure Staff Profile is updated</li>
-                <li><b>Add</b> Debit and Credit accordingly</li>
-                <li><b>Update</b> tax</li>
-                <li><b>Generate</b> Payroll</li>
-                <li>If there are outstanding amount to be moved to Net Pay, and if approval is granted, use 
-                    <b>modify</b> to implement staff by staff.</li>
-                <li>If there is need to change any of the above before generate, then you will need to <b>regenerate</b>
-                upon approval to do.</li>
-            </ol>
-            
-            <p>
-                It is recommended you generate payroll between 25th and before the end of the month.
-                Payrolls are categorized according to period. A period is one month.
-            </p>
-
-        </div>
-    </div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" 
-id="initialModal" 
-data-backdrop="static" 
-data-keyboard="false" 
-tabindex="-1" 
-aria-labelledby="staticBackdropLabel" 
-aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Generate Payroll</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+        <!-- Credit -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
+            <i class="fa fa-plus mr-1"></i> Credit
           </button>
-        </div>
-    <form action="{% url 'salary' %}" method="get">
-        <div class="modal-body">
-            {% if last_period_generated %}
-          <p>The last generated payroll is for {{last_period_generated}}.</p>     
-          {% endif %}
-          <p>Current required payroll period will be 
-              <span class="text-primary">{{next_period}}</span>,
-            which is for {{next_month}}, {{the_year}}.
-            </p>
-          <div class="row">
-            <div class="col">
-                <div class="form-group">
-                    <input class="form-control" type="text" name="period" value="{{next_period}}" hidden>      
-                </div>
-            </div>
-              
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'credit-list' %}"><i class="fa fa-eye mr-1"></i> View</a>
+            <a class="dropdown-item" href="{% url 'credit-create' %}"><i class="fa fa-plus mr-1"></i> Add</a>
           </div>
         </div>
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Generate</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+        <!-- Debit -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
+            <i class="fa fa-minus mr-1"></i> Debit
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'debit-list' %}"><i class="fa fa-eye mr-1"></i> View</a>
+            <a class="dropdown-item" href="{% url 'debit-create' %}"><i class="fa fa-plus mr-1"></i> Add</a>
+          </div>
         </div>
-    </form>
+
+        <!-- Tax -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
+            <i class="fa fa-percent mr-1"></i> Tax
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'tax-list' %}"><i class="fa fa-eye mr-1"></i> View</a>
+            <a class="dropdown-item" href="{% url 'update-tax' %}"><i class="fa fa-edit mr-1"></i> Update</a>
+          </div>
+        </div>
+
+        <!-- Payroll -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
+            <i class="fa fa-bank mr-1"></i> Payroll
+          </button>
+          <div class="dropdown-menu">
+            {% if last_period_generated and payroll_current_period != '' %}
+            <a class="dropdown-item" href="{% url 'payroll-view' payroll_current_period %}">
+              <i class="fa fa-eye mr-1"></i> View
+            </a>
+            {% endif %}
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#initialModal">
+              <i class="fa fa-play mr-1"></i> Generate
+            </a>
+            {% if last_period_generated %}
+            <a class="dropdown-item" href="{% url 'regenerate-payroll' %}">
+              <i class="fa fa-refresh mr-1"></i> Regenerate
+            </a>
+            <a class="dropdown-item" href="{% url 'start-pay' %}">
+              <i class="fa fa-check mr-1"></i> Pay
+            </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <a class="staff-nav-link" href="{% url 'staff-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
       </div>
     </div>
   </div>
+
+  <!-- ── Summary stats ──────────────────────────────── -->
+  <div class="row mb-4">
+    <div class="col-sm-3 mb-3">
+      <div class="ds-stat ds-stat--accent">
+        <div class="ds-stat__label">Total Payout (All Time)</div>
+        <div class="ds-stat__value">{{ payout_total|myriad }}</div>
+      </div>
+    </div>
+    <div class="col-sm-3 mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label">Payout {{ payout_year|str }}</div>
+        <div class="ds-stat__value">{{ payout_current_year|myriad }}</div>
+      </div>
+    </div>
+    <div class="col-sm-3 mb-3">
+      <div class="ds-stat ds-stat--success">
+        <div class="ds-stat__label">Gratuity Reserve</div>
+        <div class="ds-stat__value">{{ gratuity|myriad }}</div>
+      </div>
+    </div>
+    <div class="col-sm-3 mb-3">
+      <div class="ds-stat ds-stat--warning">
+        <div class="ds-stat__label">Welfare</div>
+        <div class="ds-stat__value">{{ welfare|myriad }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- ── Overview & steps ───────────────────────── -->
+    <div class="col-md-7 mb-4">
+      <div class="ds-card h-100">
+        <div class="ds-card__header"><span><i class="fa fa-info-circle mr-2"></i>The Payroll Process</span></div>
+        <div class="ds-card__body">
+          <p>This module manages payroll for the Human Resource Department (HRD). Payroll has two components:</p>
+          <div class="row mb-3">
+            <div class="col-sm-6">
+              <strong>Salaries</strong> — processed monthly, includes:
+              <ul class="mt-1">
+                <li>Tax (PIT)</li>
+                <li>Credits, Incentives &amp; Bonus</li>
+                <li>Base Salary</li>
+                <li>Debits, Shortages &amp; Repayments</li>
+              </ul>
+            </div>
+            <div class="col-sm-6">
+              <strong>Gratuity</strong> — a reserve earned from performance, kept separately, processed under the payroll system pending resignation or retirement.
+            </div>
+          </div>
+          <h6 class="text-primary">Steps for a Successful Payroll Run</h6>
+          <ol class="mb-2">
+            <li>Ensure all staff profiles are updated</li>
+            <li><strong>Add</strong> Debit and Credit entries accordingly</li>
+            <li><strong>Update</strong> tax records</li>
+            <li><strong>Generate</strong> payroll</li>
+            <li>Use <strong>Modify</strong> if outstanding amounts need to move to Net Pay (requires approval)</li>
+            <li>Use <strong>Regenerate</strong> if any inputs change after generation (requires approval)</li>
+          </ol>
+          <p class="text-muted small mb-0">
+            <i class="fa fa-calendar mr-1"></i>
+            Recommended: generate payroll between the 25th and the last day of the month.
+            Each payroll is categorised by period (one month).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Current period status ──────────────────── -->
+    <div class="col-md-5 mb-4">
+      <div class="ds-card h-100">
+        <div class="ds-card__header d-flex justify-content-between align-items-center">
+          <span><i class="fa fa-calendar-check-o mr-2"></i>Current Period</span>
+          <small class="text-white opacity-75">{% now 'jS \o\f M, Y' %}</small>
+        </div>
+        <div class="ds-card__body">
+          {% if last_period_generated %}
+          <div class="ds-stat ds-stat--success mb-3">
+            <div class="ds-stat__label">Last Period Generated</div>
+            <div class="ds-stat__value">{{ last_period_generated }}</div>
+          </div>
+          <div class="ds-stat mb-3">
+            <div class="ds-stat__label">Next Period</div>
+            <div class="ds-stat__value">{{ next_period }}</div>
+            <small class="ds-stat__sub">{{ next_month }}, {{ the_year }}</small>
+          </div>
+          <a href="#" class="btn btn-primary w-100" data-toggle="modal" data-target="#initialModal">
+            <i class="fa fa-play mr-1"></i> Generate {{ next_period }} Payroll
+          </a>
+          {% else %}
+          <div class="text-center py-4">
+            <i class="fa fa-exclamation-circle fa-3x text-muted mb-3"></i>
+            <h6 class="text-muted">No payroll records yet.</h6>
+            <a href="#" class="btn btn-primary mt-2" data-toggle="modal" data-target="#initialModal">
+              <i class="fa fa-play mr-1"></i> Generate First Payroll
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Generate Payroll Modal ─────────────────────────── -->
+<div class="modal fade" id="initialModal" data-backdrop="static" data-keyboard="false"
+     tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Generate Payroll</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <form action="{% url 'salary' %}" method="get">
+        <div class="modal-body">
+          {% if last_period_generated %}
+          <p class="text-muted small">Last generated: <strong>{{ last_period_generated }}</strong></p>
+          {% endif %}
+          <p>The next payroll period will be
+            <strong class="text-primary">{{ next_period }}</strong>
+            — covering <strong>{{ next_month }}, {{ the_year }}</strong>.
+          </p>
+          <input class="form-control" type="text" name="period" value="{{ next_period }}" hidden>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-play mr-1"></i> Generate
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

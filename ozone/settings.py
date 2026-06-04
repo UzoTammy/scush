@@ -75,6 +75,9 @@ INSTALLED_APPS = [
     'cashflow.apps.CashflowConfig',
 ]
 
+if DEBUG:
+    INSTALLED_APPS += ['django_browser_reload']
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -88,7 +91,7 @@ MIDDLEWARE = [
     # 'user_agents.middleware.UserAgentMiddleware',
 
     'core.middleware.CustomMiddleware',
-    
+    'django_browser_reload.middleware.BrowserReloadMiddleware',
 ]
 
 ROOT_URLCONF = 'ozone.urls'

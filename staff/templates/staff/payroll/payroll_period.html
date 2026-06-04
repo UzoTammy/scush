@@ -1,159 +1,165 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 {% load djmoney %}
 
+{% block page_title %}Payroll — {{ heading.month }} {{ heading.year }}{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-3 bg-dark">
-            <p class="m-2 text-white">
-                <i class="fa fa-plus-square text-warning"></i>
-                Recent
-            </p>
-            <ul class="nav flex-column">
-                {% for month in periods_months %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'payroll-view' month|first %}">
-                        {{month|last}}
-                    </a>
-                </li>
-                {% endfor %}
-            </ul>
-            <p class="m-2 text-white">
-                <i class="fa fa-archive text-warning"></i>
-                    Years
-            </p>
-            
-            <ul class="nav flex-column">
-                {% for yr in years %}
-                <li class="nav-item">
-                    <p class="m-2 text-white">
-                        <a class="m-3" data-toggle="collapse" href="#abc{{yr}}" role="button"
-                           aria-expanded="false" aria-controls="abc">
-                            {{yr}}
-                        </a>
-                    <div class="collapse" id="abc{{yr}}">
-                        <div class="card card-body">
-                            <ul class="list-group">
-                                {% for mn, month in months.items %}
-                                <li class="list-group-item list-group-item-sm">
-                                    <a href="{% url 'payroll-view' mn|join:yr %}">{{month}}</a>
-                                </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                    </p>
-                </li>
-                {% endfor %}
-            </ul>
-            <p class="text-white m-2">
-                <i class="fa fa-database text-warning"></i> Summary
-            </p>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'payroll-summary' summary_period|first %}">
-                        {{summary_period|first}}
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'payroll-summary' summary_period|last %}">
-                        {{summary_period|last}}
-                    </a>
-                </li>
-            </ul>
-            
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap staff-nav-bar">
+      <span>
+        <i class="fa fa-bank mr-2"></i>
+        {% if payroll %}Payroll — {{ heading.month }}, {{ heading.year }}
+        {% else %}Payroll Viewer{% endif %}
+      </span>
+      <div class="d-flex staff-nav-bar">
+
+        <!-- Recent months -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
+            <i class="fa fa-clock-o mr-1"></i> Recent
+          </button>
+          <div class="dropdown-menu">
+            {% for month in periods_months %}
+            <a class="dropdown-item" href="{% url 'payroll-view' month|first %}">
+              {{ month|last }}
+            </a>
+            {% endfor %}
+          </div>
         </div>
-        <div class="col-9">
-            <!--   Body of Page -->
-            <div class="col" style="font-family: Times New Roman; font-size: 12pt">
-                <div class="container p-3">
-                    {% if payroll %}
-                    <h3>Payroll for {{heading.month}}, {{heading.year}}</h3>
-                    <hr>
-                    <div class="row">
-                        <div class="col">
-                            <h6>Number of Staff Paid: {{payroll.count}}</h6>
-                        </div>
-                        <div class="col text-center">
-                            <h6>Date Generated: {{payroll.first.date_paid}}</h6>
-                        </div>
-                        <div class="col text-right">Salary Paid: {{naira}}{{salary.sum|floatformat:2}}</div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <table data-toggle="table"
-                                   data-pagination="true"
-                                   class="table">
-                                <thead>
-                                <tr class="bg-dark text-white">
-                                    <th>Code</th>
-                                    <th>Staff</th>
-                                    <th>Basic</th>
-                                    <th>Allowance</th>
-                                    <th>Salary</th>
-                                    <th>Tax</th>
-                                    <th>Credit</th>
-                                    <th>Debit</th>
-                                    <th>Net Pay</th>
-                                    <th>Status</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for pay in payroll %}
-                                <tr>
-                                    <td>{{pay.staff.id|zeropadding:3}}</td>
-                                    <td>{{pay.staff.fullname}}</td>
-                                    <td class="text-right">{{pay.salary.amount|multiply:40|div:100}}</td>
-                                    <td class="text-right">{{pay.salary.amount|multiply:60|div:100}}</td>
-                                    <td class="text-right">{{pay.salary.amount}}</td>
-                                    <td class="text-right">{{pay.tax.amount}}</td>
-                                    <td class="text-right">{{pay.credit_amount.amount}}</td>
-                                    <td class="text-right">{{pay.debit_amount.amount}}</td>
-                                    <td class="text-right">{{pay.net_pay.amount}}</td>
-                                    {% if pay.status %}
-                                    <td class="text-success text-center">
-                                        <i class="fa fa-check"></i>
-                                    </td>
-                                    {% else %}
-                                    <td class="text-danger text-center">
-                                        <i class="fa fa-times"></i>
-                                    </td>
-                                    {% endif %}
-                                </tr>
-                                {% endfor%}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row mb-5">
-                        <div class="col">
-                            {% with payroll|first as first_record %}
-                            <a class="btn btn-outline-primary" 
-                            href="{% url 'pdf-payroll-list' first_record.period %}">PDF & Print</a>
-                            {% endwith %}
-                        </div>
-                        <div class="col">
-                            <a type="button"
-                               class="btn btn-outline-dark float-right"
-                               href="{% url 'salary' %}"><i class="fa fa-reply"></i></a>
-                        </div>
-                    </div>
-                    {% else %}
-                    <h3>No Payroll for this period to display</h3>
-                    <div class="row p-3">
-                        
-                        <div class="col">
-                            <a type="button"
-                               class="btn btn-outline-dark float-right"
-                               href="{% url 'salary' %}"><i class="fa fa-reply"></i></a>
-                        </div>
-                    </div>
-                    {% endif %}
-                    
-                </div>
-            </div>
+
+        <!-- By year -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
+            <i class="fa fa-calendar mr-1"></i> By Year
+          </button>
+          <div class="dropdown-menu">
+            {% for yr in years %}
+            <div class="dropdown-header">{{ yr }}</div>
+            {% for mn, month in months.items %}
+            <a class="dropdown-item" href="{% url 'payroll-view' mn|join:yr %}">{{ month }}</a>
+            {% endfor %}
+            {% if not forloop.last %}<div class="dropdown-divider"></div>{% endif %}
+            {% endfor %}
+          </div>
         </div>
+
+        <!-- Summary -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
+            <i class="fa fa-database mr-1"></i> Summary
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'payroll-summary' summary_period|first %}">
+              {{ summary_period|first }}
+            </a>
+            <a class="dropdown-item" href="{% url 'payroll-summary' summary_period|last %}">
+              {{ summary_period|last }}
+            </a>
+          </div>
+        </div>
+
+        {% if payroll %}
+        {% with payroll|first as first_record %}
+        <a class="staff-nav-link" href="{% url 'pdf-payroll-list' first_record.period %}"
+           target="_blank" rel="noopener noreferrer">
+          <i class="fa fa-file-pdf-o"></i> PDF
+        </a>
+        {% endwith %}
+        {% endif %}
+
+        <a class="staff-nav-link" href="{% url 'salary' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
+  </div>
+
+  <!-- ── Payroll content ────────────────────────────── -->
+  {% if payroll %}
+
+  <!-- Summary tiles -->
+  <div class="row mb-4">
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label"><i class="fa fa-users mr-1"></i> Staff Paid</div>
+        <div class="ds-stat__value">{{ payroll.count }}</div>
+      </div>
+    </div>
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat ds-stat--success">
+        <div class="ds-stat__label"><i class="fa fa-money mr-1"></i> Total Salary Paid</div>
+        <div class="ds-stat__value">{{ naira }}{{ salary.sum|floatformat:2 }}</div>
+      </div>
+    </div>
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label"><i class="fa fa-calendar mr-1"></i> Date Generated</div>
+        <div class="ds-stat__value ds-stat__value--lg">{{ payroll.first.date_paid }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payroll table -->
+  <div class="ds-card">
+    <div class="ds-card__body pb-0 pt-2 px-3">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0"
+               data-toggle="table" data-pagination="true">
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Staff</th>
+              <th class="text-right">Basic</th>
+              <th class="text-right">Allowance</th>
+              <th class="text-right">Salary</th>
+              <th class="text-right">Tax</th>
+              <th class="text-right">Credit</th>
+              <th class="text-right">Debit</th>
+              <th class="text-right">Net Pay</th>
+              <th class="text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pay in payroll %}
+            <tr>
+              <td>{{ pay.staff.id|zeropadding:3 }}</td>
+              <td>{{ pay.staff.fullname }}</td>
+              <td class="text-right">{{ pay.salary.amount|multiply:40|div:100 }}</td>
+              <td class="text-right">{{ pay.salary.amount|multiply:60|div:100 }}</td>
+              <td class="text-right">{{ pay.salary.amount }}</td>
+              <td class="text-right">{{ pay.tax.amount }}</td>
+              <td class="text-right">{{ pay.credit_amount.amount }}</td>
+              <td class="text-right">{{ pay.debit_amount.amount }}</td>
+              <td class="text-right font-weight-bold">{{ pay.net_pay.amount }}</td>
+              <td class="text-center">
+                {% if pay.status %}
+                <i class="fa fa-check-circle text-success"></i>
+                {% else %}
+                <i class="fa fa-times-circle text-danger"></i>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+
+  <div class="ds-card">
+    <div class="ds-card__body text-center py-5">
+      <i class="fa fa-inbox fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No payroll records for this period.</h5>
+    </div>
+  </div>
+
+  {% endif %}
+
 </div>
-{% endblock content %}
+{% endblock %}

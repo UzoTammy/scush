@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Product List{% endblock %}
 
 {% block content %}
 <div class="row m-2">
@@ -16,7 +18,7 @@
                         </div>
                         <div class="col text-right">
                 <a href="{% url 'product-performance-create' %}"
-                   class="btn btn-dark btn-sm text-right">
+                   class="btn btn-secondary text-right">
                     <i class="fa fa-plus text-success"></i>
                     Add
                 </a>
@@ -56,7 +58,7 @@
             </table>
             <div class="row">
                 <div class="col">
-                    <a class="btn btn-outline-dark float-right" href="{% url 'product-home' %}"><i class="fa fa-reply"></i></a>
+                    <a class="btn btn-secondary float-right" href="{% url 'product-home' %}"><i class="fa fa-times-circle"></i></a>
                 </div>
             </div>
         </div>

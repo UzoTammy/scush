@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Adjustment List{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-3">
@@ -13,8 +15,8 @@
             <small class="text-muted">Edit requests submitted by Administrators awaiting superuser review.</small>
         </div>
         <div class="col text-right">
-            <a class="btn btn-outline-dark btn-sm" href="{% url 'trade-home' %}" title="Trade Home">
-                <i class="fa fa-reply"></i> Trade Home
+            <a class="btn btn-secondary" href="{% url 'trade-home' %}" title="Trade Home">
+                <i class="fa fa-times-circle"></i> Trade Home
             </a>
         </div>
     </div>
@@ -57,7 +59,7 @@
                 <tbody>
                     {% for field, change in adj.proposed_changes.items %}
                     <tr>
-                        <td class="text-info">{{ field }}</td>
+                        <td class="text-primary">{{ field }}</td>
                         <td class="text-danger">{{ change.old_display }}</td>
                         <td class="text-success font-weight-bold">{{ change.new_display }}</td>
                     </tr>

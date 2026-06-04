@@ -1,231 +1,169 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Dashboard{% endblock %}
 
 {% block head %}
 <style>
-
-    body {
-        background-color: rgb(255, 255, 255);
-    }
-
-    .oval {
-        max-width: 10rem;
-        border-radius: 50px;
-        background-color: rgb(214, 230, 247);
-        padding: 5px;
-    }
-    .circle {
-        max-width: 7rem; 
-        border-radius: 100px 100px 100px 100px;
-    }
-    .curved-rectangle {
-        max-width: 8rem;
-        border-radius: 10px 10px 10px 10px;
-    }
+  .kpi-oval {
+    display: inline-block;
+    min-width: 7rem;
+    border-radius: 50px;
+    background-color: #e8eaf6;
+    padding: 3px 10px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--color-primary);
+  }
 </style>
-{% endblock head %}
+{% endblock %}
 
 {% block content %}
 {% if empty_record %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col">
-            <h3>Record(s) must be in the database(s) to be able to view dashboard</h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <a class="" href="{% url 'home' %}"><i class="fa fa-reply fa-2x"></i>Home</a>
-        </div>
-    </div>
+<div class="ds-card">
+  <div class="ds-card__header"><span>Dashboard</span></div>
+  <div class="ds-card__body">
+    <p>Record(s) must be in the database to view the dashboard.</p>
+    <a href="{% url 'home' %}"><i class="fa fa-times-circle"></i> Home</a>
+  </div>
 </div>
 {% else %}
-<div class="container text-center mt-3">
-    <h5 class="text-danger text-left">As at {{date_of_record}}</h5>
-    <div class="row mt-3">
-        <div class="col-sm-3">
-            <div class="card">
-                <img src="data:image/png;base64, {{growth_plot|safe}}" class="card-img-top" alt="">
-            </div>
-        </div>
-        <div class="col-sm-3">
-            <div class="card">
-                <a href="#" data-target="#tradeDonut" data-toggle="modal">
-                    <img src="data:image/png;base64, {{trade_donut|safe}}" class="card-img-top" alt="">
-                </a>
-            </div>
-        </div>
-        <div class="col-sm-3">
-            <div class="card">
-                <img src="data:image/png;base64, {{margin_plot|safe}}" class="card-img-top" alt="">
-            </div>
-        </div>
-        <div class="col-sm-3">
-            <div class="card">
-                <img src="data:image/png;base64, {{expenses_plot|safe}}" class="card-img-top" alt="">
-            </div>
-        </div>
-    </div>
-    <div class="row mt-3">
-        <div class="col-sm-3">
-            <div class="card">
-                <div class="card-header">
-                  General
-                </div>
-                <ul class="list-group list-group-flush text-left">
-                    <li class="list-group-item">Products <span class="float-right oval">#{{basics|array:1}}</span></li>
-                    <li class="list-group-item">Customers <span class="float-right oval">#{{basics|array:2}}</span></li>
-                    <li class="list-group-item">Workforce <span class="float-right oval">#{{basics|array:3}}</span></li>
-                    <li class="list-group-item">Pending Application <span class="float-right oval">#{{basics|array:4}}</span></li>
-                    
-                </ul>
-            </div>
-        </div>
-        
-        <div class="col-sm-3">
-            <div class="card">
-                <div class="card-header">
-                  YTD
-                </div>
-                <ul class="list-group list-group-flush text-left">
-                    
-                    <li class="list-group-item">Sales <span class="float-right oval">N{{ytd|array:1|myriad}}</span></li>
-                    
-                    <li class="list-group-item">Purchase <span class="float-right oval">N{{ytd|array:2|myriad}}</span></li>
+<h5 class="text-muted mb-3">As at {{ date_of_record }}</h5>
 
-                    <li class="list-group-item">Credits <span class="float-right oval">N{{ytd|array:3|myriad}}</span></li>
+<div class="row">
+  <div class="col-sm-3 mb-3">
+    <div class="ds-card"><div class="ds-card__body p-1">
+      <img src="data:image/png;base64, {{ growth_plot|safe }}" class="img-fluid" alt="Growth">
+    </div></div>
+  </div>
+  <div class="col-sm-3 mb-3">
+    <div class="ds-card"><div class="ds-card__body p-1">
+      <a href="#" data-target="#tradeDonut" data-toggle="modal">
+        <img src="data:image/png;base64, {{ trade_donut|safe }}" class="img-fluid" alt="Trade Donut">
+      </a>
+    </div></div>
+  </div>
+  <div class="col-sm-3 mb-3">
+    <div class="ds-card"><div class="ds-card__body p-1">
+      <img src="data:image/png;base64, {{ margin_plot|safe }}" class="img-fluid" alt="Margin">
+    </div></div>
+  </div>
+  <div class="col-sm-3 mb-3">
+    <div class="ds-card"><div class="ds-card__body p-1">
+      <img src="data:image/png;base64, {{ expenses_plot|safe }}" class="img-fluid" alt="Expenses">
+    </div></div>
+  </div>
+</div>
 
-                    <li class="list-group-item">Rent Paid <span class="float-right oval">N{{ytd|array:4|myriad}}</span></li>
-                </ul>
-            </div>
-        </div>
-         
-        <div class="col-sm-3">
-            <div class="card">
-                <div class="card-header">
-                  Monthly KPI
-                </div>
-                <ul class="list-group list-group-flush text-left">
-                    <li class="list-group-item">ROI
-                        <small class="float-right text-danger">Pts</small>
-                        <span class="float-right oval">{{monthly_kpi|array:1}}</span>
-                    </li>
-                    <li class="list-group-item">Margin
-                        <small class="float-right text-danger">Pts</small>
-                        <span class="float-right oval">{{monthly_kpi|array:2}}</span>
-                    </li>
-                    <li class="list-group-item">Expenses
-                        <small class="float-right text-danger">Pts</small>
-                        <span class="float-right oval">{{monthly_kpi|array:3}}</span>
-                    </li>
-                    <li class="list-group-item">Man-hour
-                        <small class="float-right text-danger">Pts</small>
-                        <span class="float-right oval">{{monthly_kpi|array:4}}</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-         
-        <div class="col-sm-3">
-            <div class="card">
-                <div class="card-header">
-                  Others
-                </div>
-                <ul class="list-group list-group-flush text-left">
-                    <li class="list-group-item">Bank Balance 
-                        <a href="{% url 'bank-account-home' %}">
-                            <span class="float-right oval">{{extras|array:1|myriad}}</span>
-                        </a>
-                    </li>  
-                  <li class="list-group-item">Inventory Turnover
-                    <span class="float-right oval">{{extras|array:2}}</span>
-                </li>
-                  <li class="list-group-item">WC
-                    <!-- <small class="float-right text-danger">Pts</small> -->
-                    <span class="float-right oval">{{extras|array:3|myriad}}</span>
-                </li>
-                  <li class="list-group-item">Low-Stock Velocity 
-                    {% if stock_value_ratio > 0 %}
-                    <span class="float-right"><i class="fa fa-arrow-up text-danger"></i></span>
-                    <span class="float-right oval">{{stock_value_ratio}}%</span>
-                    {% elif stock_value_ratio < 0 %}
-                    <span class="float-right"><i class="fa fa-arrow-down text-success"></i></span>
-                    <span class="float-right oval">{{stock_value_ratio|abs}}%</span>
-                    {% else %}
-                    <span class="float-right oval">0.00%</span>
-                    {% endif %}
-                </li>
-                </ul>
-            </div>
-        </div>
+<div class="row">
+  <div class="col-sm-3 mb-3">
+    <div class="ds-card">
+      <div class="ds-card__header"><span>General</span></div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between">Products <span class="kpi-oval">#{{ basics|array:1 }}</span></li>
+        <li class="list-group-item d-flex justify-content-between">Customers <span class="kpi-oval">#{{ basics|array:2 }}</span></li>
+        <li class="list-group-item d-flex justify-content-between">Workforce <span class="kpi-oval">#{{ basics|array:3 }}</span></li>
+        <li class="list-group-item d-flex justify-content-between">Pending Applications <span class="kpi-oval">#{{ basics|array:4 }}</span></li>
+      </ul>
     </div>
-    <div class="row mt-3">
-        <div class="col-sm-3">
-            <div class="card">
-                <img src="data:image/png;base64, {{plotter|safe}}" class="card-img-top" alt="">
-            </div>
-        </div>
-        <div class="col-sm-3">
-            <div class="card">
-                <a data-target="#donut" data-toggle="modal" href="#"><img src="data:image/png;base64, {{donut|safe}}" class="card-img-top" alt=""></a> 
-            </div>
-        </div>
-        <div class="col-sm-3">
-            <div class="card">
-                <img src="data:image/png;base64, {{sales_bar|safe}}" class="card-img-top" alt="">
-            </div>
-        </div>
-        <div class="col-sm-3">
-            <div class="card">
-                <img src="data:image/png;base64, {{payout_plot|safe}}" class="card-img-top" alt="">
-            </div>
-        </div>
-    </div> 
-    
-    <div class="row mb-3 mt-3">
-        <div class="col">
-            <a class="float-right" href="{% url 'home' %}"><i class="fa fa-reply fa-2x"></i> Home</a>
-        </div>
+  </div>
+  <div class="col-sm-3 mb-3">
+    <div class="ds-card">
+      <div class="ds-card__header"><span>YTD</span></div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between">Sales <span class="kpi-oval">&#8358;{{ ytd|array:1|myriad }}</span></li>
+        <li class="list-group-item d-flex justify-content-between">Purchase <span class="kpi-oval">&#8358;{{ ytd|array:2|myriad }}</span></li>
+        <li class="list-group-item d-flex justify-content-between">Credits <span class="kpi-oval">&#8358;{{ ytd|array:3|myriad }}</span></li>
+        <li class="list-group-item d-flex justify-content-between">Rent Paid <span class="kpi-oval">&#8358;{{ ytd|array:4|myriad }}</span></li>
+      </ul>
     </div>
+  </div>
+  <div class="col-sm-3 mb-3">
+    <div class="ds-card">
+      <div class="ds-card__header"><span>Monthly KPI</span></div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between">ROI <span class="kpi-oval">{{ monthly_kpi|array:1 }} <small>pts</small></span></li>
+        <li class="list-group-item d-flex justify-content-between">Margin <span class="kpi-oval">{{ monthly_kpi|array:2 }} <small>pts</small></span></li>
+        <li class="list-group-item d-flex justify-content-between">Expenses <span class="kpi-oval">{{ monthly_kpi|array:3 }} <small>pts</small></span></li>
+        <li class="list-group-item d-flex justify-content-between">Man-hour <span class="kpi-oval">{{ monthly_kpi|array:4 }} <small>pts</small></span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="col-sm-3 mb-3">
+    <div class="ds-card">
+      <div class="ds-card__header"><span>Others</span></div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between">Bank Balance
+          <a href="{% url 'bank-account-home' %}"><span class="kpi-oval">{{ extras|array:1|myriad }}</span></a>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">Inventory Turnover <span class="kpi-oval">{{ extras|array:2 }}</span></li>
+        <li class="list-group-item d-flex justify-content-between">Working Capital <span class="kpi-oval">{{ extras|array:3|myriad }}</span></li>
+        <li class="list-group-item d-flex justify-content-between">Low-Stock Velocity
+          {% if stock_value_ratio > 0 %}
+            <span class="kpi-oval text-danger"><i class="fa fa-arrow-up"></i> {{ stock_value_ratio }}%</span>
+          {% elif stock_value_ratio < 0 %}
+            <span class="kpi-oval text-success"><i class="fa fa-arrow-down"></i> {{ stock_value_ratio|abs }}%</span>
+          {% else %}
+            <span class="kpi-oval">0.00%</span>
+          {% endif %}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-sm-3 mb-3">
+    <div class="ds-card"><div class="ds-card__body p-1">
+      <img src="data:image/png;base64, {{ plotter|safe }}" class="img-fluid" alt="Plotter">
+    </div></div>
+  </div>
+  <div class="col-sm-3 mb-3">
+    <div class="ds-card"><div class="ds-card__body p-1">
+      <a href="#" data-target="#donut" data-toggle="modal">
+        <img src="data:image/png;base64, {{ donut|safe }}" class="img-fluid" alt="Low Stock Donut">
+      </a>
+    </div></div>
+  </div>
+  <div class="col-sm-3 mb-3">
+    <div class="ds-card"><div class="ds-card__body p-1">
+      <img src="data:image/png;base64, {{ sales_bar|safe }}" class="img-fluid" alt="Sales Bar">
+    </div></div>
+  </div>
+  <div class="col-sm-3 mb-3">
+    <div class="ds-card"><div class="ds-card__body p-1">
+      <img src="data:image/png;base64, {{ payout_plot|safe }}" class="img-fluid" alt="Payout">
+    </div></div>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col text-right">
+    <a href="{% url 'home' %}" aria-label="Home"><i class="fa fa-times-circle"></i></a>
+  </div>
 </div>
 {% endif %}
 
-<!-- Modal -->
-<div class="modal fade" id="tradeDonut" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="tradeDonut">Trade Donut</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-            <img src="data:image/png;base64, {{trade_donut|safe}}" class="card-img-top" alt="">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-      </div>
+<!-- Modals -->
+<div class="modal fade" id="tradeDonut" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Trade Donut</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div>
+      <div class="modal-body"><img src="data:image/png;base64, {{ trade_donut|safe }}" class="img-fluid" alt="Trade Donut"></div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button></div>
     </div>
+  </div>
 </div>
 
-<div class="modal fade" id="donut" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="donut">Low Stock Donut</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-            <img src="data:image/png;base64, {{donut|safe}}" class="card-img-top" alt="">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        </div>
-      </div>
+<div class="modal fade" id="donut" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Low Stock Donut</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div>
+      <div class="modal-body"><img src="data:image/png;base64, {{ donut|safe }}" class="img-fluid" alt="Low Stock Donut"></div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button></div>
     </div>
+  </div>
 </div>
-{% endblock content %}
+{% endblock %}

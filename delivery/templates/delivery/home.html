@@ -1,63 +1,93 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Delivery{% endblock %}
 
 {% block content %}
-<div class="container mt-3">
-    <div class="row">
-        <div class="col">
-            <h1>Delivery Dashboard</h1>
-            <p>
-                As a distribution company, heavy flow of stock is to be anticipated and to put measures to track them
-                all in a customized fashion most suitable to us for effective tracking is inevitable. This section only
-                focuses on deliveries and the credit notes emanating from the returns made.
-            </p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-5">
-            <ul class="list-group list-group-sm list-group-flush">
-                <li class="list-group-item active">
-                    Delivery Stages
-                </li>
-                <li class="list-group-item bg-light">
-                    <div class="row mr-2">
-                        <div class="col-6">
-                            <a href="{% url 'delivery-list' %}">All Deliveries</a>
-                        </div>
-                        <div class="col-6">
-                            <a href="{% url 'delivery-create' %}">Create</a>
-                        </div>
+<div class="container-fluid">
 
-                    </div>
-
-                </li>
-                {% if created %}
-                <li class="list-group-item"><a href="{% url 'delivery-stage' create_stage %}">Created</a>
-                    <span class="badge badge-primary badge-pill">{{created.count}}</span>
-                </li>
-                {% endif %}
-                {% if delivered %}
-                <li class="list-group-item"><a href="{% url 'delivery-stage' deliver_stage %}">Delivered</a>
-                    <span class="badge badge-primary badge-pill">{{delivered.count}}</span>
-                </li>
-                {% endif %}
-                {% if returned %}
-                <li class="list-group-item"><a href="{% url 'delivery-stage' return_stage %}">Returned</a>
-                    <span class="badge badge-primary badge-pill">{{returned.count}}</span>
-                </li>
-                {% endif %}
-                {% if confirmed %}
-                <li class="list-group-item"><a href="{% url 'delivery-stage' confirm_stage %}">Confirmed</a>
-                    <span class="badge badge-primary badge-pill">{{confirmed.count}}</span>
-                </li>
-                {% endif %}
-                {% if credited %}
-                <li class="list-group-item"><a href="{% url 'delivery-stage' credit_stage %}">Credited</a>
-                    <span class="badge badge-primary badge-pill">{{credited.count}}</span>
-                </li>
-                {% endif %}
-            </ul>
-        </div>
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-truck mr-2"></i>Delivery Management</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'delivery-list' %}">
+          <i class="fa fa-list"></i> All Deliveries
+        </a>
+        <a class="staff-nav-link" href="{% url 'delivery-create' %}">
+          <i class="fa fa-plus"></i> Create
+        </a>
+        <a class="staff-nav-link" href="{% url 'home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
-    <hr>
+  </div>
+
+  <!-- ── Pipeline stages ───────────────────────────── -->
+  <div class="row mb-4">
+
+    <div class="col-sm mb-3">
+      <a href="{% url 'delivery-stage' create_stage %}" class="text-decoration-none">
+        <div class="ds-stat">
+          <div class="ds-stat__label"><i class="fa fa-edit mr-1"></i> Created</div>
+          <div class="ds-stat__value">{{ created.count }}</div>
+          <small class="ds-stat__sub">Awaiting dispatch</small>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm mb-3">
+      <a href="{% url 'delivery-stage' deliver_stage %}" class="text-decoration-none">
+        <div class="ds-stat ds-stat--success">
+          <div class="ds-stat__label"><i class="fa fa-truck mr-1"></i> Delivered</div>
+          <div class="ds-stat__value">{{ delivered.count }}</div>
+          <small class="ds-stat__sub">En route or handed over</small>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm mb-3">
+      <a href="{% url 'delivery-stage' return_stage %}" class="text-decoration-none">
+        <div class="ds-stat ds-stat--warning">
+          <div class="ds-stat__label"><i class="fa fa-undo mr-1"></i> Returned</div>
+          <div class="ds-stat__value">{{ returned.count }}</div>
+          <small class="ds-stat__sub">Rejected by customer</small>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm mb-3">
+      <a href="{% url 'delivery-stage' confirm_stage %}" class="text-decoration-none">
+        <div class="ds-stat ds-stat--accent">
+          <div class="ds-stat__label"><i class="fa fa-check-circle mr-1"></i> Confirmed</div>
+          <div class="ds-stat__value">{{ confirmed.count }}</div>
+          <small class="ds-stat__sub">Customer signed off</small>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-sm mb-3">
+      <a href="{% url 'delivery-stage' credit_stage %}" class="text-decoration-none">
+        <div class="ds-stat ds-stat--danger">
+          <div class="ds-stat__label"><i class="fa fa-file-text-o mr-1"></i> Credited</div>
+          <div class="ds-stat__value">{{ credited.count }}</div>
+          <small class="ds-stat__sub">Credit note issued</small>
+        </div>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- ── Context note ───────────────────────────────── -->
+  <div class="ds-card">
+    <div class="ds-card__body">
+      <p class="text-muted mb-0 small">
+        <i class="fa fa-info-circle mr-1"></i>
+        As a distribution company, every stock movement is tracked through five stages — from dispatch
+        to confirmation and credit. Click any tile above to view deliveries at that stage.
+      </p>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

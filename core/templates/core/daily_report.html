@@ -1,50 +1,96 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 
+{% block page_title %}Daily Report{% endblock %}
+
+{% block head %}
+<style>
+  .report-tile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 0.875rem 1rem;
+    margin-bottom: 0.75rem;
+    text-decoration: none;
+    transition: box-shadow 0.15s;
+    box-shadow: var(--shadow);
+  }
+
+  .report-tile:hover          { box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-decoration: none; }
+  .report-tile--updated       { border-left-color: var(--color-success); }
+  .report-tile--pending       { border-left-color: var(--color-warning); }
+
+  .report-tile__name  { font-size: 0.9375rem; font-weight: 700; color: var(--color-primary); }
+  .report-tile__date  { font-size: 0.8125rem; color: var(--color-muted); margin-top: 0.125rem; }
+  .report-tile__badge { font-size: 0.8125rem; font-weight: 700; white-space: nowrap; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-3">
-    <div class="row">
-        <div class="col text-center">
-            <h3>Daily Report Guide</h3>
-        </div>
+<div class="container-fluid">
+
+  <!-- ── Header ─────────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-calendar-check-o mr-2"></i>Daily Report Checklist</span>
+      <a class="staff-nav-link" href="{% url 'home' %}">
+        <i class="fa fa-times-circle"></i> Return
+      </a>
     </div>
-    
-    <div class="row mt-3">
-        <div class="col">
-            <h5>Expected Date: {{expected_date}}</h5>
-            <table class="table" data-toggle="table">
-                <thead class="text-center thead-dark">
-                    <tr>
-                        <th>Report</th>
-                        <th>Last updated on</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody class="text-center">
-                    {% for state in status %}
-                    <tr>
-                        {% if forloop.counter == 1 %}
-                        <td><a href="{% url 'bank-balance-create' %}">Bank Balance</a> </td>
-                        {% elif forloop.counter == 2 %}
-                        <td><a href="{% url 'import-csv' %}">Stock Report</a> </td>
-                        {% elif forloop.counter == 3 %}
-                        <td><a href="{% url 'trade-daily-create' %}">P & L Report</a> </td>
-                        {% else %}
-                        <td><a href="{% url 'bs-create' %}">Balance Sheet</a> </td>
-                        {% endif %}
-                        <td>{{state|array:2}}</td>
-                        {% if state|array:3 == 'Updated' %}
-                        <td class="text-success">{{state|array:3}}</td>
-                        {% else %}
-                        <td>{{state|array:3}}</td>
-                        {% endif %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="ds-card__body">
+      <p class="text-muted mb-0 small">
+        <i class="fa fa-info-circle mr-1"></i>
+        Expected date: <strong>{{ expected_date }}</strong> — complete all four reports for the day.
+      </p>
     </div>
+  </div>
+
+  <!-- ── Report tiles ───────────────────────────────── -->
+  <div class="ds-card">
+    <div class="ds-card__header"><span>Report Status</span></div>
+    <div class="ds-card__body">
+
+      {% for state in status %}
+      <a href="
+           {% if forloop.counter == 1 %}{% url 'bank-balance-create' %}
+           {% elif forloop.counter == 2 %}{% url 'import-csv' %}
+           {% elif forloop.counter == 3 %}{% url 'trade-daily-create' %}
+           {% else %}{% url 'bs-create' %}
+           {% endif %}"
+         class="report-tile {% if state|array:3 == 'Updated' %}report-tile--updated{% else %}report-tile--pending{% endif %}">
+
+        <div>
+          <div class="report-tile__name">
+            {% if forloop.counter == 1 %}<i class="fa fa-bank mr-2"></i>Bank Balance
+            {% elif forloop.counter == 2 %}<i class="fa fa-database mr-2"></i>Stock Report
+            {% elif forloop.counter == 3 %}<i class="fa fa-line-chart mr-2"></i>P &amp; L Report
+            {% else %}<i class="fa fa-balance-scale mr-2"></i>Balance Sheet
+            {% endif %}
+          </div>
+          {% if state|array:2 %}
+          <div class="report-tile__date">Last updated: {{ state|array:2 }}</div>
+          {% endif %}
+        </div>
+
+        <div class="report-tile__badge">
+          {% if state|array:3 == 'Updated' %}
+            <i class="fa fa-check-circle text-success mr-1"></i>
+            <span class="text-success">Updated</span>
+          {% else %}
+            <i class="fa fa-exclamation-circle text-warning mr-1"></i>
+            <span class="text-warning">{{ state|array:3|default:"Pending" }}</span>
+          {% endif %}
+        </div>
+
+      </a>
+      {% endfor %}
+
+    </div>
+  </div>
 
 </div>
-
 {% endblock %}

@@ -74,6 +74,11 @@
     <a class="ds-sidebar__link" href="{% url 'request-home' %}">
       <i class="fa fa-list-alt"></i> Requests
     </a>
+    {% if user.is_superuser %}
+    <a class="ds-sidebar__link" href="{% url 'apply-index' %}">
+      <i class="fa fa-user-plus"></i> Employ
+    </a>
+    {% endif %}
 
     <!-- COMMERCE -->
     <span class="ds-sidebar__group-label">Commerce</span>
@@ -116,11 +121,11 @@
     <a class="ds-sidebar__link" href="{% url 'post-list' %}">
       <i class="fa fa-bullhorn"></i> Briefs
     </a>
-    <a class="ds-sidebar__link" href="{% url 'policies-docs' %}">
+    <a class="ds-sidebar__link" href="{% url 'policies' %}">
       <i class="fa fa-book"></i> Policies &amp; Procedures
     </a>
-    <a class="ds-sidebar__link" href="{% url 'pdf-staff-summary' %}">
-      <i class="fa fa-file-pdf-o"></i> Company Summary
+    <a class="ds-sidebar__link" href="{% url 'company-summary' %}">
+      <i class="fa fa-building"></i> Company Summary
     </a>
 
     <!-- ADMIN (superuser only) -->
@@ -133,17 +138,15 @@
     <button type="button" class="ds-sidebar__link"
             data-toggle="collapse"
             data-target="#adminSub"
-            aria-expanded="false"
+            aria-expanded="true"
             aria-controls="adminSub">
       <i class="fa fa-shield"></i> Admin Tools
       <i class="fa fa-chevron-down ds-caret"></i>
     </button>
-    <div class="collapse" id="adminSub">
+    <div class="collapse show" id="adminSub">
       <ul class="ds-sidebar__sub">
         <li><a class="ds-sidebar__sub-link" href="{% url 'import-csv' %}">
           <i class="fa fa-upload"></i> Import CSV</a></li>
-        <li><a class="ds-sidebar__sub-link" href="{% url 'apply-index' %}">
-          <i class="fa fa-user-plus"></i> Employ</a></li>
         <li><a class="ds-sidebar__sub-link" href="{% url 'payroll-process' %}">
           <i class="fa fa-money"></i> Create Payroll</a></li>
         <li><a class="ds-sidebar__sub-link" href="{% url 'json-new' %}">

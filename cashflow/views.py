@@ -1,4 +1,5 @@
 import datetime
+import json
 from babel.numbers import format_currency
 from django.shortcuts import redirect, render
 from typing import Any
@@ -56,7 +57,6 @@ class CashflowHomeView(LoginRequiredMixin, FormView, ListView):
     template_name = 'cashflow/home.html'
     form_class = CurrentBalanceUpdateForm
     success_url = reverse_lazy('cashflow-home')
-    paginate_by = 7
     model = BankAccount
 
     
@@ -89,8 +89,18 @@ class CashflowHomeView(LoginRequiredMixin, FormView, ListView):
         context['current_bank_balance_total_business'] = QuerySum.to_currency(BankAccount.objects.filter(status=True).filter(category='Business'), 'current_balance')
         context['current_bank_balance_total_admin'] = QuerySum.to_currency(BankAccount.objects.filter(status=True).filter(category='Admin'), 'current_balance')
         
-        context['pending_withdrawals'] = Withdrawal.objects.exclude(stage=-1).exclude(stage=2) # -1, 0, 1, 2
-        
+        context['pending_withdrawals'] = Withdrawal.objects.exclude(stage=-1).exclude(stage=2)
+
+        def _amount(v):
+            return float(v.amount if hasattr(v, 'amount') else (v or 0))
+
+        context['pie_labels'] = json.dumps(['Business Cash', 'Imprest Cash', 'Business Bank', 'Admin Bank'])
+        context['pie_values'] = json.dumps([
+            _amount(context['cash']),
+            _amount(context['imprest_cash']),
+            _amount(context['current_bank_balance_total_business']),
+            _amount(context['current_bank_balance_total_admin']),
+        ])
         return context
     
     def form_valid(self, form: Any) -> HttpResponse:

@@ -1,91 +1,83 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
-<head>
-    <style>
-    body {
-        background-color: blue;
-    }
-    </style>
-</head>
+
+{% block page_title %}Credit Notes{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <table data-toggle="table"
-                   data-pagination="true"
-                   data-search="true"
-                   class="table table-bordered table-sm">
-                   {% with object_list|first as obj%}
-                <caption>Credit Note List - {{obj.period}}</caption>
-                {% endwith %}
-                <thead class="bg-success text-white">
-                    <tr class="text-center">
-                        <th scope="col">ID</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Staff</th>
-                        <th scope="col">Remark</th>
-                        <th scope="col">Value</th>
-                        <th scope="col">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for object in object_list %}
-                    <tr>
-                        <td scope="col" class="text-center">
-                            <a href="{% url 'credit-detail' object.id %}">{{ object.id|zeropadding:3 }}</a>
-                        </td>
-                        <td scope="col">{{object.credit_date|date:'d-m-Y'}}</td>
-                        <td scope="col">{{object}}</td>
-                        <td scope="col">{{object.remark}}</td>
-                        <td scope="col" class="text-right">{{object.value}}</td>
-                        <td scope="col">{{object.status|yesno:'Taken, Pending'}}</td>
-                    </tr>
-                {% endfor %}
-                {% if total %}
-                <tr class="bg-dark text-white text-right">
-                    <td colspan="4">Total</td>
-                    <td>NGN{{total|floatformat:'2'}}</td>
-                    <td></td>
-                </tr>
-                {% endif %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="row float-right">
-        <div class="col">
-            <a class="btn btn-dark" href="{% url 'salary' %}">
-                <i class="fa fa-reply"></i>
-            </a>
-        </div>
-    </div>
-</div>
+<div class="container-fluid">
 
-  <!-- Modal Credit-->
-  <div class="modal fade" 
-    id="creditModal" 
-    data-backdrop="static" 
-    data-keyboard="false" 
-    tabindex="-1" 
-    aria-labelledby="creditModalLabel" 
-    aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="creditModalLabel"></h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          ...
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Update</button>
-        </div>
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span>
+        <i class="fa fa-plus-circle mr-2"></i>Credit Notes
+        {% with object_list|first as obj %}
+        {% if obj %}&mdash; {{ obj.period }}{% endif %}
+        {% endwith %}
+      </span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'credit-create' %}">
+          <i class="fa fa-plus"></i> Add
+        </a>
+        <a class="staff-nav-link" href="{% url 'salary' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
       </div>
     </div>
   </div>
-{% endblock content %}
+
+  <!-- ── Total stat ─────────────────────────────────── -->
+  {% if total %}
+  <div class="row mb-4">
+    <div class="col-sm-4">
+      <div class="ds-stat ds-stat--success">
+        <div class="ds-stat__label">Total Credit</div>
+        <div class="ds-stat__value">NGN {{ total|floatformat:'2' }}</div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── Credit note table ──────────────────────────── -->
+  <div class="ds-card">
+    <div class="ds-card__body pb-0 pt-2 px-3">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0"
+               data-toggle="table"
+               data-pagination="true"
+               data-search="true">
+          <thead class="thead-success">
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Staff</th>
+              <th>Remark</th>
+              <th class="text-right">Value</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for object in object_list %}
+            <tr>
+              <td>
+                <a href="{% url 'credit-detail' object.id %}">{{ object.id|zeropadding:3 }}</a>
+              </td>
+              <td>{{ object.credit_date|date:'d-m-Y' }}</td>
+              <td>{{ object }}</td>
+              <td>{{ object.remark }}</td>
+              <td class="text-right">{{ object.value }}</td>
+              <td>
+                <span class="badge {% if object.status %}badge-success{% else %}badge-warning{% endif %}">
+                  {{ object.status|yesno:'Taken,Pending' }}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

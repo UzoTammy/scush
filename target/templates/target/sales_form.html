@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Sales Form{% endblock %}
 
 {% block content %} 
 <div class="container">
@@ -18,7 +20,7 @@
                 <button type="submit" class="btn btn-primary">Save</button>
             </div>
             <div class="col text-center">
-                <a type="button" class="btn btn-outline-dark" href="{% url 'sales-list' %}"><i class="fa fa-reply"></i></a>
+                <a type="button" class="btn btn-secondary" href="{% url 'sales-list' %}"><i class="fa fa-times-circle"></i></a>
             </div>
         </div>
     </form>

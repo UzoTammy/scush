@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Mailing Form{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -54,11 +56,11 @@
         </div>
         <div class="row mt-4">
             <div class="col">
-            <button type="submit" class="btn btn-outline-info">Send</button>
+            <button type="submit" class="btn btn-primary">Send</button>
         </div>
             <div class="col">
             <a href="{% url 'home' %}"
-               class="btn btn-dark float-right">Cancel</a>
+               class="btn btn-secondary float-right">Cancel</a>
         </div>
         </div>
     </form>

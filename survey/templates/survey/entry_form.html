@@ -1,4 +1,4 @@
-{% extends 'customer/base.html' %}
+{% extends 'core/base.html' %}
 
 {% block content %}
 <div class="container mt-5">
@@ -14,8 +14,8 @@
                     </div>
                     <div class="row">
                         <div class="col mb-3">
-                            <button class="btn btn-outline-info" type="submit">Proceed</button>
-                            <a class="btn btn-outline-dark float-right" href="{% url 'index' %}">Close</a>
+                            <button class="btn btn-primary" type="submit">Proceed</button>
+                            <a class="btn btn-secondary float-right" href="{% url 'index' %}">Close</a>
                         </div>
                     </div>
                 </fieldset>

@@ -1,6 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
 
+{% block page_title %}Settings — Edit Value{% endblock %}
 
 {% block content %}
 <div class="container mt-3 shadow-lg">
@@ -11,7 +12,7 @@
                 {% csrf_token %}
                 {{form|crispy}}
                 <button class="btn btn-primary mb-3" type="submit">Submit</button>
-                <a class="btn btn-dark float-right mb-3" href="{% url 'json-cat-key' vars.pk vars.key %}">Return</a>
+                <a class="btn btn-secondary float-right mb-3" href="{% url 'json-cat-key' vars.pk vars.key %}">Return</a>
             </form>
         </div>
     </div>

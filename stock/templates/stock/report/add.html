@@ -1,11 +1,13 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Add{% endblock %}
 
 {% block content %}
 <div class="container py-3">
     {% if message %}
     <h3>{{message}}</h3>
-    <a class="btn btn-dark" href="{% url 'stock-report' %}"><i class="fa fa-reply"></i></a>
+    <a class="btn btn-secondary" href="{% url 'stock-report' %}"><i class="fa fa-times-circle"></i></a>
     {% else %}
     <form action="{% url 'stock-report-add' view.kwargs.source %}">
         <div class="row">
@@ -64,7 +66,7 @@
                 <button class="btn btn-primary" type="submit">Submit</button>
             </div>
             <div class="col">
-                <a class="btn btn-dark" href="{% url 'stock-report' %}"><i class="fa fa-reply"></i></a>
+                <a class="btn btn-secondary" href="{% url 'stock-report' %}"><i class="fa fa-times-circle"></i></a>
             </div>
         </div>
     </form>

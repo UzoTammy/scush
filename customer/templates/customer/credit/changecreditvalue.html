@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Changecreditvalue{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -23,8 +25,8 @@
                             class="btn btn-primary btn-sm">
                             Change Status
                         </button>
-                        <a class="btn btn-dark btn-sm float-right" href="{% url 'customer-credit-list' %}">
-                            <i class="fa fa-reply"></i>
+                        <a class="btn btn-secondary float-right" href="{% url 'customer-credit-list' %}">
+                            <i class="fa fa-times-circle"></i>
                         </a>
                     </div>
                 </div>

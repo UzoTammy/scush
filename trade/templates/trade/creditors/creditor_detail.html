@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Creditor Detail{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-3">
@@ -13,8 +15,8 @@
             <a href="{% url 'creditor-create' %}" class="btn btn-outline-primary btn-sm">
                 <i class="fa fa-plus"></i> Add Entry
             </a>
-            <a href="{% url 'creditor-home' %}" class="btn btn-outline-dark btn-sm ml-1" title="Creditors Home">
-                <i class="fa fa-reply"></i> Back
+            <a href="{% url 'creditor-home' %}" class="btn btn-secondary ml-1" title="Creditors Home">
+                <i class="fa fa-times-circle"></i> Back
             </a>
         </div>
     </div>

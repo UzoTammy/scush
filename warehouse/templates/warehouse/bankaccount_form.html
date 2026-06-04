@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Bankaccount Form{% endblock %}
 
 {% block content %}
 <div class="container mt-3">
@@ -22,7 +24,7 @@
                             Submit
                         </button>
                         <a href="{% url 'warehouse-detail' view.kwargs.pk %}"
-                           class="btn btn-outline-dark float-right">
+                           class="btn btn-secondary float-right">
                             Cancel
                         </a>
                     </div>

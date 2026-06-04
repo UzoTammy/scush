@@ -1,6 +1,8 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 {% load static %}
+
+{% block page_title %}Home{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-3">
@@ -87,7 +89,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'trade-home' %}">
-                            <i class="fa fa-reply text-warning"></i> Return</a>
+                            <i class="fa fa-times-circle"></i> Return</a>
                     </li>
                 </ul>
             </div>
@@ -96,7 +98,7 @@
         <div class="col-sm-9">
             {% if no_object %}
             <h3 class="ml-3">No Record yet</h3>
-            <a class="btn btn-primary btn-sm" href="{% url 'bank-balance-create' %}">Add Bank Balance</a>
+            <a class="btn btn-secondary" href="{% url 'bank-balance-create' %}">Add Bank Balance</a>
             {% else %}
 
             {% if alert_pks %}

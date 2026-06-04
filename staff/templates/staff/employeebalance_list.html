@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Employeebalance List{% endblock %}
 
 {% block content %}
 <div class="container-grid">
@@ -80,11 +82,11 @@
     <div class="row mb-3">
         <div class="col">
             {% if return == 'detail' %}
-            <a class=" btn btn-outline-dark float-right" href="{% url 'employee-detail' view.kwargs.pk %}">
+            <a class="btn btn-secondary float-right" href="{% url 'employee-detail' view.kwargs.pk %}">
             {% else %}
-            <a class=" btn btn-outline-dark float-right" href="{% url 'staff-home' %}">
+            <a class="btn btn-secondary float-right" href="{% url 'staff-home' %}">
             {% endif %}
-                <i class="fa fa-reply"></i>
+                <i class="fa fa-times-circle"></i>
             </a>
         </div>
     </div>

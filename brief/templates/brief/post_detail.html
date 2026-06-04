@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Post Detail{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -9,9 +11,9 @@
             <small class="text-muted">Created by {{object.author}} on {{object.date_created}} <br> reference number {{object.pk|zeropadding:3}}</small>
             <p>{{object.content}}</p>
         
-            <a class="btn btn-primary btn-sm" href="{% url 'post-update'  object.pk %}">Update</a>
-            <a class="btn btn-primary btn-sm" href="{% url 'post-publish'  object.pk %}">Publish(PDF)</a>
-            <a class="btn btn-outline-dark float-right btn-sm" href="{% url 'post-list' %}"><i class="fa fa-reply"></i></a>
+            <a class="btn btn-secondary" href="{% url 'post-update'  object.pk %}">Update</a>
+            <a class="btn btn-secondary" href="{% url 'post-publish'  object.pk %}">Publish(PDF)</a>
+            <a class="btn btn-secondary float-right" href="{% url 'post-list' %}"><i class="fa fa-times-circle"></i></a>
         </div>
     </div>
 </div>

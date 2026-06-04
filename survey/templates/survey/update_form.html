@@ -1,4 +1,4 @@
-{% extends 'customer/base.html' %}
+{% extends 'core/base.html' %}
 
 {% block content %}
 <div class="container mt-5">
@@ -10,7 +10,7 @@
                     <img src="{{ staff.staff.image.url }}" alt="" width="150px" class="float-right">
                 </div>
             </div>
-            <h5 class="text-info">{{staff.staff.fullname}}</h5>
+            <h5 class="text-primary">{{staff.staff.fullname}}</h5>
             <form action="" method="POST">
                 {% csrf_token %}
                 <div class="form-group">
@@ -19,8 +19,8 @@
                     <small class="text-danger">If this is not you, kindly ignore</small>
                 </div>
                 <div class="mb-3">
-                    <button class="btn btn-outline-info" type="submit">Submit</button>
-                    <a class="btn btn-outline-dark float-right" href="{% url 'index' %}">Close</a>
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                    <a class="btn btn-secondary float-right" href="{% url 'index' %}">Close</a>
                 </div>
                 
             </form>

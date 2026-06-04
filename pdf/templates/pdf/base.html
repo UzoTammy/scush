@@ -1,105 +1,248 @@
-<!doctype HTML>
-
+<!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
-    
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" 
-    integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ title }} — Ozone F &amp; L</title>
+  <style>
+    /* ── Reset ── */
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 11pt;
+      color: #212121;
+      background: #fff;
+      line-height: 1.5;
+    }
 
-    <title>Report-{{title}}</title>
-    <style type="text/css">
-        body {
-            font-weight: 100;
-            font-size: 14px;
-        }
-        
-        .flex-container {
-            display: flex;
-        }
+    /* ── Letterhead — table layout (flex not supported) ── */
+    .letterhead {
+      border-bottom: 3px solid #283593;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
 
-        .flex-child {
-            flex: 1;
-        }
-        .header {
-            font-size: 30px;
-            font-weight: 100;
-            text-align: center;
-            color: #007cae;
-        }
-        .subheader {
-            font-size: 20px;
-            font-weight: 100;
-            text-align: left;
-            color: #844131;
-            margin-bottom: 0px;
-        }
-        .title {
-            font-size: 22px;
-            font-weight: 100;
-            /* text-align: right;*/
-            padding: 10px 20px 0px 20px;
-        }
-        .title span {
-            color: #007cae;
-        }
-        .details {
-            /* padding: 10px 20px 0px 20px; */
-            text-align: left !important;
-            /*margin-left: 40%;*/
-        }
-        .hrItem {
-            border: none;
-            height: 1px;
-            /* Set the hr color */
-            color: #333; /* old IE */
-            background-color: #fff; /* Modern Browsers */
-        }
-        .red {
-            color: red;
-        }
-        
-        small {
-            color: #e7aaad;
-        }
-        table, th, td {
-            border: 1px solid #d6d7ce;
-            padding: 3px;
-        }
-        table {
-            width: 100%;
-        }
-        img {
-            height: 70px;
-            width: 100px;
-        }
-        .img-1 {
-            height: 80px;
-            border-radius: 50%;
-            border: none;
-        }
+    .letterhead-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+    }
 
-        ul {
-            list-style-type: lower-alpha;   
-        }
-        
-        
-    </style>
-    
-  </head>
-  <body>
-    <div class="img-1">
-        <img src="data:image/png;base64,{{logo_image}}"
-        alt="logo"> <i style="font-size: large; color:red">&#160 F & L Trading Co. Ltd.</i>  
-        <p>GOB 1-4 Zamfara Plaza, <br> Trade Fair, Lagos. <br> <small>https://www.ozonefl.com</small></p>
-    </div>
-    
-  {% block content %}{% endblock%}
+    .letterhead-table td {
+      border: none;
+      padding: 0;
+      vertical-align: middle;
+    }
 
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    .logo-cell  { width: 80px; }
+    .name-cell  { padding-left: 20px; }
+    .addr-cell  { width: 200px; text-align: right; }
 
-  </body>
+    .letterhead-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: block;
+      margin: 4px;
+    }
+
+    .company-name {
+      font-size: 15pt;
+      font-weight: 700;
+      color: #283593;
+      line-height: 1.1;
+    }
+
+    .company-tagline {
+      font-size: 8pt;
+      color: #757575;
+      margin-top: 3px;
+    }
+
+    .letterhead-address {
+      font-size: 8pt;
+      color: #757575;
+      line-height: 1.6;
+      text-align: right;
+    }
+
+    .letterhead-address a { color: #283593; text-decoration: none; }
+
+    /* ── Document title bar ── */
+    .doc-title-bar {
+      background-color: #283593;
+      color: #fff;
+      padding: 8px 14px;
+      margin-bottom: 20px;
+    }
+
+    .doc-title-bar-title {
+      font-size: 13pt;
+      font-weight: 700;
+    }
+
+    .doc-title-bar-meta {
+      font-size: 8pt;
+      margin-top: 2px;
+    }
+
+    /* ── Section headings ── */
+    h1 { font-size: 14pt; font-weight: 700; color: #283593; margin: 18px 0 6px; }
+    h2 { font-size: 12pt; font-weight: 700; color: #283593; margin: 14px 0 5px; }
+    h3 {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #f4511e;
+      margin: 12px 0 4px;
+      border-left: 3px solid #f4511e;
+      padding-left: 8px;
+    }
+
+    /* ── Body text ── */
+    p  { margin: 0 0 8px; }
+    ol { margin: 0 0 10px; padding-left: 22px; }
+    ul { margin: 0 0 10px; padding-left: 22px; }
+    li { margin-bottom: 4px; }
+
+    /* ── Tables (content) ── */
+    .content-table          { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 10pt; }
+    .content-table th       { background-color: #283593; color: #fff; padding: 6px 8px; text-align: left; font-weight: 600; }
+    .content-table td       { padding: 5px 8px; border-bottom: 1px solid #e0e0e0; }
+
+    /* ── Utility classes ── */
+    .text-danger  { color: #e53935; }
+    .text-primary { color: #283593; }
+    .text-muted   { color: #757575; }
+    .text-center  { text-align: center; }
+    .text-right   { text-align: right; }
+    .font-bold    { font-weight: 700; }
+    .italic       { font-style: italic; }
+    .text-sm      { font-size: 9pt; }
+    .mt-section   { margin-top: 24px; }
+    .mt-sm        { margin-top: 10px; }
+    .mt-lg        { margin-top: 28px; }
+
+    /* ── Dividers ── */
+    hr { border: none; border-top: 1px solid #e0e0e0; margin: 14px 0; }
+
+    /* ── Footer ── */
+    .pdf-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border-top: 1px solid #e0e0e0;
+      padding: 5px 0;
+      font-size: 8pt;
+      color: #9e9e9e;
+    }
+
+    .pdf-footer-left  { float: left; }
+    .pdf-footer-right { float: right; }
+
+    /* ── Payroll PDF ── */
+    .pay-code        { text-align: center; }
+    .acct-col        { text-align: right; }
+    .net-pay         { text-align: right; font-weight: 700; color: #283593; }
+    .tfoot-net       { text-align: right; font-weight: 700; color: #283593; }
+
+    /* Summary table — faint indigo tint */
+    .summary-table      { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 10pt; }
+    .summary-table th   { background-color: #e8eaf6; color: #283593; padding: 6px 8px; text-align: left; font-weight: 600; border: 1px solid #c5cae9; }
+    .summary-table td   { background-color: #f5f5f5; padding: 6px 8px; border: 1px solid #e0e0e0; font-weight: 600; color: #212121; }
+
+    /* Detail table — tighter font, fixed columns */
+    .detail-table       { width: 100%; border-collapse: collapse; font-size: 9pt; }
+    .detail-table th    { background-color: #283593; color: #fff; padding: 5px 4px; font-weight: 600; }
+    .detail-table td    { padding: 4px; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
+    .detail-table tbody tr:nth-child(even) td { background-color: #f5f5f5; }
+    .detail-table tfoot th { background-color: #e8eaf6; color: #283593; padding: 5px 4px; }
+
+    .sig-table       { width: 100%; border: none; margin-top: 36px; }
+    .sig-table td    { border: none; padding-top: 0; }
+    .sig-cell-l      { width: 50%; vertical-align: bottom; }
+    .sig-cell-r      { width: 50%; text-align: right; vertical-align: bottom; }
+    .sig-line        { border-top: 1px solid #212121; width: 80%; padding-top: 4px; font-size: 9pt; color: #757575; }
+    .sig-line-r      { border-top: 1px solid #212121; width: 80%; margin-left: auto; padding-top: 4px; font-size: 9pt; color: #757575; text-align: right; }
+
+    /* ── Payslip PDF ── */
+    .ps-section         { margin-bottom: 12px; }
+    .ps-info-table      { width: 100%; border-collapse: collapse; font-size: 10pt; }
+    .ps-info-table td   { padding: 5px 10px; border: 1px solid #c5cae9; }
+    .ps-info-label      { background-color: #e8eaf6; color: #283593; font-weight: 600; width: 30%; }
+    .ps-info-value      { background-color: #f8f9ff; color: #212121; }
+
+    .ps-earn-table      { width: 100%; border-collapse: collapse; font-size: 10pt; }
+    .ps-earn-table th   { background-color: #e8f5e9; color: #1b5e20; padding: 6px 10px; font-weight: 700; border: 1px solid #c8e6c9; }
+    .ps-earn-table td   { padding: 5px 10px; border-bottom: 1px solid #e0e0e0; background-color: #ffffff; }
+
+    .ps-deduct-table    { width: 100%; border-collapse: collapse; font-size: 10pt; }
+    .ps-deduct-table th { background-color: #ffebee; color: #b71c1c; padding: 6px 10px; font-weight: 700; border: 1px solid #ffcdd2; }
+    .ps-deduct-table td { padding: 5px 10px; border-bottom: 1px solid #e0e0e0; background-color: #ffffff; }
+
+    .ps-net-table       { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    .ps-net-table td    { background-color: #283593; color: #fff; padding: 10px 16px; border: none; }
+    .ps-net-label       { font-size: 11pt; font-weight: 600; width: 30%; }
+    .ps-net-value       { font-size: 18pt; font-weight: 700; text-align: right; }
+    .ps-net-status      { font-size: 9pt; opacity: 0.85; }
+
+    .ps-side-table      { width: 49%; border-collapse: collapse; font-size: 10pt; float: left; }
+    .ps-side-right      { width: 49%; border-collapse: collapse; font-size: 10pt; float: right; }
+    .ps-clearfix        { clear: both; }
+
+    .ps-confidential    { text-align: center; color: #e53935; font-size: 8pt; margin-top: 14px; border-top: 1px solid #e0e0e0; padding-top: 6px; }
+    .ps-doc-date        { color: #9e9e9e; font-size: 8pt; }
+    .ps-net-left        { float: left; }
+    .ps-net-right       { float: right; text-align: right; font-size: 9pt; opacity: 0.8; }
+    .ps-net-clear       { clear: both; }
+
+    /* ── Legacy compat (existing PDF templates) ── */
+    .red        { color: #e53935; }
+    .subheader  { font-size: 12pt; font-weight: 700; color: #f4511e;
+                  border-left: 3px solid #f4511e; padding-left: 8px;
+                  margin: 14px 0 6px; display: block; }
+    .flex-container { width: 100%; }
+    .flex-child     { width: 48%; float: left; margin-right: 2%; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Letterhead ── -->
+  <div class="letterhead">
+    <table class="letterhead-table">
+      <tr>
+        <td class="logo-cell">
+          <img src="data:image/png;base64,{{ logo_image }}"
+               class="letterhead-logo" alt="Ozone Logo">
+        </td>
+        <td class="name-cell">
+          <div class="company-name">Ozone F &amp; L Trading Co. Ltd.</div>
+          <div class="company-tagline">A Distribution Company &mdash; Lagos, Nigeria</div>
+        </td>
+        <td class="addr-cell">
+          <div class="letterhead-address">
+            GOB 1&ndash;4 Zamfara Plaza, Trade Fair<br>
+            Lagos, Nigeria<br>
+            <a href="https://www.ozonefl.com">www.ozonefl.com</a>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ── Document title bar ── -->
+  <div class="doc-title-bar">
+    <div class="doc-title-bar-title">{{ title }}</div>
+    {% if subtitle %}
+    <div class="doc-title-bar-meta">{{ subtitle }}</div>
+    {% endif %}
+  </div>
+
+  {% block content %}{% endblock %}
+
+  <!-- ── Footer ── -->
+  <div class="pdf-footer">
+    <span class="pdf-footer-left">Ozone F &amp; L Trading Co. Ltd. &mdash; Confidential</span>
+    <span class="pdf-footer-right">{{ title }}</span>
+  </div>
+
+</body>
 </html>

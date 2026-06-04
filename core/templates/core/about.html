@@ -1,47 +1,35 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 
-{% block head %}
-    <style>
-      body {
-        background-color: black;
-        color: whitesmoke;
-        font-family: Arial, Helvetica, sans-serif;
-      }
-    #navmain {
-        display: none;
-    }
-</style>
-{% endblock %}
-
+{% block page_title %}About Ozone{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="row mt-3">
       <div class="col text-center">
         <img src="{% static 'customer/logo.png' %}"
-        class="card-img-top rounded-circle shadow"
-        style="max-width:200px"
-        alt="...">
+             class="ozone-logo shadow"
+             width="200" height="155"
+             alt="Ozone Logo">
       </div>
     </div>
     <div class="row mt-3">
       <div class="col">
         <hr>
-        <h4>Our Mission & Values</h4>
+        <h4>Our Mission &amp; Values</h4>
         <p>
-          To remain Lagos’s most trusted distributor of one-way packaging by fostering 
+          To remain Lagos's most trusted distributor of one-way packaging by fostering
           transparent partnerships and delivering unparalleled reliability to every business we serve.
         </p>
         <h4>Our Story</h4>
         <p>
-          Founded in 2009 with a vision to revolutionize the accessibility of premium Nigerian beverages, 
-          Ozone has evolved into a strategic cornerstone for the nation’s brewing industry. 
-          Our pioneering focus on one-way packaging fostered landmark partnerships with Nigerian Breweries, 
-          Guinness Nigeria, and International Breweries—collectively representing over 95% of the market. 
-          By driving the initial demand that sparked industry-wide scaling, we have converted passion into 
-          a multi-billion naira enterprise. Today, we are leveraging this legacy of trust to expand our 
-          footprint beyond Lagos, utilizing both digital innovation and physical expansion to serve 
+          Founded in 2009 with a vision to revolutionize the accessibility of premium Nigerian beverages,
+          Ozone has evolved into a strategic cornerstone for the nation's brewing industry.
+          Our pioneering focus on one-way packaging fostered landmark partnerships with Nigerian Breweries,
+          Guinness Nigeria, and International Breweries—collectively representing over 95% of the market.
+          By driving the initial demand that sparked industry-wide scaling, we have converted passion into
+          a multi-billion naira enterprise. Today, we are leveraging this legacy of trust to expand our
+          footprint beyond Lagos, utilizing both digital innovation and physical expansion to serve
           the entire nation and beyond.
         </p>
         <h4>Our Team</h4>
@@ -49,9 +37,9 @@
             {% for obj in objects %}
             {% if obj.is_management %}
             {% if obj.staff.first_name != 'Uzo' %}
-            <div class="col">
-              <img src="{{obj.image.url }}" class="rounded-circle ml-2" width="120px">
-              <i class="ml-2">{{obj.staff.first_name}}</i>
+            <div class="col-auto text-center mb-3">
+              <img src="{{ obj.image.url }}" class="rounded-circle" width="100px" alt="{{ obj.staff.first_name }}">
+              <br><small class="text-muted">{{ obj.staff.first_name }}</small>
             </div>
             {% endif %}
           {% endif %}
@@ -60,179 +48,76 @@
         <div class="row mt-3">
           <div class="col-12">
             <p>
-                At our core, we believe talent wins games, but teamwork wins championships. 
-                We’ve built a culture where diverse perspectives meet a shared sense of purpose. 
-                By listening, learning, and evolving together, we’ve turned every challenge into 
-                a milestone for growth. For us, success isn't measured in individual accolades, 
-                but in the collective impact we deliver to our partners and the beverage industry. 
-                We are proud of our history and even more excited for the future we are building together.
+                At our core, we believe talent wins games, but teamwork wins championships.
+                We've built a culture where diverse perspectives meet a shared sense of purpose.
             </p>
           </div>
-          <div class="row">
-            <div class="col-8">
+          <div class="row w-100 mx-0">
+            <div class="col-md-8">
               <h4>Our Achievements</h4>
-              <p>We are proud of our achievements and the recognition we have received for our work.
-                Some of our accomplishments include:
-              </p>
-                <ul>  
-                  <li>Guinness 2015 Distributors Award: Highest Volume on MSS (National)</li>
-                  <li>Nigerian Breweries 2020 distributors award: Funding Performance Award</li>
-                </ul>
+              <ul>
+                <li>Guinness 2015 Distributors Award: Highest Volume on MSS (National)</li>
+                <li>Nigerian Breweries 2020 distributors award: Funding Performance Award</li>
+              </ul>
             </div>
-            <div class="col-4 text-right">
+            <div class="col-md-4">
               <h4>Contact Us</h4>
               <p>
-                  Mobile: +234-(803)-3769-440<br> Email: <span class="text-info">contact@ozonefl.com</span> <br>
-                  Website: <a target="_blank" href="https://www.ozonefl.com">https://www.ozonefl.com</a>
+                Mobile: +234-(803)-3769-440<br>
+                Email: <span class="text-accent">contact@ozonefl.com</span><br>
+                Website: <a href="https://www.ozonefl.com" target="_blank" rel="noopener noreferrer">ozonefl.com</a>
               </p>
             </div>
           </div>
         </div>
-      </div> 
+      </div>
     </div>
     <hr>
     <div class="row mb-3 text-center">
         <div class="col">
-            <a href="{% url 'index' %}">
-            <i class="fa fa-home fa-2x text-info"></i></a>
+            <a href="{% url 'index' %}" aria-label="Home"><i class="fa fa-home fa-2x"></i></a>
         </div>
         <div class="col">
-            <a
-                href="model-link"
-                class="text-primary"
-                data-toggle="modal"
-                data-target="#tcModal">
-            Terms & Conditions
-            </a>
+            <a href="model-link" data-toggle="modal" data-target="#tcModal">Terms &amp; Conditions</a>
         </div>
         <div class="col">
-            <a
-                href="model-link"
-                class="text-primary"
-                data-toggle="modal"
-                data-target="#ppdModal">
-            Privacy Policy & Disclaimer
-            </a>
+            <a href="model-link" data-toggle="modal" data-target="#ppdModal">Privacy Policy &amp; Disclaimer</a>
         </div>
-<!--        template form for application-->
         <div class="col">
             <a href="{% url 'apply-create' %}">Apply</a>
         </div>
     </div>
 </div>
-<!-- Button trigger modal -->
 
-<!-- Modal -->
-<!--Policies and Procedures-->
-<div class="modal fade"
-     id="ppModal"
-     tabindex="-1"
-     aria-labelledby="ppModalLabel"
-     aria-hidden="true">
+<div class="modal fade" id="tcModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"
-            id="ppModalLabel">
-            Policies and Procedures
-        </h5>
-        <button
-                type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close"></i>
-        </button>
+        <h5 class="modal-title">Terms and Conditions</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
-            <h5 class="text-info">
-                <i class="fa fa-info-circle text-warning"></i>
-                coming soon in few days
-                <i class="fa fa-exclamation text-danger"></i>
-            </h5>
+        <p class="text-muted"><i class="fa fa-info-circle"></i> Coming soon.</p>
       </div>
       <div class="modal-footer">
-        <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal">Close
-        </button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
-<!--Terms and Conditions-->
-<div class="modal fade"
-     id="tcModal"
-     tabindex="-1"
-     aria-labelledby="tcModalLabel"
-     aria-hidden="true">
+
+<div class="modal fade" id="ppdModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"
-            id="tcModalLabel">
-            Terms and Conditions
-        </h5>
-        <button
-                type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close"></i>
-        </button>
+        <h5 class="modal-title">Privacy Policy &amp; Disclaimer</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
       </div>
       <div class="modal-body">
-            <h5 class="text-info">
-                <i class="fa fa-info-circle text-warning"></i>
-                coming soon in few days
-                <i class="fa fa-exclamation text-danger"></i>
-            </h5>
+        <p class="text-muted"><i class="fa fa-info-circle"></i> Coming soon.</p>
       </div>
       <div class="modal-footer">
-        <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal">Close
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-<!--Terms and Conditions-->
-<div class="modal fade"
-     id="ppdModal"
-     tabindex="-1"
-     aria-labelledby="ppdModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"
-            id="ppdModalLabel">
-            Privacy Policy and Disclaimer
-        </h5>
-        <button
-                type="button"
-                class="btn-close"
-                data-dismiss="modal"
-                aria-label="Close">
-            <i class="fa fa-close"></i>
-        </button>
-      </div>
-      <div class="modal-body">
-            <h5 class="text-info">
-                <i class="fa fa-info-circle text-warning"></i>
-                coming soon in few days
-                <i class="fa fa-exclamation text-danger"></i>
-            </h5>
-      </div>
-      <div class="modal-footer">
-        <button
-                type="button"
-                class="btn btn-secondary"
-                data-dismiss="modal">Close
-        </button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Productextension Productlist{% endblock %}
 
 {% block content %}
     <div class="container-fluid mt-3">
@@ -22,7 +24,7 @@
                                     {{obj.product.name}} {{obj.product.parameter}}
                                     {% endif %}
                                     {% endwith %}
-                                    <a class="float-right ml-3" href="{% url 'stock-month' view.kwargs.month %}"><i class="fa fa-reply"></i> Return</a>
+                                    <a class="btn btn-secondary float-right ml-3" href="{% url 'stock-month' view.kwargs.month %}"><i class="fa fa-times-circle"></i> Return</a>
                                     <!-- <a class="float-right" href="{% url 'stock-month' view.kwargs.month %}">Products</a> -->
                                   </button>
                                 </h2>

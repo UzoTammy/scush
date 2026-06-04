@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Product List{% endblock %}
 
 {% block content %}
 <div class="row m-2">
@@ -17,11 +19,11 @@
                         <div class="col text-right">
                             <!-- Pdf format -->
                             <a href="{% url 'pdf-stock-list' %}"
-                                class="btn btn-dark btn-sm text-right">
+                                class="btn btn-secondary text-right">
                                 <i class="fa fa-file-pdf-o text-white"></i>
                             </a>
                             <a href="{% url 'product-create' %}"
-                                class="btn btn-dark btn-sm text-right">
+                                class="btn btn-secondary text-right">
                                 <i class="fa fa-plus text-success"></i>
                                 Product
                             </a>
@@ -89,7 +91,7 @@
             <p class="text-danger">ND-Not Determined, VL-Very Low, L-Low, M-Moderate, H-High, VH-Very High</p>
             <div class="row">
                 <div class="col">
-                    <a class="btn btn-outline-dark float-right" href="{% url 'product-home' %}"><i class="fa fa-reply"></i></a>
+                    <a class="btn btn-secondary float-right" href="{% url 'product-home' %}"><i class="fa fa-times-circle"></i></a>
                 </div>
             </div>
         </div>

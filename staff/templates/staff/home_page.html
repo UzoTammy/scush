@@ -1,316 +1,321 @@
-{% extends 'users/base.html' %} 
-{% load static %} 
-{% load custom_tags %} 
+{% extends 'core/base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block page_title %}Staff &amp; HR{% endblock %}
 
 {% block head %}
 <style>
-    .newspaper {
-        column-count: 3;
-    }
-    
+  .stat-clickable { cursor: pointer; }
+  .stat-clickable:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
 </style>
-{% endblock head %} 
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <nav class="col-sm-2 bg-dark">
-            <button class="navbar-toggler bg-light float-right mt-1 mb-1 myBtn" type="button" data-toggle="collapse"
-                data-target="#dropdown" aria-controls="dropdown" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fa fa-navicon text-primary"></i>
-            </button>
 
-            <div class="collapse collapse-sm" id="dropdown">
-                <ul class="nav flex-column mr-auto">
-                    <!--Employee-->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'staff-list' %}"> 
-                            <i class="fa fa-group text-warning"></i> Employee 
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'terminated' staff_category %}">
-                            <i class="fa fa-angle-left text-warning"></i> Terminated
-                        </a>
-                    </li>
-                    <!--Payroll-->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'salary' %}">
-                            <i class="fa fa-cc-discover text-warning"></i> Payroll
-                        </a>
-                    </li>
-                    <!--Policies-->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'staff-policies' %}">
-                            <i class="fa fa-folder text-warning"></i> Policies</a>
-                    </li>
-                    <!--Procedures-->
-                    <li class="nav-item"><a class="nav-link" href="">
-                        <i class="fa fa-folder-open text-warning"></i> Procedure</a></li>
-                    <hr class="dropdown-divider">
-                    <li class="ml-1 text-white">Views</li>
-                    <!--gratuity-->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'employee-balance-list' %}">
-                            <i class="fa fa-bank text-warning"></i> Gratuity
-                        </a>
-                    </li>
-                    <!-- Permission -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'request-permission-list' %}">
-                            <i class="fa fa-universal-access text-warning"></i> Permission
-                        </a>
-                    </li>
-                    
-                    <!--Welfare-->
-                    {% if user.is_superuser %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'welfare-support-list' %}">
-                            <i class="fa fa-asterisk text-warning"></i> Welfare Support
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    <!-- Survey -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'survey-home' %}">
-                            <i class="fa fa-folder text-warning"></i> Survey - Number of Children</a>
-                    </li>
-                    <!--                Return Home-->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-reply"></i> Home</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        <!--   Body of Page     -->
-        <div class="col-sm-10" style="font-family: Times New Roman; font-size: 12pt">
-            <div class="row p-2">
-                <div class="col">
-                    {% for key, value in countdown %} {% if value == 0 %}
-                    <h5 style="font-family: cursive; color: #21ae10" class="text-center">
-                        Happy Birthday {{key}}. Our management and staff hereby wishes you a
-                        lovely years ahead
-                    </h5>
-                    {% endif %} {% endfor %}
-                </div>
-            </div>
-            <!--    upcoming birthdays-->
-            {% if countdown %}
-            <div class="row">
-                <div class="col">
-                    <h5>Upcoming Birthday</h5>
-                </div>
-            </div>
-            <div class="row">
-                <!--        {{countdown}}-->
-                <div class="col-sm-6">
-                    <ul>
-                        {% for key, value in countdown %} {% if value != 0 %}
-                        <li style="font-family: cursive; font-size: 13pt" class="text-info">
-                            {{key}}, your birthday comes up in {{value}}
-                            day{{value|pluralize}}
-                        </li>
-                        {% endif %} {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            {% endif %}
-            <div class="container">
-                {{payroll_list}}
-                <p class="newspaper">{{message_one}}</p>
-                <!--Workforce basic characteristics -->
-                <div class="vh-100">
-                    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 text-info">
-                        <div class="col p-2">
-                            <i class="fa fa-group text-danger"></i>
-                            Workforce <span class="badge badge-dark float-right">{{workforce}}</span>
-                        </div>
-                        
-                        <div class="col p-2">
-                            <i class="fa fa-female text-danger"></i>
-                            Female <span class="badge badge-dark float-right">{{female}}</span> 
-                        </div>
-                        
-                        <div class="col p-2">
-                            <i class="fa fa-briefcase text-danger"></i>
-                            Management <span class="badge badge-dark float-right">{{management}}</span>
-                        </div>
-                        
-                        <div class="col p-2">
-                            <a href="{% url 'terminated' staff_category %}">
-                                <i class="fa fa-stop text-danger"></i>
-                                Terminated <span class="badge badge-dark float-right">{{terminated}}</span></a>
-                        </div>
-                        <div class="col p-2">
-                            <i class="fa fa-step-forward text-danger"></i>
-                            Probation <span class="badge badge-dark float-right">{{probation}}</span>
-                        </div>
-                    
-                </div>
-                <p class="newspaper">{{ message_two }}</p>
-                <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 mt-3">
-                    <p class="text-center" style="font-size: 1.5rem">
-                        On probation: 
-                        <a class="circle" href="#" data-toggle="modal" data-target="#probationModal">{{probation}}</a>
-                    </p>
-                    <p class="text-center" style="font-size: 1.5rem">
-                        On internal probation: 
-                        <a class="circle" href="#" data-toggle="modal" data-target="#internalProbationModal">{{internal_probation}}</a>
-                    </p>
-                    <p class="text-center" style="font-size: 1.5rem">
-                        Permission taken <small>in {{today|date:'Y'}}</small>:
-                        <a class="circle" href="#" data-toggle="modal" data-target="#permissionTakenModal">{{number_of_permissions}}</a>
-                    </p>
-                </div>
-
-                <!-- Modal -->
-                <!-- Probation -->
-                <div class="modal fade" id="probationModal" tabindex="-1" role="table"
-                    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="table">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLongTitle">
-                                    Probation
-                                </h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="col">
-                                    <table class="table table-sm" data-toggle="table" data-pagination="true"
-                                        data-page-list="[5, 10, All]" data-page-size="5">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Employee</th>
-                                                <th>Time Left</th>
-                                                <th>Due Date</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for staff in staff_on_probation %}
-                                            <tr>
-                                                <td>{{staff.code|zeropadding:3}}</td>
-                                                <td>{{staff.name}}</td>
-                                                <td>{{staff.date|timeuntil:today }}</td>
-                                                <td>{{staff.date|date:'jS M, Y'}}</td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Internal Probation -->
-                <div class="modal fade" id="internalProbationModal" tabindex="-1" role="table" 
-                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3 class="modal-title">Secondary Probation</h3>
-                            </div>
-                            <div class="modal-body">
-                                <div class="col">
-                                    <table class="table table-sm" data-toggle="table" data-pagination="true"
-                                        data-page-list="[5, 10, All]" data-page-size="5">
-                                        
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Employee</th>
-                                                <th>Start Date</th>
-                                                <th>Due Date</th>
-                                                <th>Days Left</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for data in reassign_data %}
-                                            <tr>
-                                                <td>{{data.code|zeropadding:3}}</td>
-                                                <td>{{data.staff}}</td>
-                                                <td>{{data.start_date|date:'jS M, Y'}}</td>
-                                                <td>{{data.due_date|date:'jS M, Y'}}</td>
-                                                {% if data.days_left > 0 %}
-                                                <td>{{data.days_left}}</td>
-                                                {% else %}
-                                                <td>Complete</td>
-                                                {% endif %}
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Permission Taken -->
-                <div class="modal fade" id="permissionTakenModal" tabindex="-1" role="table" 
-                    aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3 class="modal-title">Permission taken this year</h3>
-                            </div>
-                            <div class="modal-body">
-                                <div class="col">
-                                    <table class="table table-sm" data-toggle="table" data-click-to-select="true" data-pagination="true"
-                                        data-page-list="[5, 10, All]" data-page-size="5">
-                                        
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Employee</th>
-                                                <th>Duration</th>
-                                                <th>Times</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for permit in permissions %}
-                                            <tr>
-                                                <td>{{permit.code|zeropadding:3}}</td>
-                                                <td>{{permit.name}}</td>
-                                                <td>
-                                                    {% if permit.duration|first != 0 %} 
-                                                    {{permit.duration|first}}Day{{permit.duration|first|pluralize}} 
-                                                    {% endif %} 
-                                                    {% if permit.duration|last != 0 %}
-                                                    {{permit.duration|last}}Hr{{permit.duration|last|pluralize}}
-                                                    {% endif %}
-                                                </td>
-                                                <td class="text-right">{{permit.count}}</td>
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
+  <!-- ── Quick navigation ────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-users mr-2"></i>Staff &amp; HR</span></div>
+    <div class="ds-card__body d-flex flex-wrap staff-nav-bar">
+      <a class="staff-nav-link" href="{% url 'staff-list' %}">
+        <i class="fa fa-group"></i> Employees
+      </a>
+      <a class="staff-nav-link" href="{% url 'terminated' staff_category %}">
+        <i class="fa fa-user-times"></i> Terminated
+      </a>
+      <a class="staff-nav-link" href="{% url 'salary' %}">
+        <i class="fa fa-money"></i> Payroll
+      </a>
+      <a class="staff-nav-link" href="{% url 'staff-policies' %}">
+        <i class="fa fa-folder"></i> Policies
+      </a>
+      <a class="staff-nav-link" href="{% url 'employee-balance-list' %}">
+        <i class="fa fa-bank"></i> Gratuity
+      </a>
+      <a class="staff-nav-link" href="{% url 'request-permission-list' %}">
+        <i class="fa fa-universal-access"></i> Permission
+      </a>
+      {% if user.is_superuser %}
+      <a class="staff-nav-link" href="{% url 'welfare-support-list' %}">
+        <i class="fa fa-asterisk"></i> Welfare
+      </a>
+      {% endif %}
+      <a class="staff-nav-link" href="{% url 'survey-home' %}">
+        <i class="fa fa-bar-chart"></i> Survey
+      </a>
     </div>
+  </div>
+
+  <!-- ── Birthday alerts ────────────────────────────── -->
+  {% for key, value in countdown %}
+  {% if value == 0 %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fa fa-birthday-cake mr-2"></i>
+    <strong>Happy Birthday, {{ key }}!</strong>
+    Our management and staff wish you many more lovely years ahead.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endif %}
+  {% endfor %}
+
+  <!-- ── Upcoming birthdays ─────────────────────────── -->
+  {% if countdown %}
+  {% with upcoming=countdown|length %}
+  {% if upcoming %}
+  <div class="ds-card mb-4">
+    <div class="ds-card__header">
+      <span><i class="fa fa-birthday-cake mr-2"></i>Upcoming Birthdays</span>
+    </div>
+    <div class="ds-card__body">
+      <div class="row">
+        {% for key, value in countdown %}
+        {% if value != 0 %}
+        <div class="col-sm-6 col-md-4 mb-2">
+          <div class="d-flex align-items-center">
+            <i class="fa fa-circle text-accent mr-2 birthday-dot"></i>
+            <span>
+              <strong>{{ key }}</strong> — in
+              <span class="badge badge-primary">{{ value }} day{{ value|pluralize }}</span>
+            </span>
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+  {% endif %}
+
+  <!-- ── Workforce stats ────────────────────────────── -->
+  <div class="row mb-4">
+    <div class="col-sm-6 col-md col-lg mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label"><i class="fa fa-group mr-1"></i> Workforce</div>
+        <div class="ds-stat__value">{{ workforce }}</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md col-lg mb-3">
+      <div class="ds-stat ds-stat--success">
+        <div class="ds-stat__label"><i class="fa fa-female mr-1"></i> Female</div>
+        <div class="ds-stat__value">{{ female }}</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md col-lg mb-3">
+      <div class="ds-stat ds-stat--accent">
+        <div class="ds-stat__label"><i class="fa fa-briefcase mr-1"></i> Management</div>
+        <div class="ds-stat__value">{{ management }}</div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md col-lg mb-3">
+      <a href="{% url 'terminated' staff_category %}" class="text-decoration-none">
+        <div class="ds-stat ds-stat--danger">
+          <div class="ds-stat__label"><i class="fa fa-user-times mr-1"></i> Terminated</div>
+          <div class="ds-stat__value">{{ terminated }}</div>
+        </div>
+      </a>
+    </div>
+    <div class="col-sm-6 col-md col-lg mb-3">
+      <div class="ds-stat ds-stat--warning">
+        <div class="ds-stat__label"><i class="fa fa-clock-o mr-1"></i> Probation</div>
+        <div class="ds-stat__value">{{ probation }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HR activity — clickable tiles ─────────────── -->
+  <div class="row mb-4">
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat ds-stat--warning stat-clickable"
+           data-toggle="modal" data-target="#probationModal"
+           role="button" tabindex="0" aria-label="View staff on probation">
+        <div class="ds-stat__label"><i class="fa fa-hourglass-half mr-1"></i> On Probation</div>
+        <div class="ds-stat__value">{{ probation }}</div>
+        <small class="ds-stat__sub">Click to view</small>
+      </div>
+    </div>
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat ds-stat--accent stat-clickable"
+           data-toggle="modal" data-target="#internalProbationModal"
+           role="button" tabindex="0" aria-label="View staff on internal probation">
+        <div class="ds-stat__label"><i class="fa fa-refresh mr-1"></i> Internal Probation</div>
+        <div class="ds-stat__value">{{ internal_probation }}</div>
+        <small class="ds-stat__sub">Click to view</small>
+      </div>
+    </div>
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat stat-clickable"
+           data-toggle="modal" data-target="#permissionTakenModal"
+           role="button" tabindex="0" aria-label="View permissions taken this year">
+        <div class="ds-stat__label text-nowrap">
+          <i class="fa fa-universal-access mr-1"></i> Permission Taken {{ today|date:'Y' }}
+        </div>
+        <div class="ds-stat__value">{{ number_of_permissions }}</div>
+        <small class="ds-stat__sub">Click to view</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Company philosophy ───────────────────────── -->
+  {% if message_one or message_two %}
+  <div class="row mb-4">
+    {% if message_one %}
+    <div class="col-lg-6 mb-4 mb-lg-0">
+      <div class="ds-card h-100">
+        <div class="ds-card__header">
+          <span><i class="fa fa-heart mr-2"></i>Our Commitment to You</span>
+        </div>
+        <div class="ds-card__body">
+          {{ message_one|linebreaksbr }}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% if message_two %}
+    <div class="col-lg-6">
+      <div class="ds-card h-100">
+        <div class="ds-card__header">
+          <span><i class="fa fa-star mr-2"></i>The Power of Engagement</span>
+        </div>
+        <div class="ds-card__body">
+          {{ message_two|linebreaksbr }}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+
+<!-- ── Modals ─────────────────────────────────────── -->
+
+<!-- Probation -->
+<div class="modal fade" id="probationModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Staff on Probation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover mb-0"
+                 data-toggle="table" data-pagination="true"
+                 data-page-list="[5,10,All]" data-page-size="5">
+            <thead>
+              <tr>
+                <th>ID</th><th>Employee</th><th>Time Left</th><th>Due Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for staff in staff_on_probation %}
+              <tr>
+                <td>{{ staff.code|zeropadding:3 }}</td>
+                <td>{{ staff.name }}</td>
+                <td>{{ staff.date|timeuntil:today }}</td>
+                <td>{{ staff.date|date:'jS M, Y' }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Internal Probation -->
+<div class="modal fade" id="internalProbationModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Secondary / Internal Probation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover mb-0"
+                 data-toggle="table" data-pagination="true"
+                 data-page-list="[5,10,All]" data-page-size="5">
+            <thead>
+              <tr>
+                <th>ID</th><th>Employee</th><th>Start</th><th>Due Date</th><th>Days Left</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for data in reassign_data %}
+              <tr>
+                <td>{{ data.code|zeropadding:3 }}</td>
+                <td>{{ data.staff }}</td>
+                <td>{{ data.start_date|date:'jS M, Y' }}</td>
+                <td>{{ data.due_date|date:'jS M, Y' }}</td>
+                <td>{% if data.days_left > 0 %}{{ data.days_left }}{% else %}<span class="text-success">Complete</span>{% endif %}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Permission Taken -->
+<div class="modal fade" id="permissionTakenModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Permission Taken — {{ today|date:'Y' }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover mb-0"
+                 data-toggle="table" data-pagination="true"
+                 data-page-list="[5,10,All]" data-page-size="5">
+            <thead>
+              <tr>
+                <th>ID</th><th>Employee</th><th>Duration</th><th class="text-right">Times</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for permit in permissions %}
+              <tr>
+                <td>{{ permit.code|zeropadding:3 }}</td>
+                <td>{{ permit.name }}</td>
+                <td>
+                  {% if permit.duration|first != 0 %}{{ permit.duration|first }}Day{{ permit.duration|first|pluralize }}{% endif %}
+                  {% if permit.duration|last != 0 %}{{ permit.duration|last }}Hr{{ permit.duration|last|pluralize }}{% endif %}
+                </td>
+                <td class="text-right">{{ permit.count }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

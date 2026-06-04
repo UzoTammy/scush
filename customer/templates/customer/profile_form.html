@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Profile Form{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -16,11 +18,11 @@
                     {% if title == "Update" %}
                     <a class="btn btn-outline-light float-right"
                        href="{% url 'customer-detail' object.pk %}">
-                        <i class="fa fa-reply text-danger"></i> Return</a>
+                        <i class="fa fa-times-circle"></i> Return</a>
                     {% else %}
                     <a class="btn btn-outline-light float-right"
                        href="{% url 'customer-home' %}">
-                        <i class="fa fa-reply text-danger"></i> Return</a>
+                        <i class="fa fa-times-circle"></i> Return</a>
                     {% endif %}
                 </div>
             </form>

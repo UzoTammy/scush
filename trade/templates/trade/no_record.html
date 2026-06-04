@@ -1,11 +1,13 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}No Record{% endblock %}
 
 {% block content%}
 <div class="container">
     <div class="row text-center">
         <div class="col">
             <h3>{{message}}</h3>
-            <a class="btn btn-outline-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i></a>
+            <a class="btn btn-secondary" href="{% url 'trade-home' %}"><i class="fa fa-times-circle"></i></a>
         </div>
     </div>
     

@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Profile List{% endblock %}
 
 {% block content %} 
 {% load custom_tags %}
@@ -33,7 +35,7 @@
                 Save or Update
             </a>
             <a class="float-right" href="{% url 'customer-home' %}">
-                <i class="fa fa-reply fa-2x"></i>
+                <i class="fa fa-times-circle"></i>
             </a>
         </div>
     </div>

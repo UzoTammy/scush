@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Budget Form{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-3">
@@ -14,8 +16,8 @@
                         <button type="submit" class="btn btn-primary">Save</button>
                     </div>
                     <div class="col text-right">
-                        <a href="{% url 'trade-budget-list' %}" class="btn btn-outline-dark" title="Cancel">
-                            <i class="fa fa-reply"></i> Cancel
+                        <a href="{% url 'trade-budget-list' %}" class="btn btn-secondary" title="Cancel">
+                            <i class="fa fa-times-circle"></i> Cancel
                         </a>
                     </div>
                 </div>

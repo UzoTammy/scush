@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Delivery Form Deliver{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -8,18 +10,18 @@
         <div class="col-7">
             <form action="" method="post">
                 {% csrf_token %}
-                <legend class="text-info">Delivery Stage (2 of 5 steps)</legend>
+                <legend class="text-primary">Delivery Stage (2 of 5 steps)</legend>
                 <hr>
                 <p class="text-success">Delivery Number: {{object.delivery_number}}</p>
                 <p>Source: {{object.source }}</p>
                 <div class="form-group mt-3">
                        {{form|crispy}}
                     <button type="submit"
-                            class="btn btn-outline-info btn-sm">Submit
+                            class="btn btn-primary btn-sm">Submit
                     </button>
-                    <a class="btn btn-outline-dark btn-sm float-right"
+                    <a class="btn btn-secondary float-right"
                        type="button" href="{% url 'delivery-list' %}">
-                        <i class="fa fa-reply"></i>
+                        <i class="fa fa-times-circle"></i>
                     </a>
                 </div>
             </form>

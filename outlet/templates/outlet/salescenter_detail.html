@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Salescenter Detail{% endblock %}
 
 {% block content %} 
 <div class="container">
@@ -23,7 +25,7 @@
             <a type="button" href="{% url 'sales-center-update' object.pk %}">Update</a>
         </div>
         <div class="col text-center">
-            <a type="button" href="{% url 'sales-center-list' %}"><i class="fa fa-reply"></i></a>
+            <a type="button" href="{% url 'sales-center-list' %}"><i class="fa fa-times-circle"></i></a>
         </div>
     </div>
 </div>

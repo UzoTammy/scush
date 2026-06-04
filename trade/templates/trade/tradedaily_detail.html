@@ -1,13 +1,15 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 {% load static %}
+
+{% block page_title %}Tradedaily Detail{% endblock %}
 
 {% block content %}
 <div class="container">
     
     <div class="row mt-3">
         <div class="col text-center">
-            <img class="rounded-circle" height="70px" src="{% static 'customer/logo.png' %}" alt="">
+            <img class="ozone-logo" width="90" height="70" src="{% static 'customer/logo.png' %}" alt="Ozone Logo">
             <h3>Trading, Profit & Loss Account for {{object.date|date:'d-m-Y'}}</h3>
         </div>
     </div>
@@ -53,10 +55,10 @@
     
     <div class="row mt-3">
         <div class="col">
-            <a class="btn btn-outline-dark" href="{% url 'trade-daily-update' object.pk %}">Update</a>
+            <a class="btn btn-secondary" href="{% url 'trade-daily-update' object.pk %}">Update</a>
         </div>
         <div class="col text-right">
-            <a class="btn btn-outline-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i> Trade Home</a>
+            <a class="btn btn-secondary" href="{% url 'trade-home' %}"><i class="fa fa-times-circle"></i> Trade Home</a>
         </div>
     </div>
 </div>

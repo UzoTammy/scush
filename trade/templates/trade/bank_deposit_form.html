@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Bank Deposit Form{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -17,8 +19,8 @@
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                     <div class="col text-right">
-                        <a class="btn btn-outline-dark" 
-                        href="{% url 'bank-account-home' %}"><i class="fa fa-reply"></i> 
+                        <a class="btn btn-secondary" 
+                        href="{% url 'bank-account-home' %}"><i class="fa fa-times-circle"></i> 
                         Trade Home
                         </a>
                     </div>

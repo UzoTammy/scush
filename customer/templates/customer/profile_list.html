@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Profile List{% endblock %}
 
 {% block content %}
 <div class="row m-2">
@@ -14,11 +16,11 @@
                                 Customers List - {{the_list|upper}}
                             </div>
                             <div class="col text-right">
-                                <a class="btn btn-dark btn-sm" href="{% url 'pdf-customers-list' %}">
+                                <a class="btn btn-secondary" href="{% url 'pdf-customers-list' %}">
                                     <i class="fa fa-file-pdf-o text-danger"></i>
                                     <i class="fa fa-print text-white"></i>
                                 </a>
-                                <a href="{% url 'customer-create' %}" class="btn btn-dark btn-sm text-right">
+                                <a href="{% url 'customer-create' %}" class="btn btn-secondary text-right">
                                     <i class="fa fa-plus text-success"></i>
                                     New Customer
                                 </a>
@@ -63,8 +65,8 @@
         {{qs}}
         <div class="row float-right">
             <div class="col">
-                <a type="button" class="btn btn-outline-dark" href="{% url 'customer-home' %}">
-                    <i class="fa fa-reply"></i>
+                <a type="button" class="btn btn-secondary" href="{% url 'customer-home' %}">
+                    <i class="fa fa-times-circle"></i>
                 </a>
             </div>
         </div>

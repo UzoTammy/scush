@@ -1,39 +1,40 @@
-{% extends 'users/base.html' %}
-{%load custom_tags %}
+{% extends 'core/base.html' %}
+{% load custom_tags %}
+
+{% block page_title %}Users &amp; Groups{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <table class="table table-sm table-info"
-            data-pagination="true" 
-            data-toggle="table">
-                <caption>
-                    Users and Groups
-                </caption>
-                <thead class="bg-light">
-                    <tr class="text-center">
-                    <th>ID</th>
-                    <th>User</th>
-                    <th>Staff</th>
-                </tr>
-                </thead>
-            {% for user in groups %}
-               <tr>
-                   {% with user|first as user %}
-                   <td>{{user.id}}</td>
-                   {% endwith %}
-                   <td>{{user}}</td>
-                   <td>{{user.groups.all}}</td>
-                </tr>
-            {% endfor %}
-            </table>
-            
-            <a href="{% url 'users-list' %}" class="btn btn-dark float-right mt-3">
-                <i class="fa fa-reply"></i>
-            </a>
-        </div>
+<div class="ds-page-header">
+  <h2 class="ds-page-header__title">Users &amp; Groups</h2>
+  <a class="btn btn-secondary" href="{% url 'users-list' %}">
+    <i class="fa fa-times-circle mr-1"></i> Back to Users
+  </a>
+</div>
+
+<div class="ds-card">
+  <div class="ds-card__body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover mb-0"
+             data-pagination="true"
+             data-toggle="table">
+        <thead>
+          <tr class="text-center">
+            <th>ID</th>
+            <th>User</th>
+            <th>Groups</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in groups %}
+          <tr>
+            <td>{% with user|first as u %}{{ u.id }}{% endwith %}</td>
+            <td>{{ user }}</td>
+            <td>{{ user.groups.all }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-    
+  </div>
 </div>
 {% endblock %}

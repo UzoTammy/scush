@@ -75,7 +75,7 @@ class PayrollListView(LoginRequiredMixin, ListView):
                 period_word = ''
 
             context = {
-                'N': 'NGN',
+                'N': 'N',
                 'credentials': f"{request.user.first_name} {request.user.last_name}",
                 'approval': Employee.active.first(),
                 'today': datetime.datetime.now(),
@@ -249,7 +249,7 @@ class PayslipView(LoginRequiredMixin, TemplateView):
             pdf = render_to_pdf(self.template_name, context)
             if pdf:
                 response = HttpResponse(pdf, content_type='application/pdf')
-                response['Content-Disposition'] = f'filename="payslip-{user_input}.pdf"'
+                response['Content-Disposition'] = f'attachment; filename="payslip-{user_input}.pdf"'
                 return response
             return HttpResponse(f"""<div style=padding:20;><h1>Payslip {user_input} do not exist</h1>
                 <p><a href='/home/'>Return Home</a></p></div>""")

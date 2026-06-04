@@ -1,40 +1,55 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 
-{% block content %} 
-<div class="container">
-    <div class="row mt-3">
-        <div class="col">
-            <table class="table" data-toggle="table">
-                <caption>List of Sales Center</caption>
-                <thead>
-                    <tr class="text-center bg-primary text-white">
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Address</th>
-                        <th>Sales Center Manager</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for object in object_list %}
-                    <tr class="text-center">
-                        <td>{{object.pk|zeropadding:2}}</td>
-                        <td><a href="{% url 'sales-center-detail' object.pk %}">{{object.name}}</a> </td>
-                        <td>{{object.address}}</td>
-                        <td>{{object.staff}}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+{% block page_title %}Sales Centers{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-store mr-2"></i>Sales Centers</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'sales-center-create' %}">
+          <i class="fa fa-plus"></i> New Center
+        </a>
+        <a class="staff-nav-link" href="{% url 'home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
-    <div class="row mt-3">
-        <div class="col text-center">
-            <a type="button" href="{% url 'sales-center-create' %}">Create</a>
-        </div>
-        <div class="col text-center">
-            <a type="button" href="{% url 'home' %}"><i class="fa fa-reply"></i></a>
-        </div>
+  </div>
+
+  <!-- ── Sales centers table ───────────────────────── -->
+  <div class="ds-card">
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0" data-toggle="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Manager</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for object in object_list %}
+            <tr>
+              <td>{{ object.pk|zeropadding:2 }}</td>
+              <td>
+                <a href="{% url 'sales-center-detail' object.pk %}">{{ object.name }}</a>
+              </td>
+              <td>{{ object.address }}</td>
+              <td>{{ object.staff }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
+
 </div>
 {% endblock %}

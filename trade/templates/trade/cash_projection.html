@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Cash Projection{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-3">
@@ -13,11 +15,11 @@
             </small>
         </div>
         <div class="col text-right">
-            <a href="{% url 'cash-projection-create' %}" class="btn btn-primary btn-sm">
+            <a href="{% url 'cash-projection-create' %}" class="btn btn-secondary">
                 <i class="fa fa-plus"></i> Add Entry
             </a>
-            <a href="{% url 'trade-home' %}" class="btn btn-outline-dark btn-sm ml-1" title="Trade Home">
-                <i class="fa fa-reply"></i>
+            <a href="{% url 'trade-home' %}" class="btn btn-secondary ml-1" title="Trade Home">
+                <i class="fa fa-times-circle"></i>
             </a>
         </div>
     </div>

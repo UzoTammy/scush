@@ -1,6 +1,8 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 {% load custom_tags %}
+
+{% block page_title %}Deliverynote List{% endblock %}
 
 {% block content %}
 <div class="p-3">
@@ -59,8 +61,8 @@
     <div class="container mt-5">
         <div class="row float-right">
             <div class="col">
-                <a class="btn btn-outline-dark" href="{% url 'delivery-home' %}">
-                    <i class="fa fa-reply text-danger"></i>
+                <a class="btn btn-secondary" href="{% url 'delivery-home' %}">
+                    <i class="fa fa-times-circle"></i>
                 </a>
             </div>
         </div>

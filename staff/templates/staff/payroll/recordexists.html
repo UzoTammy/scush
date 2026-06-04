@@ -1,6 +1,8 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 {% load djmoney %}
+
+{% block page_title %}Recordexists{% endblock %}
 
 {% block content %}
 <div class="container mt-3">
@@ -20,9 +22,9 @@
             <a href="{% url 'payroll-view' period %}">View this payroll</a>
         </div>
         <div class="col d-flex justify-content-end">
-            <a class="btn btn-outline-dark"
+            <a class="btn btn-secondary"
                href="{% url 'salary' %}">
-            <i class="fa fa-reply"></i>
+            <i class="fa fa-times-circle"></i>
             </a>
         </div>
     </div>

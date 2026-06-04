@@ -1,6 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
 
+{% block page_title %}Settings Form{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -13,7 +14,7 @@
                 <div class="row">
                     <div class="col text-right">
                         <button class="btn btn-primary" type="submit">Submit</button>
-                        <a class="btn btn-dark" href="{% url 'json-list' %}"> <i class="fa fa-home"></i> Settings</a>
+                        <a class="btn btn-secondary" href="{% url 'json-list' %}"> <i class="fa fa-home"></i> Settings</a>
                     </div>
                 </div>
                 

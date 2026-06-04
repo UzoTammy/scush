@@ -55,6 +55,7 @@ class Applicant(models.Model):
                                           (False, 'Rejected')],
                                  null=True, blank=True)
     state = models.CharField(max_length=10, default='Applied')
+    resignation_reason = models.TextField(blank=True, null=True)
     
     objects = ApplicantManager()
     this_year = ThisYearApplicantManager()

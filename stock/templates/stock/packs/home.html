@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Home{% endblock %}
 
 {% block content %}
 <div class="container-fluid p-3">
@@ -13,19 +15,19 @@
               <span class="text-danger">Logged-in at:</span> {{user.last_login}}
               <span class="btn btn-light btn-sm float-right">
                   <!-- Button trigger modal -->
-                  <a class="btn btn-primary btn-sm" 
+                  <a class="btn btn-secondary" 
                     href="." 
                     data-toggle="modal" 
                     data-target="#stockReportDateModal">
                     Set Date 
                   </a>
-                  <!-- <a class="btn btn-primary btn-sm" 
+                  <!-- <a class="btn btn-secondary" 
                   href="." 
                   data-toggle="modal" 
                   data-target="#fileUploadModal">
                     File Upload <sup class="text-warning">2</sup>
                   </a>
-                  <a class="btn btn-primary btn-sm" 
+                  <a class="btn btn-secondary" 
                     href="#">
                     View Upload <sup class="text-warning">3</sup>
                   </a> -->
@@ -79,7 +81,7 @@
   <div class="row m-3">
     <div class="col">
       <a class="btn btn-primary" href="{% url 'stock-report' %}">View</a>
-      <a class="btn btn-dark float-right" href="{% url 'product-home' %}"><i class="fa fa-reply"></i></a> 
+      <a class="btn btn-secondary float-right" href="{% url 'product-home' %}"><i class="fa fa-times-circle"></i></a> 
     </div>
   </div>
 </div>
@@ -127,7 +129,7 @@
             {% csrf_token %}
             <div class="row">
               <div class="col">
-                  <P class="text-info">Set Date is: {{user.profile.stock_report_date|date:'d-m-Y'}} <br>
+                  <P class="text-primary">Set Date is: {{user.profile.stock_report_date|date:'d-m-Y'}} <br>
                     <small class="text-muted">The file to be uploaded has got a date with it.
                       If records exist in the database for this date, it will be updated and if not, it will be added
                       <span class="text-danger">!!!</span>

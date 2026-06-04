@@ -1,4 +1,4 @@
-{% extends 'users/base.html' %} {% load custom_tags %} {% block head %}
+{% extends 'core/base.html' %} {% load custom_tags %} {% block head %}
 <style>
     .text-lime {
         color: lime;
@@ -56,7 +56,9 @@
         padding: 0.3rem;
     }
 </style>
-{% endblock %} {% block content %}
+{% endblock %} {% block page_title %}Home{% endblock %}
+
+{% block content %}
 <div class="container-fluid">
     <h3 class="text-center mt-3">Products Performance</h3>
     {% if record_exist %}
@@ -335,7 +337,7 @@
 
     <div class="row m-3">
         <div class="col">
-            <a class="float-right" href="{% url 'product-home' %}"><i class="fa fa-reply fa-2x"></i></a>
+            <a class="btn btn-secondary float-right" href="{% url 'product-home' %}"><i class="fa fa-times-circle"></i></a>
         </div>
     </div>
     {% else %}

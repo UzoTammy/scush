@@ -1,94 +1,104 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Debtors — Partner Receivables{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <nav class="col-sm-2 bg-dark">
-            <button class="navbar-toggler bg-light mt-1 mb-1 float-right myBtn" type="button"
-                data-toggle="collapse" data-target="#Dropdown2" aria-controls="Dropdown2"
-                aria-expanded="true" aria-label="toggle navigation">
-                <i class="fa fa-navicon fa-1x text-primary"></i>
-            </button>
-            <div class="collapse collapse-sm" id="Dropdown2">
-                <ul class="nav flex-column mt-3">
-                    <li class="text-white"><i class="fa fa-minus text-warning"></i> Debtors</li>
-                    <li class="nav-item">
-                        <a href="{% url 'creditor-create' %}" class="nav-link">
-                            <i class="fa fa-plus text-warning"></i> Add Entry
-                        </a>
-                    </li>
-                    <hr class="dropdown-divider">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'trade-home' %}">
-                            <i class="fa fa-reply text-warning"></i> Trade Home
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
 
-        <div class="col mt-3">
-            <div class="row mb-2">
-                <div class="col">
-                    <h5>Debtors — Partner Receivables</h5>
-                    <small class="text-muted">Amounts owed <strong>to the company</strong> by partners.</small>
-                </div>
-                {% if total_outstanding %}
-                <div class="col text-right">
-                    <span class="badge badge-warning p-2">
-                        Total Receivable: {{ total_outstanding }}
-                    </span>
-                </div>
-                {% endif %}
-            </div>
-
-            {% if has_records %}
-            <table class="table table-bordered table-sm table-hover">
-                <thead class="bg-dark text-white text-center">
-                    <tr>
-                        <th>Account</th>
-                        <th>Type</th>
-                        <th>Total CR</th>
-                        <th>Total DR</th>
-                        <th>Balance (CR &minus; DR)</th>
-                        <th>Entries</th>
-                        <th>Last Entry</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for s in summaries %}
-                    <tr class="text-right {% if s.balance.amount > 0 %}table-warning{% elif s.balance.amount < 0 %}table-danger{% endif %}">
-                        <td class="text-left">
-                            <a href="{% url 'creditor-detail' s.account %}">{{ s.account }}</a>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge {% if s.account_type == 'Ext' %}badge-secondary{% else %}badge-info{% endif %}">
-                                {{ s.account_type }}
-                            </span>
-                        </td>
-                        <td>{{ s.cr_total }}</td>
-                        <td>{{ s.dr_total }}</td>
-                        <td class="font-weight-bold {% if s.balance.amount > 0 %}text-warning{% elif s.balance.amount < 0 %}text-danger{% else %}text-success{% endif %}">
-                            {{ s.balance }}
-                        </td>
-                        <td class="text-center">{{ s.entry_count }}</td>
-                        <td class="text-left">{{ s.last_entry|date:"d-m-Y" }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <small class="text-muted">
-                CR = amount billed / owed to us &nbsp;|&nbsp; DR = payment received from debtor &nbsp;|&nbsp;
-                Amber = still receivable &nbsp;|&nbsp; Red = overpayment (DR &gt; CR).
-            </small>
-            {% else %}
-            <div class="mt-4">
-                <h6 class="text-muted">No debtor records yet.</h6>
-                <a href="{% url 'creditor-create' %}" class="btn btn-primary btn-sm mt-2">Add First Entry</a>
-            </div>
-            {% endif %}
-        </div>
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-users mr-2"></i>Debtors &amp; Partner Receivables</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'creditor-create' %}">
+          <i class="fa fa-plus"></i> Add Entry
+        </a>
+        <a class="staff-nav-link" href="{% url 'trade-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
+  </div>
+
+  <!-- ── Summary stat ───────────────────────────────── -->
+  {% if total_outstanding %}
+  <div class="row mb-4">
+    <div class="col-sm-4">
+      <div class="ds-stat ds-stat--warning">
+        <div class="ds-stat__label"><i class="fa fa-exclamation-circle mr-1"></i> Total Receivable</div>
+        <div class="ds-stat__value">{{ total_outstanding }}</div>
+        <small class="ds-stat__sub">Outstanding balance owed to the company</small>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── Records table ──────────────────────────────── -->
+  {% if has_records %}
+  <div class="ds-card">
+    <div class="ds-card__header">
+      <span>Debtor Ledger Summary</span>
+    </div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th class="text-center">Type</th>
+              <th class="text-right">Total CR</th>
+              <th class="text-right">Total DR</th>
+              <th class="text-right">Balance (CR &minus; DR)</th>
+              <th class="text-center">Entries</th>
+              <th>Last Entry</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in summaries %}
+            <tr class="text-right {% if s.balance.amount > 0 %}table-warning{% elif s.balance.amount < 0 %}table-danger{% endif %}">
+              <td class="text-left">
+                <a href="{% url 'creditor-detail' s.account %}">{{ s.account }}</a>
+              </td>
+              <td class="text-center">
+                <span class="badge {% if s.account_type == 'Ext' %}badge-secondary{% else %}badge-primary{% endif %}">
+                  {{ s.account_type }}
+                </span>
+              </td>
+              <td>{{ s.cr_total }}</td>
+              <td>{{ s.dr_total }}</td>
+              <td class="font-weight-bold {% if s.balance.amount > 0 %}text-warning{% elif s.balance.amount < 0 %}text-danger{% else %}text-success{% endif %}">
+                {{ s.balance }}
+              </td>
+              <td class="text-center">{{ s.entry_count }}</td>
+              <td class="text-left">{{ s.last_entry|date:"d-m-Y" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="ds-card__body border-top">
+      <small class="text-muted">
+        <strong>CR</strong> = amount billed / owed to us &nbsp;&mdash;&nbsp;
+        <strong>DR</strong> = payment received from debtor &nbsp;&mdash;&nbsp;
+        <span class="text-warning font-weight-bold">Amber</span> = still receivable &nbsp;&mdash;&nbsp;
+        <span class="text-danger font-weight-bold">Red</span> = overpayment (DR &gt; CR)
+      </small>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="ds-card">
+    <div class="ds-card__body text-center py-5">
+      <i class="fa fa-users fa-3x text-muted mb-3"></i>
+      <h5>No debtor records yet.</h5>
+      <a href="{% url 'creditor-create' %}" class="btn btn-primary mt-2">
+        <i class="fa fa-plus mr-1"></i> Add First Entry
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
 </div>
 {% endblock %}

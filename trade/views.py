@@ -1,6 +1,7 @@
 import base64
 import calendar
 import datetime
+import json
 from decimal import Decimal
 import io
 import itertools as it
@@ -11,6 +12,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import (LoginRequiredMixin, UserPassesTestMixin)
 from django.db.models.expressions import Func
 from django.db.models.fields import FloatField
+from django.db.models.functions import TruncMonth
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls.base import reverse_lazy
@@ -211,10 +213,26 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
             # The Sales Drive Ratio: Sales by opening stock
             dates = [x.date.strftime('%d-%m-%Y') for x in qs_for_chart]
-            sales = [round(100*y.sales/y.opening_value, 2) for y in qs_for_chart]
+            sales_ratio = [round(100*y.sales/y.opening_value, 2) for y in qs_for_chart]
+            sales_amount = [round(float(y.sales.amount), 2) for y in qs_for_chart]
             dates.reverse()
-            sales.reverse()
-            context['chart'] = plotter.sales_stock_figure(dates, sales)
+            sales_ratio.reverse()
+            sales_amount.reverse()
+            context['chart'] = plotter.sales_stock_figure(dates, sales_ratio)
+            context['chart_dates'] = json.dumps(dates)
+            context['chart_sales_ratio'] = json.dumps([float(x) for x in sales_ratio])
+            context['chart_sales_amount'] = json.dumps([float(x) for x in sales_amount])
+
+            # MoM sales for the current year
+            mom_qs = (
+                TradeDaily.objects.filter(date__year=year)
+                .annotate(m=TruncMonth('date'))
+                .values('m')
+                .annotate(s=Sum('sales'))
+                .order_by('m')
+            )
+            context['mom_labels'] = json.dumps([r['m'].strftime('%b') for r in mom_qs])
+            context['mom_sales']  = json.dumps([float(r['s']) for r in mom_qs])
         if self.request.user.is_superuser:
             context['pending_adjustments'] = TradeAdjustmentRequest.objects.filter(
                 status=TradeAdjustmentRequest.STATUS_PENDING
@@ -234,8 +252,9 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             bs_qs = BalanceSheet.objects.filter(date__year=year, date__month=month)
             actual_growth = float(bs_qs.latest('date').growth_ratio()) if bs_qs.exists() else None
             context['kpi_data'] = _build_kpi_comparison(year, month, actual_margin, actual_lc, actual_ac, actual_growth)
+        zero = Money(0, 'NGN')
+        creditor_net = zero
         if Creditor.objects.exists():
-            zero = Money(0, 'NGN')
             cr_sum = sum(
                 (obj.amount for obj in Creditor.objects.filter(ledger='CR')), zero
             )
@@ -245,6 +264,19 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             outstanding = cr_sum - dr_sum
             if outstanding > zero:
                 context['creditor_outstanding'] = outstanding
+                creditor_net = outstanding
+
+        # Working Capital = (current_asset − sundry_debtor) − liability + creditor_net
+        # creditor_net = capital deployed to business partners (adds to working capital)
+        bs = context.get('object')
+        if bs:
+            wc = (
+                bs.current_asset.amount
+                - bs.sundry_debtor.amount
+                - bs.liability.amount
+                + creditor_net.amount
+            )
+            context['working_capital'] = round(wc)
         return context
   
 

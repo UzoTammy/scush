@@ -1,6 +1,8 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 {% load djmoney %}
+
+{% block page_title %}Payroll Modify{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -78,13 +80,13 @@
                     </li>
                     <li class="nav-item mb-3 text-center">
                         <input type="submit"
-                               class="btn btn-dark text-white"
+                               class="btn btn-secondary text-white"
                                value="Get Staff">
                     </li>
                     <li class="nav-item mb-3 text-center">
-                        <a class="btn btn-dark text-white"
+                        <a class="btn btn-secondary text-white"
                            href="{% url 'salary' %}">
-                        <i class="fa fa-reply"></i> Payroll Page</a>
+                        <i class="fa fa-times-circle"></i> Payroll Page</a>
                     </li>
                 </ul>
             </form>
@@ -141,7 +143,7 @@
                             <div class="d-flex w-100 justify-content-between">
                                 <h5 class="mb-1">
                                     {{record.staff.fullname}}-({{record.staff.id|zeropadding:3}})</h5>
-                                <a href="{% url 'payroll-modify-outstanding'  record.pk %}" class="btn btn-outline-dark btn-sm">Apply</a>
+                                <a href="{% url 'payroll-modify-outstanding'  record.pk %}" class="btn btn-secondary">Apply</a>
                             </div>
                             <p class="mb-1">Net Pay: {{record.net_pay}}</p>
                             <p class="mb-1">Outstanding: {{record.outstanding}}</p>

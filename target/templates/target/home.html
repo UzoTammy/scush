@@ -1,23 +1,101 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 
+{% block page_title %}Targets &amp; Achievements{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row mt-3">
-        <div class="col">
-            <h3>Targets and Achievements</h3>
-        </div>
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-crosshairs mr-2"></i>Targets &amp; Achievements</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'kpi-list' %}">
+          <i class="fa fa-list-alt"></i> KPI Targets
+        </a>
+        <a class="staff-nav-link" href="{% url 'home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
-    <div class="row mt-3">
-        <div class="col">
-            <img src="data:image/png;base64, {{margin_plot|safe}}" alt="">
-        </div>
+  </div>
+
+  <!-- ── Margin chart ───────────────────────────────── -->
+  {% if margin_days %}
+  <div class="ds-card mb-4">
+    <div class="ds-card__header">
+      <span><i class="fa fa-line-chart mr-2"></i>Margin Ratio — {{ margin_month }} {{ request.year }}</span>
     </div>
-    <div class="row mt-3">
-        <div class="col">
-            <a href="{% url 'kpi-list' %}"   class="btn btn-primary btn-bg">KPI Target</a>
-            <a class="float-right" href="{% url 'home' %}"><i class="fa fa-reply fa-2x"></i><i class="fa fa-home"></i></a>
-        </div>
+    <div class="ds-card__body">
+      <div class="chart-wrap">
+        <canvas id="marginChart"></canvas>
+      </div>
     </div>
+  </div>
+  {% else %}
+  <div class="ds-card">
+    <div class="ds-card__body text-center py-5">
+      <i class="fa fa-bar-chart fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No margin data available for October.</h5>
+    </div>
+  </div>
+  {% endif %}
+
 </div>
+
+{% if margin_days %}
+<script>
+(function () {
+  var ctx = document.getElementById('marginChart');
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: {{ margin_days|safe }},
+      datasets: [{
+        label: 'Margin Ratio (%)',
+        data: {{ margin_values|safe }},
+        borderColor: '#283593',
+        backgroundColor: 'rgba(40,53,147,0.08)',
+        pointBackgroundColor: '#f4511e',
+        pointBorderColor: '#fff',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 2.5,
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#283593',
+          titleColor: '#fff',
+          bodyColor: 'rgba(255,255,255,0.85)',
+          padding: 10,
+          callbacks: {
+            label: function(ctx) { return ' ' + ctx.parsed.y.toFixed(2) + '%'; }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Day of month', color: '#757575' },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { color: '#757575' }
+        },
+        y: {
+          title: { display: true, text: 'Margin %', color: '#757575' },
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { color: '#757575' }
+        }
+      }
+    }
+  });
+})();
+</script>
+{% endif %}
 {% endblock %}

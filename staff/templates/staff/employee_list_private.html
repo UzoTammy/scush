@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Employee List Private{% endblock %}
 
 {% block content %}
 <div class="section p-3">
@@ -29,18 +31,18 @@
                     <div class="col text-right">
                         <!--  links to variety of listings-->
                         <a href="#"
-                           class="btn btn-dark btn-sm text-right">
+                           class="btn btn-secondary text-right">
                             <i class="fa fa-plus text-success"></i>
 
                         </a>
                         <a href="{% url 'staff-list' %}"
-                           class="btn btn-dark btn-sm text-right">
+                           class="btn btn-secondary text-right">
                             <i class="fa fa-plus text-success"></i>
                             Basic
                         </a>
                         <!-- Button trigger modal -->
                         <button type="button"
-                                class="btn btn-dark btn-sm text-right"
+                                class="btn btn-secondary btn-sm text-right"
                                 data-toggle="modal"
                                 data-target="#newEmployeeModal">
                             <i class="fa fa-plus text-success"></i>
@@ -188,7 +190,7 @@
     </div>
     <div class="row mt-3 mb-3">
         <div class="col text-right">
-            <a class="btn btn-outline-dark" href="{% url 'staff-list' %}"><i class="fa fa-reply"></i></a>
+            <a class="btn btn-secondary" href="{% url 'staff-list' %}"><i class="fa fa-times-circle"></i></a>
         </div>
     </div>
 </div>

@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Pk Reset{% endblock %}
 
 {% block content %}
 <div class="container mt-3">
@@ -24,9 +26,9 @@
     <div class="row mt-3 float-right">
         <div class="col">
             <a type="button"
-               class="btn btn-sm btn-outline-dark"
+               class="btn btn-sm btn-secondary"
                href="{% url 'home' %}">
-                <i class="fa fa-reply"> Home</i>
+                <i class="fa fa-times-circle"> Home</i>
             </a>
         </div>
     </div>

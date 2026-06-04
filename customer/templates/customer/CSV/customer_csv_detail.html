@@ -1,12 +1,12 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 {% load djmoney %}
 {% load custom_tags %}
 
-{% block head %}
 
-{% endblock head %}
 
+
+{% block page_title %}Customer Csv Detail{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -15,7 +15,7 @@
     </div>
     <div class="row">
     <div class="col-sm-6">
-        <h5 class="text-info">{{object.business}}
+        <h5 class="text-primary">{{object.business}}
         <span>(ID: {{object.id|zeropadding:3}})</span>
         </h5>
         <p>Owner: {{object.owner}}</p>
@@ -28,7 +28,7 @@
         <p>Sales: {% money_localize object.sales 'NGN' %}</p>
         <p>Frequency: {{object.freq}}</p>
         <button class="btn btn-outline-primary" type="submit">Submit</button>
-        <a class="btn btn-dark float-right" href="{% url 'customer-csv' %}">Cancel</a>
+        <a class="btn btn-secondary float-right" href="{% url 'customer-csv' %}">Cancel</a>
     </div>
     </div>
 </div>

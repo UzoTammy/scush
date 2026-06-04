@@ -1,6 +1,8 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
 
+
+{% block page_title %}Bank Account Form{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -16,7 +18,7 @@
                 <h6>This Bank Account will be activated. Proceed <span class="text-success">?</span></h6>
                 {% endif %}
                 <button class="btn btn-outline-primary" type="submit">Submit</button>
-                <a class="btn btn-dark" href="{% url 'cashflow-home' %}">Return</a>
+                <a class="btn btn-secondary" href="{% url 'cashflow-home' %}">Return</a>
             </form>
         </div>
     </div>

@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+{% block page_title %}Storelevy List{% endblock %}
+
 {% block content %}
 <div class="container mt-3">
     <div class="row justify-content-center">
@@ -48,7 +50,7 @@
             
             <div class="col">
                 <a class="btn btn-outline-primary" href="{% url 'store-levy-create' %}"><i class="fa fa-paypal"></i> Pay Levy</a>
-                <a type="button" class="btn btn-outline-dark" href="{% url 'warehouse-home' %}"><i class="fa fa-reply"></i></a>
+                <a type="button" class="btn btn-secondary" href="{% url 'warehouse-home' %}"><i class="fa fa-times-circle"></i></a>
             </div>
         </div>
     </div>

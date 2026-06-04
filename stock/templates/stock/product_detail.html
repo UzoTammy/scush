@@ -1,7 +1,9 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 {% load custom_tags %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Product Detail{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -87,7 +89,7 @@
                       <i class="fa fa-list text-warning"></i> Update Cost Price</a></li>
                   <hr class="dropdown-divider">
                   <li class="nav-item"><a class="nav-link" href="{% url 'stock-report-source' 'All' %}">
-                    <i class="fa fa-reply text-warning"></i> Return
+                    <i class="fa fa-times-circle"></i> Return
                   </a>
                 </li>
               </ul>  
@@ -103,7 +105,7 @@
                    class="rounded mr-3 float-right"
                    alt="...">
               <div class="media-body">
-                <h3 class="text-info">Product Code: {{object.id|zeropadding:4}}</h3>
+                <h3 class="text-primary">Product Code: {{object.id|zeropadding:4}}</h3>
                 {% if object.active %}
                 <h5 class="text-success">Active</h5>
                 {% else %}

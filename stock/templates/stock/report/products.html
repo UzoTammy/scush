@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Products{% endblock %}
 
 {% block content %} 
 <div class="container py-3">
@@ -18,7 +20,7 @@
         {% endfor %}
     </div>
     
-    <a class="btn btn-dark float-right" href="{% url 'stock-report' %}"><i class="fa fa-reply"></i></a>
+    <a class="btn btn-secondary float-right" href="{% url 'stock-report' %}"><i class="fa fa-times-circle"></i></a>
     
 </div>
 {% endblock %}

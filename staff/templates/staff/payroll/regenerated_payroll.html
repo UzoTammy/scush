@@ -1,6 +1,8 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 {% load djmoney %}
+
+{% block page_title %}Regenerated Payroll{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -73,7 +75,7 @@
     <hr>
     <div class="row mr-3 float-right">
         <div class="col">
-            <a href="{% url 'salary' %}"><i class="fa fa-reply"></i> Return</a>
+            <a href="{% url 'salary' %}"><i class="fa fa-times-circle"></i> Return</a>
         </div>
     </div>
 </div>

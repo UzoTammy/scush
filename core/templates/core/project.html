@@ -1,23 +1,29 @@
 {% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Project Profile{% endblock %}
+
 {% block content %}
 <div class="container mt-3">
-    <div class="row">
-        <div class="col-8">
-            <div class="list-group">
-                <li class="list-group-item list-group-item-danger d-flex justify-content-between align-items-center">Project Size 
-                    <span class="badge badge-light badge-pill">{{scush.megabyte|floatformat:2}}MB or {{scush.byte}}Bytes</span>
-                </li>
-                <li class="list-group-item list-group-item-danger d-flex justify-content-between align-items-center">Files and Folders count 
-                    <span class="badge badge-light badge-pill">{{scush.files}} files && {{scush.folders}} folders</span>
-                </li>
-            </div>
-        </div>
+  <div class="ds-card">
+    <div class="ds-card__header"><span>SCusH Project Stats</span></div>
+    <div class="ds-card__body">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Project Size
+          <span class="badge badge-primary badge-pill">{{ scush.megabyte|floatformat:2 }} MB &mdash; {{ scush.byte }} Bytes</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          Files &amp; Folders
+          <span class="badge badge-primary badge-pill">{{ scush.files }} files &amp;&amp; {{ scush.folders }} folders</span>
+        </li>
+      </ul>
     </div>
-    <div class="row mt-3">
-        <div class="col">
-            <a class="btn btn-dark" href="{% url 'index' %}">Return</a>
-        </div>
-    </div>
+  </div>
+  <div class="mt-3">
+    <a class="btn btn-secondary" href="{% url 'index' %}">
+      <i class="fa fa-times-circle mr-1"></i> Return
+    </a>
+  </div>
 </div>
 {% endblock %}

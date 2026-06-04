@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Deliverynote Detail{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -109,12 +111,12 @@
     </p>
     <div class="row mb-5">
         <div class="col">
-            <a class="btn btn-outline-dark btn-sm" href="{% url 'delivery-arrive' object.pk %}">
+            <a class="btn btn-secondary" href="{% url 'delivery-arrive' object.pk %}">
                 Deliver
             </a>
         </div>
         <div class="col">
-            <a class="btn btn-outline-dark btn-sm" href="{% url 'delivery-return' object.pk %}">
+            <a class="btn btn-secondary" href="{% url 'delivery-return' object.pk %}">
                 Receive
             </a>
         </div>
@@ -122,12 +124,12 @@
             <a type="button"
                data-toggle="modal"
                data-target="#delConfirm"
-               class="btn btn-outline-dark btn-sm" href="">
+               class="btn btn-secondary" href="">
                 Confirm
             </a>
         </div>
         <div class="col">
-            <a class="btn btn-outline-dark btn-sm"
+            <a class="btn btn-secondary"
                data-toggle="modal"
                type="button"
                data-target="#delCredit" href="">
@@ -135,8 +137,8 @@
             </a>
         </div>
         <div class="col">
-            <a class="btn btn-outline-dark btn-sm" href="{% url 'delivery-list' %}">
-                <i class="fa fa-reply text-primary"></i>
+            <a class="btn btn-secondary" href="{% url 'delivery-list' %}">
+                <i class="fa fa-times-circle"></i>
             </a>
         </div>
     </div>

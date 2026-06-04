@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Deliverynote Form{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -8,15 +10,15 @@
         <div class="col-7">
             <form action="" method="post">
                 {% csrf_token %}
-                <legend class="text-info">Create Delivery (1 of 5 steps)</legend>
+                <legend class="text-primary">Create Delivery (1 of 5 steps)</legend>
                 <div class="form-group mt-3">
                        {{form|crispy}}
                     <button type="submit"
-                            class="btn btn-outline-info btn-sm">Create
+                            class="btn btn-primary btn-sm">Create
                     </button>
-                    <a class="btn btn-outline-dark btn-sm float-right"
+                    <a class="btn btn-secondary float-right"
                        type="button" href="{% url 'delivery-home' %}">
-                        <i class="fa fa-reply"></i>
+                        <i class="fa fa-times-circle"></i>
                     </a>
                 </div>
             </form>

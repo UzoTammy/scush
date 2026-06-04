@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Bankaccount Detail{% endblock %}
 
 {% block content %}   
 <div class="container mt-2">
@@ -11,7 +13,7 @@
                 <li class="list-group-item">Bank: {{object.bank}}</li>
                 <li class="list-group-item">
                     <a class="btn btn-primary" href="{% url 'warehouse-bank-update' object.pk%}">Update Bank Account</a>
-                    <a class="btn btn-dark float-right" href="{% url 'warehouse-list-all' %}">Cancel</a>
+                    <a class="btn btn-secondary float-right" href="{% url 'warehouse-list-all' %}">Cancel</a>
                 </li>
             </ul>
         </div>

@@ -39,14 +39,14 @@ from django.template import loader
 from django.urls import reverse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import (View, TemplateView, ListView, CreateView, DetailView, UpdateView)
-from django.db.models import F, Sum, Q
+from django.db.models import F, Sum, Q, Avg, Min
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import authenticate, login
-from staff.models import Employee, Permit, Payroll, Welfare
+from staff.models import Employee, Permit, Payroll, Welfare, EmployeeBalance
 from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
 from apply.models import Applicant
-from trade.models import TradeDaily, BalanceSheet, BankBalance,TradeMonthly
+from trade.models import TradeDaily, BalanceSheet, BankBalance, TradeMonthly, Creditor
 from cashflow.models import BankAccount, CashCenter
 from warehouse.models import Renewal, StoreLevy, Stores
 from .forms import JsonDatasetForm
@@ -229,15 +229,24 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
         """ROI is calculated by dividing net income by total equity. 
             This ratio indicates how efficiently a company is using its equity to generate profits.
-            Working Capital: This is calculated by subtracting current liabilities from current assets.
-            A positive working capital indicates that the company has enough short-term assets to cover 
-            its short-term liabilities.
+            Working Capital (Liquid): (current_asset - sundry_debtor) - liability.
+            Excludes receivables — measures liquidity from cash and stock only.
         """
         qs = BalanceSheet.objects.filter(date__year=obj.date.year)
         if qs.exists():
             # profit = qs.aggregate(Sum('profit'))['profit__sum']
             # roi = round(profit/obj.capital.amount, 2)
-            wc = round(obj.current_asset.amount - obj.liability.amount)
+            from djmoney.money import Money as _Money
+            _zero = _Money(0, 'NGN')
+            _cr = sum((c.amount for c in Creditor.objects.filter(ledger='CR')), _zero)
+            _dr = sum((c.amount for c in Creditor.objects.filter(ledger='DR')), _zero)
+            _creditor_net = max((_cr - _dr).amount, 0)
+            wc = round(
+                obj.current_asset.amount
+                - obj.sundry_debtor.amount
+                - obj.liability.amount
+                + _creditor_net
+            )
        
         # From Profit & Loss for the month
         latest_date = TradeDaily.objects.latest('date').date
@@ -961,8 +970,26 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
         business_summary['Cash'] = current_cash_balance
         
 
+        context['currency'] = self.request.GET.get('currency', 'naira')
+
+        rate_str = self.request.GET.get('rate', '').strip()
+        rate_error = False
+        naira_per_dollar = None
+
         if self.request.GET.get('currency') == 'dollars':
-            dollar_rate = decimal.Decimal(1/1540)
+            try:
+                naira_per_dollar = int(rate_str)
+                if naira_per_dollar <= 0:
+                    raise ValueError
+            except (ValueError, TypeError):
+                rate_error = True  # dollars requested but no valid rate
+                naira_per_dollar = None
+
+        context['naira_per_dollar'] = naira_per_dollar
+        context['rate_error'] = rate_error
+
+        if self.request.GET.get('currency') == 'dollars' and not rate_error:
+            dollar_rate = decimal.Decimal(1 / naira_per_dollar)
             for key, value in business_summary.items():
                 if key == 'Rent' or key == 'Levy':
                     business_summary[key] = (value[0]*dollar_rate, value[1]*dollar_rate)
@@ -987,4 +1014,56 @@ class ScushProfileView(TemplateView):
             'folders': files_and_folders[1],
 
         }
+        return context
+
+class CompanySummaryView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/company_summary.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = datetime.date.today()
+        qs = Employee.active.all()
+
+        grads = qs.exclude(staff__qualification='NONE').exclude(
+            staff__qualification='ND/NCE').exclude(
+            staff__qualification='PRIMARY').exclude(
+            staff__qualification='SECONDARY')
+
+        annual_qs = qs.annotate(total_salary=12*(F('basic_salary') + F('allowance')))
+        monthly_qs = qs.annotate(total_salary=F('basic_salary') + F('allowance'))
+        cr = EmployeeBalance.objects.filter(value_type='Cr').aggregate(total=Sum('value'))['total'] or 0
+        dr = EmployeeBalance.objects.filter(value_type='Dr').aggregate(total=Sum('value'))['total'] or 0
+
+        last_year = str(today.year - 1)
+        this_year = str(today.year)
+        sales_ly = TradeMonthly.objects.filter(year=last_year).aggregate(Sum('sales'))['sales__sum']
+        sales_ty = TradeMonthly.objects.filter(year=this_year).aggregate(Sum('sales'))['sales__sum']
+        gm_ly = TradeMonthly.objects.filter(year=last_year).aggregate(Sum('gross_profit'))['gross_profit__sum']
+        gm_ty = TradeMonthly.objects.filter(year=this_year).aggregate(Sum('gross_profit'))['gross_profit__sum']
+
+        context.update({
+            'now': today,
+            'workforce': qs.count(),
+            'num_female': qs.filter(staff__gender='FEMALE').count(),
+            'num_male': qs.filter(staff__gender='MALE').count(),
+            'num_single': qs.filter(staff__marital_status='SINGLE').count(),
+            'num_married': qs.filter(staff__marital_status='MARRIED').count(),
+            'num_management': qs.filter(is_management=True).count(),
+            'num_non_management': qs.filter(is_management=False).count(),
+            'num_all_time': Employee.objects.count(),
+            'num_probation': qs.filter(is_confirmed=False).count(),
+            'num_graduates': grads.count(),
+            'total_salary': annual_qs.aggregate(total=Sum('total_salary'))['total'],
+            'average_salary': monthly_qs.aggregate(tsa=Avg('total_salary'))['tsa'],
+            'total_net_pay': Payroll.objects.aggregate(total=Sum('net_pay'))['total'],
+            'gratuity_balance': cr - dr,
+            'youngest': qs.latest('staff__birth_date').staff.birth_date if qs.exists() else None,
+            'oldest': qs.earliest('staff__birth_date').staff.birth_date if qs.exists() else None,
+            'sales_last_year': sales_ly,
+            'sales_year': sales_ty,
+            'gm_last_year': round(100 * gm_ly / sales_ly, 1) if sales_ly else None,
+            'gm_year': round(100 * gm_ty / sales_ty, 1) if sales_ty else None,
+            'last_year': last_year,
+            'this_year': this_year,
+        })
         return context

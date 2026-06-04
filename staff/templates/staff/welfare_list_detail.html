@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Welfare List Detail{% endblock %}
 
 {% block content %} 
 <div class="container">
@@ -39,9 +41,9 @@
     </div>
     <div class="row">
         <div class="col">
-            <a class=" btn btn-outline-dark float-right" 
+            <a class="btn btn-secondary float-right" 
             href="{% url 'welfare-support-list' %}">
-        <i class="fa fa-reply"></i>
+        <i class="fa fa-times-circle"></i>
         </a>
         </div>
     </div>

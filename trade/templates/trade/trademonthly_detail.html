@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Trademonthly Detail{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -68,7 +70,7 @@
     <div class="row mt-3">
         <div class="col">
             {% if not object.locked %}
-            <a class="btn btn-outline-dark" href="{% url 'trade-update' object.pk %}">Update</a>
+            <a class="btn btn-secondary" href="{% url 'trade-update' object.pk %}">Update</a>
             {% else %}
             <button type="button" class="btn btn-outline-secondary" disabled title="Period is locked">Update</button>
             {% endif %}
@@ -83,7 +85,7 @@
             {% endif %}
         </div>
         <div class="col text-right">
-            <a class="btn btn-outline-dark" href="{% url 'trade-home' %}"><i class="fa fa-reply"></i> Trade Home</a>
+            <a class="btn btn-secondary" href="{% url 'trade-home' %}"><i class="fa fa-times-circle"></i> Trade Home</a>
         </div>
     </div>
 </div>

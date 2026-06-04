@@ -1,81 +1,61 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 
-{% block head %}
-    <style>
-        #navmain {
-            display: none;
-        }
-        body {
-            background-color: white;
-        }
-        
-    </style>
-{% endblock %}
-
+{% block page_title %}Company Team{% endblock %}
 
 {% block content %}
 <div class="container mt-3">
-  <h3 class="text-warning mb-3">The Team</h3>
-  <div class="row">
-    <div class="col-md-6">
-        <div class="row">
-            <div class="col">
-                <div class="card mb-3" style="max-width: 72rem;">
-                    <div class="row no-gutters">
-                        <div class="col-md-4">
-                        <img width="180rem;" src="{{md.first.image.url}}" alt="...">
-                        </div>
-                        <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">{{md.first}}</h5>
-                            <p class="card-text">{{md.first.position}}</p>
-                            
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-            </div>
-        </div>  
-        <div class="row">
-            <div class="col">
-                <div class="card mb-3" style="max-width: 72rem;">
-                    <div class="row no-gutters">
-                        <div class="col-md-4">
-                        <img width="180rem;" src="{{gsm.first.image.url}}" alt="...">
-                        </div>
-                        <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">{{gsm.first}}</h5>
-                            <p class="card-text">{{gsm.first.position}}</p>
-                            
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-            </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <ul class="list-unstyled">
-            {% for staff in team %}
-            <li class="media mb-2">
-              <img src="{{staff.image.url}}" width="64rem;" class="mr-3" alt="...">
-              <div class="media-body">
-                <h5 class="mt-0 mb-1">{{staff}}</h5>
-                <p>{{staff.position}}</p>
-              </div>
-            </li>
-            <hr>
-            {% endfor %}
-        </ul>
-      </div>
+  <div class="ds-page-header">
+    <h2 class="ds-page-header__title">The Team</h2>
+    <a class="btn btn-secondary btn-sm" href="{% url 'about' %}"><i class="fa fa-backward mr-1"></i> Back</a>
   </div>
 
   <div class="row">
-      <div class="col">
-          <a class="btn btn-outline-primary" href="{% url 'about' %}"><i class="fa fa-backward"></i> Back</a>
+    <div class="col-md-6">
+      {% if md.first %}
+      <div class="ds-card mb-3">
+        <div class="ds-card__body">
+          <div class="d-flex align-items-center gap-3">
+            <img width="120" src="{{ md.first.image.url }}" class="rounded-circle mr-3" alt="{{ md.first }}">
+            <div>
+              <h5 class="mb-1">{{ md.first }}</h5>
+              <p class="text-muted mb-0">{{ md.first.position }}</p>
+            </div>
+          </div>
+        </div>
       </div>
+      {% endif %}
+      {% if gsm.first %}
+      <div class="ds-card mb-3">
+        <div class="ds-card__body">
+          <div class="d-flex align-items-center">
+            <img width="120" src="{{ gsm.first.image.url }}" class="rounded-circle mr-3" alt="{{ gsm.first }}">
+            <div>
+              <h5 class="mb-1">{{ gsm.first }}</h5>
+              <p class="text-muted mb-0">{{ gsm.first.position }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    <div class="col-md-6">
+      <div class="ds-card">
+        <div class="ds-card__header"><span>Staff</span></div>
+        <div class="ds-card__body mb-0">
+          {% for staff in team %}
+          <div class="d-flex align-items-center mb-3">
+            <img src="{{ staff.image.url }}" width="48" class="rounded-circle mr-3" alt="{{ staff }}">
+            <div>
+              <strong>{{ staff }}</strong><br>
+              <small class="text-muted">{{ staff.position }}</small>
+            </div>
+          </div>
+          {% if not forloop.last %}<hr class="my-1">{% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

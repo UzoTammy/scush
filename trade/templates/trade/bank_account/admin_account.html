@@ -1,6 +1,8 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 {% load static %}
+
+{% block page_title %}Admin Account{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-3">
@@ -63,7 +65,7 @@
     </div>
     <div class="row mr-3">
         <div class="col">
-            <a class="btn btn-dark float-right" href="{% url 'bank-account-home' %}"><i class="fa fa-reply"></i></a>
+            <a class="btn btn-secondary float-right" href="{% url 'bank-account-home' %}"><i class="fa fa-times-circle"></i></a>
         </div>
     </div>
 </div>

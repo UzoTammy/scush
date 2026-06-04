@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Request{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -17,7 +19,7 @@
         
         <div class="col mt-3">
             <div class="card text-center p-3">
-                <a href="{% url 'home' %}"> <i class="fa fa-reply"></i> Return Home</a>
+                <a href="{% url 'home' %}"> <i class="fa fa-times-circle"></i> Return Home</a>
               </div>
         </div>
     </div>    

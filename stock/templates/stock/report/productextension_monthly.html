@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+{% block page_title %}Productextension Monthly{% endblock %}
+
 {% block content %}
     <div class="container mt-3">
         <div class="row">
@@ -14,7 +16,7 @@
                           <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{forloop.counter}}" aria-expanded="true" aria-controls="collapseOne">
                             {% with datas|first as first_data %}
                             {{first_data.source}}
-                            <a class="float-right ml-3" href="{% url 'stock-report' %}"><i class="fa fa-reply"></i> Return</a>
+                            <a class="btn btn-secondary float-right ml-3" href="{% url 'stock-report' %}"><i class="fa fa-times-circle"></i> Return</a>
                             <a class="float-right" href="{% url 'stock-report-product' view.kwargs.month first_data.source %}">Products</a>
                             {% endwith %}
                           </button>

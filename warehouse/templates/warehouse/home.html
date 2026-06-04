@@ -1,226 +1,238 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Stores &amp; Facilities{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row vh-100">
-        <!--        body of page-->
-        <div class="col">
-            <div class="container mt-2">
-                <div class="row">
-                    <div class="col">
-                        <h3 class="text-center">Facilities Home Page </h3>
-                        <div class="btn-group">
-                            <a class="btn btn-dark" href="{% url 'warehouse-help' %}"><i class="fa fa-question text-warning"></i> Help</a>
-                            <a class="btn btn-dark" href="{% url 'warehouse-list-all' %}"><i class="fa fa-eye-slash text-warning"></i> Facilities</a>
-                            <a class="btn btn-dark" href="{% url 'store-rent-list' %}"><i class="fa fa-eye-slash text-warning"></i> Rent</a>
-                            <a class="btn btn-dark" href="{% url 'store-levy-list' %}"><i class="fa fa-eye-slash text-warning"></i> Levy</a> 
-                        </div>
-                    </div>
-                </div>
-                <div class="row d-flex justify-content-center mt-2">
-                    <div class="col-sm-4">
-                        <table class="table text-monospace">
-                            <caption>Capacity</caption>
-                            <thead>
-                                <tr>
-                                    <td>Total</td>
-                                    <td>Rented</td>
-                                    <td>Owned</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{{rented_stores.capacity.total}}</td>
-                                    <td>{{rented_stores.capacity.rented|first}}</td>
-                                    <td>{{rented_stores.capacity.owned|first}}</td>
-                                </tr>
-                                <tr>
-                                    <td>100%</td>
-                                    <td>{{rented_stores.capacity.rented|last}}%</td>
-                                    <td>{{rented_stores.capacity.owned|last}}%</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="col-sm-8 mt-3">
-                        <table class="table text-monospace" data-toggle="table">
-                            <thead>
-                                <tr class="text-center">
-                                    <th colspan="3">Rent</th>
-                                    <th class="bg-light" colspan="3">Levy</th>
 
-                                </tr>
-                                <tr class="text-info text-center">
-                                    <th>Payable</th>
-                                    <th>Paid</th>
-                                    <th class="text-center">Unpaid</th>
-                                    <th class="bg-light">Payable</th>
-                                    <th class="bg-light">Paid</th>
-                                    <th class="bg-light text-center">Unpaid</th>
-                                    
-                                </tr>
-                            </thead>
-                            <tbody>
-                                
-                                <tr>
-                                    <td class="text-center">{{naira}}{{rented_stores.rent.payable|first}}</td>
-                                    <td class="text-right">{{naira}}{{rented_stores.rent.paid|first}} </td>
-                                    <td class="text-right">{{naira}}{{rented_stores.rent.unpaid|first}}</td>
-                                    <td class="bg-light text-center">{{naira}}{{rented_stores.levy.payable|first}}</td>
-                                    <td class="bg-light text-right">{{naira}}{{rented_stores.levy.paid|first}} </td>
-                                    <td class="bg-light text-right">{{naira}}{{rented_stores.levy.unpaid|first}}</td>
-                                </tr>
-                                
-                                <tr>
-                                    <td class="text-center">{{rented_stores.rent.payable|last}}</td>
-                                    <td class="text-right">{{rented_stores.rent.paid|last}}</td>
-                                    <td class="text-right">{{rented_stores.rent.unpaid|last}}</td>
-                                    <td class="bg-light text-center">{{rented_stores.levy.payable|last}}</td>
-                                    <td class="bg-light text-right">{{rented_stores.levy.paid|last}}</td>
-                                    <td class="bg-light text-right">{{rented_stores.levy.unpaid|last}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    
-                </div>
-
-                
-                <div class="row">
-                    <div class="col">
-                        <table class="table table-sm text-monospace" data-toggle="table" data-pagination="true">
-                            <caption>Rented Facilities and due dates</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Store</th>
-                                    <th class="text-center">Set Levy Value</th>
-                                    <th scope="col">Rent Due Date</th>
-                                    <th class="text-center" scope="col">Rent Value</th>
-                                    <th scope="col">Time left</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {% for store in rented_stores.all %}
-                                <tr>
-                                    <td>{{store.name}}</td>
-                                    <td class="text-right">{{store.allocated_levy_amount}}</td>
-                                    <td>{{store.expiry_date}}</td>
-                                    <td class="text-right">{{store.rent_amount}}</td>
-                                    {% if store.expiry_date >= store.today %}
-                                    <td>{{store.expiry_date|timeuntil}}</td>
-                                    {% else %}
-                                    <td><a href="#" data-toggle="modal" data-target="#dueRent{{store.pk}}Modal">Rent is due
-
-                                        </a></td>
-                                    {% endif %}
-                                </tr>
-
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                
-                <div class="row d-flex justify-content-center">
-                    <div class="col">
-                        <table class="table text-monospace" data-toggle="table">
-                            <caption>Facility Usage</caption>
-                            <thead class="text-center">
-                                <tr>
-                                    <th scope="col" class="bg-light">Usage</th>
-                                    <th>Lock-up</th>
-                                    <th>Warehouse</th>
-                                    <th>Office</th>
-                                    <th>Apartment</th>
-                                    <th class="bg-light">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody class="text-right">
-                                <tr>
-                                    <td>Number</td>
-                                    <td>{{usage.number.sell_out}}</td>
-                                    <td>{{usage.number.storage}}</td>
-                                    <td>{{usage.number.office}}</td>
-                                    <td>{{usage.number.apartment}}</td>
-                                    <td>{{usage.number.sell_out|add:usage.number.storage|add:usage.number.office|add:usage.number.apartment}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Levy</td>
-                                    <td>{{naira}}{{usage.levy.sell_out}}</td>
-                                    <td>{{naira}}{{usage.levy.storage}}</td>
-                                    <td>{{naira}}{{usage.levy.office}}</td>
-                                    <td>{{naira}}{{usage.levy.apartment}}</td>
-                                    {% with usage.levy.sell_out|add:usage.levy.storage|add:usage.levy.office|add:usage.levy.apartment as levy_total %}
-                                    <td>{{naira}}{{levy_total|floatformat:'2g'}}</td>
-                                    
-                                </tr>
-                                <tr>
-                                    <td>Rent</td>
-                                    <td>{{naira}}{{usage.rent.sell_out}}</td>
-                                    <td>{{naira}}{{usage.rent.storage}}</td>
-                                    <td>{{naira}}{{usage.rent.office}}</td>
-                                    <td>{{naira}}{{usage.rent.apartment}}</td>
-                                    {% with usage.rent.sell_out|add:usage.rent.storage|add:usage.rent.office|add:usage.rent.apartment as rent_total %}
-                                    <td>{{naira}}{{rent_total|floatformat:'2g'}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Total</td>
-                                    <td>{{naira}}{{usage.levy.sell_out|add:usage.rent.sell_out|floatformat:'2g'}}</td>
-                                    <td>{{naira}}{{usage.levy.storage|add:usage.rent.storage|floatformat:'2g'}}</td>
-                                    <td>{{naira}}{{usage.levy.office|add:usage.rent.office|floatformat:'2g'}}</td>
-                                    <td>{{naira}}{{usage.levy.apartment|add:usage.rent.apartment|floatformat:'2g'}}</td>
-                                    <th class="bg-dark text-white">{{naira}}{{rent_total|add:levy_total|floatformat:'2g'}}</th>
-                                    {% endwith %}
-                                    {% endwith %}
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="bg-info clearfix mt-3 mb-3">
-                    
-                    <button type="button" class="btn btn-dark float-right">
-                        <a href="{% url 'home' %}">
-                            <i class="fa fa-reply text-warning"></i> Home
-                        </a>
-                    </button>
-                </div>
-            </div>
-        </div>
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-building mr-2"></i>Stores &amp; Facilities</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'warehouse-list-all' %}">
+          <i class="fa fa-list"></i> Facilities
+        </a>
+        <a class="staff-nav-link" href="{% url 'store-rent-list' %}">
+          <i class="fa fa-home"></i> Rent
+        </a>
+        <a class="staff-nav-link" href="{% url 'store-levy-list' %}">
+          <i class="fa fa-money"></i> Levy
+        </a>
+        <a class="staff-nav-link" href="{% url 'warehouse-help' %}">
+          <i class="fa fa-question-circle"></i> Help
+        </a>
+        <a class="staff-nav-link" href="{% url 'home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
+  </div>
+
+  <!-- ── Capacity tiles ────────────────────────────── -->
+  <div class="row mb-4">
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label"><i class="fa fa-building mr-1"></i> Total Capacity</div>
+        <div class="ds-stat__value">{{ rented_stores.capacity.total }}</div>
+        <small class="ds-stat__sub">Cases of 33cl</small>
+      </div>
+    </div>
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat ds-stat--warning">
+        <div class="ds-stat__label"><i class="fa fa-key mr-1"></i> Rented</div>
+        <div class="ds-stat__value">{{ rented_stores.capacity.rented|first }}</div>
+        <small class="ds-stat__sub">{{ rented_stores.capacity.rented|last }}% of total</small>
+      </div>
+    </div>
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat ds-stat--success">
+        <div class="ds-stat__label"><i class="fa fa-check-circle mr-1"></i> Owned</div>
+        <div class="ds-stat__value">{{ rented_stores.capacity.owned|first }}</div>
+        <small class="ds-stat__sub">{{ rented_stores.capacity.owned|last }}% of total</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Rent & Levy summary ───────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-table mr-2"></i>Rent &amp; Levy Summary</span></div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped mb-0">
+          <thead class="thead-accent">
+            <tr>
+              <th>Type</th>
+              <th class="text-right">Payable</th>
+              <th class="text-right">Paid</th>
+              <th class="text-right">Unpaid</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="font-weight-600">Rent</td>
+              <td class="text-right">{{ naira }}{{ rented_stores.rent.payable|first }}</td>
+              <td class="text-right text-success">{{ naira }}{{ rented_stores.rent.paid|first }}</td>
+              <td class="text-right {% if rented_stores.rent.unpaid|first %}text-danger font-weight-bold{% endif %}">
+                {{ naira }}{{ rented_stores.rent.unpaid|first }}
+              </td>
+            </tr>
+            <tr class="text-muted small">
+              <td></td>
+              <td class="text-right">{{ rented_stores.rent.payable|last }}</td>
+              <td class="text-right">{{ rented_stores.rent.paid|last }}</td>
+              <td class="text-right">{{ rented_stores.rent.unpaid|last }}</td>
+            </tr>
+            <tr>
+              <td class="font-weight-600">Levy</td>
+              <td class="text-right">{{ naira }}{{ rented_stores.levy.payable|first }}</td>
+              <td class="text-right text-success">{{ naira }}{{ rented_stores.levy.paid|first }}</td>
+              <td class="text-right {% if rented_stores.levy.unpaid|first %}text-danger font-weight-bold{% endif %}">
+                {{ naira }}{{ rented_stores.levy.unpaid|first }}
+              </td>
+            </tr>
+            <tr class="text-muted small">
+              <td></td>
+              <td class="text-right">{{ rented_stores.levy.payable|last }}</td>
+              <td class="text-right">{{ rented_stores.levy.paid|last }}</td>
+              <td class="text-right">{{ rented_stores.levy.unpaid|last }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Rented facilities & due dates ─────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-calendar mr-2"></i>Rented Facilities &amp; Due Dates</span></div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0"
+               data-toggle="table" data-pagination="true">
+          <thead class="thead-warning">
+            <tr>
+              <th>Store</th>
+              <th class="text-right">Levy Allocated</th>
+              <th>Rent Due Date</th>
+              <th class="text-right">Rent Value</th>
+              <th>Time Left</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for store in rented_stores.all %}
+            <tr>
+              <td>{{ store.name }}</td>
+              <td class="text-right">{{ store.allocated_levy_amount }}</td>
+              <td>{{ store.expiry_date }}</td>
+              <td class="text-right">{{ store.rent_amount }}</td>
+              <td>
+                {% if store.expiry_date >= store.today %}
+                  {{ store.expiry_date|timeuntil }}
+                {% else %}
+                  <a href="#" class="text-danger font-weight-bold"
+                     data-toggle="modal" data-target="#dueRent{{ store.pk }}Modal">
+                    <i class="fa fa-exclamation-triangle mr-1"></i> Rent Due
+                  </a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Facility usage ─────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-pie-chart mr-2"></i>Facility Usage by Type</span></div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped mb-0">
+          <thead class="thead-success">
+            <tr>
+              <th>Metric</th>
+              <th class="text-right">Lock-up</th>
+              <th class="text-right">Warehouse</th>
+              <th class="text-right">Office</th>
+              <th class="text-right">Apartment</th>
+              <th class="text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="font-weight-600">Count</td>
+              <td class="text-right">{{ usage.number.sell_out }}</td>
+              <td class="text-right">{{ usage.number.storage }}</td>
+              <td class="text-right">{{ usage.number.office }}</td>
+              <td class="text-right">{{ usage.number.apartment }}</td>
+              <td class="text-right font-weight-bold">
+                {{ usage.number.sell_out|add:usage.number.storage|add:usage.number.office|add:usage.number.apartment }}
+              </td>
+            </tr>
+            <tr>
+              <td class="font-weight-600">Levy</td>
+              <td class="text-right">{{ naira }}{{ usage.levy.sell_out }}</td>
+              <td class="text-right">{{ naira }}{{ usage.levy.storage }}</td>
+              <td class="text-right">{{ naira }}{{ usage.levy.office }}</td>
+              <td class="text-right">{{ naira }}{{ usage.levy.apartment }}</td>
+              {% with usage.levy.sell_out|add:usage.levy.storage|add:usage.levy.office|add:usage.levy.apartment as levy_total %}
+              <td class="text-right font-weight-bold">{{ naira }}{{ levy_total|floatformat:'2g' }}</td>
+              {% endwith %}
+            </tr>
+            <tr>
+              <td class="font-weight-600">Rent</td>
+              <td class="text-right">{{ naira }}{{ usage.rent.sell_out }}</td>
+              <td class="text-right">{{ naira }}{{ usage.rent.storage }}</td>
+              <td class="text-right">{{ naira }}{{ usage.rent.office }}</td>
+              <td class="text-right">{{ naira }}{{ usage.rent.apartment }}</td>
+              {% with usage.rent.sell_out|add:usage.rent.storage|add:usage.rent.office|add:usage.rent.apartment as rent_total %}
+              <td class="text-right font-weight-bold">{{ naira }}{{ rent_total|floatformat:'2g' }}</td>
+              {% endwith %}
+            </tr>
+            <tr class="font-weight-bold">
+              <td>Total</td>
+              <td class="text-right">{{ naira }}{{ usage.levy.sell_out|add:usage.rent.sell_out|floatformat:'2g' }}</td>
+              <td class="text-right">{{ naira }}{{ usage.levy.storage|add:usage.rent.storage|floatformat:'2g' }}</td>
+              <td class="text-right">{{ naira }}{{ usage.levy.office|add:usage.rent.office|floatformat:'2g' }}</td>
+              <td class="text-right">{{ naira }}{{ usage.levy.apartment|add:usage.rent.apartment|floatformat:'2g' }}</td>
+              {% with usage.levy.sell_out|add:usage.levy.storage|add:usage.levy.office|add:usage.levy.apartment as lt %}
+              {% with usage.rent.sell_out|add:usage.rent.storage|add:usage.rent.office|add:usage.rent.apartment as rt %}
+              <td class="text-right">{{ naira }}{{ rt|add:lt|floatformat:'2g' }}</td>
+              {% endwith %}
+              {% endwith %}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- Modal due rent -->
-<section>
-    {% for store in rented_stores.all %}
-    <div class="modal fade" id="dueRent{{store.pk}}Modal" tabindex="-1" aria-labelledby="dueRentModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="dueRentModalLabel">Pay Rent - {{store}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-monospace">
-                    Are you ready to pay rent?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                    <a href="{% url 'store-pay-rent' store.pk %}" class="btn btn-primary">
-                        Yes
-                    </a>
-                </div>
-            </div>
-        </div>
+<!-- ── Pay Rent modals ────────────────────────────────── -->
+{% for store in rented_stores.all %}
+<div class="modal fade" id="dueRent{{ store.pk }}Modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Pay Rent — {{ store }}</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <p>The rent for <strong>{{ store }}</strong> is overdue. Proceed to pay?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Not Now</button>
+        <a href="{% url 'store-pay-rent' store.pk %}" class="btn btn-primary">
+          <i class="fa fa-check mr-1"></i> Pay Now
+        </a>
+      </div>
     </div>
-    {% endfor %}
-</section>
+  </div>
+</div>
+{% endfor %}
 
-{% endblock content%}
+{% endblock %}

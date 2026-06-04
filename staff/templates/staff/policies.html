@@ -1,14 +1,16 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
+
+{% block page_title %}Policies{% endblock %}
 
 {% block content %}
 <div class="container mt-3">
     <div class="row">
         <div class="col text-center">
             <img src="{% static 'customer/logo.png' %}"
-                 class="rounded-circle shadow"
-                 width="12%"
-                 alt="">
+                 class="ozone-logo shadow"
+                 width="120" height="93"
+                 alt="Ozone Logo">
         </div>
     </div>
     <div class="row">

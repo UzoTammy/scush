@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Break Even{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-3">
@@ -12,8 +14,8 @@
             </small>
         </div>
         <div class="col text-right">
-            <a class="btn btn-outline-dark btn-sm" href="{% url 'trade-home' %}" title="Trade Home">
-                <i class="fa fa-reply"></i> Trade Home
+            <a class="btn btn-secondary" href="{% url 'trade-home' %}" title="Trade Home">
+                <i class="fa fa-times-circle"></i> Trade Home
             </a>
         </div>
     </div>

@@ -1,30 +1,41 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
 {% load custom_tags %}
+
+{% block page_title %}Create User Handle{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-sm-6">
-            
-            <form action="" method="POST">
-                {% csrf_token %}
-                <h5 class="text-info">Create User Handle for {{staff}}</h5>
-                <h6 class="text-secondary">This is an auto generated User with details below</h6>
-                <img class="thumbnail float-right ml-2" width="70px" src="{{staff.image.url}}" alt="#">
-                <ul class="list-group">
-                    <li class="list-group-item">Username: {{username}}</li>
-                    <li class="list-group-item">First Name: {{first_name}}</li>
-                    <li class="list-group-item">Last Name: {{last_name}}</li>
-                    <li class="list-group-item">Email: {{email}}</li>
-                    <li class="list-group-item text-danger">Password will be generated automatically 
-                        and you can see it in your email stated above.</li>
-                </ul>
-                <div class="form-group mt-3">
-                    <button class="btn btn-primary" type="submit">Create</button>
-                    <a class="btn btn-outline-dark float-right" href="{% url 'employee-detail' staff.id %}"><i class="fa fa-reply"></i></a>
-                </div>
-            </form>
-        </div>
+<div class="container">
+  <div class="ds-card ds-card--narrow">
+    <div class="ds-card__header">
+      <span>Create User Handle for {{ staff }}</span>
     </div>
+    <div class="ds-card__body">
+      <form action="" method="POST">
+        {% csrf_token %}
+        <div class="d-flex align-items-start mb-3">
+          <img class="rounded-circle mr-3" width="70" src="{{ staff.image.url }}" alt="{{ staff }}">
+          <div class="flex-fill">
+            <p class="text-muted small mb-2">This is an auto-generated user handle with the details below.</p>
+            <div class="list-group list-group-flush">
+              <div class="list-group-item py-1">Username: <strong>{{ username }}</strong></div>
+              <div class="list-group-item py-1">First Name: {{ first_name }}</div>
+              <div class="list-group-item py-1">Last Name: {{ last_name }}</div>
+              <div class="list-group-item py-1">Email: {{ email }}</div>
+              <div class="list-group-item py-1 text-danger small">Password will be auto-generated and sent to the email above.</div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between mt-3">
+          <button class="btn btn-primary" type="submit">
+            <i class="fa fa-user-plus mr-1"></i> Create
+          </button>
+          <a class="btn btn-secondary" href="{% url 'employee-detail' staff.id %}">
+            <i class="fa fa-times-circle mr-1"></i> Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 {% endblock %}

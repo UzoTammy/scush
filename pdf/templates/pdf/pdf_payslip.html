@@ -2,77 +2,90 @@
 {% load custom_tags %}
 
 {% block content %}
-<div class="wrapper">
-    <div class="header">
-        <p class="title">Payslip</p>
-    </div>
 
-    <div class="subheader">
-        <table>
-            <tbody>
-                <tr>
-                    <td>Staff: {{person.staff.fullname}}</td>
-                    <td>Pay Period: {{period_month}}</td>
-                </tr>
-            </tbody>
-        </table>
-        <hr class="hrItem">
-    </div>
-</div>
-<div class="details">
-    
-    <table>
-        <tbody>
-            <tr>
-                <td>Pay Code: <span style="color: chocolate;">{{ paycode }}</span></td>
-                <td>Pay Day: {{ person.date_paid }}</td>
-            </tr>
-            <tr>
-                <td>Total Payout: NGN{{total_pay|floatformat:'2g'}}</td>
-                <td>Number of Payments: {{ pay_count }}</td>
-            </tr>
-            <tr>
-                <td>Receiving Bank: <span>{{person.staff.banker}}</span></td>
-                <td>Account Number: <span>{{person.staff.account_number}}</span></td>
-            </tr>
-        </tbody>
-    </table>
-    <hr>
-    <table>
-        <tbody>
-            <tr>
-                <td>Salary: {{person.salary}}</td>
-                <td>Tax Payable: {{person.tax}}</td>
-            </tr>
-            <tr>
-                <td>Debit Amount: {{person.debit_amount}}
-                <sup style="color:red">-</sup>
-                </td>
-                <td>Credit Amount: {{person.credit_amount}}
-                <sup style="color:green">+</sup>
-                </td>
-            </tr>
-            <tr>
-                <td>Allowance: {{person.staff.allowance}}</td>
-                <td style="color:green">Net Pay: {{ person.net_pay }}</td>
-            </tr>
-            <tr>
-                <td>Deduction: {{person.deduction}}</td>
-                <td>Outstanding: {{person.outstanding}}</td>
-            </tr>
-            <tr>
-                <td>Retained Bonus: {% if gratuity >= 0 %}
-                    <span style="color:green;">NGN{{ gratuity|floatformat:'2g' }}</span>
-                    {%else%}
-                    <span style="color:rgb(248, 6, 6);">NGN{{ gratuity|abs|floatformat:'2g' }}</span>
-                    {% endif %}
-                </td>
-                <td>Payment Status: {{person.status|yesno:'Paid, Not Paid'}}</td>    
-            </tr>
-        </tbody>
-    </table>
-    <p style="color:grey">Document date(yyyy-mm-dd): {% now 'Y-m-d' %}</p>
-    <p style="color:red; text-align: center;">Confidential document!!!</p>
-</div>
+<!-- ── Identity & period ── -->
+<h3>Payslip — {{ period_month }}</h3>
+<hr>
+
+<table class="ps-info-table ps-section">
+  <tr>
+    <td class="ps-info-label">Employee</td>
+    <td class="ps-info-value font-bold">{{ person.staff.fullname }}</td>
+    <td class="ps-info-label">Staff ID</td>
+    <td class="ps-info-value">{{ person.staff.id|zeropadding:3 }}</td>
+  </tr>
+  <tr>
+    <td class="ps-info-label">Pay Code</td>
+    <td class="ps-info-value font-bold">{{ paycode }}</td>
+    <td class="ps-info-label">Pay Period</td>
+    <td class="ps-info-value">{{ period_month }}</td>
+  </tr>
+  <tr>
+    <td class="ps-info-label">Pay Date</td>
+    <td class="ps-info-value">{{ person.date_paid }}</td>
+    <td class="ps-info-label">Status</td>
+    <td class="ps-info-value font-bold {% if not person.status %}text-danger{% endif %}">
+      {{ person.status|yesno:'Paid,Not Paid' }}
+    </td>
+  </tr>
+  <tr>
+    <td class="ps-info-label">Bank</td>
+    <td class="ps-info-value">{{ person.staff.banker }}</td>
+    <td class="ps-info-label">Account No.</td>
+    <td class="ps-info-value">{{ person.staff.account_number }}</td>
+  </tr>
+  <tr>
+    <td class="ps-info-label">Payments to Date</td>
+    <td class="ps-info-value">{{ pay_count }}</td>
+    <td class="ps-info-label">Cumulative Pay</td>
+    <td class="ps-info-value font-bold">N{{ total_pay|floatformat:'2g' }}</td>
+  </tr>
+</table>
+
+<!-- ── Salary composition (left) | Adjustments (right) ── -->
+<table class="ps-earn-table ps-side-table">
+  <thead>
+    <tr><th colspan="2">Salary Composition</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Basic Salary</td><td class="text-right">{{ person.staff.basic_salary }}</td></tr>
+    <tr><td>Allowance</td><td class="text-right">{{ person.staff.allowance }}</td></tr>
+    <tr><td>Credit Amount</td><td class="text-right">{{ person.credit_amount }}</td></tr>
+    <tr>
+      <td>Retained Bonus</td>
+      <td class="text-right">
+        {% if gratuity >= 0 %}N{{ gratuity|floatformat:'2g' }}
+        {% else %}<span class="text-danger">-N{{ gratuity|abs|floatformat:'2g' }}</span>
+        {% endif %}
+      </td>
+    </tr>
+    <tr><td class="font-bold">Gross Salary</td><td class="text-right font-bold">{{ person.salary }}</td></tr>
+  </tbody>
+</table>
+
+<table class="ps-deduct-table ps-side-right">
+  <thead>
+    <tr><th colspan="2">Adjustments &amp; Deductions</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Tax (PIT)</td><td class="text-right">{{ person.tax }}</td></tr>
+    <tr><td>Debit Amount</td><td class="text-right">{{ person.debit_amount }}</td></tr>
+    <tr><td>Deduction</td><td class="text-right">{{ person.deduction }}</td></tr>
+    <tr><td>Outstanding (B/D)</td><td class="text-right">{{ person.outstanding }}</td></tr>
+  </tbody>
+</table>
+
+<div class="ps-clearfix"></div>
+
+<!-- ── Net Pay — label and amount on same row ── -->
+<table class="ps-net-table">
+  <tr>
+    <td class="ps-net-label">
+      Net Pay
+      {% if person.status %}<br><span class="ps-net-status">&#10003; Paid</span>{% endif %}
+    </td>
+    <td class="ps-net-value">{{ person.net_pay }}</td>
+  </tr>
+</table>
 
 {% endblock %}

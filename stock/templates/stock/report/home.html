@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Home{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -57,7 +59,7 @@
               </li>
                 
               <li class="nav-item">
-                  <a class="nav-link" href="{% url 'product-home' %}"><i class="fa fa-reply"></i> Return</a>
+                  <a class="nav-link" href="{% url 'product-home' %}"><i class="fa fa-times-circle"></i> Return</a>
               </li>
             </ul>
         </div>
@@ -198,7 +200,7 @@
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
-              <button id="btnReportOK" type="submit" class="btn btn-info" disabled>OK</button>        
+              <button id="btnReportOK" type="submit" class="btn btn-secondary" disabled>OK</button>        
           </div>
       </form>
     </div>

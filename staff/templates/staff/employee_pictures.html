@@ -1,6 +1,8 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 {% load custom_tags %}
+
+{% block page_title %}Employee Pictures{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -24,9 +26,9 @@
                                               alt="">
                         <span class="text-bg"> {{object.id|zeropadding:3}}</span><br>{{object.fullname}}<br>
                         {% if object.position == 'SCM' and object.branch %}
-                        <span class="text-info">{{object.position}}-{{object.branch}}</span>
+                        <span class="text-primary">{{object.position}}-{{object.branch}}</span>
                         {% else %}
-                        <span class="text-info">{{object.position}}</span>
+                        <span class="text-primary">{{object.position}}</span>
                         {% endif %}
                     </p>
                 </div>
@@ -39,10 +41,10 @@
             <div class="pagination mt-3">
                 <span class="step-links">
                     {% if page_obj.has_previous %}
-                        <a type="button" class="btn btn-outline-info btn-sm" href="?page=1">
+                        <a type="button" class="btn btn-secondary" href="?page=1">
                             <i class="fa fa-fast-backward"></i>
                         </a>
-                        <a type="button" class="btn btn-outline-info btn-sm" href="?page={{page_obj.previous_page_number}}">
+                        <a type="button" class="btn btn-secondary" href="?page={{page_obj.previous_page_number}}">
                             <i class="fa fa-backward"></i>
                         </a>
                     {% endif %}
@@ -51,17 +53,17 @@
                         {{page_obj.paginator.num_pages}}
                     </span>
                     {% if page_obj.has_next %}
-                    <a type="button" class="btn btn-outline-info btn-sm" href="?page={{ page_obj.next_page_number }}">
+                    <a type="button" class="btn btn-secondary" href="?page={{ page_obj.next_page_number }}">
                         <i class="fa fa-forward"></i></a>
-                    <a type="button" class="btn btn-outline-info btn-sm" href="?page={{ page_obj.paginator.num_pages }}">
+                    <a type="button" class="btn btn-secondary" href="?page={{ page_obj.paginator.num_pages }}">
                         <i class="fa fa-fast-forward"></i></a>
                     {% endif %}
                 </span>
             </div>
         </div>
         <div class="col mt-3 mb-5">
-            <a type="button" class="btn btn-outline-info btn-sm float-right" href="{% url 'staff-list' %}">
-                <i class="fa fa-reply"></i> Return
+            <a type="button" class="btn btn-secondary float-right" href="{% url 'staff-list' %}">
+                <i class="fa fa-times-circle"></i> Return
             </a>
         </div>
     </div>

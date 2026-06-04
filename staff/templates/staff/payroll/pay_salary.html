@@ -1,79 +1,152 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 
+{% block page_title %}Pay Salary — {{ object.staff.fullname }}{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row p-3">
-        <div class="col-3">
-            <img src="{{object.staff.image.url}}"
-                 class="rounded-circle"
-                 width="70%"
-                 alt="">
-        </div>
-        <div class="col-6">
-            <h3>{{object.staff.fullname}}</h3>
-            <p class="text-info">Pay Code: {{object.id|zeropadding:3}}-{{object.period}}</p>
-            <h5>Staff ID: {{object.staff.id|zeropadding:3}}</h5>
-            <p>Salary for Period: {{object.period}} ({{object.period_month}})</p>
-            <p>Date Generated: {{object.date_paid}}</p>
-            <p>Banker: {{object.staff.banker}}</p>
-            <p>Account Number: {{object.staff.account_number|addsep}}</p>
-            <hr>
-            <div class="row">
-            <div class="col-sm-6">
-            <p class="text-secondary">Retained bonus: NGN{{balance|floatformat:'2g'}}</p>
-            <p>Deduction: {{object.deduction}}</p>
-            <p>Outstanding (B/D):
-                {% if object.outstanding.amount < 0 %}
-                <span class="text-danger">{{object.outstanding|abs}}</span>
-                {% else %}
-                <span class="text-dark">{{object.outstanding}}</span>
-                {% endif %}
-            </p>
-                <p>Credit: {{object.credit_amount}}</p>
-                <p>Debit: {{object.debit_amount}}</p>
-                <hr>
-                
-            </div>
-            <div class="col-sm-6">
-                <p>Basic Salary: {{object.staff.basic_salary}}</p>
-                <p>Allowance: {{object.staff.allowance}}</p>
-                <p>Salary: {{object.staff.salary}}</p>
-                <p>Tax Payable: {{object.staff.tax_amount}}</p>
-                <p>Gross Pay: {{object.staff.gross_pay}}</p>
-                <hr>
-                <h6 class="text-success">Net Pay: {{object.net_pay}}</h3>
-            </div>
-            </div>
+<div class="container-fluid">
 
-            <div class="row mt-5 ml-2">
-                <div class="col">
-                    <form method="post">
-                    {% csrf_token %}
-                    <button type="submit"
-                            
-                            class="btn btn-sm btn-outline-primary">
-                    Pay Now
-                </button>
-                    </form>
-                </div>
-                <div class="col text-center">
-                    <form action="{% url 'pdf-payslip' %}">
-                        <button type="submit"
-                           class="btn btn-outline-primary btn-sm"
-                            name="payCode" value="{{object.staff.id}}-{{object.period}}">PDF & Print
-                    </button>
-                    </form>
-                </div>
-                <div class="col text-right">
-                    <a href="{% url 'payroll-statement' object.staff.pk %}"
-                    class="btn btn-sm btn-outline-dark">
-                    <i class="fa fa-reply"></i>
-                </a>
-                </div>
-            </div>
-        </div>
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-money mr-2"></i>Pay Salary — {{ object.staff.fullname }}</span>
+      <div class="d-flex staff-nav-bar">
+        <form action="{% url 'pdf-payslip' %}" class="d-inline">
+          <button type="submit" name="payCode" value="{{ object.staff.id }}-{{ object.period }}"
+                  class="staff-nav-link">
+            <i class="fa fa-file-pdf-o"></i> Payslip
+          </button>
+        </form>
+        <a class="staff-nav-link" href="{% url 'payroll-statement' object.staff.pk %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
+  </div>
+
+  <div class="row">
+
+    <!-- ── Photo ──────────────────────────────────── -->
+    <div class="col-md-2 mb-4 text-center">
+      <img src="{{ object.staff.image.url }}"
+           class="ozone-logo shadow"
+           width="130" height="100"
+           alt="{{ object.staff.fullname }}">
+      <p class="text-muted small mt-2">{{ object.staff.id|zeropadding:3 }}</p>
+    </div>
+
+    <!-- ── Details ────────────────────────────────── -->
+    <div class="col-md-10">
+
+      <!-- Identity + period -->
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span><i class="fa fa-id-card mr-2"></i>Payslip Details</span></div>
+        <div class="ds-card__body p-0">
+          <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Pay Code</span>
+              <strong class="text-primary">{{ object.id|zeropadding:3 }}-{{ object.period }}</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Period</span>
+              <span>{{ object.period }} ({{ object.period_month }})</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Date Generated</span>
+              <span>{{ object.date_paid }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Banker</span>
+              <span>{{ object.staff.banker }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted">Account Number</span>
+              <span>{{ object.staff.account_number|addsep }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Salary breakdown -->
+      <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+          <div class="ds-card h-100">
+            <div class="ds-card__header"><span><i class="fa fa-calculator mr-2"></i>Salary Composition</span></div>
+            <div class="ds-card__body p-0">
+              <div class="list-group list-group-flush">
+                <div class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">Basic Salary</span><span>{{ object.staff.basic_salary }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">Allowance</span><span>{{ object.staff.allowance }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">Gross Salary</span><span>{{ object.staff.salary }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">Tax Payable</span><span class="text-danger">{{ object.staff.tax_amount }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">Gross Pay</span><strong>{{ object.staff.gross_pay }}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <div class="ds-card h-100">
+            <div class="ds-card__header"><span><i class="fa fa-exchange mr-2"></i>Adjustments</span></div>
+            <div class="ds-card__body p-0">
+              <div class="list-group list-group-flush">
+                <div class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">Credit</span>
+                  <span class="text-success">{{ object.credit_amount }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">Debit</span>
+                  <span class="text-danger">{{ object.debit_amount }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">Deduction</span>
+                  <span class="text-danger">{{ object.deduction }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">Retained Bonus</span>
+                  <span class="text-secondary">{{ balance|floatformat:'2g' }}</span>
+                </div>
+                <div class="list-group-item d-flex justify-content-between">
+                  <span class="text-muted">Outstanding (B/D)</span>
+                  {% if object.outstanding.amount < 0 %}
+                  <span class="text-danger font-weight-bold">{{ object.outstanding|abs }}</span>
+                  {% else %}
+                  <span>{{ object.outstanding }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Net pay + action -->
+      <div class="ds-card mb-4">
+        <div class="ds-card__body d-flex justify-content-between align-items-center">
+          <div>
+            <p class="text-muted small mb-1">Net Pay</p>
+            <h3 class="text-success mb-0">{{ object.net_pay }}</h3>
+          </div>
+          <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">
+              <i class="fa fa-check mr-1"></i> Pay Now
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 {% endblock %}

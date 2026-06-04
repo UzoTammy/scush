@@ -1,4 +1,5 @@
 import datetime
+import json
 from .models import PositionKPIMonthly, Sales
 from django.views.generic import View, TemplateView,ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -12,11 +13,15 @@ class TargetHomeView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = TradeDaily.objects.filter(date__year=datetime.date.today().year).filter(date__month=10)
+        today = datetime.date.today()
+        qs = TradeDaily.objects.filter(date__year=today.year).filter(date__month=10)
         if qs.exists():
             y = [float(obj.margin_ratio()) for obj in qs]
             x = [date.day for date in qs.values_list('date', flat=True)]
             context['margin_plot'] = plotter.margin_graph(x, y)
+            context['margin_days']   = json.dumps(x)
+            context['margin_values'] = json.dumps(y)
+            context['margin_month']  = 'October'
         return context
 
 class KPIListView(LoginRequiredMixin, ListView):

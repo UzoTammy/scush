@@ -1,53 +1,96 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Briefs{% endblock %}
+
+{% block head %}
+<style>
+  .pagination-bar { gap: 0.375rem; flex-wrap: wrap; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row mt-3">
-        <div class="col">
-            <a class="btn btn-outline-dark float-right ml-1" href="{% url 'pdf-daily-post' %}">Today's Brief (pdf)</a>
-            <a class="btn btn-outline-dark float-right ml-1" href="{% url 'post-create' %}">Add Post</a>
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="col">
-            <ul class="list-group">
-                {% for post in object_list %}
-                <li class="list-group-item mb-2">
-                    <div class="row">
-                        <div class="col">
-                            <h5>{{post.title}}</h5>
-                            <p>{{post.content|truncatechars:50}}</p>
-                            <small class="text-muted">Posted by {{post.author}} ({{post.author.position}})
-                                <span class="float-right">
-                                    <a class="btn btn-primary btn-sm" href="{% url 'post-detail' post.pk %}">Detail</a>
-                                </span>
-                            </small>
-                        </div>
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
-            {% if is_paginated %}
-                {% if page_obj.has_previous %}
-                <a class="btn btn-outline-primary" href="?page=1"><i class="fa fa-angle-double-left"></i></a>
-                <a class="btn btn-outline-primary" href="?page={{page_obj.previous_page_number}}"><i class="fa fa-angle-left"></i></a>
-                {% endif%}
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                        <a class="btn btn-primary" href="?page={{num}}">{{ num }}</a>
-                    {% elif num > page.obj.number|add:'-3' and num < page.obj.number|add:'3' %}
-                        <a class="btn btn-outline-primary" href="?page={{num}}">{{ num }}</a>
-                    {% endif %}
-                {% endfor %}
+<div class="container-fluid">
 
-                {% if page_obj.has_next %}
-                <a class="btn btn-outline-primary" href="?page={{page_obj.next_page_number}}"><i class="fa fa-angle-right"></i></a>
-                <a class="btn btn-outline-primary" href="?page={{page_obj.paginator.num_pages}}"><i class="fa fa-angle-double-right"></i></a>
-                {% endif%}
-                
-            {% endif %}
-            <a class="btn btn-outline-dark float-right" href="{% url 'home' %}">Home</a>
-        </div>
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-bullhorn mr-2"></i>Briefs &amp; Announcements</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'post-create' %}">
+          <i class="fa fa-plus"></i> Add Post
+        </a>
+        <a class="staff-nav-link" href="{% url 'pdf-daily-post' %}">
+          <i class="fa fa-file-pdf-o"></i> Today's PDF
+        </a>
+        <a class="staff-nav-link" href="{% url 'home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
+  </div>
+
+  <!-- ── Post list ──────────────────────────────────── -->
+  <div class="ds-card">
+    <div class="ds-card__body">
+      {% if object_list %}
+        {% for post in object_list %}
+        <div class="border-bottom pb-3 mb-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="mb-1">{{ post.title }}</h5>
+              <p class="text-muted mb-1">{{ post.content|truncatechars:120 }}</p>
+              <small class="text-muted">
+                <i class="fa fa-user mr-1"></i>{{ post.author }}
+                {% if post.author.position %}— {{ post.author.position }}{% endif %}
+              </small>
+            </div>
+            <a class="btn btn-primary btn-sm ml-3 text-nowrap" href="{% url 'post-detail' post.pk %}">
+              Read More
+            </a>
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="d-flex align-items-center mt-2 pagination-bar">
+          {% if page_obj.has_previous %}
+          <a class="btn btn-secondary btn-sm" href="?page=1" aria-label="First page">
+            <i class="fa fa-angle-double-left"></i>
+          </a>
+          <a class="btn btn-secondary btn-sm" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous page">
+            <i class="fa fa-angle-left"></i>
+          </a>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+          <a class="btn btn-sm {% if page_obj.number == num %}btn-primary{% else %}btn-secondary{% endif %}"
+             href="?page={{ num }}">{{ num }}</a>
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+          <a class="btn btn-secondary btn-sm" href="?page={{ page_obj.next_page_number }}" aria-label="Next page">
+            <i class="fa fa-angle-right"></i>
+          </a>
+          <a class="btn btn-secondary btn-sm" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last page">
+            <i class="fa fa-angle-double-right"></i>
+          </a>
+          {% endif %}
+        </div>
+        {% endif %}
+
+      {% else %}
+      <div class="text-center py-5">
+        <i class="fa fa-bullhorn fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No briefs posted yet.</h5>
+        <a href="{% url 'post-create' %}" class="btn btn-primary mt-2">
+          <i class="fa fa-plus mr-1"></i> Add First Post
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
 </div>
-{% endblock content %}
+
+{% endblock %}

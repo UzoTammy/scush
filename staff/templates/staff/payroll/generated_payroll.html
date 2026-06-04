@@ -1,6 +1,8 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 {% load djmoney %}
+
+{% block page_title %}Generated Payroll{% endblock %}
 
 {% block content %}
 <div class="container p-5">
@@ -69,8 +71,8 @@
                 <button type="submit" class="btn btn-outline-success">Save</button>
             </div>
             <div class="col text-right">
-                <a href="{% url 'salary' %}" class="btn btn-outline-dark">
-                    <i class="fa fa-reply"></i>
+                <a href="{% url 'salary' %}" class="btn btn-secondary">
+                    <i class="fa fa-times-circle"></i>
                 </a>
             </div>
         </div>

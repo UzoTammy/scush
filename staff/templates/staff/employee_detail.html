@@ -1,1186 +1,724 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 {% load custom_tags %}
 {% load crispy_forms_tags %}
 
+{% block page_title %}{{ object }}{% endblock %}
+
+{% block head %}
+<style>
+  .action-dropdown .dropdown-toggle {
+    font-size: 0.8125rem; font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff; border-radius: 4px; white-space: nowrap;
+  }
+  .action-dropdown .dropdown-toggle:hover,
+  .action-dropdown .show > .dropdown-toggle {
+    background: var(--color-accent); border-color: var(--color-accent);
+  }
+  .action-dropdown .dropdown-menu {
+    min-width: 180px; padding: 0.25rem 0;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+  .action-dropdown .dropdown-item {
+    font-size: 0.8125rem; font-weight: 600;
+    padding: 0.4rem 1rem; color: var(--color-text);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .action-dropdown .dropdown-item:hover { background: var(--color-primary); color: #fff; }
+  .profile-photo  { width: 120px; height: 93px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; }
+  .stat-val-sm    { font-size: 0.95rem; }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <nav class="col-sm-2 bg-dark">
-            <button
-                class="navbar-toggler bg-light mt-1 mb-1 float-right myBtn"
-                type="button"
-                data-toggle="collapse"
-                data-target="#Dropdown2"
-                aria-controls="Dropdown2"
-                aria-expanded="true"
-                aria-label="toggle navigation">
-                <i class="fa fa-navicon fa-1x text-primary"></i>
-            </button>
-            <div class="collapse collapse-sm" id="Dropdown2">
-                <ul class="nav flex-column mt-3">
-                    <li class="text-white"><i class="fa fa-minus text-warning"></i>HR Actions</li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           data-toggle="modal"
-                           data-target="#staffBalance">
-                            <i class="fa fa-book text-warning"></i>
-                            Add Gratuity
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                               data-toggle="modal"
-                               data-target="#staffMgmt">
-                            <i class="fa fa-briefcase text-warning"></i>
-                            Make Mgmt. Staff
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                               data-toggle="modal"
-                               data-target="#staffSalary">
-                            <i class="fa fa-credit-card text-warning"></i>
-                            Change Salary
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                               data-toggle="modal"
-                               data-target="#staffPermit">
-                            <i class="fa fa-pause text-warning"></i>
-                            Request Permission
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           data-toggle="modal"
-                           data-target="#staffReassign">
-                            <i class="fa fa-envelope-open text-warning"></i>
-                            Reassign Position
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                               data-toggle="modal"
-                               data-target="#staffSuspend">
-                            <i class="fa fa-stop-circle text-warning"></i>
-                            Suspend</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                               data-toggle="modal"
-                               data-target="#staffTerminate">
-                            <i class="fa fa-stop text-warning"></i>
-                            Terminate
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           data-toggle="modal"
-                           data-target="#staffWelfare">
-                            <i class="fa fa-envelope-open text-warning"></i>
-                            Welfare Support 
-                            <!-- <sup class="badge badge-danger">new</sup> -->
-                        </a>
-                    </li>
-                    <hr class="dropdown-divider">
-                    <li class="text-white"><i class="fa fa-minus text-warning"></i>Views</li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           href="{% url 'apply-detail' object.staff.pk %}">
-                            <i class="fa fa-book text-warning"></i>
-                            Applicant
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           href="{% url 'payroll-statement' object.pk %}">
-                            <i class="fa fa-book text-warning"></i>
-                            Payslip
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'balance-view' object.pk %}">
-                            <i class="fa fa-book text-warning"></i>
-                            Gratuity
-                        </a>
-                    </li>
-                    {% if not username %}
-                    <hr class="dropdown-divider">
-                    <li class="text-white mt-1">
-                        <i class="fa fa-minus text-warning"></i>
-                            Admin
-                    </li>
-                    
-                    <li class="nav-item"><a class="nav-link" 
-                        href="{% url 'create-user' object.pk %}"><i class="fa fa-user text-warning">
 
-                        </i>  Register Staff</a>
-                    </li>
-                    
-                    {% endif %}
-                    <hr class="dropdown-divider">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="fa fa-question text-warning"></i> Help
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'staff-list' %}">
-                            <i class="fa fa-reply text-warning"></i> Return</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        <div class="col-10 mt-4">
-            <h2 class="text-secondary text-center bg-light">Profile of {{object}}</h2>
-            <p class="text-success text-center">Employee ID: {{object.id|zeropadding:3}}
-                <span class="text-danger">
-                    ({% if username %}Username: {{username}}{% else %}Unregistered{% endif %})
-                </span>
-            </p>
-            <div class="row">
-                <div class="col-sm-4">
-                    <div class="media">
-                        <a class="btn btn-outline-dark btn-sm" href="{% url 'employee-update' object.pk %}">
-                            <i class="fa fa-camera fa-sm"></i>
-                        </a>
-                        <img src="{{object.image.url}}"
-                                width="150px"
-                                height="150px"
-                                class="rounded-circle mr-3"
-                                alt="...">
-                        <div class="media-body">
-                            <p>Survey Code: <span class="badge badge-info">{{question_obj.code|slugify}}</span></p>
-                        </div>
-                    </div>
-                    
-                </div>
-                <div class="col-sm-4">
-                    <p>Full Salary: <span class="text-success float-right">{{object.salary}}</span></p>
-                    <p>Age: <span class="text-success float-right">{{object.staff.birth_date|timesince}}</span></p>
-                    <p>Payout<small class="text-muted">(since June 2021)</small></span>: <span class="text-success float-right">{{naira}}{{payout|floatformat:'2g'}}</span></p>
-                </div>
-                <div class="col-sm-4">
-                    <p>Gratuity: <span class="text-success float-right">{{naira}}{{total_balance|floatformat:'2g'}}</span></p>
-                    <p>Welfare: <span class="text-success float-right">{{naira}}{{total_welfare|floatformat:'2g'}}</span></p>
-                    <p>Worked For: <span class="text-success float-right">{{object.date_employed|timesince}}</span></p>
-                    {% if consumed_days|first == 0 and consumed_days|last == 0 %}
-                    <p>Permissions: <span class="text-success float-right">No permission taken or granted</span></p>
-                    {% else %}
-                    <p>Permissions Taken: <span class="text-danger float-right">{{consumed_days|first}}Day{{consumed_days|first|pluralize}}, {{consumed_days|last}}Hour{{consumed_days|last|pluralize}}</span></p>
-                    {% endif %}
-                </div>
-            </div>
-                
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <ul class="p-1" style="list-style-type: none;">
-                            <li>First Name: <span class="float-right">{{object.staff.first_name}}</span></li>
-                            <hr>
-                            <li>Second Name: <span class="float-right">{{object.staff.second_name}}</span></li>
-                            <hr>
-                            <li>Last Name: <span class="float-right">{{object.staff.last_name}}</span></li>
-                            <hr>
-                            <li>Date of Birth: <span class="float-right">{{object.staff.birth_date}}</span></li>
-                            <hr>
-                            <li>Gender: <span class="float-right">{{object.staff.gender}}</span></li>
-                            <hr>
-                            <li>Marital Status: <span class="float-right">{{object.staff.marital_status}}</span></li>
-                            <hr>
-                            <li>Qualification: <span class="float-right">{{object.staff.qualification}}</span></li>
-                            <hr>
-                            <li>Course: <span class="float-right">{{object.staff.course }}</span></li>
-                            <hr>
-                            <li>Personal Mobile: <span class="float-right">{{object.staff.mobile}}</span></li>
-                            <hr>
-                            <li>Personal Email: <span class="float-right">{{object.staff.email}}</span></li>
-                            <hr>
-                            <li>Application Date: <span class="float-right">{{object.staff.apply_date}}</span></li>
-                            <hr>
-                            <li>Data Modified Time: <span class="float-right">{{object.staff.modified_date}}</span></li>
-                            <hr>
-                            <li>Residential Address: <span class="float-right">{{object.staff.address}}</span></li>
-                        
-                        </ul>
-                    </div>
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap staff-nav-bar">
+      <span><i class="fa fa-user mr-2"></i>{{ object }} &mdash; ID {{ object.id|zeropadding:3 }}</span>
+      <div class="d-flex align-items-center action-dropdown staff-nav-bar">
 
-                    <div class="col-sm-4">
-                        
-                        <ul class="p-1" style="list-style-type: none;">
-                            <li>Date Employed: <span class="float-right">{{object.date_employed}}</span></li>
-                            <hr>
-                            <li>Official Email: <span class="float-right">{{object.official_email}}</span></li>
-                            <hr>
-                            <li>Official Mobile:
-                                {% if object.official_mobile is None %}
-                                <span class="float-right">{{object.official_mobile}}</span>
-                                {% else %}
-                                <span class="float-right">{{object.official_mobile|addsep}}</span>
-                                {% endif %}
-                            </li>
-                            <hr>
-                            <li>Management Staff?:
-                                <span class="float-right">{{ object.is_management|yesno|upper }}</span>
-                            </li>
-                            <hr>
-                            <li>Duty Status: <span class="float-right">{{object.status|yesno:'Active, Terminated, Passive'}}</span></li>
-                            <hr>
-                            <li>Status:
-                                <span class="float-right">{{object.is_confirmed|yesno:'CONFIRMED, PROBATION'}}</span>
-                            </li>
-                            <hr>
-                            <li>Position: <span class="float-right">{{object.position}}</span></li>
-                            <hr>
-                            <li>Department: <span class="float-right">{{object.department}}</span></li>
-                            <hr>
-                            <li>Outlet: <span class="float-right">{{object.branch}}</span></li>
-                            <hr>
-                            <li>Banker: <span class="float-right">{{object.banker}}</span></li>
-                            <hr>
-                            <li>Account Number: <span class="float-right">{{object.account_number|addsep}}</span></li>
-                            <hr>
-                            <li>Basic Salary: <span class="float-right">S: {{object.basic_salary}} | A: {{object.allowance}}</span></li>
-                            <hr>
-                            <li>Tax Payable:<span class="float-right">{{object.tax_amount}}</span></p>
-                        </ul>
-                        
-                    </div>
-                    <hr>
-                    <div class="col-sm-4">
-                        {% if reassigned %}
-                        <h3 class="text-info" style="font-family:cursive;">Reassigned</h3>
-                        <div class="row bg-light mb-2">
-                            <div class="col">
-                                <table class="table" data-toggle="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Type</th>
-                                        <th>Position:From</th>
-                                        <th>Position:To</th>
-                                        <th>Branch:From</th>
-                                        <th>Branch:To</th>
-                                        <th>Date</th>
-                                        <th>Remark</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for reassign in reassigned %}
-                                    <tr>
-                                        <td>{{reassign.reassign_type}}</td>
-                                        <th>{{reassign.from_position}}</th>
-                                        <th>{{reassign.to_position}}</th>
-                                        <th>{{reassign.from_branch}}</th>
-                                        <th>{{reassign.to_branch}}</th>
-                                        <th>{{reassign.start_date}}</th>
-                                        <th>{{reassign.remark}}</th>
-                                    </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                    <tfoot></tfoot>
-                                </table>
-                            </div>
-                        </div>
-                        {% endif %}
-    
-                        {% if salary_changed %}
-                        <h3 class="text-info" style="font-family:cursive;">Salary Changes</h3>
-                        <div class="row bg-light mb-2">
-                            <div class="col">
-                                <table class="table" data-toggle="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Previous Salary</th>
-                                        <th>Current Salary</th>
-                                        <th>Remark</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for salary in salary_changed %}
-                                    <tr>
-                                        <td>{{salary.date}}</td>
-                                        <th>{{salary.previous_value}}</th>
-                                        <th>{{salary.value}}</th>
-                                        <th>{{salary.remark}}</th>
-                                    </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                    <tfoot></tfoot>
-                                </table>
-                            </div>
-                        </div>
-                        {% endif %}
-    
-                        {% if permissions %}
-                        <h3 class="text-info" style="font-family:cursive;">Permissions</h3>
-                        <div class="row bg-light mb-2">
-                            <div class="col">
-                                <table class="table" 
-                                    data-toggle="table" 
-                                    data-pagination="true"
-                                    data-page-list="[3, 6, 9, 12, All]"
-                                    >
-                                    <thead>
-                                    <tr>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
-                                        <th>Reason</th>
-                                        <th>Duration</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for permission in permissions %}
-                                    <tr>
-                                        <td>{{permission.starting_from}}</td>
-                                        <td>{{permission.ending_at}}</td>
-                                        <td>{{permission.reason}}</td>
-                                        <td>{{permission.duration}}</td>
-                                    </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                    <tfoot></tfoot>
-                                </table>
-                            </div>
-                        </div>
-                        {% endif %}
-    
-                        {% if suspensions %}
-                        <h3 class="text-info" style="font-family:cursive;">Suspensions</h3>
-                        <div class="row bg-light mb-2">
-                            <div class="col">
-                                <table class="table" data-toggle="table">
-                                    <thead>
-                                    <tr>
-                                        <th>Start Date</th>
-                                        <th>Resumption Date</th>
-                                        <th>Reason</th>
-                                        <th>Penalty</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {% for suspension in suspensions %}
-                                    <tr>
-                                        <td>{{suspension.start_date}}</td>
-                                        <th>{{suspension.resumption_date}}</th>
-                                        <th>{{suspension.reason}}</th>
-                                        <th>{{suspension.penalty}}</th>
-                                    </tr>
-                                    {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        {% endif %}
-                        
-                    </div>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col">
-                    
-                </div>
-            </div>
+        <!-- HR Actions dropdown -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-cog mr-1"></i> HR Actions
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#staffBalance">
+              <i class="fa fa-book"></i> Add Gratuity
+            </a>
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#staffMgmt">
+              <i class="fa fa-briefcase"></i> Make Management
+            </a>
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#staffSalary">
+              <i class="fa fa-credit-card"></i> Change Salary
+            </a>
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#staffPermit">
+              <i class="fa fa-pause"></i> Request Permission
+            </a>
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#staffReassign">
+              <i class="fa fa-exchange"></i> Reassign Position
+            </a>
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#staffSuspend">
+              <i class="fa fa-stop-circle"></i> Suspend
+            </a>
+            <a class="dropdown-item text-danger" href="#" data-toggle="modal" data-target="#staffTerminate">
+              <i class="fa fa-stop"></i> Terminate
+            </a>
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#staffWelfare">
+              <i class="fa fa-heart"></i> Welfare Support
+            </a>
+          </div>
         </div>
+
+        <!-- Views dropdown -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-eye mr-1"></i> Views
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'apply-detail' object.staff.pk %}">
+              <i class="fa fa-file-text"></i> Application
+            </a>
+            <a class="dropdown-item" href="{% url 'payroll-statement' object.pk %}">
+              <i class="fa fa-money"></i> Payslip
+            </a>
+            <a class="dropdown-item" href="{% url 'balance-view' object.pk %}">
+              <i class="fa fa-bank"></i> Gratuity
+            </a>
+          </div>
+        </div>
+
+        <a class="staff-nav-link" href="{% url 'employee-update' object.pk %}">
+          <i class="fa fa-edit"></i> Edit
+        </a>
+
+        {% if not username %}
+        <a class="staff-nav-link" href="{% url 'create-user' object.pk %}">
+          <i class="fa fa-user-plus"></i> Register
+        </a>
+        {% endif %}
+
+        <a class="staff-nav-link" href="{% url 'staff-list' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
+  </div>
+
+  <!-- ── Profile card ───────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__body">
+      <div class="d-flex align-items-start">
+        <img src="{{ object.image.url }}" class="profile-photo mr-4" alt="{{ object }}">
+        <div class="flex-fill">
+          <h4 class="mb-1">{{ object }}</h4>
+          <p class="text-muted mb-2 small">
+            {{ object.position }}
+            {% if object.department %} &mdash; {{ object.department }}{% endif %}
+            {% if object.branch %} &mdash; {{ object.branch }}{% endif %}
+          </p>
+          <div class="row">
+            <div class="col-sm-3 mb-2">
+              <div class="ds-stat ds-stat--accent">
+                <div class="ds-stat__label">Salary</div>
+                <div class="ds-stat__value stat-val-sm">{{ object.salary }}</div>
+              </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+              <div class="ds-stat">
+                <div class="ds-stat__label">Payout (all time)</div>
+                <div class="ds-stat__value stat-val-sm">{{ naira }}{{ payout|floatformat:'2g' }}</div>
+              </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+              <div class="ds-stat ds-stat--success">
+                <div class="ds-stat__label">Gratuity</div>
+                <div class="ds-stat__value stat-val-sm">{{ naira }}{{ total_balance|floatformat:'2g' }}</div>
+              </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+              <div class="ds-stat ds-stat--warning">
+                <div class="ds-stat__label">Welfare</div>
+                <div class="ds-stat__value stat-val-sm">{{ naira }}{{ total_welfare|floatformat:'2g' }}</div>
+              </div>
+            </div>
+          </div>
+          <p class="text-muted small mb-1">
+            <i class="fa fa-clock-o mr-1"></i>
+            Worked for: <strong>{{ object.date_employed|timesince }}</strong>
+          </p>
+          {% if consumed_days|first != 0 or consumed_days|last != 0 %}
+          <p class="text-muted small mb-1">
+            <i class="fa fa-pause mr-1"></i>
+            Permissions: <span class="text-danger">{{ consumed_days|first }} day{{ consumed_days|first|pluralize }}, {{ consumed_days|last }} hour{{ consumed_days|last|pluralize }}</span>
+          </p>
+          {% endif %}
+          {% if question_obj %}
+          <p class="text-muted small mb-0">
+            Survey Code: <span class="badge badge-soft-primary">{{ question_obj.code|slugify }}</span>
+          </p>
+          {% endif %}
+          {% if username %}
+          <p class="text-muted small mb-0 mt-1">
+            <i class="fa fa-user mr-1"></i> Username: <strong>{{ username }}</strong>
+          </p>
+          {% else %}
+          <p class="text-muted small mb-0 mt-1">
+            <span class="badge badge-warning">Unregistered User</span>
+          </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Personal & Employment info ────────────────── -->
+  <div class="row mb-4">
+    <div class="col-md-6 mb-3">
+      <div class="ds-card h-100">
+        <div class="ds-card__header"><span><i class="fa fa-id-card mr-2"></i>Personal Information</span></div>
+        <div class="ds-card__body p-0">
+          <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Full Name</span><strong>{{ object.staff.last_name|upper }}, {{ object.staff.first_name }} {{ object.staff.second_name }}</strong></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Date of Birth</span><span>{{ object.staff.birth_date }} <small class="text-muted">({{ object.staff.birth_date|timesince }} ago)</small></span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Gender</span><span>{{ object.staff.gender }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Marital Status</span><span>{{ object.staff.marital_status }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Qualification</span><span>{{ object.staff.qualification }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Course</span><span>{{ object.staff.course|default:"—" }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Personal Mobile</span><span>{{ object.staff.mobile }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Personal Email</span><span>{{ object.staff.email|default:"—" }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Address</span><span>{{ object.staff.address }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Applied</span><span>{{ object.staff.apply_date }}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <div class="ds-card h-100">
+        <div class="ds-card__header"><span><i class="fa fa-briefcase mr-2"></i>Employment Details</span></div>
+        <div class="ds-card__body p-0">
+          <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Date Employed</span><span>{{ object.date_employed }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Status</span><span class="badge {% if object.status == True %}badge-success{% elif object.status == False %}badge-danger{% else %}badge-warning{% endif %}">{{ object.status|yesno:'Active,Terminated,Passive' }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Confirmation</span><span class="badge {% if object.is_confirmed %}badge-success{% else %}badge-warning{% endif %}">{{ object.is_confirmed|yesno:'Confirmed,Probation' }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Management</span><span>{{ object.is_management|yesno:'Yes,No' }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Position</span><span>{{ object.position }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Department</span><span>{{ object.department }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Outlet</span><span>{{ object.branch }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Official Email</span><span>{{ object.official_email|default:"—" }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Official Mobile</span><span>{% if object.official_mobile %}{{ object.official_mobile|addsep }}{% else %}—{% endif %}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Banker</span><span>{{ object.banker }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Account Number</span><span>{{ object.account_number|addsep }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Basic Salary</span><span>{{ object.basic_salary }} + {{ object.allowance }}</span></div>
+            <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Tax Payable</span><span>{{ object.tax_amount }}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── History ────────────────────────────────────── -->
+  {% if reassigned %}
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-exchange mr-2"></i>Reassignment History</span></div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0" data-toggle="table">
+          <thead class="thead-accent">
+            <tr><th>Type</th><th>From Position</th><th>To Position</th><th>From Branch</th><th>To Branch</th><th>Date</th><th>Remark</th></tr>
+          </thead>
+          <tbody>
+            {% for r in reassigned %}
+            <tr>
+              <td>{{ r.reassign_type }}</td>
+              <td>{{ r.from_position }}</td>
+              <td>{{ r.to_position }}</td>
+              <td>{{ r.from_branch }}</td>
+              <td>{{ r.to_branch }}</td>
+              <td>{{ r.start_date }}</td>
+              <td>{{ r.remark }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if salary_changed %}
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-money mr-2"></i>Salary Change History</span></div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0" data-toggle="table">
+          <thead class="thead-success">
+            <tr><th>Date</th><th>Previous Salary</th><th>New Salary</th><th>Remark</th></tr>
+          </thead>
+          <tbody>
+            {% for s in salary_changed %}
+            <tr>
+              <td>{{ s.date }}</td>
+              <td>{{ s.previous_value }}</td>
+              <td>{{ s.value }}</td>
+              <td>{{ s.remark }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if permissions %}
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-pause mr-2"></i>Permission History</span></div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0"
+               data-toggle="table" data-pagination="true"
+               data-page-list="[5,10,All]" data-page-size="5">
+          <thead class="thead-warning">
+            <tr><th>Start Date</th><th>End Date</th><th>Reason</th><th>Duration</th></tr>
+          </thead>
+          <tbody>
+            {% for p in permissions %}
+            <tr>
+              <td>{{ p.starting_from }}</td>
+              <td>{{ p.ending_at }}</td>
+              <td>{{ p.reason }}</td>
+              <td>{{ p.duration }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if suspensions %}
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-stop-circle mr-2"></i>Suspension History</span></div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0" data-toggle="table">
+          <thead class="thead-danger">
+            <tr><th>Start Date</th><th>Resumption Date</th><th>Reason</th><th>Penalty</th></tr>
+          </thead>
+          <tbody>
+            {% for s in suspensions %}
+            <tr>
+              <td>{{ s.start_date }}</td>
+              <td>{{ s.resumption_date }}</td>
+              <td>{{ s.reason }}</td>
+              <td>{{ s.penalty }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
 </div>
 
-<div class="modal"
-     tabindex="-1"
-     data-backdrop="static"
-     role="dialog"
-     id="staffMgmt">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    Convert to Management Staff <br>
-                </h3>
-                
-                <button type="button"
-                        class="close"
-                        aria-label="close"
-                        data-dismiss="modal">
-                    <i class="fa fa-times text-danger"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <h4>{{view.kwargs.pk|zeropadding:3}} - {{object}} </h4>
-                    <p class="text-info">Current Status:{% if object.is_management %} 
-                        Management Staff {% else %} Non-management Staff {% endif %}</p>
-                    <form action="{% url 'employee-management' object.pk %}"
-                          method="post">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="mgmtStaff">Click to Convert</label>
-                                <input id="mgmtStaff"
-                                       class="form-check form-check-inline ml-2"
-                                       name="mgmtStaff"
-                                       type="checkbox" required>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="modal-footer">
-                <button type="submit"
-                        class="btn btn-outline-info">
-                    Submit
-                </button>
-                <button type="button"
-                        data-dismiss="modal"
-                        class="btn btn-outline-dark">
-                    Cancel
-                </button>
-            </div>
-                </form>
-                </div>
-            </div>
-        </div>
+<!-- ══════════════════════ MODALS ══════════════════════ -->
+
+<!-- Management -->
+<div class="modal fade" tabindex="-1" data-backdrop="static" id="staffMgmt" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Convert to Management — {{ object }}</h5>
+      <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
     </div>
+    <form action="{% url 'employee-management' object.pk %}" method="post">{% csrf_token %}
+      <div class="modal-body">
+        <p class="text-muted">Current: <strong>{% if object.is_management %}Management{% else %}Non-Management{% endif %}</strong></p>
+        <div class="form-group">
+          <div class="form-check">
+            <input class="form-check-input" id="mgmtStaff" name="mgmtStaff" type="checkbox" required>
+            <label class="form-check-label" for="mgmtStaff">Confirm conversion</label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+  </div></div>
 </div>
 
-
-<!--Change Salary-->
-<div class="modal"
-     tabindex="-1"
-     data-backdrop="static"
-     role="dialog"
-     id="staffSalary">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    Reassign (<span style="font-size: 11pt">
-                    {{view.kwargs.pk|zeropadding:3}} - {{object}}
-                </span>)
-                </h3>
-                <button type="button"
-                        class="close"
-                        aria-label="close"
-                        data-dismiss="modal">
-                    <i class="fa fa-times text-danger"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <p>Salary (Basic + Allowance): {{object.salary}}</p>
-
-                    <form action="{% url 'employee-salary-change' object.pk %}"
-                          method="post">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="tSal">Total Salary</label>
-                                <input id="tSal"
-                                       class="form-control"
-                                       name="salary"
-                                       value=""
-                                       type="number" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label class="form-label" for="salComment">Remark</label>
-                                    <input name="remark"
-                                           placeholder="Reason for the change"
-                                           id="salComment"
-                                           class="form-control"
-                                           type="text" required>
-                                </div>
-                            </div>
-                        </div>
-                    <div class="modal-footer">
-                <button type="submit"
-                        class="btn btn-outline-info">
-                    Apply
-                </button>
-                <button type="button"
-                        data-dismiss="modal"
-                        class="btn btn-outline-dark">
-                    Cancel
-                </button>
-            </div>
-                </form>
-                </div>
-            </div>
-        </div>
+<!-- Change Salary -->
+<div class="modal fade" tabindex="-1" data-backdrop="static" id="staffSalary" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Change Salary — {{ object }}</h5>
+      <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
     </div>
+    <form action="{% url 'employee-salary-change' object.pk %}" method="post">{% csrf_token %}
+      <div class="modal-body">
+        <p class="text-muted">Current Salary: <strong>{{ object.salary }}</strong></p>
+        <div class="form-group">
+          <label for="tSal">New Total Salary</label>
+          <input id="tSal" class="form-control" name="salary" type="number" required>
+        </div>
+        <div class="form-group">
+          <label for="salComment">Remark</label>
+          <input id="salComment" class="form-control" name="remark" type="text" placeholder="Reason for change" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Apply</button>
+      </div>
+    </form>
+  </div></div>
 </div>
 
-<!--Enter Balance (gratuity)-->
-<div class="modal"
-     tabindex="-1"
-     data-backdrop="static"
-     role="dialog"
-     id="staffBalance">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    Gratuity(<span style="font-size: 11pt">
-                    {{view.kwargs.pk|zeropadding:3}} - {{object}}
-                </span>)
-                </h3>
-                <button type="button"
-                        class="close"
-                        aria-label="close"
-                        data-dismiss="modal">
-                    <i class="fa fa-times text-danger"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <p id="dateField"></p>
-                    <form action="{% url 'employee-balance' object.pk %}" method="post">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-5">
-                            <div class="form-group">
-                                <label for="period">Period</label>
-                                <input class="form-control" 
-                                name="period" 
-                                id="period" 
-                                type="text" 
-                                pattern="[0-9]{4}-[0-9]{2}"
-                                value="{% now 'Y-m' %}" required>
-                            </div>
-                        </div>
-                        <div class="col-7">
-                            <div class="form-group">
-                                <label for="title">Title<sup class="text-danger">*</sup></label>
-                                <input class="form-control" 
-                                name="title" 
-                                id="title" 
-                                maxlength="30"
-                                value="{{gratuity_title}}"
-                                type="text" required>
-                                <small class="form-help text-muted">Not more than 30 characters</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-9">
-                            <div class="form-group">
-                                <label class="form-label" for="tBal">Value</label>
-                                <input id="tBal"
-                                       class="form-control"
-                                       name="balance"
-                                       value="0.00"
-                                       type="number" required>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="form-group">
-                                <label class="form-label" for="tBal">Type</label>
-                                <select class="form-control" name="CrDr" id="balType">
-                                    <option value="Cr">Cr</option>
-                                    <option value="Dr">Dr</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="salComment">Description</label>
-                                <input name="comment"
-                                       id="balComment"
-                                       maxlength="50"
-                                       class="form-control"
-                                       type="text" required>
-                                <small class="form-help text-muted">Not more than 50 characters</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit"
-                                class="btn btn-outline-info">
-                            Apply
-                        </button>
-                        <button type="button"
-                                data-dismiss="modal"
-                                class="btn btn-outline-dark">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-                </div>
-            </div>
-        </div>
+<!-- Add Gratuity -->
+<div class="modal fade" tabindex="-1" data-backdrop="static" id="staffBalance" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Add Gratuity — {{ object }}</h5>
+      <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
     </div>
+    <form action="{% url 'employee-balance' object.pk %}" method="post">{% csrf_token %}
+      <div class="modal-body">
+        <p id="dateField" class="text-muted small"></p>
+        <div class="row">
+          <div class="col-5">
+            <div class="form-group">
+              <label for="period">Period</label>
+              <input class="form-control" name="period" id="period" type="text"
+                     pattern="[0-9]{4}-[0-9]{2}" value="{% now 'Y-m' %}" required>
+            </div>
+          </div>
+          <div class="col-7">
+            <div class="form-group">
+              <label for="title">Title <sup class="text-danger">*</sup></label>
+              <input class="form-control" name="title" id="title" maxlength="30"
+                     value="{{ gratuity_title }}" type="text" required>
+              <small class="text-muted">Max 30 characters</small>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-9">
+            <div class="form-group">
+              <label for="tBal">Value</label>
+              <input id="tBal" class="form-control" name="balance" value="0.00" type="number" required>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="form-group">
+              <label for="balType">Type</label>
+              <select class="form-control" name="CrDr" id="balType">
+                <option value="Cr">Cr</option>
+                <option value="Dr">Dr</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="balComment">Description</label>
+          <input id="balComment" class="form-control" name="comment" maxlength="50" type="text" required>
+          <small class="text-muted">Max 50 characters</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Apply</button>
+      </div>
+    </form>
+  </div></div>
 </div>
 
-<!--Reassign-->
-<div class="modal"
-     tabindex="-1"
-     data-backdrop="static"
-     role="dialog"
-     id="staffReassign">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    Reassign (<span style="font-size: 11pt">
-                    {{view.kwargs.pk|zeropadding:3}} - {{object}}
-                </span>)
-                </h3>
-                <button type="button"
-                        class="close"
-                        aria-label="close"
-                        data-dismiss="modal">
-                    <i class="fa fa-times text-danger"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-
-                    <form action="{% url 'employee-reassign' object.pk %}"
-                          method="post">
-                    {% csrf_token %}
-
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="cP">Current Position</label>
-                                <input id="cP"
-                                       class="form-control"
-                                       name="current_position"
-                                       value="{{object.position}}"
-                                       type="text" readonly>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="cB">Current Branch</label>
-                                <input id="cB"
-                                       class="form-control"
-                                       name="current_branch"
-                                       value="{{object.branch}}"
-                                       type="text" readonly>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="startDate">Start Date</label>
-                                <input name="start_date" id="startDate" class="form-control" type="date" required>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="reassign">Type</label>
-                                <select onchange="lostFocus()" class="form-control" name="type" id="reassign">
-                                    <option value="T">Temporal</option>
-                                    <option value="A">Acting</option>
-                                    <option value="C">Confirmed</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                        <label class="form-label" for="aa">Change Position:</label>
-                        <select class="form-control" name="position" id="aa">
-                            <option value="None">No position assigned</option>
-                            {% for position in positions %}
-                            {% if object.position == position %}
-                            <option value="{{position}}" selected>{{position}}</option>
-                            {% else %}
-                            <option value="{{position}}">{{position}}</option>
-                            {% endif %}
-                            {% endfor %}
-                        </select>
-                    </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                            <label for="bb">Change Branch:</label>
-                            <select class="form-control" name="branch" id="bb">
-                                <option value="None">No Branch Assigned</option>
-                                {% for branch in branches %}
-                                {% if object.branch == branch %}
-                                <option value="{{branch}}" selected>{{branch}}</option>
-                                {% else %}
-                                <option value="{{branch}}">{{branch}}</option>
-                                {% endif %}
-                                {% endfor %}
-                            </select>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-5">
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col">
-                                        <label class="form-label" for="duration">Duration(in days)</label>
-                                    </div>
-                                    <div class="col">
-                                        <input id="divDuration" 
-                                        name="duration" 
-                                        value=60 
-                                        id="duration" 
-                                        class="form-control"
-                                        type="number" readonly>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="comment">Remark</label>
-                                <input name="remark" placeholder="Comment" id="comment" class="form-control" type="text" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                <button type="submit"
-                        class="btn btn-outline-info">
-                    Apply
-                </button>
-                <button type="button"
-                        data-dismiss="modal"
-                        class="btn btn-outline-dark">
-                    Cancel
-                </button>
-            </div>
-                </form>
-                </div>
-            </div>
-        </div>
+<!-- Reassign -->
+<div class="modal fade" tabindex="-1" data-backdrop="static" id="staffReassign" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Reassign — {{ object }}</h5>
+      <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
     </div>
+    <form action="{% url 'employee-reassign' object.pk %}" method="post">{% csrf_token %}
+      <div class="modal-body">
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="cP">Current Position</label>
+              <input id="cP" class="form-control" name="current_position" value="{{ object.position }}" type="text" readonly>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="cB">Current Branch</label>
+              <input id="cB" class="form-control" name="current_branch" value="{{ object.branch }}" type="text" readonly>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="startDate">Start Date</label>
+              <input name="start_date" id="startDate" class="form-control" type="date" required>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="reassign">Type</label>
+              <select onchange="lostFocus()" class="form-control" name="type" id="reassign">
+                <option value="T">Temporal</option>
+                <option value="A">Acting</option>
+                <option value="C">Confirmed</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="aa">Change Position</label>
+              <select class="form-control" name="position" id="aa">
+                <option value="None">No position assigned</option>
+                {% for position in positions %}
+                <option value="{{ position }}" {% if object.position == position %}selected{% endif %}>{{ position }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="bb">Change Branch</label>
+              <select class="form-control" name="branch" id="bb">
+                <option value="None">No Branch Assigned</option>
+                {% for branch in branches %}
+                <option value="{{ branch }}" {% if object.branch == branch %}selected{% endif %}>{{ branch }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" id="divDuration" hidden>
+          <label for="duration">Duration (days)</label>
+          <input name="duration" id="duration" class="form-control" value="60" type="number">
+        </div>
+        <div class="form-group">
+          <label for="comment">Remark</label>
+          <input name="remark" id="comment" class="form-control" type="text" placeholder="Comment" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Apply</button>
+      </div>
+    </form>
+  </div></div>
 </div>
 
-<!--modal Terminate-->
-<div class="modal"
-     tabindex="-1"
-     data-backdrop="static"
-     role="dialog"
-     id="staffTerminate">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Termination of Staff</h4>
-                <button type="button"
-                        class="close"
-                        aria-label="close"
-                        data-dismiss="modal">
-                    <i class="fa fa-times text-danger"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col">
-                        <h5>Staff: {{ object.fullname }} with ID {{ object.pk|zeropadding:3 }}</h5>
-                        <div class="col mt-2">
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <div class="row">
-                                        <div class="col">
-                                            <form action="{% url 'employee-terminate' object.pk %}" method="post">
-                                                {% csrf_token %}
-                                                <div class="form-group">
-                                                    <label class="form-label" for="type">Type</label>
-                                                    <select class="form-control" name="type" id="type">
-                                                        <option value="Resign">Resign</option>
-                                                        <option value="Sack">Sack</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="form-label" for="remark">
-                                                        Remark
-                                                    </label>
-                                                    <input type="text"
-                                                           class="form-control"
-                                                           id="remark"
-                                                           name="remark"
-                                                           placeholder="State the reason"
-                                                           value="" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="form-label" for="date">Date</label>
-                                                    <input class="form-control"
-                                                           type="date"
-                                                           name="date"
-                                                           value=""
-                                                           id="date" required>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label class="form-label"
-                                                           for="terminate">
-                                                        You are about to Terminate this staff. Enter the word
-                                                        "TERMINATE"
-                                                    </label>
-                                                    <input type="text"
-                                                           class="form-control"
-                                                           name="keyWord"
-                                                           value=""
-                                                           id="terminate">
-                                                </div>
-                                                <button type="submit"
-                                                        id="btnOK"
-                                                        class="btn btn-outline-danger float-right">
-                                                    Terminate
-                                                </button>
-                                                <a class="btn btn-dark" href="{% url 'employee-detail' object.pk %}">
-                                                    Cancel
-                                                </a>
-                                            </form>
-                                        </div>
-                                    </div>
-
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- Terminate -->
+<div class="modal fade" tabindex="-1" data-backdrop="static" id="staffTerminate" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title text-danger"><i class="fa fa-stop mr-2"></i>Terminate — {{ object }}</h5>
+      <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
     </div>
+    <form action="{% url 'employee-terminate' object.pk %}" method="post">{% csrf_token %}
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="type">Type</label>
+          <select class="form-control" name="type" id="type">
+            <option value="Resign">Resign</option>
+            <option value="Sack">Sack</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="remark">Reason</label>
+          <input type="text" class="form-control" id="remark" name="remark" placeholder="State the reason" required>
+        </div>
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input class="form-control" type="date" name="date" id="date" required>
+        </div>
+        <div class="form-group">
+          <label for="terminate">Type <strong class="text-danger">TERMINATE</strong> to confirm</label>
+          <input type="text" class="form-control" name="keyWord" id="terminate">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-danger">Terminate</button>
+      </div>
+    </form>
+  </div></div>
 </div>
 
-<!--modal Suspend-->
-<div class="modal"
-     tabindex="-1"
-     data-backdrop="static"
-     role="dialog"
-     id="staffSuspend">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    Suspend (<span style="font-size: 11pt">
-                    {{view.kwargs.pk|zeropadding:3}} - {{object}}
-                </span>)
-                </h3>
-                <button type="button"
-                        class="close"
-                        aria-label="close"
-                        data-dismiss="modal">
-                    <i class="fa fa-times text-danger"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <form action="{% url 'employee-suspend' object.pk %}"
-                          method="post">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="sD">Start Date</label>
-                                <input id="sD"
-                                       class="form-control"
-                                       name="startDate"
-                                       value=""
-                                       type="date" required>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="rD">Resumption Date</label>
-                                <input id="rD"
-                                       class="form-control"
-                                       name="resumptionDate"
-                                       value=""
-                                       type="date" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <!-- <label class="form-label" for="reason">Reason</label> -->
-                                    <input name="reason" 
-                                    placeholder="Reason for suspending" 
-                                    id="reason" 
-                                    class="form-control" 
-                                    type="text" required>
-                                </div>
-                            </div>
-                        </div>
-                    <div class="modal-footer">
-                <button type="submit"
-                        class="btn btn-outline-info">
-                    Apply
-                </button>
-                <button type="button"
-                        data-dismiss="modal"
-                        class="btn btn-outline-dark">
-                    Cancel
-                </button>
-            </div>
-                </form>
-                </div>
-            </div>
-        </div>
+<!-- Suspend -->
+<div class="modal fade" tabindex="-1" data-backdrop="static" id="staffSuspend" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Suspend — {{ object }}</h5>
+      <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
     </div>
+    <form action="{% url 'employee-suspend' object.pk %}" method="post">{% csrf_token %}
+      <div class="modal-body">
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="sD">Start Date</label>
+              <input id="sD" class="form-control" name="startDate" type="date" required>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="rD">Resumption Date</label>
+              <input id="rD" class="form-control" name="resumptionDate" type="date" required>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <input name="reason" class="form-control" type="text" placeholder="Reason for suspending" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Apply</button>
+      </div>
+    </form>
+  </div></div>
 </div>
 
-<!--modal Permission-->
-<div class="modal"
-     tabindex="-1"
-     data-backdrop="static"
-     role="dialog"
-     id="staffPermit">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    Permission (<span style="font-size: 11pt">
-                    {{view.kwargs.pk|zeropadding:3}} - {{object}}
-                </span>)
-                </h3>
-                <button type="button"
-                        class="close"
-                        aria-label="close"
-                        data-dismiss="modal">
-                    <i class="fa fa-times text-danger"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <p>Permissible this year: {{permissible_days}} days</p>
-                    <p>Number of permissions: {{permit_count}}</p>
-                    <p>Already Consumed this year: {{consumed_days|first}} day{{consumed_days|first|pluralize}}</p>
-                    {% if permissible_days > consumed_days %}
-                    <p class="text-success">Permission beyond {{balance_days}} day{{balance_days|pluralize}} should not be granted</p>
-                    {% endif %}
-                    <!--request-permission-update  -->
-                    <form action="{% url 'request-permission' object.pk %}" 
-                          method="post">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="sF">Start Date & Time</label>
-                                <input id="sF"
-                                       class="form-control"
-                                       name="startFrom"
-                                       value=""
-                                       type="datetime-local" required>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="eA">Resume Date & Time</label>
-                                <input id="eA"
-                                       class="form-control"
-                                       name="endingAt"
-                                       value=""
-                                       type="datetime-local" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <!-- <label class="form-label" for="reasonP">Reason</label> -->
-                                    <input name="reason" 
-                                    placeholder="Reason for permission" 
-                                    id="reasonP" 
-                                    class="form-control" 
-                                    type="text" required>
-                                </div>
-                            </div>
-                        </div>
-                    <div class="modal-footer">
-                <button type="submit"
-                        class="btn btn-outline-info">
-                    Apply
-                </button>
-                <button type="button"
-                        data-dismiss="modal"
-                        class="btn btn-outline-dark">
-                    Cancel
-                </button>
-            </div>
-                </form>
-                </div>
-            </div>
-        </div>
+<!-- Request Permission -->
+<div class="modal fade" tabindex="-1" data-backdrop="static" id="staffPermit" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Request Permission — {{ object }}</h5>
+      <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
     </div>
+    <form action="{% url 'request-permission' object.pk %}" method="post">{% csrf_token %}
+      <div class="modal-body">
+        <p class="text-muted small">
+          Permissible: <strong>{{ permissible_days }} days</strong> &mdash;
+          Used: <strong>{{ consumed_days|first }} day{{ consumed_days|first|pluralize }}</strong> &mdash;
+          Requests: <strong>{{ permit_count }}</strong>
+        </p>
+        {% if permissible_days > consumed_days %}
+        <p class="text-success small">
+          <i class="fa fa-info-circle mr-1"></i>
+          Do not grant permission beyond {{ balance_days }} day{{ balance_days|pluralize }}.
+        </p>
+        {% endif %}
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <label for="sF">Start Date &amp; Time</label>
+              <input id="sF" class="form-control" name="startFrom" type="datetime-local" required>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-group">
+              <label for="eA">Resume Date &amp; Time</label>
+              <input id="eA" class="form-control" name="endingAt" type="datetime-local" required>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <input name="reason" class="form-control" type="text" placeholder="Reason for permission" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Apply</button>
+      </div>
+    </form>
+  </div></div>
 </div>
 
-<!--modal Welfare-->
-<div class="modal"
-     tabindex="-1"
-     data-backdrop="static"
-     role="dialog"
-     id="staffWelfare">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    Welfare Support (<span style="font-size: 11pt">
-                    {{view.kwargs.pk|zeropadding:3}} - {{object}}
-                </span>)
-                </h3>
-                <button type="button"
-                        class="close"
-                        aria-label="close"
-                        data-dismiss="modal">
-                    <i class="fa fa-times text-danger"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <form action="{% url 'staff-welfare' object.pk %}"
-                          method="post">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col">
-                            <div class="form-group">
-                                <label class="form-label" for="sF">Date</label>
-                                <input id="sF"
-                                       class="form-control"
-                                       name="date"
-                                       value=""
-                                       type="date" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <input name="description" 
-                                    placeholder="Enter description/title here" 
-                                    id="desc" 
-                                    class="form-control" 
-                                    type="text" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label class="form-label" for="amount">Amount</label>
-                                    <input name="amount" 
-                                    id="amount" 
-                                    class="form-control" 
-                                    type="number" required>
-                                </div>
-                            </div>
-                        </div>
-                    <div class="modal-footer">
-                <button type="submit"
-                        class="btn btn-outline-info">
-                    Save
-                </button>
-                <button type="button"
-                        data-dismiss="modal"
-                        class="btn btn-outline-dark">
-                    Cancel
-                </button>
-            </div>
-                </form>
-                <h5 class="text-info">Last Entered Record</h5>
-                <div class="row">
-                    <div class="col">
-                        <ul class="list-group list-group-horizontal">
-                            <li class="list-group-item">{{welfare_last_record.staff}}</li>
-                            <li class="list-group-item">{{welfare_last_record.date}}</li>
-                            <li class="list-group-item">{{welfare_last_record.amount}}</li>
-                            <li class="list-group-item">{{welfare_last_record.description|truncatewords:2}}</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col">
-                        <button class="float-right btn btn-outline-info btn-sm" 
-                            type="button" 
-                            data-toggle="modal" 
-                            data-target="#welfareDate">
-                            View All Others
-                        </button>
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
+<!-- Welfare Support -->
+<div class="modal fade" tabindex="-1" data-backdrop="static" id="staffWelfare" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Welfare Support — {{ object }}</h5>
+      <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
     </div>
+    <form action="{% url 'staff-welfare' object.pk %}" method="post">{% csrf_token %}
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="wDate">Date</label>
+          <input id="wDate" class="form-control" name="date" type="date" required>
+        </div>
+        <div class="form-group">
+          <input name="description" class="form-control" type="text"
+                 placeholder="Description / title" id="desc" required>
+        </div>
+        <div class="form-group">
+          <label for="amount">Amount</label>
+          <input name="amount" id="amount" class="form-control" type="number" required>
+        </div>
+        {% if welfare_last_record %}
+        <p class="text-muted small mb-1">Last record:</p>
+        <div class="d-flex staff-nav-bar small text-muted">
+          <span>{{ welfare_last_record.staff }}</span>
+          <span>{{ welfare_last_record.date }}</span>
+          <span>{{ welfare_last_record.amount }}</span>
+          <span>{{ welfare_last_record.description|truncatewords:3 }}</span>
+        </div>
+        <div class="text-right mt-2">
+          <button class="btn btn-secondary btn-sm" type="button"
+                  data-toggle="modal" data-target="#welfareDate">
+            View All
+          </button>
+        </div>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div></div>
 </div>
 
-<!-- modal welfare for a date link is in modal welfare-->
-<div class="modal"
-     tabindex="-1"
-     role="dialog"
-     id="welfareDate">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
-        <div class="modal-content bg-light">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    Welfare Suport for {{welfare_last_record.date}}
-                </h3>
-                <button type="button"
-                        class="close"
-                        aria-label="close"
-                        data-dismiss="modal">
-                    <i class="fa fa-times text-danger"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    
-                    <div class="col">
-                        <table class="table table-bordered table-striped" data-toggle="table">
-                            <thead>
-                                <tr class="bg-info">
-                                    <td>Staff</td>
-                                    <td>Date</td>
-                                    <td>Description</td>
-                                    <td>Amount</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for record in welfare_for_a_date %}
-                                <tr>
-                                    <td>{{record.staff}}</td>
-                                    <td>{{record.date}}</td>
-                                    <td>{{record.description}}</td>
-                                    <td>{{record.amount}}</td>
-                                </tr>
-                                {% endfor %}
-                                <span class="float-right">{{welfare_for_a_date_total_amount|floatformat:'2g'}}</span>    
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- Welfare date detail -->
+<div class="modal fade" tabindex="-1" id="welfareDate" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">Welfare — {{ welfare_last_record.date }}</h5>
+      <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
     </div>
+    <div class="modal-body p-0">
+      <table class="table table-striped mb-0" data-toggle="table">
+        <thead><tr><th>Staff</th><th>Date</th><th>Description</th><th class="text-right">Amount</th></tr></thead>
+        <tbody>
+          {% for record in welfare_for_a_date %}
+          <tr>
+            <td>{{ record.staff }}</td>
+            <td>{{ record.date }}</td>
+            <td>{{ record.description }}</td>
+            <td class="text-right">{{ record.amount }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div></div>
 </div>
-
-
 
 <script>
-    const date = new Date();
-    document.getElementById('dateField').innerHTML = 'Entry Date: ' + date.toDateString();
-    function lostFocus() {
-        if (document.getElementById("reassign").value=='A') {
-            document.getElementById("divDuration").hidden = false;
-        }
-        else {
-            document.getElementById("divDuration").hidden = true;
-        }
-    }
+  document.getElementById('dateField').textContent = 'Entry Date: ' + new Date().toDateString();
+  function lostFocus() {
+    var t = document.getElementById('reassign').value;
+    document.getElementById('divDuration').hidden = (t !== 'A');
+  }
 </script>
-
-{% endblock content %}
+{% endblock %}

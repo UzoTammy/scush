@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Home{% endblock %}
 
 {% block content %} 
 <div class="container py-3">
@@ -45,7 +47,7 @@
                 <a class="btn btn-danger" href="{% url 'watchlist-update' 'remove' %}">Remove</a>
             </div>
             <div class="col">
-                <a class="btn btn-dark" href="{% url 'product-home' %}"><i class="fa fa-reply"></i></a>
+                <a class="btn btn-secondary" href="{% url 'product-home' %}"><i class="fa fa-times-circle"></i></a>
             </div>
         </div>
         

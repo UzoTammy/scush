@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}One Product{% endblock %}
 
 {% block content %} 
 <div class="container py-3">
@@ -19,7 +21,7 @@
                 <li class="list-group-item ml-2">
                     <div class="row">
                         <div class="col">DA Sellout: {{daily_average_sellout|floatformat:0}}</div>
-                        <div class="col"><a class="btn btn-primary btn-sm float-right" href="#" data-toggle="modal" data-target="#monthly">Monthly</a></div>
+                        <div class="col"><a class="btn btn-secondary float-right" href="#" data-toggle="modal" data-target="#monthly">Monthly</a></div>
                     </div>
                 </li>
                 <li class="list-group-item ml-2"><small class="text-danger">YTD: Year To Date, DA: Daily Average</small></li>
@@ -27,7 +29,7 @@
             
         </div>
     </div>
-    <a href="{% url 'stock-report-all-products' %}" class="btn btn-dark float-right"><i class="fa fa-reply"></i></a>
+    <a href="{% url 'stock-report-all-products' %}" class="btn btn-secondary float-right"><i class="fa fa-times-circle"></i></a>
 </div>
 <section>
     <div class="modal" tabindex="-1" id="monthly">

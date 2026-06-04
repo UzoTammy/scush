@@ -1,70 +1,98 @@
 {% extends 'pdf/base.html' %}
 {% load custom_tags %}
 
-<body>
 {% block content %}
-<div class='wrapper'>
-    <div class='header'>    
-        <h1 class='title'>Payroll Report for {{period_month}} </h1>
-    </div>
-</div>
-<div class='details'>
-    <p>Number of Staff: {{employees.count}} <br>
-    As At: {{today}} WAT
-    </p>
-    <p>
-        Total Net Pay: {{N}}{{total_net_pay.sum|floatformat:"2g"}}<br>
-        Debit Incurred: {{N}}{{total_debit.sum|floatformat:"2g"}} |
-        Credit Accrued: {{N}}{{total_credit.sum|floatformat:"2g"}}<br>
-        Deductions: {{N}}{{total_deduction.sum|floatformat:"2g"}} |
-        Balance: {{N}}{{total_outstanding.sum|floatformat:"2g"}}
-    </p>
 
-</div>
-<br>
-<h2 style="color:blue">Payroll for the period-{{period}}</h2>
-<table class="table caption-top">
-    <thead>
-        <tr>
-            <th width="40px" scope="col">ID</th>
-            <th scope="col">Staff</th>
-            <th scope="col">Pay Code</th>
-            <th scope="col">Banker</th>
-            <th scope="col">Acct Num</th>
-            <th width="90px" scope="col">Salary</th>
-            <th width="65px" scope="col">Tax</th>
-            <th width="90px" scope="col" style="color: #007cae;">Net Pay</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for employee in employees %}
-        <tr>
-            <th scope="row">{{ employee.staff.id|zeropadding:3 }}</th>
-            <td>{{employee.staff}}</td>
-            <td style="text-align:center;">{{employee.staff.id|zeropadding:3}}-{{employee.period}}</td>
-            <td style="text-align:center;">{{employee.staff.banker}}</td>
-            <td style="text-align:right;">{{employee.staff.account_number|addsep}}</td>
-<!--            Change to employee.salary-->
-            <td style="text-align:right;">{{employee.staff.gross_pay.amount|floatformat:"2g"}}</td>
-<!--            Change to employee.tax-->
-            <td style="text-align:right;">{{employee.staff.tax_amount.amount|floatformat:"2g"}}</td>
-            <td style="text-align:right; color:#007cae;">{{employee.net_pay.amount|floatformat:"2g"}}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-    <tfoot>
-        <tr>
-            <th width="50px" scope="col">ID</th>
-            <th scope="col">Staff</th>
-            <th scope="col">Pay Code</th>
-            <th scope="col">Banker</th>
-            <th scope="col">Acct Num</th>
-            <th scope="col">Salary</th>
-            <th scope="col">Tax</th>
-            <th scope="col" style="color: #007cae;">Net Pay</th>
-        </tr>
-    </tfoot>
+<h2>Payroll Report — {{ period_month }}</h2>
+<hr>
+
+<!-- ── Summary (faint-tinted table) ── -->
+<table class="summary-table mt-sm">
+  <tr>
+    <th>Period</th>
+    <td>{{ period }}</td>
+    <th>Staff Paid</th>
+    <td>{{ employees.count }}</td>
+    <th>As At</th>
+    <td>{{ today }}</td>
+  </tr>
+  <tr>
+    <th>Total Net Pay</th>
+    <td>{{ N }}{{ total_net_pay.sum|floatformat:"2g" }}</td>
+    <th>Total Debit</th>
+    <td>{{ N }}{{ total_debit.sum|floatformat:"2g" }}</td>
+    <th>Total Credit</th>
+    <td>{{ N }}{{ total_credit.sum|floatformat:"2g" }}</td>
+  </tr>
+  <tr>
+    <th>Deductions</th>
+    <td>{{ N }}{{ total_deduction.sum|floatformat:"2g" }}</td>
+    <th>Outstanding</th>
+    <td>{{ N }}{{ total_outstanding.sum|floatformat:"2g" }}</td>
+    <td colspan="2"></td>
+  </tr>
+</table>
+
+<!-- ── Detail table — explicit column widths ── -->
+<h3 class="mt-section">Staff Payroll Details</h3>
+
+<table class="detail-table">
+  <colgroup>
+    <col width="28">   <!-- ID -->
+    <col width="110">  <!-- Staff -->
+    <col width="65">   <!-- Pay Code -->
+    <col width="60">   <!-- Banker -->
+    <col width="72">   <!-- Account No. -->
+    <col width="58">   <!-- Salary -->
+    <col width="45">   <!-- Tax -->
+    <col width="60">   <!-- Net Pay -->
+  </colgroup>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Staff</th>
+      <th>Pay Code</th>
+      <th>Banker</th>
+      <th>Account No.</th>
+      <th class="text-right">Salary</th>
+      <th class="text-right">Tax</th>
+      <th class="net-pay">Net Pay</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for employee in employees %}
+    <tr>
+      <td>{{ employee.staff.id|zeropadding:3 }}</td>
+      <td>{{ employee.staff }}</td>
+      <td class="pay-code">{{ employee.staff.id|zeropadding:3 }}-{{ employee.period }}</td>
+      <td>{{ employee.staff.banker }}</td>
+      <td class="acct-col">{{ employee.staff.account_number|addsep }}</td>
+      <td class="text-right">{{ employee.staff.gross_pay.amount|floatformat:"2g" }}</td>
+      <td class="text-right">{{ employee.staff.tax_amount.amount|floatformat:"2g" }}</td>
+      <td class="net-pay">{{ employee.net_pay.amount|floatformat:"2g" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <th colspan="5">Totals</th>
+      <th class="text-right">—</th>
+      <th class="text-right">—</th>
+      <th class="tfoot-net">{{ N }}{{ total_net_pay.sum|floatformat:"2g" }}</th>
+    </tr>
+  </tfoot>
+</table>
+
+<!-- ── Authorisation ── -->
+<table class="sig-table">
+  <tr>
+    <td class="sig-cell-l">
+      <div class="sig-line">Prepared by: {{ credentials }}</div>
+    </td>
+    <td class="sig-cell-r">
+      <div class="sig-line-r">Approved by: {{ approval }}</div>
+    </td>
+  </tr>
 </table>
 
 {% endblock %}
-</body>

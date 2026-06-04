@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Productextension Form{% endblock %}
 
 {% block content %}
 <div class="container py-3">
@@ -7,7 +9,7 @@
         <div class="col-sm-8 shadow-lg">
             <form method="POST">
                 {% csrf_token %}
-                <legend class="text-info text-center">Add for {{product}}</legend>
+                <legend class="text-primary text-center">Add for {{product}}</legend>
                 <h6>To be Used:</h6>
                 <div class="row m-2">
                     <div class="col-sm-4">
@@ -25,10 +27,10 @@
                     <div class="ml-2">{{ form|crispy }}</div>
                 </fieldset>
                 <div class="form-group p-2">
-                    <button class="btn btn-outline-info" type="submit">Save</button>
+                    <button class="btn btn-primary" type="submit">Save</button>
                     <a class="btn btn-outline-light float-right"
                        href="{% url 'stock-report-home' user %}">
-                        <i class="fa fa-reply text-danger"></i> Return</a>
+                        <i class="fa fa-times-circle"></i> Return</a>
                 </div>
             </form>
         </div>

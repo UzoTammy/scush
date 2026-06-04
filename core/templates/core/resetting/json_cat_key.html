@@ -1,13 +1,15 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
+
+{% block page_title %}Settings — Edit Key{% endblock %}
 
 {% block content %}
 <div class="container mt-3">
     <div class="row">
         <div class="col shadow-lg">
             <h3>{{object.name}}-{{view.kwargs.key}}</h3>
-            <p> <span class="text-info">List of {{view.kwargs.key}}:</span>   
+            <p> <span class="text-primary">List of {{view.kwargs.key}}:</span>   
             {% for key, values in object.dataset.items %}
                 {% if key == view.kwargs.key %}
                 {% for value in values %}
@@ -19,7 +21,7 @@
             <div class="row">
                 <div class="col text-right">
                     <a class="btn btn-primary" href="{% url 'json-cat-key-new' object.pk view.kwargs.key %}">Add</a>
-                    <a class="btn btn-dark" href="{% url 'json-list' %}">Return</a>
+                    <a class="btn btn-secondary" href="{% url 'json-list' %}">Return</a>
                 </div>
             </div>
 

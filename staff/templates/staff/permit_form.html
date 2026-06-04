@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Permit Form{% endblock %}
 
 {% block content %}
 <div class="container mt-3">
@@ -30,8 +32,8 @@
                             <a href="{% url 'request-permission-disapprove' code %}" class="btn btn-outline-danger">Disapprove</a>
                         </div>
                         <div class="col">
-                            <a href="{% url 'request-permission-list' %}" class="btn btn-outline-dark float-right">
-                                <i class="fa fa-reply"></i>
+                            <a href="{% url 'request-permission-list' %}" class="btn btn-secondary float-right">
+                                <i class="fa fa-times-circle"></i>
                             </a>
                         </div>
                     </div>

@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Positionkpimonthly Form{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -13,7 +15,7 @@
                 </div>
                 <div class="mb-3">
                     <button class="btn btn-primary" type="submit">Save</button>
-                    <a class="float-right" href="{% url 'kpi-list' %}"><i class="fa fa-reply fa-2x"></i></a>
+                    <a class="btn btn-secondary float-right" href="{% url 'kpi-list' %}"><i class="fa fa-times-circle"></i></a>
                     <!-- <a class="btn btn-secondary float-right" href="{% url 'target-home' %}">Home</a> -->
                 </div>
             </form>

@@ -1,7 +1,9 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 {% load djmoney %}
 
+
+{% block page_title %}Statement{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -60,8 +62,8 @@
     <div class="row p-3 float-right">
         <div class="col">
             <a href="{% url 'employee-detail' code %}"
-               class="btn btn-outline-dark">
-                <i class="fa fa-reply"></i>
+               class="btn btn-secondary">
+                <i class="fa fa-times-circle"></i>
             </a>
         </div>
     </div>

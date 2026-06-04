@@ -1,81 +1,147 @@
 {% extends 'core/base.html' %}
-{% block head %}
 {% load custom_tags %}
+
+{% block page_title %}Business Summary{% endblock %}
+
+{% block head %}
 <style>
-    body {
-        font-size: large;
-        /* background-color: black; */
-        background: #323131;
-    }
+  .bs-controls   { gap: 0.625rem; }
+  .bs-rate-input { width: 160px; }
 
-    
-    .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
+  /* Active currency button — explicit orange, no ambiguity */
+  .bs-currency-btn {
+    border: 2px solid var(--color-border);
+    color: var(--color-text);
+    background: #fff;
+    font-weight: 600;
+  }
 
-    .card {
-        background: #0b0b0b;
-        padding: 20px;
-        border-radius: 8px;
-        border: 1px solid #222;
-    }
+  .bs-currency-btn.active {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+  }
 
-    .card h3 {
-        font-size: 16px;
-        color: #00c8ff;
+  .bs-currency-btn:hover:not(.active) {
+    background: #fce8e3;
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    text-decoration: none;
+  }
 
-    }
+  .bs-rate-badge {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-muted);
+  }
 
-    .card p {
-        font-size: 28px;
-        margin-top: 10px;
-        color: #f6db0d;
-    }
+  .bs-rate-badge strong { color: var(--color-accent); }
+
+  .ds-page-header.flex-wrap { row-gap: 0.75rem; }
 </style>
 {% endblock %}
 
-{% block content%}
+{% block content %}
 <div class="container mt-3">
-    <div class="row mt-2 mb-3">
-      <div class="col">
-        <a href="?currency=dollars">
-          {% if view.request.GET.currency == 'dollars' %}
-          <i class="fa fa-check-circle text-success"></i> 
-          {% else %}
-          <i class="fa fa-times-circle text-danger"></i> 
-          {% endif %}
-          Dollars
-        </a>
-        <a class="ml-2" href="?currency=naira">
-          {% if view.request.GET.currency == 'naira' or not view.request.GET %}
-          <i class="fa fa-check-circle text-success"></i> 
-          {% else %}
-          <i class="fa fa-times-circle text-danger"></i> 
-          {% endif %}
-          Naira
-        </a>
-      </div>
-    </div>
-    <div class="cards">
-      {% for key, value in business_summary.items %}
-      <div class="card">
-          <h3>{{key}} </h3>
-          {% if key == 'Rent' or key == 'Levy' %}
-          <p>{{value|first|myriad}}</p>
-          <small class="text-muted"> of {{value|last|myriad}}</small>
-          {% else %}
-          <p>{{value|myriad}}{% if key == 'Stock' %} </p>
-          <small class="text-muted">({{stock_date|date:'dS N'}})</small> {% endif %}
-          {% endif %}
 
-      </div>
-      {% endfor %}
-    </div>
-        <div class="card p-0">
-            <a class="btn btn-info" href="{% url 'home' %}"><i class="fa fa-reply"></i> Return</a>
+  <!-- Page header + controls -->
+  <div class="ds-page-header flex-wrap">
+    <h2 class="ds-page-header__title">Business Summary</h2>
+
+    <div class="d-flex align-items-center flex-wrap bs-controls">
+
+      <!-- Rate input (only relevant when switching to dollars) -->
+      <div class="input-group input-group-sm bs-rate-input">
+        <div class="input-group-prepend">
+          <span class="input-group-text font-weight-600">&#8358;/$</span>
         </div>
+        <input id="rateInput"
+               type="number"
+               class="form-control"
+               value="{% if naira_per_dollar %}{{ naira_per_dollar }}{% endif %}"
+               placeholder="e.g. 1620"
+               min="1"
+               step="1"
+               aria-label="Naira per dollar exchange rate">
+      </div>
+
+      <!-- Dollars toggle -->
+      <a id="dollarBtn"
+         href="?currency=dollars&rate={% if naira_per_dollar %}{{ naira_per_dollar }}{% else %}0{% endif %}"
+         class="btn btn-sm bs-currency-btn {% if currency == 'dollars' and not rate_error %}active{% endif %}">
+        <i class="fa fa-dollar mr-1"></i> Dollars
+      </a>
+
+      <!-- Naira toggle -->
+      <a href="?currency=naira"
+         class="btn btn-sm bs-currency-btn {% if currency == 'naira' %}active{% endif %}">
+        <i class="fa fa-money mr-1"></i> Naira
+      </a>
+
+    </div>
+  </div>
+
+  <!-- Status line — always visible -->
+  <p class="bs-rate-badge mb-3">
+    {% if currency == 'dollars' and not rate_error %}
+      <i class="fa fa-check-circle text-success mr-1"></i>
+      Showing in <strong>US Dollars</strong> at
+      <strong>&#8358;{{ naira_per_dollar }}</strong> per $1.
+    {% elif rate_error %}
+      <i class="fa fa-exclamation-triangle text-warning mr-1"></i>
+      Enter a valid exchange rate above, then click <strong>Dollars</strong>.
+    {% else %}
+      <i class="fa fa-money mr-1"></i>
+      Showing in <strong>Nigerian Naira (&#8358;)</strong>.
+      Enter a rate above to switch to Dollars.
+    {% endif %}
+  </p>
+
+  <!-- Summary tiles — only show when no error -->
+  {% if not rate_error %}
+  <div class="row">
+    {% for key, value in business_summary.items %}
+    <div class="col-sm-4 col-md-3 mb-3">
+      <div class="ds-stat ds-stat--accent">
+        <div class="ds-stat__label">{{ key }}</div>
+        <div class="ds-stat__value">
+          {% if key == 'Rent' or key == 'Levy' %}
+            {{ value|first|myriad }}
+            <small class="ds-stat__sub">of {{ value|last|myriad }}</small>
+          {% else %}
+            {{ value|myriad }}
+            {% if key == 'Stock' %}
+            <small class="ds-stat__sub">({{ stock_date|date:'dS N' }})</small>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="mt-2">
+    <a class="btn btn-secondary btn-sm" href="{% url 'home' %}">
+      <i class="fa fa-times-circle mr-1"></i> Return
+    </a>
+  </div>
 </div>
-{% endblock%}
+
+<script>
+  (function () {
+    var rateInput = document.getElementById('rateInput');
+    var dollarBtn = document.getElementById('dollarBtn');
+
+    function updateDollarHref() {
+      var rate = parseInt(rateInput.value, 10);
+      dollarBtn.href = rate > 0
+        ? '?currency=dollars&rate=' + rate
+        : '?currency=dollars';
+    }
+
+    rateInput.addEventListener('input', updateDollarHref);
+    rateInput.addEventListener('change', updateDollarHref);
+  })();
+</script>
+{% endblock %}

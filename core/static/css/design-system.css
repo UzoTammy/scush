@@ -99,9 +99,12 @@ li::marker { color: var(--color-accent); }
 }
 
 .ds-sidebar__brand-logo {
-  width: 30px; height: 30px;
+  width: 38px;
+  height: 30px;
   border-radius: 50%;
   object-fit: cover;
+  border: 3px solid #ffffff;
+  flex-shrink: 0;
 }
 
 .ds-sidebar__brand-name {
@@ -168,7 +171,7 @@ li::marker { color: var(--color-accent); }
   list-style: none;
   padding: 0;
   margin: 0;
-  background: rgba(0,0,0,0.18);
+  background: rgba(255,255,255,0.06);
 }
 
 .ds-sidebar__sub-link {
@@ -285,6 +288,7 @@ li::marker { color: var(--color-accent); }
 .ds-card__header a:hover  { color: #fff; }
 
 .ds-card__body { padding: 1rem; }
+.ds-card--narrow { max-width: 640px; }
 
 /* ─── Stat / KPI tiles ───────────────────────────────────── */
 .ds-stat {
@@ -309,6 +313,15 @@ li::marker { color: var(--color-accent); }
   letter-spacing: 0.07em;
   color: var(--color-muted);
   margin-bottom: 0.25rem;
+}
+
+.ds-stat__value--lg { font-size: 1.1rem; }
+
+.ds-stat__sub {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  display: block;
+  margin-top: 0.1rem;
 }
 
 .ds-stat__value {
@@ -398,6 +411,11 @@ li::marker { color: var(--color-accent); }
 .table-striped tbody tr:nth-of-type(even) { background-color: #fafafa; }
 .table-hover  tbody tr:hover              { background-color: #fce8e3 !important; }
 
+.thead-accent th  { background-color: #fce8e3 !important; color: #bf360c !important; }
+.thead-success th { background-color: #e8f5e9 !important; color: #1b5e20 !important; }
+.thead-warning th { background-color: #fff3e0 !important; color: #e65100 !important; }
+.thead-danger th  { background-color: #ffebee !important; color: #b71c1c !important; }
+
 /* Forms */
 .form-control {
   font-family: var(--font);
@@ -448,6 +466,11 @@ label {
 .badge-danger   { background-color: var(--color-danger)  !important; }
 .badge-warning  { background-color: var(--color-accent)  !important; color: #fff; }
 
+/* Soft / tinted badge variants */
+.badge-soft-primary { background-color: #e8eaf6 !important; color: #283593 !important; }
+.badge-soft-success { background-color: #e8f5e9 !important; color: #1b5e20 !important; }
+.badge-soft-accent  { background-color: #fce8e3 !important; color: #bf360c !important; }
+
 /* Pagination */
 .page-link {
   font-family: var(--font);
@@ -463,11 +486,12 @@ label {
 .dropdown-item {
   font-family: var(--font);
   font-size: 0.875rem;
+  color: var(--color-text) !important;
 }
 
 .dropdown-item:hover {
   background-color: #fce8e3;
-  color: var(--color-accent);
+  color: var(--color-accent) !important;
 }
 
 /* Modal */
@@ -505,6 +529,144 @@ label {
   .ds-content             { margin-left: 0; }
   .ds-topbar__hamburger   { display: block; }
 }
+
+/* ─── Section quick-nav link (staff, customer home pages) ── */
+.staff-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-card);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.staff-nav-link:hover {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+  text-decoration: none;
+}
+
+/* Ensure <button> elements get the same look as <a> elements */
+button.staff-nav-link {
+  cursor: pointer;
+  outline: none;
+}
+
+/* Inside a dark card header the button also needs the frosted override */
+.ds-card__header button.staff-nav-link {
+  background: rgba(255,255,255,0.15) !important;
+  border-color: rgba(255,255,255,0.35) !important;
+  color: #ffffff !important;
+}
+
+.ds-card__header button.staff-nav-link:hover {
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+}
+
+/* Dropdown menus inside dark card headers — force visible colours */
+.ds-card__header .dropdown-menu {
+  background-color: #ffffff !important;
+}
+
+.ds-card__header .dropdown-menu .dropdown-item {
+  color: var(--color-primary) !important;
+  background-color: transparent;
+}
+
+.ds-card__header .dropdown-menu .dropdown-item:hover {
+  background-color: var(--color-primary) !important;
+  color: #ffffff !important;
+}
+
+.ds-card__header .dropdown-menu .dropdown-item .fa {
+  color: var(--color-primary) !important;
+}
+
+.ds-card__header .dropdown-menu .dropdown-item:hover .fa {
+  color: #ffffff !important;
+}
+
+.staff-nav-bar { gap: 0.5rem; }
+.birthday-dot  { font-size: 0.5rem; }
+
+/* staff-nav-link inside a dark ds-card__header */
+.ds-card__header .staff-nav-link {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.35);
+  color: #ffffff;
+}
+
+.ds-card__header .staff-nav-link:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #ffffff;
+}
+
+/* ─── Return / close icon — orange fa-times-circle ──────── */
+a .fa-times-circle,
+button .fa-times-circle {
+  color: var(--color-accent);
+}
+
+/* Stand-alone icon-only close link (no button wrapper) */
+.btn-return {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent);
+  color: var(--color-accent);
+  background: transparent;
+  font-size: 1.125rem;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+
+.btn-return:hover {
+  background: var(--color-accent);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* ─── Ozone logo — horizontal oval with white ring ─────── */
+.ozone-logo {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ffffff;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ─── Chart container ───────────────────────────────────── */
+.chart-wrap {
+  position: relative;
+  height: 200px;
+}
+
+/* ─── Hero banner ───────────────────────────────────────── */
+.ds-hero {
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.ds-hero h1, .ds-hero h2, .ds-hero h3 { color: #fff; }
 
 /* ─── Print ──────────────────────────────────────────────── */
 @media print {

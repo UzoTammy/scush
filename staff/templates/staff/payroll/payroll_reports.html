@@ -1,6 +1,8 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
 {% load djmoney %}
+
+{% block page_title %}Payroll Reports{% endblock %}
 
 {% block content %}
 <section>
@@ -43,8 +45,8 @@
                 <a class="btn btn-outline-success" href="{% url 'start-pay' %}">Proceed to Pay</a>
             </div>
             <div class="cold-flex justify-content-end">
-                <a class="btn btn-outline-dark" href="{% url 'salary' %}">
-                    <i class="fa fa-reply"></i></a>
+                <a class="btn btn-secondary" href="{% url 'salary' %}">
+                    <i class="fa fa-times-circle"></i></a>
             </div>
         </div>
     </div>

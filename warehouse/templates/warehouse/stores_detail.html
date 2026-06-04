@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Stores Detail{% endblock %}
 
 {% block content %}
 <!--        -->
@@ -46,7 +48,7 @@
                 {% endif %}
             </ul>
 
-            <a class="btn btn-outline-dark mt-3 mr-3 float-right" href="{% url 'warehouse-list-all' %}">Return</a>
+            <a class="btn btn-secondary mt-3 mr-3 float-right" href="{% url 'warehouse-list-all' %}">Return</a>
         </div>
     </div>
     

@@ -1,213 +1,180 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Employee List{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <!-- Table, Caption, Workforce, Pagination, Side bar, countdown-->
-    <div class="row">
-        <div class="col mt-3">
-            <h3 class="text-center">General Staff Page</h3>
-        </div>
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap staff-nav-bar">
+      <span><i class="fa fa-users mr-2"></i>All Employees</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'pdf-employee-list' %}" target="_blank" rel="noopener noreferrer"
+           aria-label="PDF format">
+          <i class="fa fa-file-pdf-o"></i> PDF
+        </a>
+        <a class="staff-nav-link" href="{% url 'staff-pictures' %}" aria-label="Photo view">
+          <i class="fa fa-photo"></i> Photos
+        </a>
+        <a class="staff-nav-link" href="{% url 'employee-list-private' %}">
+          <i class="fa fa-list-alt"></i> Private
+        </a>
+        <a class="staff-nav-link" href="#" data-toggle="modal" data-target="#newEmployeeModal">
+          <i class="fa fa-info-circle"></i> New Employee
+        </a>
+        {% if switch %}
+        <a class="staff-nav-link" href="{% url 'payroll-process' %}">
+          <i class="fa fa-times-circle"></i> Payroll
+        </a>
+        {% else %}
+        <a class="staff-nav-link" href="{% url 'staff-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+        {% endif %}
+      </div>
     </div>
-    <div class="row m-2">
-        <div class="col-sm-12">
-            <table data-toggle="table"
-                   data-search="true"
-                   data-search-align="left"
-                   data-show-columns="true"
-                   data-pagination="true"
-                   data-page-list="[10, 20, 30, 40, 50, All]"
-                   class="table caption-top table-sm">
-                <caption>
-                    <div class="row">
-                        <div class="col">
-                            All Employees<small class="text-muted" style="font-size: 20px">(sorted by ID)</small>
-                        </div>
-                        <div class="col text-right">
-                            <!--  links to variety of listings-->
-                            <a href="{% url 'pdf-employee-list' %}"
-                               target="_blank"
-                               class="btn btn-dark btn-sm text-right">
-                                <i class="fa fa-file-pdf-o text-white"></i>
-                                <!-- PDF Format -->
-                            </a>
-                            
-                            <a href="{% url 'staff-pictures' %}"
-                               class="btn btn-dark btn-sm text-right">
-                                <i class="fa fa-photo text-white"></i>
-                                <!-- Photo -->
-                            </a>
-                            
-                            <a href="{% url 'employee-list-private' %}"
-                               class="btn btn-dark btn-sm text-right">
-                                <i class="fa fa-list-alt text-white"></i>
-                                Private
-                            </a>
-                            <!-- Button trigger modal -->
-                            <button type="button"
-                                    class="btn btn-dark btn-sm text-right"
-                                    data-toggle="modal"
-                                    data-target="#newEmployeeModal">
-                                <i class="fa fa-plus text-success"></i>
-                                New Employee note
-                            </button>
+  </div>
 
-                            <!-- Modal -->
-                            <div class="text-left modal fade"
-                                 id="newEmployeeModal"
-                                 tabindex="-1"
-                                 aria-labelledby="newEmployeeModalLabel"
-                                 aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title"
-                                                id="newEmployeeModalLabel">
-                                                Ozone-SCUsH | New Employment
-                                            </h5>
-                                            <button type="button" class="fa fa-close text-danger" data-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <P>A new staff must come through an application process and cannot be added
-                                                directly.
-                                                Therefore, he or she must have completed the application form in the
-                                                past,
-                                                and to employ such a person, we must go through the detailed page of the
-                                                applicant.
-                                                An employ link is provided to continue data capture of such staff.
-                                                At the top of the menu, click
-                                                <br>
-                                                <span class="text-center text-danger">
-                                        applicant --> name link --> employ
-                                    </span>
-                                            </P>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">OK
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </caption>
-
-                <thead class="bg-success text-white">
-                <tr>
-                    <th scope="col">ID</th>
-                    <th width="40px" scope="col">Image</th>
-                    <th scope="col">Employee</th>
-                    <th scope="col">Date Employed</th>
-                    <th scope="col">State</th>
-                    <th scope="col">Qualification</th>
-                    <th scope="col">Course</th>
-                    <th scope="col">Mobile</th>
-                    <!-- <th scope="col">Official Mobile</th> -->
-                    <th scope="col">Age(yrs)</th>
-                    <th scope="col">DOB</th>
-                    <th scope="col">Position</th>
-                    <th scope="col">Department</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for employee in object_list %}
-                <tr class="text-center">
-                    <th {% if employee.is_confirmed == False %} class="text-danger" {%endif%}
-                     scope="row">{{ employee.pk|zeropadding:3 }}</th>
-                    <td><a href="{% url 'employee-detail' employee.id %}">
-                        <img src="{{ employee.image.url }}"
-                             class="rounded-circle"
-                             width="50px"
-                             height="50px"
-                             alt="">
-                        </a>
-                    </td>
-                    <td><a href="{% url 'employee-detail' employee.pk %}">{{employee.fullname}}</a></td>
-                    <td>{{employee.date_employed}}</td>
-                    <td>{{employee.is_confirmed|yesno:'Confirmed, Probation'}}</td>
-                    <td>{{employee.staff.qualification}}</td>
-                    <td>{{employee.staff.course}}</td>
-                    <td>{{employee.staff.mobile}}</td>
-                    <!-- <td>{{employee.official_mobile|default_if_none:""}}</td> -->
-                    <td> {{employee.staff.get_age}}</td>
-                    <td>{{employee.staff.birth_date}}</td>
-                    <td>{{employee.position}}</td>
-                    <td>{{employee.department}}</td>
-                </tr>
-                {% endfor %}
-                </tbody>
-                <tfoot>
-
-                </tfoot>
-            </table>
-            <hr>
-            <!--pagination-->
-            <div class="row text-center">
-                <div class="col">
-                    {% if is_paginated %}
-                    {% if page_obj.has_previous %}
-                    <a href="?page=1" class="btn btn-outline-info btn-sm mb-4">
-                        <i class="fa fa-backward"></i>
-                    </a>
-                    <a href="?page={{ page_obj.previous_page_number }}"
-                       class="btn btn-outline-info btn-sm mb-4">
-                        <i class="fa fa-step-backward"></i>
-                    </a>
-                    {% endif %}
-                    {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                    <a href="?page={{num}}" class="btn btn-info btn-sm mb-4">{{num}}</a>
-                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                    <a href="?page={{num}}" class="btn btn-outline-info btn-sm mb-4">{{num}}</a>
-                    {% endif %}
-                    {% endfor %}
-                    {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}"
-                       class="btn btn-outline-info btn-sm mb-4">
-                        <i class="fa fa-step-forward"></i>
-                    </a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}"
-                       class="btn btn-outline-info btn-sm mb-4">
-                        <i class="fa fa-forward"></i>
-                    </a>
-                    {% endif %}
-                    {% endif %}
-                </div>
-                <!---->
-            </div>
-        </div>
-    </div>
-    <!--{{countdown}}-->
-    <div class="col-sm-4 ml-4">
-        <ul>
-            {% for key, value in countdown %}
-            {% if value != 0 %}
-            <li>{{key}}, your birthday comes up in {{value}}
-                day{{value|pluralize}}
-            </li>
-            {% endif %}
-            {% endfor %}
-        </ul>
-    </div>
-    <!--Return button-->
-    <div class="container">
-        <div class="row mb-5 float-right">
-            <div class="col">
-                {% if switch %}
-                <a class="btn btn-outline-dark" href="{% url 'payroll-process' %}"><i class="fa fa-reply"></i> Payroll</a>
-                {% else %}
-                <a type="button" class="btn btn-outline-dark"
-                   href="{% url 'staff-home' %}">
-                    <i class="fa fa-reply"></i>
+  <!-- ── Employee table ────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__body pb-0 pt-2 px-3">
+      <div class="table-responsive">
+        <table data-toggle="table"
+               data-search="true"
+               data-search-align="left"
+               data-show-columns="true"
+               data-pagination="true"
+               data-page-list="[10, 20, 30, 40, 50, All]"
+               data-sort-name="id"
+               data-sort-order="desc"
+               class="table table-striped table-hover mb-0 table-sm">
+          <thead>
+            <tr>
+              <th data-field="id" data-sortable="true" scope="col">
+                ID <i class="fa fa-sort-amount-desc text-muted ml-1" title="Sorted descending"></i>
+              </th>
+              <th scope="col">Photo</th>
+              <th scope="col">Employee</th>
+              <th scope="col">Date Employed</th>
+              <th scope="col">State</th>
+              <th scope="col">Qualification</th>
+              <th scope="col">Course</th>
+              <th scope="col">Mobile</th>
+              <th scope="col">Age (yrs)</th>
+              <th scope="col">DOB</th>
+              <th scope="col">Position</th>
+              <th scope="col">Department</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for employee in object_list %}
+            <tr>
+              <td class="{% if employee.is_confirmed == False %}text-danger font-weight-bold{% endif %}">
+                {{ employee.pk|zeropadding:3 }}
+              </td>
+              <td>
+                <a href="{% url 'employee-detail' employee.id %}">
+                  <img src="{{ employee.image.url }}"
+                       class="ozone-logo"
+                       width="56" height="43"
+                       alt="{{ employee.fullname }}">
                 </a>
-                {% endif %}
-                
-            </div>
-        </div>
+              </td>
+              <td><a href="{% url 'employee-detail' employee.pk %}">{{ employee.fullname }}</a></td>
+              <td>{{ employee.date_employed }}</td>
+              <td>
+                <span class="badge {% if employee.is_confirmed %}badge-success{% else %}badge-warning{% endif %}">
+                  {{ employee.is_confirmed|yesno:'Confirmed,Probation' }}
+                </span>
+              </td>
+              <td>{{ employee.staff.qualification }}</td>
+              <td>{{ employee.staff.course }}</td>
+              <td>{{ employee.staff.mobile }}</td>
+              <td>{{ employee.staff.get_age }}</td>
+              <td>{{ employee.staff.birth_date }}</td>
+              <td>{{ employee.position }}</td>
+              <td>{{ employee.department }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
+  </div>
+
+  <!-- ── Pagination ─────────────────────────────────── -->
+  {% if is_paginated %}
+  <div class="d-flex justify-content-center staff-nav-bar mb-4">
+    {% if page_obj.has_previous %}
+    <a href="?page=1" class="btn btn-secondary btn-sm" aria-label="First page">
+      <i class="fa fa-angle-double-left"></i>
+    </a>
+    <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-sm" aria-label="Previous page">
+      <i class="fa fa-angle-left"></i>
+    </a>
+    {% endif %}
+    {% for num in page_obj.paginator.page_range %}
+    {% if page_obj.number == num %}
+    <a href="?page={{ num }}" class="btn btn-primary btn-sm">{{ num }}</a>
+    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+    <a href="?page={{ num }}" class="btn btn-secondary btn-sm">{{ num }}</a>
+    {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-sm" aria-label="Next page">
+      <i class="fa fa-angle-right"></i>
+    </a>
+    <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-secondary btn-sm" aria-label="Last page">
+      <i class="fa fa-angle-double-right"></i>
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ── Birthday countdown ─────────────────────────── -->
+  {% if countdown %}
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-birthday-cake mr-2"></i>Upcoming Birthdays</span></div>
+    <div class="ds-card__body">
+      <div class="row">
+        {% for key, value in countdown %}
+        {% if value != 0 %}
+        <div class="col-sm-6 col-md-4 mb-2">
+          <i class="fa fa-circle text-accent mr-1 birthday-dot"></i>
+          <strong>{{ key }}</strong> — in
+          <span class="badge badge-primary">{{ value }} day{{ value|pluralize }}</span>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% endif %}
 
 </div>
-{% endblock content %}
+
+<!-- ── New Employee info modal ────────────────────────── -->
+<div class="modal fade" id="newEmployeeModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">How to Add a New Employee</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <p>A new staff must come through an application process and cannot be added directly.</p>
+        <p>They must have completed the application form, and to employ them:</p>
+        <p class="text-center text-danger font-weight-bold">
+          Employ (sidebar) &rarr; Select Applicant &rarr; Employ
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Stores List{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -47,8 +49,8 @@
             <a class="btn btn-outline-primary" href="{% url 'warehouse-create' %}"><i class="fa fa-plus text-warning"></i> Add</a>
             
             
-            <a type="button" class="btn btn-outline-dark" href="{% url 'warehouse-home' %}"><i
-                    class="fa fa-reply"></i>
+            <a type="button" class="btn btn-secondary" href="{% url 'warehouse-home' %}"><i
+                    class="fa fa-times-circle"></i>
             </a>
         </div>
     </div>

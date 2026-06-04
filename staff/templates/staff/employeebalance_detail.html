@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Employeebalance Detail{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -18,8 +20,8 @@
     <div class="row mt-3">
         <div class="col text-right">
             <a class="btn btn-outline-primary" href="{%url 'employee-balance-update' object.pk %}">Update</a>
-            <a class="btn btn-outline-dark" href="{% url 'employee-gratuity-list' object.staff.pk %}">
-                <i class="fa fa-reply"></i></a>
+            <a class="btn btn-secondary" href="{% url 'employee-gratuity-list' object.staff.pk %}">
+                <i class="fa fa-times-circle"></i></a>
         </div>
     </div>
 </div>

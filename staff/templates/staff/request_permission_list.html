@@ -1,10 +1,12 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+{% block page_title %}Request Permission List{% endblock %}
+
 {% block content%}
 <div class="container">
     <div class="row">
         <div class="col">
-            <table class="table table-info" 
+            <table class="table table-striped table-hover" 
             data-toggle="table" 
             data-pagination="true">
                 <caption>List of Pending Request for Permission</caption>
@@ -82,8 +84,8 @@
     </div>
     <div class="row">
         <div class="col">
-            <a href="{% url 'staff-home' %}" class="btn btn-outline-dark float-right">
-                <i class="fa fa-reply"></i>
+            <a href="{% url 'staff-home' %}" class="btn btn-secondary float-right">
+                <i class="fa fa-times-circle"></i>
             </a>
         </div>
     </div>

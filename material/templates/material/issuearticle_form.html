@@ -1,7 +1,9 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
 {% load custom_tags %}
 
+
+{% block page_title %}Issuearticle Form{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -26,8 +28,8 @@
                             <a href="{% url 'article-request-disapprove' request.pk %}" class="btn btn-outline-danger">Disapprove</a>
                         </div>
                         <div class="col">
-                            <a href="{% url 'article-list' %}" class="btn btn-outline-dark float-right">
-                                <i class="fa fa-reply"></i>
+                            <a href="{% url 'article-list' %}" class="btn btn-secondary float-right">
+                                <i class="fa fa-times-circle"></i>
                             </a>
                         </div>
                     </div>

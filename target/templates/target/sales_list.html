@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Sales List{% endblock %}
 
 {% block content %} 
 <div class="container">
@@ -37,7 +39,7 @@
             <a type="button" href="{% url 'sales-create' %}">Create</a>
         </div>
         <div class="col text-center">
-            <a type="button" href="{% url 'home' %}"><i class="fa fa-reply"></i></a>
+            <a type="button" href="{% url 'home' %}"><i class="fa fa-times-circle"></i></a>
         </div>
     </div>
 </div>

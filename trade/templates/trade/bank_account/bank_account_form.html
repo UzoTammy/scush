@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
+
+{% block page_title %}Bank Account Form{% endblock %}
 
 {% block content %}
 <div class="container mt-3">
@@ -11,7 +13,7 @@
                 <h3>{% if view.kwargs.pk %} Update {% else %} Add {% endif %} Bank Account</h3>
                 {{form|crispy}}
                 <button type="submit" class="btn btn-primary mt-3 ml-2">Save</button>
-                <a class="btn btn-dark float-right mt-3 mr-2" href="{% url 'bank-balance-create' %}"><i class="fa fa-reply"></i></a>
+                <a class="btn btn-secondary float-right mt-3 mr-2" href="{% url 'bank-balance-create' %}"><i class="fa fa-times-circle"></i></a>
             </div>
         </div>
     </form>

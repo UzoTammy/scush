@@ -1,161 +1,110 @@
 {% extends 'pdf/base.html' %}
 
 {% block content %}
-<div class='wrapper'>
-    <div class='header'>
-        <p class='title'>SALES</p>
-    </div>
-</div>
 
-<div class="flex-container">
-    <div class="flex-child">
-        <p class="subheader">Sales Order and Invoice</p>
-        <ul>
-            <li>Welcome the Customer</li>
-            <li>Go through her list to determine if:</li>
-            <ul style="list-style-type: lower-roman;">
-                <li>All items can be raised</li>
-                <li>Some of the items can be raised</li>
-                <li>All items <span class="red">CANNOT</span> be raised</li>
-            </ul>
-            <li>Is She a repeat customer?</li>
-            <ul>
-                <li>Yes - Identify account</li>
-                <li>No - Request for account to be created</li>
-            </ul>
-            <li>Raise Order to determine total amount</li>
-            <li>Agree with her on total amount</li>
-            <li>Transfer sales order to invoice</li>
-            <li>Confirm payment and sign the invoice</li>
-            <li>Handover Invoice to Store-Keeper</li>
-        </ul>    
-    </div>
-    <div class="flex-child">
-        <p class="subheader">Supply the customer</p>   
-        <ul>
-            <li>Confirm Cashier's signature - This serves as your evidence to supply</li>
-            <li>Supply the item(s) one after the order</li>
-            <li>Handover original invoice to customer</li>
-            <li>Confirm the supply with the customer item by item, quantity by quantity</li>
-            <li>Sign the customer's copy of the invoice - <i class="red">Do not overwrite on the invoice</i></li>
-            <li>The SCM <i class="red">MUST</i> supervise the supply</li>
-        </ul>
-    </div>    
-    
-</div>
+<!-- ── Section 1: Finance ───────────────────────────── -->
+<h2>1. Accounting, Financial &amp; Reporting Policies</h2>
+<hr>
 
-<div class="wrapper">
-    <p class="subheader">CREDIT SALES</p>
-    <span>
-        Credit Sales <i class="red">MUST</i> involve the SCM who will request for approval to sell on credit.
-        The SCM will sign on the invoice and the cashier will sign on sighting the SCM's signature. The Store-Keeper 
-        <i class="red">MUST</i> sight the cashier signature to supply. On no reason should a cashier or store-keeper authorize
-        supply of goods without payment of the goods in full.
-    </span>
+<h3>1.1 Books and Records Keeping Policy</h3>
+<p><strong>Purpose:</strong> To ensure accurate, complete, and reliable recording and maintenance of
+financial transactions in compliance with applicable laws and accounting standards.</p>
+<ol>
+  <li>All financial transactions must be promptly, accurately, and completely recorded in Ozone's books and records.</li>
+  <li>The books and records must reflect the true nature of transactions, supported by appropriate documentation and evidence.</li>
+  <li>Falsification, alteration, or unauthorized destruction of records is <span class="text-danger font-bold">strictly prohibited</span>.</li>
+  <li>All transactions must be recorded in a timely manner and properly classified to the appropriate accounts.</li>
+  <li>Regular reconciliations of bank accounts, ledgers, and subsidiary records should be performed to ensure accuracy.</li>
+</ol>
 
-    <p class="subheader">SELLING WITH CONDITIONS</p>
-    <span>
-        There are times when a highly sort after stock is available in limited quantity and the inevitable method of distribution is to allocate or limit the stock.
-        The distribution method will be decided by management and communicated by the SS to cashiers and stock keeper. He is also to ensure the guidelines are followed STRICTLY.
-    </span>
+<h3>1.2 Authority to Approve Payments Policy</h3>
+<p><strong>Purpose:</strong> To define the authorization process for approving payments and ensure proper controls, accountability, and compliance.</p>
+<ol>
+  <li>Payments should only be made based on valid and authorized documents in accordance with established policies.</li>
+  <li>Only authorized individuals with appropriate levels of authority should approve payments.</li>
+  <li>The approval process must ensure appropriate segregation of duties and prevent conflicts of interest.</li>
+  <li>A clear and documented approval hierarchy must outline authority levels required for various payment amounts.</li>
+  <li>A proper documentation trail — including invoices, purchase orders, expense reports — must support all payment authorizations.</li>
+</ol>
 
-    <p class="subheader">PAYMENT</p>
-    <span>When a customer places order and the amount due is ascertained. Payment is to be made either in cash to the cashier or otherwise. 
-        When cash is paid in full the cashier makes the approval to supply and when cash is made in part or not made at all then the SS MUST make the approval in accordance to our guideline.
-    </span>
-    
-    <p class="subheader">PROMOTIONAL SALES</p>
-    <ul>
-        Promotional sales are in two broad categories:
-        <ol>
-            <li>In house promotions:
-                This promotion originates from the management and for a defined purpose which should be communicated to all. 
-                The objective for this promotion should be driven by all to quickly achieve our aim. It will be regarded as 
-                insubordination if any staff does to the contrary.
-            </li>
-            <li>Company promotions: 
-                This promotion is delicate and administered by us on behalf of the company. In most cases, 
-                we conduct this promotion with our stock and renders reconciliation report to the issuing company for payment. 
-                We could lose the reimbursement if reconciliation is not made properly or not made at all. All promotions require 
-                proper promo report and it is compulsory for cashiers and stock keepers to facilitate the promo report.
-            </li>
-        </ol>
-        No matter the category of the promotion, each promotion has its unique mechanics and it is important to seek to understand 
-        it.
-    </ul>
-</div>
+<h3>1.3 Documents Retention Policy</h3>
+<p><strong>Purpose:</strong> To outline requirements for retaining and disposing of financial documents in compliance with legal, regulatory, and internal control requirements.</p>
+<ol>
+  <li>Ozone will retain financial documents for periods specified by applicable laws, regulations, and industry best practices.</li>
+  <li>Documents should be stored securely and be readily accessible for audit, legal, and regulatory purposes.</li>
+  <li>Proper disposal methods must be employed to protect sensitive information and maintain data privacy.</li>
+  <li>A centralized and secure document management system must be maintained to organize financial records.</li>
+</ol>
 
+<p class="text-muted italic mt-sm">All employees are expected to familiarize themselves with these policies and seek guidance from the appropriate authority in case of any questions or concerns.</p>
 
-PROMOTIONAL SALES PROCEDURE
-Identify the promotion
-Inhouse : No report required
-Company : Report is required
-Understand the promotion
-Know your Scope
-Work within your Allocation
-Seek the Mechanics
-Make calls discretionary
+<!-- ── Section 2: Anti-Bribery ──────────────────────── -->
+<h2 class="mt-section">2. Anti-Bribery and Corruption Policy</h2>
+<hr>
 
-DISCOUNT SALES
-Sales sometimes can only take place if discount is allowed. Therefore, we empower the SS to approve discount to customers. The cashier do not have the right to give discount other than to operate within the price regime handed over to her for the product and within the conditions. However, the use of discretion is allowed to deserving and honest cashiers.
+<p>Ozone is committed to conducting its business with the highest ethical standards and complying with all applicable laws and regulations. This policy establishes our zero-tolerance stance against bribery and corruption.</p>
 
-SALES RETURN
-This is anti sales, enemy of growth. It is not meant to exist. When a customer buys from us and on a later date decides to return the goods bought wholly or partially, we term it sales return and we frown at it. This can only occur if the GSM permits it and for a good reason.
-SALES RETURN PROCEDURE
-A customer return goods bought previously
-Contact the GSM
-GSM engages the customer to agree
+<h3>2.1 Policy Statement</h3>
+<ol>
+  <li>Ozone <strong>strictly prohibits</strong> bribery and corruption in all its forms, whether committed by employees, contractors, agents, or any other party acting on our behalf.</li>
+  <li>We adhere to all relevant anti-bribery and corruption laws, including the EFCC, NAFDAC, SON, and applicable international legislation.</li>
+  <li>Any violation of this policy will result in disciplinary action, which may include termination of employment or legal action.</li>
+</ol>
 
-THE CASHIER
-At Ozone, cashiers are key influence to our business. They are usually the first point of call and reflect the company. We believe our cashier should be well cultured, full of smiles and engage in excellent relationship with the customer. She will at no time be involved in exchange of words with our customer. Instead, she will tolerate and speak kindly to the customer irrespective of the circumstance. Failure to do this will amount to insubordination.
+<h3>2.2 Prohibited Activities</h3>
+<ol>
+  <li>Offering, giving, receiving, or soliciting bribes, kickbacks, or improper payments in cash, gifts, entertainment, or any other form.</li>
+  <li>Making facilitation payments to expedite routine government actions.</li>
+  <li>Engaging in transactions intended to conceal the true nature of payments.</li>
+  <li>Participating in any activity that could create an actual or perceived conflict of interest.</li>
+  <li>Failing to maintain accurate books, records, and accounts that reflect the company's transactions.</li>
+</ol>
 
-THE STOCK KEEPER
-He works side by side with the cashier and could have serious influence on customer decision. He is saddled with the responsibility to supply the customer accordingly and appropriately. He must with his service give the customer another reason to come again. A cheerful stock keeper rendering swift service to the customer could keep the customer attached to his outlet.
+<h3>2.3 Reporting &amp; Whistleblowing</h3>
+<ol>
+  <li>Employees, contractors, and stakeholders are encouraged to report any suspected instances of bribery or corruption <strong>without fear of reprisal</strong>.</li>
+  <li>An anonymous reporting mechanism is established to facilitate confidential reporting.</li>
+  <li>All reported or suspected instances will be promptly investigated in a fair, thorough, and confidential manner.</li>
+  <li>Appropriate disciplinary action will be taken against individuals found to be involved.</li>
+</ol>
 
-FRONT DESK ETHICS
-Front desk is the table of contact between our staff and the customer usually the cashier and stock keeper.
-There should be no action either by the cashier or the stock keeper which will amount in any way taking undue advantage of the customer resulting in the customer getting less even if the customer is ignorant or unsuspecting. Such gross abuse of office cannot be tolerated.
-We encourage the outlet cashier and stock keeper to render unreserved and excellent service to the customer in spite of all odds.
-Should the customer be provoked by us in any way, we should be calm and render apology to her no matter who you think is at fault. CUSTOMER IS KING.
+<!-- ── Section 3: Compliance ────────────────────────── -->
+<h2 class="mt-section">3. Compliance Roles, Policies &amp; Procedures</h2>
+<hr>
 
-STAFF CONDUCT AT THE FRONT DESK
-It is compulsory that maximum attention should be given to the customer rather than a staff distracting another staff while ignoring the customer. Rather, the two staff should pay attention to the customer and be willing to render services to him.
+<h3>3.1 Compliance Manager</h3>
+<p>The Compliance Manager is responsible for overseeing the compliance function, ensuring adherence to all relevant laws, regulations, and internal policies, and reporting to senior management.</p>
 
-No staff should wear anything which appears to block his ears. Headphone and earpiece inclusive.
-No busy hair
-No face cap
-No fiddling with phone especially playing games, “facebooking” and “whatsapping” and the likes. The front desk is strictly for business.
-No noise and wild chat with anyone
-No visitor is allowed
-No occupying of customer’s seat by non customer.
+<h3>3.2 Compliance Policies and Procedures</h3>
+<p>The compliance function is responsible for developing, implementing, and maintaining comprehensive compliance policies and procedures that align with applicable laws and regulations.</p>
 
-THE STOCK KEEPER
-The stock in the outlet is absolutely your responsibility and you are obligated to give account of it. Therefore, you are not permitted to give out stock without payment or authorized approval. You must provide your supply evidence when requested.
+<h3>3.3 Risk Assessment and Monitoring</h3>
+<ol>
+  <li>The compliance team conducts regular risk assessments to identify potential compliance risks and vulnerabilities.</li>
+  <li>Monitoring programmes are designed and implemented to detect and mitigate compliance breaches using data analytics, audits, and internal controls.</li>
+</ol>
 
-SHORTAGES
-This is ugly and should be avoided by all means. It is important to note that two things are responsible for shortage. The custodian must not be
-Careless
-Dishonest
-Once any of this quality is lacking, shortage will occur. There is no manner of padding that can conceal the shortage.
-Be transparent and honest with your work and you will enjoy it. It is unfortunate that when shortages occur, the only amicable source of recovery is through your salary. However, when the shortage is beyond what your salary can repay, we will take adequate measures to recover it.
+<h3>3.4 Training and Awareness</h3>
+<ol>
+  <li>Training programmes are designed and delivered to educate employees on their compliance obligations and promote a culture of ethics and integrity.</li>
+  <li>Awareness campaigns communicate updates in laws and regulations and provide ongoing guidance to employees.</li>
+</ol>
 
-EXCESS
-Excess do occur and one thing is certain be it stock or cash. When it occurs, though it is tempting to conceal, it is also embarrassing when revealed and can rubbish your integrity. There is no justification whatsoever to keep excess cash or stock for yourself because rightly you did not come with any from your house. Do not take what you did not provide and it shall be well with you.
+<h3>3.5 Investigations and Reporting</h3>
+<ol>
+  <li>The compliance team investigates all reported or suspected compliance breaches, misconduct, or unethical behaviour.</li>
+  <li>A process is maintained for reporting compliance concerns, including an anonymous reporting mechanism.</li>
+  <li>Appropriate action is taken in response to all substantiated allegations.</li>
+</ol>
 
-LEAVING THE FRONT DESK
-I will candidly advice to avoid leaving the front desk but if you must do so bear in mind it is risky to do so. No other person bears your responsibility other than yourself. Therefore be cautious when you must leave to protect what is in your custody.
+<h3>3.6 Regulatory Compliance</h3>
+<p>The compliance function monitors and ensures compliance with relevant laws, regulations, and industry standards. Processes are established to keep abreast of changes in regulatory requirements and implement necessary adjustments.</p>
 
-VISITING THE FRONT DESK
-The front desk is a sensitive place and should be handled with caution by all staff. A staff visiting the front desk must have cogent reason to do so. It will be nice when you visit to support sales rather than to distract sales. Any action by any staff which amount to distraction from sales will not be tolerated.
-
-PURCHASE
-PURCHASES PROCEDURE
-The GSM agrees with MD on what to purchase
-Accountant raises the cheque
-Follows up with the debit and treats accordingly
-The GSM notes the order placed and tracks the delivery.
-If the order is distorted then we adjust accordingly.
-
+<!-- ── Sign-off ──────────────────────────────────────── -->
+<hr class="mt-lg">
+<p class="text-muted italic text-sm text-center">
+  This document is confidential and intended solely for Ozone F &amp; L employees and authorised stakeholders.<br>
+  The specific roles and structure of the compliance function may be customised to meet organisational needs.
+</p>
 
 {% endblock %}
-

@@ -1,5 +1,7 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Customer Db Csv{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -64,7 +66,7 @@
         <div class="row mb-3">
             <div class="col">
                 <button class="btn btn-primary" type="submit">Save</button>
-                <a class="btn btn-dark float-right" href="{% url 'customer-home' %}"><i class="fa fa-reply"></i></a>
+                <a class="btn btn-secondary float-right" href="{% url 'customer-home' %}"><i class="fa fa-times-circle"></i></a>
             </div>
         </div>
     </form>

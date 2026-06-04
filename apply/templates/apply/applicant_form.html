@@ -1,15 +1,14 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 {% block head %}
 <style>
-    #navmain {
-        display: none;
-    }
     .display-big {
         font-size: x-large;
     }
 </style>
 {% endblock %}
+
+{% block page_title %}Applicant Form{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -40,9 +39,9 @@
         <div class="col-sm-8 mt-3">
             <div class="row">
                 <div class="col text-center">
-                    <img src="{% static 'customer/logo.png' %}" class="rounded-circle shadow" width="80px" alt=""> 
+                    <img src="{% static 'customer/logo.png' %}" class="ozone-logo shadow" width="80" height="62" alt="Ozone Logo">
                     <i class="text-danger display-big">F & L Trading Co Ltd <br> 
-                        <small class="text-info">(A Distribution Company)</small>
+                        <small class="text-primary">(A Distribution Company)</small>
                     </i>
                     <br>
 
@@ -59,31 +58,31 @@
                 {% csrf_token %}
                 {{form.errors}}
                 <fieldset class="p-3">
-                    <legend class="text-info"><i>Application Form</i>
+                    <legend class="text-primary"><i>Application Form</i>
                         <small class="text-muted float-right">{% now 'd-m-Y@h:mA' %}</small>
                     </legend>
                     <div class="form-row">
                         <div class="col-sm-4">
-                            <span class="form-label text-info">First Name</span><span class="text-danger">*</span>
+                            <span class="form-label text-primary">First Name</span><span class="text-danger">*</span>
                             {{form.first_name}}
                         </div>
                         <div class="col-sm-4">
-                            <span class="form-label text-info">Second or middle Name</span>
+                            <span class="form-label text-primary">Second or middle Name</span>
                             {{form.second_name}}
                         </div>
                         <div class="col-sm-4">
-                            <span class="form-label text-info">Last Name (Surname)<span class="text-danger">*</span></span>
+                            <span class="form-label text-primary">Last Name (Surname)<span class="text-danger">*</span></span>
                             {{form.last_name}}
                         </div>
                     </div>
                     <hr>
                     <div class="form-row">
                         <div class="col">
-                            <div class="form-label text-info">Gender<span class="text-danger">*</span></div>
+                            <div class="form-label text-primary">Gender<span class="text-danger">*</span></div>
                             <div class="form-check">{{form.gender}}</div>
                         </div>
                         <div class="col text-right mr-2">
-                            <div class="form-label text-info">
+                            <div class="form-label text-primary">
                                 Marital Status<span class="text-danger">*</span>
                             </div>
                             <div class="form-check">{{form.marital_status}}</div>
@@ -92,13 +91,13 @@
                     <hr>
                     <div class="form-row">
                         <div class="col">
-                            <div class="form-label text-info">
+                            <div class="form-label text-primary">
                                 Qualification<span class="text-danger">*</span>
                             </div>
                             <div class="mb-2">{{form.qualification}}</div>
                         </div>
                         <div class="col">
-                    <div class="form-label text-info">
+                    <div class="form-label text-primary">
                         Date of Birth<span class="text-danger">*</span>
                     </div>
                     <div>{{ form.birth_date }}</div>
@@ -107,11 +106,11 @@
                     <hr>
                     <div class="form-row">
                         <div class="col">
-                            <div class="form-label text-info">Course <span class="text-muted">(optional)</span></div>
+                            <div class="form-label text-primary">Course <span class="text-muted">(optional)</span></div>
                             <div>{{ form.course }}</div>
                         </div>
                         <div class="col">
-                            <div class="form-label text-info">
+                            <div class="form-label text-primary">
                                 Mobile<span class="text-danger">*</span>
                             </div>
                             <div>{{ form.mobile }}
@@ -122,13 +121,13 @@
                     <hr>
                     <div class="form-row">
                         <div class="col-sm">
-                            <div class="form-label text-info">Email
+                            <div class="form-label text-primary">Email
                                 <span class="text-muted">(highly recommended, but optional)</span>
                             </div>
                             <div>{{ form.email }}</div>
                         </div>
                         <div class="col-sm">
-                            <div class="form-label text-info">
+                            <div class="form-label text-primary">
                                 Residential address<span class="text-danger">*</span>
                             </div>
                             <div class="">{{ form.address }}</div>
@@ -154,7 +153,7 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col ml-5">
-                            <button class="btn btn-outline-info" type="submit">
+                            <button class="btn btn-primary" type="submit">
                                 <small>
                                     {% if title == 'Update' %}
                                     {{ title }}
@@ -168,10 +167,10 @@
                         <div class="col d-flex justify-content-end mr-5">
                             {% if title == 'Update' %}
                             <a class="btn btn-outline-secondary" type="button" href="{% url 'apply-detail' form.instance.id %}">
-                                <i class="fa fa-reply text-danger"></i> Cancel</a>
+                                <i class="fa fa-times-circle"></i> Cancel</a>
                             {% else %}
                             <a class="btn btn-outline-secondary" type="button" href="{% url 'index' %}">
-                                <i class="fa fa-reply text-danger"></i> Cancel</a>
+                                <i class="fa fa-times-circle"></i> Cancel</a>
                             {% endif %}
                         </div>
                     </div>

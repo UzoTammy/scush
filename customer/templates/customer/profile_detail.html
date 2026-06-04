@@ -1,11 +1,11 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
 {% load static %}
 {% load custom_tags %}
 
-{% block head %}
 
-{% endblock head %}
 
+
+{% block page_title %}Profile Detail{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-sm-2 bg-secondary">
             <div class="container text-center">
-                <img src="{% static 'customer/logo.png' %}" width="70px" class="rounded-circle p-1 shadow" alt="">
+                <img src="{% static 'customer/logo.png' %}" class="ozone-logo shadow" width="70" height="54" alt="Ozone Logo">
             </div>
         </div>
         <div class="col-sm-6">
@@ -54,7 +54,7 @@
 
             <div class="row mt-3 text-center">
                 <div class="col">
-                    <a href="{% url 'customer-update' object.id %}" class="btn btn-info btn-sm">Update</a>
+                    <a href="{% url 'customer-update' object.id %}" class="btn btn-secondary">Update</a>
                 </div>
 
                 {% if user.is_superuser %}
@@ -63,8 +63,8 @@
                 </div>
                 {% endif %}
                 <div class="col">
-                    <a href="{% url 'customer-home'  %}" class="btn btn-secondary btn-sm">
-                        <i class="fa fa-reply text-danger"></i> Return</a>
+                    <a href="{% url 'customer-home'  %}" class="btn btn-secondary">
+                        <i class="fa fa-times-circle"></i> Return</a>
                 </div>
             </div>
 

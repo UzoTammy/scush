@@ -1,305 +1,304 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Stock Management{% endblock %}
+
+{% block head %}
+<style>
+  .stock-nav-bar { gap: 0.375rem; flex-wrap: wrap; }
+
+  .stock-nav-bar .dropdown-toggle {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .stock-nav-bar .dropdown-toggle:hover,
+  .stock-nav-bar .show > .dropdown-toggle {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+  }
+
+  .stock-nav-bar .dropdown-menu {
+    min-width: 160px;
+    padding: 0.25rem 0;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+
+  .stock-nav-bar .dropdown-item {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    color: var(--color-text);
+  }
+
+  .stock-nav-bar .dropdown-item:hover {
+    background: var(--color-primary);
+    color: #fff;
+  }
+
+  .ds-stat__value--lg { font-size: 1.1rem; }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <nav class="col-sm-2 bg-dark">
-            <button class="navbar-toggler 
-                bg-light float-right mt-1 mb-1 myBtn" 
-                type="button" 
-                data-toggle="collapse"
-                data-target="#dropdown" 
-                aria-controls="dropdown" 
-                aria-expanded="false" 
-                aria-label="Toggle navigation">
-                <i class="fa fa-navicon text-primary"></i>
-            </button>
 
-            <div class="collapse collapse-sm" id="dropdown">
-                <ul class="nav flex-column mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'performance-home' %}">
-                            <i class="fa fa-archive text-warning"></i> Performance</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'product-analysis' %}">
-                            <i class="fa fa-cloud text-warning"></i> Run Rate</a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'stock-report-source' 'All' %}">
-                            <i class="fa fa-database text-warning"></i> All Products</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'stock-report' %}">
-                            <i class="fa fa-table text-warning"></i> Stock Report</a>
-                    </li>
-                
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'watchlist-home' %}">
-                            <i class="fa fa-tty text-warning"></i> Watchlist</a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'delivery-home' %}">
-                            <i class="fa fa-truck text-warning"></i> Deliveries</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'product-create' %}">
-                            <i class="fa fa-plus text-warning"></i> Product</a>
-                    </li>
+  <!-- ── Nav card ───────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap staff-nav-bar">
+      <span><i class="fa fa-cubes mr-2"></i>Stock Management</span>
+      <div class="d-flex align-items-center stock-nav-bar">
 
-                    <li class="nav-item">
-                        <!-- Button trigger modal -->
-                        <a class="nav-link" href="{% url 'stock-report-home' user %}">
-                            <i class="fa fa-plus text-warning"></i> Sellout & Balance</a>
-                    </li>
-    
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" role="button"
-                            aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-file-pdf-o text-warning"></i> PDF View</a>
-    
-                        <ul class="dropdown-menu">
-                            {% for source in sources %}
-                            <li class="dropdown-item"><a class="nav-link" href="{% url 'pdf-prices' source %}">{{source}}</a></li>
-                            {% endfor %}
-                            <li class="dropdown-item"><a class="nav-link" href="{% url 'pdf-prices' 'All' %}">All</a></li>
-                        </ul>
-                    </li>
-                    
-                <li class="nav-item">
-                    <a class="nav-link" href="" data-toggle="modal" data-target="#footNotePriceUpdate">
-                        <i class="fa fa-archive text-warning"></i> Price Update Footnote</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'pdf-price-change' %}">
-                        <i class="fa fa-file-text-o text-warning"></i> Today's Price Update (PDF)</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'home' %}"><i class="fa fa-reply text-warning"></i> Home</a>
-                </li>
-                </ul>
-            </div>
-        </nav>
-        <div class="col text-center">
-            <h3>Stock Management Home Page</h3>
-            <div class="col">
-                <div class="row">
-                    <!--                    Product Count-->
-                    <div class="col-6">
-                        <h4 style="font-family: cursive" class="text-danger">Counts</h4>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item list-group-item-info">
-                                <i>Products: {{total_count}}</i>
-                            </li>
-                            <li class="list-group-item">
-                                <i>NB Products: {{nb_count}}</i>
-                            </li>
-                            <li class="list-group-item list-group-item-info">
-                                <i>GN Products: Beer & APNAD: {{gn_count}} -- MSS: {{mss_count}} -- IPS:
-                                    {{ips_count}}</i>
-                            </li>
-                            <li class="list-group-item">
-                                <i>IB Products: {{ib_count}}</i>
-                            </li>
-                        </ul>
-                    </div>
-                    <!--                    Quantity Delivered-->
-                    <div class="col-6">
-                        <h4 style="font-family: cursive" class="text-danger">Quantity</h4>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item list-group-item-info">
-                                <i>Delivered: {{quantity_delivered}}</i>
-                            </li>
-                            <li class="list-group-item">
-                                <i>Sold: not ready</i>
-                            </li>
-                            <li class="list-group-item list-group-item-info">
-                                <i>Rejected: {{quantity_rejected}}</i>
-                            </li>
-                            <li class="list-group-item">
-                                <i>{{percent_rejected}} of all deliveries were rejected.</i>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-6">
-                        <h4 style="font-family: cursive" class="text-danger">Values</h4>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item list-group-item-info">
-                                <i>Delivered: {{total_amount}}</i>
-                            </li>
-                            <li class="list-group-item">
-                                <i>Sold: not ready</i>
-                            </li>
-                            <li class="list-group-item list-group-item-info">
-                                <i>Rejected: {{total_amount_credit}}</i>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-6">
-                        <h4 style="font-family: cursive" class="text-danger">Sources</h4>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item list-group-item-info">
-                                <i>GN: {{gn_delivered}} ({{gn_amount}})</i>
-                            </li>
-                            <li class="list-group-item">
-                                <i>NB: {{nb_delivered}} ({{nb_amount}})</i>
-                            </li>
-                            <li class="list-group-item list-group-item-info">
-                                <i>IB: {{ib_delivered}} ({{ib_amount}})</i>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <!--                    Category right side-->
-                    <div class="col-6">
-                        <h4 style="font-family: cursive" class="text-danger">Category</h4>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item list-group-item-info">
-                                <i>Malt: {{total_malt_delivered}}</i>
-                            </li>
-                            <li class="list-group-item">
-                                <i>Lager: {{total_lager_delivered}}</i>
-                            </li>
-                            <li class="list-group-item list-group-item-info">
-                                <i>RTD: {{total_rtd_delivered}}</i>
-                            </li>
-                            <li class="list-group-item">
-                                <i>Soft: {{total_soft_delivered}}</i>
-                            </li>
-                        </ul>
-                    </div>
-                    <!--                    Category left side-->
-                    <div class="col-6">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><i>Stout: {{total_stout_delivered}}</i></li>
-                            <li class="list-group-item list-group-item-info">
-                                <i>ED: {{total_ed_delivered}}</i>
-                            </li>
-                            <li class="list-group-item">
-                                <i>Bitters: {{total_bitters_delivered}}</i>
-                            </li>
-                            <li class="list-group-item list-group-item-info">
-                                <i>Alcoholic Wine: {{total_wine_delivered}}</i>
-                            </li>
-                            <li class="list-group-item">
-                                <i>Non Alcoholic Wine: {{total_na_wine_delivered}}</i>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+        <!-- Reports group -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-bar-chart mr-1"></i> Reports
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'stock-report' %}"><i class="fa fa-table mr-1"></i> Stock Report</a>
+            <a class="dropdown-item" href="{% url 'stock-report-source' 'All' %}"><i class="fa fa-database mr-1"></i> All Products</a>
+            <a class="dropdown-item" href="{% url 'performance-home' %}"><i class="fa fa-archive mr-1"></i> Performance</a>
+            <a class="dropdown-item" href="{% url 'product-analysis' %}"><i class="fa fa-cloud mr-1"></i> Run Rate</a>
+          </div>
         </div>
+
+        <!-- Operations group -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-truck mr-1"></i> Operations
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'delivery-home' %}"><i class="fa fa-truck mr-1"></i> Deliveries</a>
+            <a class="dropdown-item" href="{% url 'watchlist-home' %}"><i class="fa fa-tty mr-1"></i> Watchlist</a>
+            <a class="dropdown-item" href="{% url 'stock-report-home' user %}"><i class="fa fa-plus mr-1"></i> Sellout &amp; Balance</a>
+          </div>
+        </div>
+
+        <!-- PDF group -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-file-pdf-o mr-1"></i> PDF
+          </button>
+          <div class="dropdown-menu">
+            {% for source in sources %}
+            <a class="dropdown-item" href="{% url 'pdf-prices' source %}">{{ source }}</a>
+            {% endfor %}
+            <a class="dropdown-item" href="{% url 'pdf-prices' 'All' %}">All</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'pdf-price-change' %}"><i class="fa fa-file-text-o mr-1"></i> Today's Price Update</a>
+            <a class="dropdown-item" href="" data-toggle="modal" data-target="#footNotePriceUpdate"><i class="fa fa-archive mr-1"></i> Price Update Footnote</a>
+          </div>
+        </div>
+
+        <!-- Manage -->
+        <a class="staff-nav-link" href="{% url 'product-create' %}">
+          <i class="fa fa-plus"></i> New Product
+        </a>
+        <a class="staff-nav-link" href="{% url 'home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+
+      </div>
     </div>
+  </div>
+
+  <!-- ── Product counts ─────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-cubes mr-2"></i>Products by Source</span></div>
+    <div class="ds-card__body">
+      <div class="row">
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">Total</div>
+            <div class="ds-stat__value">{{ total_count }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat ds-stat--accent">
+            <div class="ds-stat__label">NB</div>
+            <div class="ds-stat__value">{{ nb_count }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat ds-stat--success">
+            <div class="ds-stat__label">GN</div>
+            <div class="ds-stat__value">{{ gn_count }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">MSS</div>
+            <div class="ds-stat__value">{{ mss_count }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">IPS</div>
+            <div class="ds-stat__value">{{ ips_count }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat ds-stat--warning">
+            <div class="ds-stat__label">IB</div>
+            <div class="ds-stat__value">{{ ib_count }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Delivery stats ─────────────────────────────── -->
+  <div class="row">
+    <div class="col-md-8">
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span><i class="fa fa-truck mr-2"></i>All-Time Delivery Summary</span></div>
+        <div class="ds-card__body">
+          <div class="row">
+            <div class="col-sm-4 mb-3">
+              <div class="ds-stat ds-stat--success">
+                <div class="ds-stat__label">Qty Delivered</div>
+                <div class="ds-stat__value">{{ quantity_delivered }}</div>
+              </div>
+            </div>
+            <div class="col-sm-4 mb-3">
+              <div class="ds-stat ds-stat--danger">
+                <div class="ds-stat__label">Qty Rejected</div>
+                <div class="ds-stat__value">{{ quantity_rejected }}</div>
+                <small class="ds-stat__sub">{{ percent_rejected }} of delivered</small>
+              </div>
+            </div>
+            <div class="col-sm-4 mb-3">
+              <div class="ds-stat">
+                <div class="ds-stat__label">Total Value</div>
+                <div class="ds-stat__value ds-stat__value--lg">{{ total_amount }}</div>
+              </div>
+            </div>
+            <div class="col-sm-4 mb-3">
+              <div class="ds-stat ds-stat--warning">
+                <div class="ds-stat__label">Credit Amount</div>
+                <div class="ds-stat__value ds-stat__value--lg">{{ total_amount_credit }}</div>
+                <small class="ds-stat__sub">{{ percent_credited }} of value</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Per-source delivery ───────────────────────── -->
+    <div class="col-md-4">
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span><i class="fa fa-building mr-2"></i>Delivery by Source</span></div>
+        <div class="ds-card__body p-0">
+          <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between py-2">
+              <span class="font-weight-600">NB</span>
+              <span>{{ nb_delivered }} &nbsp;<small class="text-muted">{{ nb_amount }}</small></span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between py-2">
+              <span class="font-weight-600">GN</span>
+              <span>{{ gn_delivered }} &nbsp;<small class="text-muted">{{ gn_amount }}</small></span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between py-2">
+              <span class="font-weight-600">IB</span>
+              <span>{{ ib_delivered }} &nbsp;<small class="text-muted">{{ ib_amount }}</small></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Category breakdown ─────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-tags mr-2"></i>Delivery by Category</span></div>
+    <div class="ds-card__body">
+      <div class="row">
+          <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat"><div class="ds-stat__label">Malt</div><div class="ds-stat__value">{{ total_malt_delivered }}</div></div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat ds-stat--accent"><div class="ds-stat__label">Lager</div><div class="ds-stat__value">{{ total_lager_delivered }}</div></div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat ds-stat--success"><div class="ds-stat__label">RTD</div><div class="ds-stat__value">{{ total_rtd_delivered }}</div></div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat"><div class="ds-stat__label">Soft</div><div class="ds-stat__value">{{ total_soft_delivered }}</div></div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat ds-stat--warning"><div class="ds-stat__label">Stout</div><div class="ds-stat__value">{{ total_stout_delivered }}</div></div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat"><div class="ds-stat__label">Wine</div><div class="ds-stat__value">{{ total_wine_delivered }}</div></div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat"><div class="ds-stat__label">NA Wine</div><div class="ds-stat__value">{{ total_na_wine_delivered }}</div></div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat"><div class="ds-stat__label">Others</div><div class="ds-stat__value">{{ total_others_delivered }}</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- Modal footnote-->
-<div class="modal fade" id="footNotePriceUpdate" data-backdrop="static" data-keyboard="false" tabindex="-1"
-    aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Price Update Footnote</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form action="{% url 'price-update-footnote' %}">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="footNote">Note</label>
-                        <textarea class="form-control"
-                            placeholder="enter your footnotes here to add more infomation to the price review"
-                            name="footnote" id="footNote" cols="30" rows="10"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-            </form>
+<!-- ── Price Update Footnote Modal ───────────────────── -->
+<div class="modal fade" id="footNotePriceUpdate" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Price Update Footnote</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <form action="{% url 'price-update-footnote' %}">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="footNote">Note</label>
+            <textarea class="form-control" name="footnote" id="footNote"
+                      rows="6"
+                      placeholder="Enter footnotes to add more information to the price review"></textarea>
+          </div>
         </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
 
-
-<!-- Add Stock  Modal -->
-<div class="modal fade" id="stockAddModal" tabindex="-1" aria-labelledby="stockAddModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="stockUpdateModalLabel">Add Stock - Pick A Date</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form action="#" method="GET">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label" for="">Date</label>
-                        <input id="stockAddInput" class="form-control" type="date" name="theDate" onchange="addFunc()">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button id="btnAdd" type="submit" class="btn btn-primary" disabled>Continue</button>
-                </div>
-            </form>
+<!-- ── Stock Report Date Modal ───────────────────────── -->
+<div class="modal fade" id="stockReportModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Stock Report — Pick a Date</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <form action="#" method="GET">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="stockReportInput">Date</label>
+            <input id="stockReportInput" class="form-control" type="date" name="theDate"
+                   onchange="document.getElementById('btnReport').disabled = !this.value">
+          </div>
         </div>
-    </div>
-</div>
-
-<!-- View Stock  Modal -->
-<div class="modal fade" id="stockReportModal" tabindex="-1" aria-labelledby="stockReportModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="stockReportModalLabel">Stock Report - Pick A Date</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form action="#" method="GET">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label" for="">Date</label>
-                        <input id="stockReportInput" class="form-control" type="date" name="theDate"
-                            onchange="reportFunc()">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button id="btnReport" type="submit" class="btn btn-primary" disabled>Report</button>
-                </div>
-            </form>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="btnReport" type="submit" class="btn btn-primary" disabled>Report</button>
         </div>
+      </form>
     </div>
+  </div>
 </div>
-
-<script>
-    function addFunc() {
-
-        if (document.getElementById('stockAddInput').value == '') {
-            document.getElementById('btnAdd').disabled = true;
-        } else {
-            document.getElementById('btnAdd').disabled = false;
-        }
-    }
-
-    function reportFunc() {
-
-        if (document.getElementById('stockReportInput').value == '') {
-            document.getElementById('btnReport').disabled = true;
-        } else {
-            document.getElementById('btnReport').disabled = false;
-        }
-    }
-</script>
 {% endblock %}

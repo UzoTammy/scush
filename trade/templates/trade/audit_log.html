@@ -1,4 +1,6 @@
-{% extends 'users/base.html' %}
+{% extends 'core/base.html' %}
+
+{% block page_title %}Audit Log{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
@@ -9,8 +11,8 @@
             <small class="text-muted">Every field-level change made to trade records, by whom and when.</small>
         </div>
         <div class="col text-right mt-3">
-            <a class="btn btn-outline-dark btn-sm" href="{% url 'trade-home' %}" title="Trade Home">
-                <i class="fa fa-reply"></i> Trade Home
+            <a class="btn btn-secondary" href="{% url 'trade-home' %}" title="Trade Home">
+                <i class="fa fa-times-circle"></i> Trade Home
             </a>
         </div>
     </div>
@@ -45,7 +47,7 @@
                             {{ log.record_str }}
                         </td>
                         {% endif %}
-                        <td class="text-info">{{ field }}</td>
+                        <td class="text-primary">{{ field }}</td>
                         <td class="text-danger">{{ change.old }}</td>
                         <td class="text-success">{{ change.new }}</td>
                     </tr>
