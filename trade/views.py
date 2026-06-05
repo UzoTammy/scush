@@ -1258,21 +1258,30 @@ class BankAccountHomeView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if BankBalance.objects.exists():
-            latest_date = BankBalance.objects.latest('date').date
-            qs = BankBalance.objects.filter(date=latest_date).filter(bank__account_group='Business')
-            context['object_list'] = qs
-            context['current_date'] = latest_date
-            context['total_balance'] = qs.aggregate(Sum('bank_balance'))['bank_balance__sum']
-            context['total_package'] = qs.aggregate(Sum('account_package_balance'))['account_package_balance__sum']
-            context['bank_accounts_business'] = BankAccount.objects.filter(account_group='Business')
-            context['bank_accounts_admin'] = BankAccount.objects.filter(account_group='Admin')
-            context['alert_pks'] = {
-                obj.pk for obj in qs if abs(obj.delta().amount) > BANK_DELTA_THRESHOLD
-            }
-            context['delta_threshold'] = BANK_DELTA_THRESHOLD
-        else:
-            context['no_object'] = True
+        from cashflow.models import BankAccount as CashBankAccount, BankTransaction
+        import datetime as dt
+
+        today    = dt.date.today()
+        business = list(CashBankAccount.objects.filter(status=True, category='Business'))
+        admin    = list(CashBankAccount.objects.filter(status=True, category='Admin'))
+        all_accs = business + admin
+
+        context['bank_accounts_business']   = business
+        context['bank_accounts_admin']      = admin
+        context['current_date']             = today
+        context['total_business_balance']   = sum(a.current_balance.amount for a in business)
+        context['total_admin_balance']      = sum(a.current_balance.amount for a in admin)
+        context['total_all_balance']        = sum(a.current_balance.amount for a in all_accs)
+
+        # Recent transactions (last 15 across all accounts)
+        context['recent_transactions'] = BankTransaction.objects.select_related('bank').order_by('-timestamp')[:15]
+
+        # Today's activity
+        today_tx = BankTransaction.objects.filter(timestamp__date=today)
+        context['today_credits'] = today_tx.filter(transaction_type='CR').aggregate(Sum('amount'))['amount__sum']
+        context['today_debits']  = today_tx.filter(transaction_type='DR').aggregate(Sum('amount'))['amount__sum']
+        context['today_count']   = today_tx.count()
+
         return context
 
 
@@ -1324,16 +1333,19 @@ class BankAccountCreateView(LoginRequiredMixin, CreateView):
     template_name = 'trade/bank_account/bank_account_form.html'
 
 
-class BankBalanceCreateView(LoginRequiredMixin, CreateView):
-    model = BankBalance
-    form_class = BankBalanceForm
-    template_name = 'trade/bank_account/bank_balance_form.html'
+class BankBalanceCreateView(LoginRequiredMixin, View):
+    """Manual bank balance entry is disabled — balances are now derived from the cashflow ledger."""
+    def get(self, request, *args, **kwargs):
+        messages.info(
+            request,
+            'Manual bank balance entry has been disabled. '
+            'All balances are now derived directly from the cashflow transaction ledger. '
+            'Use the cashflow module to record deposits, withdrawals and transfers.'
+        )
+        return redirect(reverse('bank-account-home'))
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        date = self.get_queryset().latest('date').date
-        context['records'] = self.get_queryset().filter(date=date)
-        return context
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
 
 
 class BankBalanceDetailView(LoginRequiredMixin, DetailView):
@@ -1390,15 +1402,10 @@ class BankBalanceListView(LoginRequiredMixin, ListView):
         return context
 
 
-class BankBalanceCopyView(LoginRequiredMixin, TemplateView):
-    template_name = 'trade/bank_account/bank_balance_copy.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        obj = BankBalance.objects.get(pk=kwargs['pk'])
-        obj.date = obj.date + datetime.timedelta(days=2 if obj.date.weekday()==calendar.SATURDAY else 1)
-        context['form'] = BankBalanceCopyForm(instance=obj)
-        return context
+class BankBalanceCopyView(LoginRequiredMixin, View):
+    """Disabled — manual bank balance entry no longer accepted."""
+    def get(self, request, *args, **kwargs):
+        return redirect(reverse('bank-account-home'))
 
 
 class CreditorHomeView(LoginRequiredMixin, TemplateView):

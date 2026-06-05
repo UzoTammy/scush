@@ -1,84 +1,29 @@
 {% extends 'core/base.html' %}
 {% load custom_tags %}
-{% load static %}
 
 {% block page_title %}Bank Account Manager{% endblock %}
+
+{% block head %}
+<style>
+  .tx-cr { color: var(--color-success); font-weight:600; }
+  .tx-dr { color: var(--color-danger);  font-weight:600; }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
 
-  <!-- ── Nav strip ──────────────────────────────────── -->
+  <!-- ── Top nav ────────────────────────────────────── -->
   <div class="ds-card mb-4">
     <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap staff-nav-bar">
       <span><i class="fa fa-bank mr-2"></i>Bank Account Manager</span>
       <div class="d-flex staff-nav-bar">
-
-        <!-- Transactions -->
-        <div class="dropdown">
-          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
-            <i class="fa fa-exchange mr-1"></i> Transactions
-          </button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="{% url 'bank-deposit' %}">
-              <i class="fa fa-plus"></i> Cash Deposit
-            </a>
-          </div>
-        </div>
-
-        <!-- Bank Accounts -->
-        <div class="dropdown">
-          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
-            <i class="fa fa-credit-card mr-1"></i> Accounts
-          </button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="{% url 'bank-account-list' %}">
-              <i class="fa fa-list"></i> View &amp; Update
-            </a>
-            <div class="dropdown-divider"></div>
-            <div class="dropdown-header">Business</div>
-            {% for obj in bank_accounts_business %}
-            <a class="dropdown-item" href="{% url 'bank-account-detail' obj.pk %}">{{ obj }}</a>
-            {% endfor %}
-            {% if bank_accounts_admin %}
-            <div class="dropdown-divider"></div>
-            <div class="dropdown-header">Admin</div>
-            {% for obj in bank_accounts_admin %}
-            <a class="dropdown-item" href="{% url 'bank-account-detail' obj.pk %}">{{ obj }}</a>
-            {% endfor %}
-            {% endif %}
-          </div>
-        </div>
-
-        <!-- Bank Balance -->
-        <div class="dropdown">
-          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
-            <i class="fa fa-money mr-1"></i> Balance
-          </button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="{% url 'bank-balance-create' %}">
-              <i class="fa fa-plus"></i> Add Balance
-            </a>
-            <a class="dropdown-item" href="{% url 'bank-balance-list' %}">
-              <i class="fa fa-list"></i> View &amp; Update
-            </a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="{% url 'bank-balance-list-admin' %}">
-              <i class="fa fa-bank"></i> Admin Account
-            </a>
-            <a class="dropdown-item" href="{% url 'bank-delta-variance' %}">
-              <i class="fa fa-exclamation-triangle"></i> Variance Report
-            </a>
-            <a class="dropdown-item" href="{% url 'pdf-daily-bank-balance' %}" target="_blank" rel="noopener noreferrer">
-              <i class="fa fa-file-pdf-o"></i> PDF
-            </a>
-          </div>
-        </div>
-
-        <!-- Help -->
-        <a class="staff-nav-link" href="#" data-toggle="modal" data-target="#helpModal">
-          <i class="fa fa-question-circle"></i> Help
+        <a class="staff-nav-link" href="{% url 'bank-account-list' %}">
+          <i class="fa fa-list"></i> Accounts
         </a>
-
+        <a class="staff-nav-link" href="{% url 'bank-balance-list' %}" title="Historical BankBalance archive">
+          <i class="fa fa-archive"></i> Archive
+        </a>
         <a class="staff-nav-link" href="{% url 'trade-home' %}">
           <i class="fa fa-times-circle"></i> Return
         </a>
@@ -86,138 +31,159 @@
     </div>
   </div>
 
-  <!-- ── Variance alert ─────────────────────────────── -->
-  {% if alert_pks %}
-  <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
-    <i class="fa fa-exclamation-triangle fa-lg mr-3"></i>
-    <div>
-      <strong>{{ alert_pks|length }} account{{ alert_pks|length|pluralize }} with unexplained variance</strong>
-      — delta exceeds NGN {{ delta_threshold|floatformat:"2g" }}.
-      <a href="{% url 'bank-delta-variance' %}" class="alert-link ml-2">View full variance report &rarr;</a>
+  <!-- ── Summary tiles ─────────────────────────────── -->
+  <div class="row mb-4">
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat ds-stat--accent">
+        <div class="ds-stat__label"><i class="fa fa-briefcase mr-1"></i> Business Total</div>
+        <div class="ds-stat__value">NGN {{ total_business_balance|floatformat:2 }}</div>
+      </div>
+    </div>
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label"><i class="fa fa-shield mr-1"></i> Admin Total</div>
+        <div class="ds-stat__value">NGN {{ total_admin_balance|floatformat:2 }}</div>
+      </div>
+    </div>
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat ds-stat--success">
+        <div class="ds-stat__label"><i class="fa fa-bank mr-1"></i> All Banks Total</div>
+        <div class="ds-stat__value">NGN {{ total_all_balance|floatformat:2 }}</div>
+        <small class="ds-stat__sub">As at {{ current_date }}</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Today's activity tiles ────────────────────── -->
+  {% if today_count %}
+  <div class="row mb-4">
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat ds-stat--success">
+        <div class="ds-stat__label"><i class="fa fa-arrow-down mr-1"></i> Today's Credits</div>
+        <div class="ds-stat__value">{% if today_credits %}{{ today_credits }}{% else %}—{% endif %}</div>
+      </div>
+    </div>
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat ds-stat--danger">
+        <div class="ds-stat__label"><i class="fa fa-arrow-up mr-1"></i> Today's Debits</div>
+        <div class="ds-stat__value">{% if today_debits %}{{ today_debits }}{% else %}—{% endif %}</div>
+      </div>
+    </div>
+    <div class="col-sm-4 mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label"><i class="fa fa-list mr-1"></i> Today's Transactions</div>
+        <div class="ds-stat__value">{{ today_count }}</div>
+      </div>
     </div>
   </div>
   {% endif %}
 
-  <!-- ── Content ────────────────────────────────────── -->
-  {% if no_object %}
-  <div class="ds-card">
-    <div class="ds-card__body text-center py-5">
-      <i class="fa fa-bank fa-3x text-muted mb-3"></i>
-      <h5 class="text-muted">No bank balance records yet.</h5>
-      <a href="{% url 'bank-balance-create' %}" class="btn btn-primary mt-2">
-        <i class="fa fa-plus mr-1"></i> Add Bank Balance
-      </a>
-    </div>
-  </div>
+  <div class="row">
 
-  {% else %}
+    <!-- ── Left: account list ────────────────────── -->
+    <div class="col-md-5 mb-4">
 
-  <div class="ds-card">
-    <div class="ds-card__header d-flex justify-content-between align-items-center">
-      <span><i class="fa fa-table mr-2"></i>Business Account Balance — {{ current_date }}</span>
-    </div>
-    <div class="ds-card__body p-0">
-      <div class="table-responsive">
-        <table class="table table-striped table-hover mb-0" data-toggle="table">
-          <thead>
-            <tr>
-              <th>Account Name</th>
-              <th>Account Number</th>
-              <th>Banker</th>
-              <th class="text-right">Bank Balance</th>
-              <th class="text-right">AP Balance</th>
-              <th class="text-right">BB &minus; AP</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for object in object_list %}
-            <tr{% if object.pk in alert_pks %} class="table-danger"{% endif %}>
-              <td>
-                <a href="{% url 'bank-balance-detail' object.pk %}">{{ object.bank.nickname }}</a>
-                {% if object.pk in alert_pks %}
-                <i class="fa fa-exclamation-triangle text-danger ml-1" title="Variance exceeds threshold"></i>
-                {% endif %}
-              </td>
-              <td>{{ object.bank.account_number }}</td>
-              <td>{{ object.bank.bank }}</td>
-              <td class="text-right">{{ object.bank_balance }}</td>
-              <td class="text-right">{{ object.account_package_balance }}</td>
-              {% if object.delta.amount >= 0 %}
-              <td class="text-right {% if object.pk in alert_pks %}font-weight-bold text-danger{% endif %}">
-                {{ object.delta }}
-              </td>
-              {% else %}
-              <td class="text-right text-danger {% if object.pk in alert_pks %}font-weight-bold{% endif %}">
-                {{ object.delta|abs }}
-              </td>
-              {% endif %}
-            </tr>
+      <!-- Business accounts -->
+      <div class="ds-card mb-3">
+        <div class="ds-card__header"><span><i class="fa fa-briefcase mr-2"></i>Business</span></div>
+        <div class="ds-card__body p-0">
+          <div class="list-group list-group-flush">
+            {% for acc in bank_accounts_business %}
+            <a href="{% url 'bank-statement' acc.account_number %}"
+               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2">
+              <div>
+                <span class="font-weight-600">{{ acc.short_name }}</span>
+                <small class="text-muted d-block">{{ acc.name }} · {{ acc.account_number }}</small>
+              </div>
+              <strong class="text-primary">{{ acc.current_balance }}</strong>
+            </a>
+            {% empty %}
+            <div class="list-group-item text-muted">No business accounts.</div>
             {% endfor %}
-          </tbody>
-          <tfoot>
-            <tr class="font-weight-bold">
-              <td colspan="3" class="text-center text-muted">Totals</td>
-              <td class="text-right">NGN {{ total_balance|floatformat:2 }}</td>
-              <td class="text-right">NGN {{ total_package|floatformat:2 }}</td>
-              {% with total_balance|minus:total_package as total %}
-              <td class="text-right {% if total < 0 %}text-danger{% endif %}">
-                NGN {{ total|abs|floatformat:2 }}
-              </td>
-              {% endwith %}
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </div>
-    <div class="ds-card__body border-top py-2">
-      <small class="text-muted">
-        <strong>AP</strong> — Account Package &nbsp;|&nbsp;
-        <strong>BB</strong> — Bank Balance &nbsp;|&nbsp;
-        Variance threshold: NGN {{ delta_threshold|floatformat:"2g" }}
-      </small>
-    </div>
-  </div>
-
-  {% endif %}
-
-</div>
-
-<!-- ── Help modal ────────────────────────────────────── -->
-<div class="modal fade" id="helpModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"><i class="fa fa-question-circle mr-2"></i>Bank Account Manager — Help</h5>
-        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-      </div>
-      <div class="modal-body">
-        <p>This page displays the current bank balance comparison for all business accounts.</p>
-        <div class="list-group list-group-flush">
-          <div class="list-group-item px-0">
-            <strong>Bank Balance (BB)</strong>
-            <p class="text-muted small mb-0">The actual balance as shown by the bank statement.</p>
-          </div>
-          <div class="list-group-item px-0">
-            <strong>Account Package Balance (AP)</strong>
-            <p class="text-muted small mb-0">The balance recorded in the accounting package.</p>
-          </div>
-          <div class="list-group-item px-0">
-            <strong>BB &minus; AP</strong>
-            <p class="text-muted small mb-0">The variance. Red rows exceed the alert threshold.</p>
-          </div>
-          <div class="list-group-item px-0">
-            <strong>Adding a bank account</strong>
-            <p class="text-muted small mb-0">Use <em>Accounts → View &amp; Update</em>, then the Add link at the top of that page.</p>
           </div>
         </div>
-        <p class="text-danger small mt-3 mb-0">
-          <i class="fa fa-lock mr-1"></i> Contact an admin to delete any record.
-        </p>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+      <!-- Admin accounts -->
+      {% if bank_accounts_admin %}
+      <div class="ds-card">
+        <div class="ds-card__header"><span><i class="fa fa-shield mr-2"></i>Admin</span></div>
+        <div class="ds-card__body p-0">
+          <div class="list-group list-group-flush">
+            {% for acc in bank_accounts_admin %}
+            <a href="{% url 'bank-statement' acc.account_number %}"
+               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2">
+              <div>
+                <span class="font-weight-600">{{ acc.short_name }}</span>
+                <small class="text-muted d-block">{{ acc.name }} · {{ acc.account_number }}</small>
+              </div>
+              <strong class="text-primary">{{ acc.current_balance }}</strong>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- ── Right: recent transactions ────────────── -->
+    <div class="col-md-7 mb-4">
+      <div class="ds-card h-100">
+        <div class="ds-card__header d-flex justify-content-between align-items-center">
+          <span><i class="fa fa-history mr-2"></i>Recent Transactions</span>
+          <small class="text-white opacity-75">Last 15</small>
+        </div>
+        <div class="ds-card__body p-0">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+              <thead class="thead-accent">
+                <tr>
+                  <th>Date</th>
+                  <th>Account</th>
+                  <th>Description</th>
+                  <th class="text-center">Type</th>
+                  <th class="text-right">Amount</th>
+                  <th class="text-right">Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for tx in recent_transactions %}
+                <tr>
+                  <td class="text-muted small">{{ tx.timestamp|date:'d-m-Y' }}</td>
+                  <td class="small">{{ tx.bank.short_name }}</td>
+                  <td class="small">{{ tx.description|truncatewords:6 }}</td>
+                  <td class="text-center">
+                    <span class="badge {% if tx.transaction_type == 'CR' %}badge-success{% else %}badge-danger{% endif %}">
+                      {{ tx.transaction_type }}
+                    </span>
+                  </td>
+                  <td class="text-right {% if tx.transaction_type == 'CR' %}tx-cr{% else %}tx-dr{% endif %}">
+                    {{ tx.amount }}
+                  </td>
+                  <td class="text-right small text-muted">{{ tx.balance }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">No transactions recorded yet.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="ds-card__body border-top py-2 text-center">
+          <a href="{% url 'bank-delta-variance' %}" class="text-muted small mr-3">
+            <i class="fa fa-exclamation-triangle mr-1"></i> Variance Report
+          </a>
+          <a href="{% url 'bank-balance-list' %}" class="text-muted small">
+            <i class="fa fa-archive mr-1"></i> Historical Archive
+          </a>
+        </div>
       </div>
     </div>
+
   </div>
+
 </div>
 {% endblock %}

@@ -153,6 +153,7 @@
                   <th>Short Name</th>
                   <th class="text-right">Opening Balance</th>
                   <th class="text-right">Current Balance</th>
+                  <th class="text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -165,13 +166,15 @@
                     <i class="fa fa-times-circle text-muted mr-1"></i>
                     {% endif %}
                     <a href="" data-toggle="modal" data-target="#currentBalanceDetailModal{{ bank.pk }}">{{ bank.account_number }}</a>
-                    <a class="float-right text-muted" href="{% url 'bank-statement' bank.pk %}" title="Statement">
-                      <i class="fa fa-paste"></i>
-                    </a>
                   </td>
                   <td>{{ bank.short_name }}</td>
                   <td class="text-right">{{ bank.opening_balance }}</td>
                   <td class="text-right">{{ bank.current_balance }}</td>
+                  <td class="text-center">
+                    <a class="staff-nav-link" href="{% url 'bank-statement' bank.pk %}">
+                      <i class="fa fa-file-text-o mr-1"></i>Statement
+                    </a>
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -193,19 +196,20 @@
                   <th>Name</th>
                   <th class="text-right">Opening Balance</th>
                   <th class="text-right">Current Balance</th>
+                  <th class="text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {% for cash in cash_center %}
                 <tr>
-                  <td>
-                    {{ cash.name }}
-                    <a class="float-right text-muted" href="{% url 'cash-statement' cash.pk %}" title="Statement">
-                      <i class="fa fa-paste"></i>
-                    </a>
-                  </td>
+                  <td>{{ cash.name }}</td>
                   <td class="text-right">{{ cash.opening_balance }}</td>
                   <td class="text-right">{{ cash.current_balance }}</td>
+                  <td class="text-center">
+                    <a class="staff-nav-link" href="{% url 'cash-statement' cash.pk %}">
+                      <i class="fa fa-file-text-o mr-1"></i>Statement
+                    </a>
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>

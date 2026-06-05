@@ -46,7 +46,7 @@ from staff.models import Employee, Permit, Payroll, Welfare, EmployeeBalance
 from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
 from apply.models import Applicant
-from trade.models import TradeDaily, BalanceSheet, BankBalance, TradeMonthly, Creditor
+from trade.models import TradeDaily, BalanceSheet, TradeMonthly, Creditor
 from cashflow.models import BankAccount, CashCenter
 from warehouse.models import Renewal, StoreLevy, Stores
 from .forms import JsonDatasetForm
@@ -150,9 +150,12 @@ class DailyReportView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs) 
-        dates = [('Bank Balance', BankBalance.objects.latest('date').date), 
+        from cashflow.models import BankTransaction
+        _last_tx = BankTransaction.objects.latest('timestamp').timestamp.date() \
+            if BankTransaction.objects.exists() else datetime.date(2000, 1, 1)
+        dates = [('Bank Balance', _last_tx),
                 ('Stock Report', ProductExtension.objects.latest('date').date),
-                ('P & L Report', TradeDaily.objects.latest('date').date), 
+                ('P & L Report', TradeDaily.objects.latest('date').date),
                 ('Balance Sheet', BalanceSheet.objects.latest('date').date)
             ]
         yesterday = datetime.date.today() - datetime.timedelta(days=1)
@@ -378,10 +381,11 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         
         qs = CustomerCredit.objects.all()
         credit_balance = float(qs.aggregate(Sum('current_credit'))['current_credit__sum']) if qs.exists() else 0.0
-        bank_balance_qs = BankBalance.objects.filter(bank__account_group='Business')
-        obj_date = bank_balance_qs.latest('date').date
-        bank_balance_qs = bank_balance_qs.filter(date=obj_date)
-        bank_balance = float(bank_balance_qs.aggregate(Sum('account_package_balance'))['account_package_balance__sum']) if bank_balance_qs.exists() else 0.0
+        from cashflow.models import BankAccount as CashBankAccount
+        bank_balance = float(sum(
+            a.current_balance.amount
+            for a in CashBankAccount.objects.filter(status=True, category='Business')
+        ))
         
         context['date_of_record'] = latest_date
         context['color'] = ['success', 'info', 'warning']
@@ -498,8 +502,12 @@ class DashBoardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         qs = qs.annotate(sv=F('cost_price')*F('stock_value'))
         stock_value = float(qs.aggregate(Sum('sv'))['sv__sum']) if qs.exists() else 110e6
 
-        #3. get bank balance from bank balance model
-        bank_balance = BankBalance.objects.filter(date=latest_date).aggregate(Sum('bank_balance'))['bank_balance__sum']
+        #3. get bank balance from cashflow transaction ledger
+        from cashflow.models import BankAccount as CashBankAccount
+        bank_balance = sum(
+            a.current_balance.amount
+            for a in CashBankAccount.objects.filter(status=True, category='Business')
+        )
         bank_balance = bank_balance if bank_balance != None else 0.0
         context['trade_donut'] = plotter.donut(['Debits',  'Credits', 'Stock', 'Funds'], 
                                                [debit.amount, credit.amount, stock_value,  bank_balance],
