@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     'material.apps.MaterialConfig',
     'survey.apps.SurveyConfig',
     'cashflow.apps.CashflowConfig',
+    'jobs',
 ]
 
 if DEBUG:

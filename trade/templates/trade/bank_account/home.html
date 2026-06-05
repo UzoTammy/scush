@@ -2,212 +2,222 @@
 {% load custom_tags %}
 {% load static %}
 
-{% block page_title %}Home{% endblock %}
+{% block page_title %}Bank Account Manager{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-3">
-    <div class="row">
-        <div class="col">
-            <h3 class="text-center">Funds Manager Home Page</h3>
-        </div>
-    </div>
-    <div class="row">
-        <nav class="col-sm-2 bg-dark ml-3">
-            <button
-                class="navbar-toggler bg-light mt-1 mb-1 float-right myBtn"
-                type="button"
-                data-toggle="collapse"
-                data-target="#Dropdown2"
-                aria-controls="Dropdown2"
-                aria-expanded="true"
-                aria-label="toggle navigation">
-                <i class="fa fa-navicon fa-1x text-primary"></i>
-            </button>
-            <div class="collapse collapse-sm" id="Dropdown2">
-                <ul class="nav flex-column mt-3">
-                    <li class="text-white"><i class="fa fa-minus text-warning"></i> Transaction</li>
-                    <li class="nav-item text-white"><a class="nav-link" href="{% url 'bank-deposit' %}">Cash Deposit</a></li>
-                    <hr class="dropdown-divider">
-                    <li class="text-white"><i class="fa fa-minus text-warning"></i>Bank Account</li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'bank-account-list' %}">
-                            <i class="fa fa-edit text-warning"></i>
-                            View & Update
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" 
-                        data-toggle="dropdown" href="#" 
-                        role="button" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-navicon text-warning"></i> View One</a>
-                        <div class="dropdown-menu">
-                            {% for obj in bank_accounts_business %}
-                                <a class="dropdown-item" href="{% url 'bank-account-detail' obj.pk %}">{{obj}}</a>
-                            {% endfor %}
-                            <hr class="dropdown-divider">
-                            {% for obj in bank_accounts_admin %}
-                                <a class="dropdown-item" href="{% url 'bank-account-detail' obj.pk %}">{{obj}}</a>
-                            {% endfor %}
-                            
-                          
-                        </div>
-                      </li>
-                    <hr class="dropdown-divider">
-                    <li class="text-white"><i class="fa fa-minus text-warning"></i>Bank Balance</li>
-                    <li class="nav-item">
-                        <a href="{% url 'bank-balance-create' %}" class="nav-link"><i class="fa fa-plus text-warning"></i>
-                            Add
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'bank-balance-list' %}">
-                            <i class="fa fa-edit text-warning"></i>
-                            View & Update
-                        </a>
-                    </li>
-                    <hr class="dropdown-divider">
-                    <li class="nav-item">
-                        <a href="{% url 'pdf-daily-bank-balance' %}" target="_blank" class="nav-link">
-                            <i class="fa fa-file-pdf-o text-warning"></i> PDF 
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{% url 'bank-balance-list-admin' %}" class="nav-link">
-                            <i class="fa fa-bank text-warning"></i> Admin Account
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{% url 'bank-delta-variance' %}" class="nav-link">
-                            <i class="fa fa-exclamation-triangle text-warning"></i> Variance Report
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a data-toggle="modal" data-target="#exampleModal" class="nav-link">
-                            <i class="fa fa-question text-warning"></i> Help
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'trade-home' %}">
-                            <i class="fa fa-times-circle"></i> Return</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        
-        <div class="col-sm-9">
-            {% if no_object %}
-            <h3 class="ml-3">No Record yet</h3>
-            <a class="btn btn-secondary" href="{% url 'bank-balance-create' %}">Add Bank Balance</a>
-            {% else %}
+<div class="container-fluid">
 
-            {% if alert_pks %}
-            <div class="alert alert-danger">
-                <i class="fa fa-exclamation-triangle"></i>
-                <strong>{{ alert_pks|length }} account{{ alert_pks|length|pluralize }} with unexplained variance</strong>
-                — delta exceeds NGN {{ delta_threshold|floatformat:"2g" }}.
-                <a href="{% url 'bank-delta-variance' %}" class="alert-link ml-2">View full variance report &rarr;</a>
-            </div>
-            {% endif %}
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap staff-nav-bar">
+      <span><i class="fa fa-bank mr-2"></i>Bank Account Manager</span>
+      <div class="d-flex staff-nav-bar">
 
-            <table class="table table-bordered" data-toggle="table">
-                <caption>Business Account Balance as at {{current_date}}</caption>
-                <thead class="">
-                    <tr class="bg-dark text-white text-center">
-                        <th>Account Name</th>
-                        <th>Account Number</th>
-                        <th>Banker</th>
-                        <th>Bank Balance</th>
-                        <th>AP Balance</th>
-                        <th>(BB - AP)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for object in object_list %}
-                    <tr{% if object.pk in alert_pks %} class="table-danger"{% endif %}>
-                        <td><a href="{% url 'bank-balance-detail' object.pk %}">{{object.bank.nickname}}</a>
-                            {% if object.pk in alert_pks %}
-                            <i class="fa fa-exclamation-triangle text-danger ml-1" title="Variance exceeds threshold"></i>
-                            {% endif %}
-                        </td>
-                        <td>{{object.bank.account_number}}</td>
-                        <td>{{object.bank.bank}}</td>
-                        <td class="text-right">{{object.bank_balance}}</td>
-                        <td class="text-right">{{object.account_package_balance}}</td>
-                        {% if object.delta.amount >= 0 %}
-                        <td class="text-right {% if object.pk in alert_pks %}font-weight-bold{% endif %}">{{object.delta}}</td>
-                        {% else %}
-                        <td class="text-right text-danger {% if object.pk in alert_pks %}font-weight-bold{% endif %}">{{object.delta|abs}}</td>
-                        {% endif %}
-                    </tr>
-                    {% endfor %}
-                    <tr class="font-weight-bold bg-dark text-white">
-                        <td colspan="3" class="text-center">Total</td>
-                        <td class="text-right">NGN{{total_balance|floatformat:2}}</td>
-                        <td class="text-right">NGN{{total_package|floatformat:2}}</td>
-                        {% with total_balance|minus:total_package as total %}
-                        {% if total >= 0 %}
-                        <td class="text-right">NGN{{total|floatformat:2}}</td>
-                        {% else %}
-                        <td class="text-right text-danger">NGN{{total|abs|floatformat:2}}</td>
-                        {% endif %}
-                        {% endwith %}
-                    </tr>
-                </tbody>
-            </table>
-            <p class="mt-3 mr-2 text-muted float-right"><small>AP — Account Package &nbsp;|&nbsp; BB — Bank Balance &nbsp;|&nbsp; Threshold: NGN {{delta_threshold|floatformat:"2g"}}</small></p>
-            {% endif %}
-        </div>
-        
-    </div>
-</div>
-
-<!-- Modal -->
-<section>
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-question text-success"></i>  Help with this Page</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
+        <!-- Transactions -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
+            <i class="fa fa-exchange mr-1"></i> Transactions
           </button>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col">
-                <h6>This page is the Bank Account Home page</h6>
-                <p class="ml-3">It displays the bank balance for the date at the table's title. 
-                    The Bank Account information is divided into two sections. The bank account section 
-                    and the bank balance section. The bank account section is used to capture all bank account
-                    details while bank balance is used to capture only the balance of the account both at the Bank
-                    and in the accounting package.
-                </p>
-                <h6>To view and update bank account</h6>
-                <p class="ml-3">By the left-side of this page, on the menu in black,
-                    click the view & update link to view the list of all bank accounts stored
-                    from that page you can update any of the acount listed.
-                </p>
-                <h6>To add bank account and balance</h6>
-                <p class="ml-3">By the left-side of this page, on the menu in black,
-                    click the <i class="text-danger fa fa-plus"> add</i> link access the form for bank
-                    balance details and at the top of the form is <i class="text-danger fa fa-plus"> add</i>
-                    link for the bank account form.
-                </p>
-                <h6>To view and update bank balance</h6>
-                <p class="ml-3">By the left-side of this page, on the menu in black,
-                    click the view & update link to view the list of all bank balance stored
-                    from that page you can update any of the balance listed.
-                </p>
-                <h6 class="text-danger">Contact the admin to delete a record. If neccesary</h6>
-            </div>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'bank-deposit' %}">
+              <i class="fa fa-plus"></i> Cash Deposit
+            </a>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+        <!-- Bank Accounts -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
+            <i class="fa fa-credit-card mr-1"></i> Accounts
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'bank-account-list' %}">
+              <i class="fa fa-list"></i> View &amp; Update
+            </a>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-header">Business</div>
+            {% for obj in bank_accounts_business %}
+            <a class="dropdown-item" href="{% url 'bank-account-detail' obj.pk %}">{{ obj }}</a>
+            {% endfor %}
+            {% if bank_accounts_admin %}
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-header">Admin</div>
+            {% for obj in bank_accounts_admin %}
+            <a class="dropdown-item" href="{% url 'bank-account-detail' obj.pk %}">{{ obj }}</a>
+            {% endfor %}
+            {% endif %}
+          </div>
         </div>
+
+        <!-- Bank Balance -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle staff-nav-link" data-toggle="dropdown">
+            <i class="fa fa-money mr-1"></i> Balance
+          </button>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'bank-balance-create' %}">
+              <i class="fa fa-plus"></i> Add Balance
+            </a>
+            <a class="dropdown-item" href="{% url 'bank-balance-list' %}">
+              <i class="fa fa-list"></i> View &amp; Update
+            </a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'bank-balance-list-admin' %}">
+              <i class="fa fa-bank"></i> Admin Account
+            </a>
+            <a class="dropdown-item" href="{% url 'bank-delta-variance' %}">
+              <i class="fa fa-exclamation-triangle"></i> Variance Report
+            </a>
+            <a class="dropdown-item" href="{% url 'pdf-daily-bank-balance' %}" target="_blank" rel="noopener noreferrer">
+              <i class="fa fa-file-pdf-o"></i> PDF
+            </a>
+          </div>
+        </div>
+
+        <!-- Help -->
+        <a class="staff-nav-link" href="#" data-toggle="modal" data-target="#helpModal">
+          <i class="fa fa-question-circle"></i> Help
+        </a>
+
+        <a class="staff-nav-link" href="{% url 'trade-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
       </div>
     </div>
   </div>
-</section>
-{% endblock%}
+
+  <!-- ── Variance alert ─────────────────────────────── -->
+  {% if alert_pks %}
+  <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+    <i class="fa fa-exclamation-triangle fa-lg mr-3"></i>
+    <div>
+      <strong>{{ alert_pks|length }} account{{ alert_pks|length|pluralize }} with unexplained variance</strong>
+      — delta exceeds NGN {{ delta_threshold|floatformat:"2g" }}.
+      <a href="{% url 'bank-delta-variance' %}" class="alert-link ml-2">View full variance report &rarr;</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── Content ────────────────────────────────────── -->
+  {% if no_object %}
+  <div class="ds-card">
+    <div class="ds-card__body text-center py-5">
+      <i class="fa fa-bank fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No bank balance records yet.</h5>
+      <a href="{% url 'bank-balance-create' %}" class="btn btn-primary mt-2">
+        <i class="fa fa-plus mr-1"></i> Add Bank Balance
+      </a>
+    </div>
+  </div>
+
+  {% else %}
+
+  <div class="ds-card">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-table mr-2"></i>Business Account Balance — {{ current_date }}</span>
+    </div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0" data-toggle="table">
+          <thead>
+            <tr>
+              <th>Account Name</th>
+              <th>Account Number</th>
+              <th>Banker</th>
+              <th class="text-right">Bank Balance</th>
+              <th class="text-right">AP Balance</th>
+              <th class="text-right">BB &minus; AP</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for object in object_list %}
+            <tr{% if object.pk in alert_pks %} class="table-danger"{% endif %}>
+              <td>
+                <a href="{% url 'bank-balance-detail' object.pk %}">{{ object.bank.nickname }}</a>
+                {% if object.pk in alert_pks %}
+                <i class="fa fa-exclamation-triangle text-danger ml-1" title="Variance exceeds threshold"></i>
+                {% endif %}
+              </td>
+              <td>{{ object.bank.account_number }}</td>
+              <td>{{ object.bank.bank }}</td>
+              <td class="text-right">{{ object.bank_balance }}</td>
+              <td class="text-right">{{ object.account_package_balance }}</td>
+              {% if object.delta.amount >= 0 %}
+              <td class="text-right {% if object.pk in alert_pks %}font-weight-bold text-danger{% endif %}">
+                {{ object.delta }}
+              </td>
+              {% else %}
+              <td class="text-right text-danger {% if object.pk in alert_pks %}font-weight-bold{% endif %}">
+                {{ object.delta|abs }}
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="font-weight-bold">
+              <td colspan="3" class="text-center text-muted">Totals</td>
+              <td class="text-right">NGN {{ total_balance|floatformat:2 }}</td>
+              <td class="text-right">NGN {{ total_package|floatformat:2 }}</td>
+              {% with total_balance|minus:total_package as total %}
+              <td class="text-right {% if total < 0 %}text-danger{% endif %}">
+                NGN {{ total|abs|floatformat:2 }}
+              </td>
+              {% endwith %}
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <div class="ds-card__body border-top py-2">
+      <small class="text-muted">
+        <strong>AP</strong> — Account Package &nbsp;|&nbsp;
+        <strong>BB</strong> — Bank Balance &nbsp;|&nbsp;
+        Variance threshold: NGN {{ delta_threshold|floatformat:"2g" }}
+      </small>
+    </div>
+  </div>
+
+  {% endif %}
+
+</div>
+
+<!-- ── Help modal ────────────────────────────────────── -->
+<div class="modal fade" id="helpModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fa fa-question-circle mr-2"></i>Bank Account Manager — Help</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <p>This page displays the current bank balance comparison for all business accounts.</p>
+        <div class="list-group list-group-flush">
+          <div class="list-group-item px-0">
+            <strong>Bank Balance (BB)</strong>
+            <p class="text-muted small mb-0">The actual balance as shown by the bank statement.</p>
+          </div>
+          <div class="list-group-item px-0">
+            <strong>Account Package Balance (AP)</strong>
+            <p class="text-muted small mb-0">The balance recorded in the accounting package.</p>
+          </div>
+          <div class="list-group-item px-0">
+            <strong>BB &minus; AP</strong>
+            <p class="text-muted small mb-0">The variance. Red rows exceed the alert threshold.</p>
+          </div>
+          <div class="list-group-item px-0">
+            <strong>Adding a bank account</strong>
+            <p class="text-muted small mb-0">Use <em>Accounts → View &amp; Update</em>, then the Add link at the top of that page.</p>
+          </div>
+        </div>
+        <p class="text-danger small mt-3 mb-0">
+          <i class="fa fa-lock mr-1"></i> Contact an admin to delete any record.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

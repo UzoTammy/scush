@@ -1,0 +1,135 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block page_title %}{{ job.title }}{% endblock %}
+
+{% block head %}
+<style>
+  .apply-box {
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 1.5rem;
+  }
+  .apply-box h5, .apply-box p { color: #fff; }
+  .apply-box .btn { width: 100%; font-size: 1rem; padding: 0.75rem; }
+  .section-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+    margin-bottom: 0.5rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- ── Breadcrumb / Back ─────────────────────────── -->
+  <div class="mb-3">
+    <a href="{% url 'job-list' %}" class="text-muted small">
+      <i class="fa fa-arrow-left mr-1"></i> Back to all positions
+    </a>
+  </div>
+
+  <div class="row">
+
+    <!-- ── Job detail ─────────────────────────────── -->
+    <div class="col-md-8 mb-4">
+
+      <div class="ds-card mb-4">
+        <div class="ds-card__header">
+          <span><i class="fa fa-briefcase mr-2"></i>{{ job.title }}</span>
+        </div>
+        <div class="ds-card__body">
+          <div class="d-flex flex-wrap mb-3" style="gap:1rem;">
+            <span class="text-muted small">
+              <i class="fa fa-building mr-1"></i> {{ job.department }}
+            </span>
+            <span class="text-muted small">
+              <i class="fa fa-map-marker mr-1"></i> {{ job.location }}
+            </span>
+            <span class="text-muted small">
+              <i class="fa fa-calendar mr-1"></i> Posted {{ job.posted_date }}
+            </span>
+            <span class="text-muted small">
+              <i class="fa fa-clock-o mr-1"></i> Deadline: <strong class="text-danger">{{ job.deadline }}</strong>
+            </span>
+          </div>
+
+          <div class="mb-4">
+            <p class="section-label">About the Role</p>
+            <div>{{ job.description|linebreaksbr }}</div>
+          </div>
+
+          <div>
+            <p class="section-label">Requirements</p>
+            <div>{{ job.requirements|linebreaksbr }}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Apply sidebar ──────────────────────────── -->
+    <div class="col-md-4">
+
+      <!-- Apply box -->
+      <div class="apply-box mb-4">
+        <h5 class="mb-1">Interested in this role?</h5>
+        <p class="small mb-3" style="opacity:0.85;">
+          Send your application to us. Include
+          "<strong>{{ job.title }}</strong>" in the subject line.
+        </p>
+        <a href="mailto:{{ job.contact_email }}?subject=Application for {{ job.title|urlencode }}&body=Dear Hiring Team,%0A%0APlease find attached my CV and cover letter for the {{ job.title|urlencode }} position.%0A%0AThank you for your consideration."
+           class="btn btn-primary">
+          <i class="fa fa-envelope mr-2"></i> Apply via Email
+        </a>
+        <p class="mt-2 mb-0" style="font-size:0.75rem; opacity:0.75; text-align:center;">
+          Attach your CV / résumé to the email if it will help
+        </p>
+      </div>
+
+      <!-- Job summary -->
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span>Job Summary</span></div>
+        <div class="ds-card__body p-0">
+          <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between py-2">
+              <span class="text-muted">Position</span>
+              <span class="font-weight-600">{{ job.title }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between py-2">
+              <span class="text-muted">Department</span>
+              <span>{{ job.department }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between py-2">
+              <span class="text-muted">Location</span>
+              <span>{{ job.location }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between py-2">
+              <span class="text-muted">Deadline</span>
+              <span class="text-danger font-weight-600">{{ job.deadline }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between py-2">
+              <span class="text-muted">Contact</span>
+              <a href="mailto:{{ job.contact_email }}">{{ job.contact_email }}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Share/browse -->
+      <div class="text-center">
+        <a href="{% url 'job-list' %}" class="text-muted small">
+          <i class="fa fa-list mr-1"></i> View all open positions
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

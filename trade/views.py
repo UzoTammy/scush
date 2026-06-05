@@ -1370,6 +1370,25 @@ class BankBalanceListView(LoginRequiredMixin, ListView):
     model = BankBalance
     template_name = 'trade/bank_account/bank_balance_list.html'
 
+    def get_queryset(self):
+        year = self.request.GET.get('year', datetime.date.today().year)
+        try:
+            year = int(year)
+        except (ValueError, TypeError):
+            year = datetime.date.today().year
+        return BankBalance.objects.filter(date__year=year).order_by('-date')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['years'] = sorted(
+            {d.year for d in BankBalance.objects.dates('date', 'year')},
+            reverse=True
+        )
+        context['selected_year'] = int(
+            self.request.GET.get('year', datetime.date.today().year)
+        )
+        return context
+
 
 class BankBalanceCopyView(LoginRequiredMixin, TemplateView):
     template_name = 'trade/bank_account/bank_balance_copy.html'

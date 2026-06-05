@@ -56,6 +56,7 @@ urlpatterns = [
     path('model/choices/', user_views.add_choice, name='choices'),
     path('survey/', include('survey.urls')),
     path('cashflow/', include('cashflow.urls')),
+    path('jobs/', include('jobs.urls')),
 
     # users
     path('register/', user_views.register, name='register'),

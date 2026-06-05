@@ -114,6 +114,17 @@
       <i class="fa fa-building"></i> Stores
     </a>
 
+    <!-- CAREERS -->
+    <span class="ds-sidebar__group-label">Careers</span>
+    <a class="ds-sidebar__link" href="{% url 'job-list' %}">
+      <i class="fa fa-briefcase"></i> Job Openings
+    </a>
+    {% if user.is_authenticated %}
+    <a class="ds-sidebar__link" href="{% url 'job-manage' %}">
+      <i class="fa fa-cog"></i> Manage Postings
+    </a>
+    {% endif %}
+
     <!-- REPORTS -->
     <span class="ds-sidebar__group-label">Reports</span>
     <a class="ds-sidebar__link" href="{% url 'daily-report' %}">
