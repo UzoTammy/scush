@@ -6,6 +6,35 @@
 {% block content %}
 <div class="container-fluid">
 
+  <!-- ── Save success banner ───────────────────────── -->
+  {% if request.GET.saved %}
+  <div class="alert alert-success alert-dismissible fade show d-flex align-items-center mb-4" role="alert">
+    <i class="fa fa-check-circle fa-lg mr-3"></i>
+    <div>
+      <strong>Payroll saved successfully.</strong>
+      Payroll for period <strong>{{ request.GET.saved }}</strong> has been generated and committed to the database.
+      Kindly await management approval before proceeding to pay.
+    </div>
+    <button type="button" class="close ml-auto" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endif %}
+
+  {% if request.GET.exists %}
+  <div class="alert alert-warning alert-dismissible fade show d-flex align-items-center mb-4" role="alert">
+    <i class="fa fa-exclamation-triangle fa-lg mr-3"></i>
+    <div>
+      <strong>Already saved.</strong>
+      Payroll for period <strong>{{ request.GET.exists }}</strong> has already been generated.
+      Proceed to Pay or view the payroll record.
+    </div>
+    <button type="button" class="close ml-auto" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endif %}
+
   <!-- ── Nav strip ──────────────────────────────────── -->
   <div class="ds-card mb-4">
     <div class="ds-card__header d-flex justify-content-between align-items-start flex-wrap staff-nav-bar">

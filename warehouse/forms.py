@@ -78,17 +78,22 @@ class StoreLevyForm(forms.ModelForm):
     
 
 class BankAccountForm(forms.ModelForm):
-    json_data = get_object_or_404(JsonDataset, pk=1).dataset
-
-    try:
-        banks = list(
-            (bank, bank) for bank in json_data['banks']) if json_data['banks'] else [(None, '------')]
-    except KeyError:
-        banks = [('UBA', 'UBA')]
-
     name = forms.CharField(label='Account Name')
-    bank = forms.ChoiceField(choices=banks)
-    
+    bank = forms.ChoiceField(choices=[])
+
     class Meta:
         model = BankAccount
         fields = ['name', 'account_number', 'bank']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            json_data = JsonDataset.objects.filter(pk=1).first()
+            banks = (
+                list((b, b) for b in json_data.dataset['banks'])
+                if json_data and json_data.dataset.get('banks')
+                else [('UBA', 'UBA')]
+            )
+        except Exception:
+            banks = [('UBA', 'UBA')]
+        self.fields['bank'].choices = banks

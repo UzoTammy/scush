@@ -7,6 +7,21 @@
 {% block content %}
 <div class="container-fluid">
 
+  <!-- ── Save success banner (shown when redirected after save) ── -->
+  {% if request.GET.saved %}
+  <div class="alert alert-success alert-dismissible fade show d-flex align-items-center mb-4" role="alert">
+    <i class="fa fa-check-circle fa-lg mr-3"></i>
+    <div>
+      <strong>Payroll saved successfully.</strong>
+      Payroll for {{ heading.month }}, {{ heading.year }} has been generated and committed to the database.
+      Kindly await management approval before proceeding to pay.
+    </div>
+    <button type="button" class="close ml-auto" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endif %}
+
   <!-- ── Nav strip ──────────────────────────────────── -->
   <div class="ds-card mb-4">
     <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap staff-nav-bar">
@@ -40,7 +55,7 @@
             {% for yr in years %}
             <div class="dropdown-header">{{ yr }}</div>
             {% for mn, month in months.items %}
-            <a class="dropdown-item" href="{% url 'payroll-view' mn|join:yr %}">{{ month }}</a>
+            <a class="dropdown-item" href="{% url 'payroll-view' yr|add:'-'|add:mn %}">{{ month }}</a>
             {% endfor %}
             {% if not forloop.last %}<div class="dropdown-divider"></div>{% endif %}
             {% endfor %}

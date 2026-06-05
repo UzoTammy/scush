@@ -206,6 +206,12 @@ class Payroll(models.Model):
 
     class Meta:
         verbose_name_plural = 'Payroll'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['staff', 'period'],
+                name='unique_payroll_staff_period'
+            )
+        ]
 
     def __str__(self):
         return f"{self.staff.fullname()}-{self.period}"

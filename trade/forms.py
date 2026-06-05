@@ -190,15 +190,21 @@ class BankBalanceCopyForm(forms.ModelForm):
         fields = '__all__'
 
 class CreditorAccountForm(forms.ModelForm):
-    json_dict = JsonDataset.objects.get(pk=1).dataset
-    SOURCES = [(i, i) for i in json_dict['product-source']]
-    
-    date = forms.DateField(widget=DateInput(attrs={'type':'date'}))
-    account = forms.ChoiceField(choices=SOURCES)
-    
+    date    = forms.DateField(widget=DateInput(attrs={'type': 'date'}))
+    account = forms.ChoiceField(choices=[])
+
     class Meta:
-        model = Creditor
+        model  = Creditor
         fields = ['account', 'date', 'account_type', 'amount', 'ledger']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            data    = JsonDataset.objects.filter(pk=1).first()
+            sources = [(i, i) for i in data.dataset['product-source']] if data else []
+        except Exception:
+            sources = []
+        self.fields['account'].choices = sources
 
 class FinancialForm(forms.ModelForm):
     date = forms.DateField(widget=DateInput(attrs={'type':'date'}))

@@ -28,51 +28,39 @@ class DebitForm(forms.ModelForm):
         exclude = ('status',)
 
 
+def _get_json_choices(key, fallback):
+    """Load choices from JsonDataset at request time, not import time."""
+    try:
+        content = JsonDataset.objects.filter(pk=1).first()
+        if content and content.dataset.get(key):
+            return sorted((i, i) for i in content.dataset[key])
+    except Exception:
+        pass
+    return fallback
+
+
 class EmployeeForm(forms.ModelForm):
 
-    """Get the specific record from database for this form"""
-    content = get_object_or_404(JsonDataset, pk=1).dataset
-    try:
-        BANKS = sorted(list((i, i) for i in content['banks'])) if content['banks'] else [(None, '-----')] 
-    except KeyError:
-        BANKS = [('UBA', 'UBA')]
-    try:
-        BRANCHES = sorted(list((i, i) for i in content['branches'])) if content['branches'] else [(None, '-----')]
-    except KeyError:
-        BRANCHES = [('FG', 'FG')]
-    try:    
-        POSITIONS = sorted(list((i, i) for i in content['positions'])) if content['positions'] else [(None, '-----')]
-    except KeyError:
-        POSITIONS = [('GSM', 'GSM')]
-    try:        
-        DEPARTMENTS = sorted(list((i, i) for i in content['departments'])) if content['departments'] else [(None, '-----')]
-    except KeyError:
-        DEPARTMENTS = [('Sales', 'Sales')]
+    date_employed = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    banker     = forms.ChoiceField(choices=[])
+    branch     = forms.ChoiceField(choices=[], required=False)
+    position   = forms.ChoiceField(choices=[], required=False)
+    department = forms.ChoiceField(choices=[], required=False)
+    salary     = forms.CharField(max_length=12,
+                                 help_text='<small class=text-danger>Note: Currency in Naira</small>')
 
-    BRANCHES.insert(0, (None, '--------'))
-    POSITIONS.insert(0, (None, '--------'))
-    DEPARTMENTS.insert(0, (None, '--------'))
-    
-    
-    date_employed = forms.DateField(widget=forms.DateInput(attrs={
-        'type': 'date'
-    }))
-    banker = forms.ChoiceField(choices=BANKS, initial='UBA')
-    branch = forms.ChoiceField(choices=BRANCHES, required=False)
-    position = forms.ChoiceField(choices=POSITIONS, required=False)
-    department = forms.ChoiceField(choices=DEPARTMENTS, required=False)
-    salary = forms.CharField(max_length=12, help_text='<small class=text-danger>Note: Currency in Naira</small>')
-    
     class Meta:
         model = Employee
-        fields = ('date_employed', 'position',
-              'department', 'branch', 'banker', 
-              'account_number')
-        extra = ['salary']
-    
+        fields = ('date_employed', 'position', 'department', 'branch', 'banker', 'account_number')
+        extra  = ['salary']
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['salary'].widget.attrs['placeholder'] = 'Enter Salary as Approved'
+        self.fields['banker'].choices     = _get_json_choices('banks',       [('UBA', 'UBA')])
+        self.fields['branch'].choices     = [(None, '--------')] + _get_json_choices('branches',    [('FG', 'FG')])
+        self.fields['position'].choices   = [(None, '--------')] + _get_json_choices('positions',   [('GSM', 'GSM')])
+        self.fields['department'].choices = [(None, '--------')] + _get_json_choices('departments', [('Sales', 'Sales')])
 
     
 class DateTimeSelectorWidget(forms.MultiWidget):

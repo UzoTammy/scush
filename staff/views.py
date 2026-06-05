@@ -974,9 +974,8 @@ class PayrollHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
 
-        if request.GET:
-            period = request.GET['period']
-            return redirect('generate-payroll', period=period)
+        if request.GET.get('period'):
+            return redirect('generate-payroll', period=request.GET['period'])
         return render(request, self.template_name, context=context)
 
 
@@ -1378,15 +1377,21 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return render(request, self.template_name, context)
 
     def post(self, request, **kwargs):
-        """Get context, get period"""
         context = self.get_context_data(**kwargs)
-        
-        """Save to database or throw error if data is unclean"""
-        """record context is group"""
+        period  = context['period']
+
+        # Guard: if this period is already fully saved, redirect immediately
+        if Payroll.objects.filter(period=period).exists():
+            return redirect(reverse('salary') + f'?exists={period}')
+
         for row in context['records']:
             staff = Employee.active.get(pk=row['code'])
-            """get the queryset"""
-            data = Payroll(period=context['period'],
+
+            # Skip if this staff-period record already exists (double-submit guard)
+            if Payroll.objects.filter(period=period, staff=staff).exists():
+                continue
+
+            data = Payroll(period=period,
                            date_paid=datetime.date.today(),
                            staff=staff,
                            salary=round(row['salary'], 2),
@@ -1398,30 +1403,40 @@ class GeneratePayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                            )
             try:
                 data.full_clean()
-                data.save()  # Save Save Save
+                data.save()
             except ValidationError as err:
-                """send mail to admin"""
-                return HttpResponse(f"""
-                Generated data is not clean. 
-                Check the validity of your 
-                data and try again or contact your admin. {err}.
-                """)
+                return HttpResponse(
+                    f'Generated data is not clean. Check your data and try again, '
+                    f'or contact your admin. {err}.'
+                )
+            except Exception:
+                # Unique constraint violation — record already exists, skip silently
+                continue
             
         # end of loop #
 
-        """Send mail to managers"""
-        context.update({'user': request.user})
-        mail_message = loader.render_to_string('staff/payroll/payroll_mail.html', context)
-
-        send_mail(
-            f"Payroll Generated for {context['month']}, {context['year']}",
-            message="",
-            fail_silently=False,
-            from_email='',
-            recipient_list=['uzo.nwokoro@ozonefl.com'],
-            html_message=mail_message
+        # Send notification email — wrapped entirely so ANY failure
+        # (template error, SMTP error, config error) never blocks the redirect
+        try:
+            context.update({'user': request.user})
+            mail_message = loader.render_to_string(
+                'staff/payroll/payroll_mail.html', context
             )
-        return redirect(reverse('payroll-view', kwargs={'period': context['period']}))
+            send_mail(
+                f"Payroll Generated for {context['month']}, {context['year']}",
+                message="",
+                fail_silently=True,
+                from_email='',
+                recipient_list=['uzo.nwokoro@ozonefl.com'],
+                html_message=mail_message
+            )
+        except Exception:
+            pass  # Email failure must never block the redirect
+
+        period = context['period']
+        return redirect(
+            reverse('salary') + f'?saved={period}'
+        )
 
 
 class ModifyGeneratedPayroll(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
