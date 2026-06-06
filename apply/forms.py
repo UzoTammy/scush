@@ -1,6 +1,6 @@
 from django import forms
 import datetime
-from apply.models import Applicant
+from apply.models import Applicant, Interview, GuarantorDocument
 
 
 class DateInput(forms.DateInput):
@@ -8,6 +8,13 @@ class DateInput(forms.DateInput):
 
 class ApplicantForm(forms.ModelForm):
 
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control mb-2',
+            'placeholder': 'e.g. name@gmail.com',
+        })
+    )
 
     class Meta:
         model = Applicant
@@ -59,11 +66,6 @@ class ApplicantForm(forms.ModelForm):
                                              'placeholder': 'e.g. Accounting or empty if no course',
                                              'type': 'search',
                                              }),
-            'email': forms.TextInput(attrs={'class': 'form-control mb-2',
-                                            'placeholder': 'e.g. name@gmail.com',
-                                            'required': False,
-                                            'error_messages': {'required': 'Enter Valid email'}
-                                            }),
             'mobile': forms.TextInput(attrs={'class': 'form-control mb-2',
                                               'type': 'tel',  
                                               'pattern': "[0-9]{3}-[0-9]{4}-[0-9]{4}",
@@ -73,6 +75,54 @@ class ApplicantForm(forms.ModelForm):
                                              'rows': 4}),
             # 'status': forms.Select(attrs={'class': 'form-control'})
         }
+
+
+class InterviewForm(forms.ModelForm):
+    date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
+
+    class Meta:
+        model = Interview
+        fields = ['interviewer', 'result', 'date', 'notes']
+        labels = {
+            'interviewer': 'Interviewer (Staff Member)',
+            'result':      'Interview Result',
+            'date':        'Interview Date',
+            'notes':       'Notes / Remarks',
+        }
+        widgets = {
+            'result': forms.RadioSelect(),
+            'notes':  forms.Textarea(attrs={'class': 'form-control', 'rows': 3,
+                                            'placeholder': 'Optional remarks'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from staff.models import Employee
+        self.fields['interviewer'].queryset = Employee.objects.filter(status=True).order_by(
+            'staff__last_name'
+        )
+        self.fields['interviewer'].widget.attrs.update({'class': 'form-control'})
+
+
+class GuarantorDocumentForm(forms.ModelForm):
+    class Meta:
+        model = GuarantorDocument
+        fields = ['document']
+        labels = {'document': 'Upload Completed & Signed Guarantor Form (with ID attached)'}
+        widgets = {'document': forms.FileInput(attrs={
+            'class': 'form-control-file',
+            'accept': '.pdf,.jpg,.jpeg,.png',
+        })}
+
+
+class InviteRequestForm(forms.Form):
+    email = forms.EmailField(
+        label='Your Email Address',
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control mb-2',
+            'placeholder': 'e.g. name@gmail.com',
+        })
+    )
 
 
 class MyForm(forms.Form):

@@ -1,0 +1,125 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Applications{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-users mr-2"></i>Job Applications</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'app-init' %}">
+          <i class="fa fa-plus"></i> New Application
+        </a>
+        <a class="staff-nav-link" href="{% url 'job-manage' %}">
+          <i class="fa fa-briefcase"></i> Job Postings
+        </a>
+        <a class="staff-nav-link" href="{% url 'home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Summary tiles ─────────────────────────────── -->
+  <div class="row mb-4">
+    <div class="col-6 col-sm-4 col-lg-2 mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label">Total</div>
+        <div class="ds-stat__value">{{ total }}</div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-4 col-lg-2 mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label">Pending Link</div>
+        <div class="ds-stat__value">{{ pending }}</div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-4 col-lg-2 mb-3">
+      <div class="ds-stat ds-stat--info">
+        <div class="ds-stat__label">Submitted</div>
+        <div class="ds-stat__value">{{ submitted }}</div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-4 col-lg-2 mb-3">
+      <div class="ds-stat ds-stat--warning">
+        <div class="ds-stat__label">Interview</div>
+        <div class="ds-stat__value">{{ interview }}</div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-4 col-lg-2 mb-3">
+      <div class="ds-stat ds-stat--success">
+        <div class="ds-stat__label">Employed</div>
+        <div class="ds-stat__value">{{ employed }}</div>
+      </div>
+    </div>
+    <div class="col-6 col-sm-4 col-lg-2 mb-3">
+      <div class="ds-stat ds-stat--danger">
+        <div class="ds-stat__label">Rejected</div>
+        <div class="ds-stat__value">{{ rejected }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Applications table ─────────────────────────── -->
+  <div class="ds-card">
+    <div class="ds-card__body pb-0 pt-2 px-3">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Applicant</th>
+              <th>Position</th>
+              <th>Email</th>
+              <th>Applied</th>
+              <th class="text-center">Status</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for app in applications %}
+            <tr>
+              <td class="text-muted small">{{ app.pk }}</td>
+              <td>{{ app.applicant_name }}</td>
+              <td>{{ app.job.title }}</td>
+              <td class="small">{{ app.applicant_email }}</td>
+              <td class="small text-muted">{{ app.created_at|date:"d M Y" }}</td>
+              <td class="text-center">
+                {% if app.status == 'pending' %}
+                  <span class="badge badge-secondary">Pending</span>
+                {% elif app.status == 'submitted' %}
+                  <span class="badge badge-info">Submitted</span>
+                {% elif app.status == 'interview' %}
+                  <span class="badge badge-warning">Interview</span>
+                {% elif app.status == 'accepted' %}
+                  <span class="badge badge-primary">Accepted</span>
+                {% elif app.status == 'employed' %}
+                  <span class="badge badge-success">Employed</span>
+                {% elif app.status == 'rejected' %}
+                  <span class="badge badge-danger">Rejected</span>
+                {% endif %}
+              </td>
+              <td class="text-center">
+                <a href="{% url 'app-detail' app.pk %}" class="btn btn-secondary btn-sm">
+                  <i class="fa fa-eye"></i>
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" class="text-center text-muted py-4">
+                No applications yet. <a href="{% url 'app-init' %}">Create one</a>.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

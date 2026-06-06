@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}New Application{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-user-plus mr-2"></i>Register New Application</span>
+      <a class="staff-nav-link" href="{% url 'app-list' %}">
+        <i class="fa fa-times-circle"></i> Cancel
+      </a>
+    </div>
+  </div>
+
+  <div class="ds-card ds-card--narrow mx-auto">
+    <div class="ds-card__body">
+      <p class="text-muted small mb-4">
+        Enter the applicant's name and email address as received from their initial enquiry.
+        A unique application link will be generated — copy it from the next page and send it to the applicant.
+      </p>
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="d-flex justify-content-between mt-4">
+          <a href="{% url 'app-list' %}" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-link mr-1"></i> Generate Application Link
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

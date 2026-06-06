@@ -66,6 +66,40 @@
     </div>
   </div>
 
+  <!-- ── Interview stage ──────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-calendar-check-o mr-2"></i>Interview Stage</span>
+      {% if interview %}
+      <span class="badge badge-info">{{ interview|length }}</span>
+      {% endif %}
+    </div>
+    <div class="ds-card__body">
+      {% if interview %}
+      <p class="text-muted small mb-3">These applicants have been granted an interview. Employ or reject after the interview.</p>
+      <div class="row">
+        {% for applicant in interview %}
+        <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+          <a href="{% url 'apply-detail' applicant.pk %}" class="text-decoration-none">
+            <div class="ds-stat ds-stat--info stat-clickable">
+              <div class="ds-stat__label">
+                <i class="fa fa-user mr-1"></i> #{{ forloop.counter }}
+              </div>
+              <div class="ds-stat__value applicant-name">{{ applicant }}</div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-muted mb-0">
+        <i class="fa fa-info-circle text-muted mr-1"></i>
+        No applicants at interview stage.
+      </p>
+      {% endif %}
+    </div>
+  </div>
+
   <!-- ── Resigned / returning ──────────────────────── -->
   <div class="ds-card mb-4">
     <div class="ds-card__header d-flex justify-content-between align-items-center">
@@ -77,13 +111,17 @@
     <div class="ds-card__body">
       {% if resigned %}
       <div class="table-responsive">
-        <table class="table table-striped table-hover mb-0">
+        <table class="table table-striped table-hover mb-0"
+               data-toggle="table"
+               data-search="true"
+               data-pagination="true"
+               data-page-size="10">
           <thead class="thead-warning">
             <tr>
               <th>ID</th>
               <th>Name</th>
-              <th>Reason for Resignation</th>
-              <th>Action</th>
+              <th>Reason for Termination</th>
+              <th class="text-center">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -92,9 +130,9 @@
               <td class="text-muted small">{{ person.id }}</td>
               <td>{{ person }}</td>
               <td class="text-muted small">
-                {{ person.resignation_reason|default:"—" }}
+                {{ person.employee_set.first.terminate_set.last.remark|default:"—" }}
               </td>
-              <td class="text-right">
+              <td class="text-center">
                 <a href="{% url 'apply-detail' person.pk %}" class="btn btn-primary btn-sm">
                   <i class="fa fa-user-plus mr-1"></i> Re-employ
                 </a>

@@ -1,0 +1,23 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Link Expired{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:520px;">
+  <div class="ds-card mt-4 text-center py-5">
+    <div class="ds-card__body">
+      <div style="font-size:3.5rem; color:#dc3545;" class="mb-3">
+        <i class="fa fa-clock-o"></i>
+      </div>
+      <h5 class="mb-2">This Link Has Expired</h5>
+      <p class="text-muted">
+        Your application link is no longer valid. Links expire after 3 days or
+        after the form has already been submitted.
+      </p>
+      <a href="{% url 'apply-invite' %}" class="btn btn-primary mt-2">
+        <i class="fa fa-refresh mr-1"></i> Request a New Link
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

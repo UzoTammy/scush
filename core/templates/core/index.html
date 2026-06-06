@@ -153,6 +153,32 @@
       }
       .lp-pillar:last-child { border-bottom: none; }
     }
+
+    /* ── How to Apply callout ── */
+    .lp-apply-callout {
+      background: #f8f9fa;
+      border-top: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+      padding: 1.25rem 2rem;
+      text-align: center;
+    }
+    .lp-apply-callout__label {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--color-muted);
+      margin-bottom: 0.4rem;
+    }
+    .lp-apply-callout__text {
+      font-size: 0.9rem;
+      color: #333;
+      margin: 0;
+    }
+    .lp-apply-callout__link {
+      color: var(--color-primary);
+      font-weight: 600;
+    }
   </style>
   <title>SCusH — Ozone F &amp; L</title>
   <link rel="icon" href="{% static 'customer/logo.ico' %}">
@@ -220,19 +246,26 @@
       <img class="lp-partner-img" src="{% static 'customer/photo/redbull.jpeg' %}" alt="Red Bull">
     </div>
 
+    <!-- ── How to Apply callout ── -->
+    <div class="lp-apply-callout">
+      <p class="lp-apply-callout__label">
+        <i class="fa fa-envelope mr-1"></i> How to Apply
+      </p>
+      <p class="lp-apply-callout__text">
+        To apply for a position, send your CV and a brief introduction from your personal email address to
+        <a href="mailto:contact@ozonefl.com" class="lp-apply-callout__link">contact@ozonefl.com</a>.
+        We will reply with a personal application link.
+      </p>
+    </div>
+
     <!-- ── Footer nav ── -->
     <nav class="lp-nav" aria-label="Site links">
-      <a class="btn btn-sm btn-secondary" href="{% url 'job-list' %}">
-        <i class="fa fa-briefcase mr-1"></i> Jobs
-      </a>
-      <a class="btn btn-sm btn-secondary" href="{% url 'apply-create' %}">
-        <i class="fa fa-pencil mr-1"></i> Apply
-      </a>
-      <a class="btn btn-sm btn-secondary" href="{% url 'policies' %}">
-        <i class="fa fa-book mr-1"></i> Policies
-      </a>
       <a class="btn btn-sm btn-secondary" href="{% url 'about' %}">
         <i class="fa fa-info-circle mr-1"></i> About
+      </a>
+      {% if user.is_authenticated %}
+      <a class="btn btn-sm btn-secondary" href="{% url 'policies' %}">
+        <i class="fa fa-book mr-1"></i> Policies
       </a>
       <a class="btn btn-sm btn-secondary" href="{% url 'management' %}">
         <i class="fa fa-id-card mr-1"></i> Management
@@ -240,6 +273,7 @@
       <a class="btn btn-sm btn-secondary" href="{% url 'survey-update' %}">
         <i class="fa fa-bar-chart mr-1"></i> Survey
       </a>
+      {% endif %}
       {% if user.is_authenticated %}
       <a class="btn btn-sm btn-secondary" href="{% url 'do-logout' %}">
         <i class="fa fa-sign-out mr-1"></i> Log Out

@@ -1,0 +1,31 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Link Expired{% endblock %}
+
+{% block head %}
+<style>
+  .expired-icon { font-size: 4rem; color: #dc3545; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:600px;">
+  <div class="ds-card text-center py-5">
+    <div class="ds-card__body">
+      <div class="expired-icon mb-3"><i class="fa fa-clock-o"></i></div>
+      <h4 class="mb-2">This Link Has Expired</h4>
+      {% if kind == 'application' %}
+        <p class="text-muted">
+          Your application link is no longer valid. Please contact the HR team
+          to request a new link.
+        </p>
+      {% else %}
+        <p class="text-muted">
+          This Letter of Indemnity link is no longer valid. Please ask the
+          applicant to contact the HR team to request a new link.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

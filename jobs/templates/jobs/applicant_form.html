@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}Application Form — {{ app.job.title }}{% endblock %}
+
+{% block head %}
+<style>
+  .job-banner {
+    background: var(--color-primary);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .job-banner h4, .job-banner p { color: #fff; margin: 0; }
+  .job-banner p { opacity: 0.85; font-size: 0.9rem; margin-top: 0.25rem; }
+  .section-divider {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.4rem;
+    margin: 1.5rem 0 1rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:720px;">
+
+  <div class="job-banner">
+    <h4><i class="fa fa-briefcase mr-2"></i>{{ app.job.title }}</h4>
+    <p>{{ app.job.department }} &bull; {{ app.job.location }}</p>
+  </div>
+
+  <div class="ds-card">
+    <div class="ds-card__header">
+      <span>Application Form</span>
+    </div>
+    <div class="ds-card__body">
+      <p class="text-muted small mb-4">
+        Please complete all fields carefully and accurately. Your information will be
+        used solely for the purpose of evaluating your application.
+      </p>
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <p class="section-divider">Personal Information</p>
+        {% crispy form %}
+
+        <div class="mt-4 d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fa fa-paper-plane mr-1"></i> Submit Application
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <p class="text-center text-muted small mt-3">
+    This link is personal to you. Please do not share it with anyone else.
+  </p>
+
+</div>
+{% endblock %}

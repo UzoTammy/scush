@@ -16,7 +16,8 @@ from django.views.generic import (View,
                                   UpdateView,
                                   DeleteView,
                                   )
-from .forms import ApplicantForm, MyForm
+from .forms import ApplicantForm, GuarantorDocumentForm, InterviewForm, InviteRequestForm, MyForm
+from .models import ApplicationInvite, GuarantorDocument, Interview
 from django.urls import reverse_lazy, reverse
 from django.utils.safestring import mark_safe
 from djmoney.models.fields import Money
@@ -29,6 +30,7 @@ class ApplyIndexView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context['applied'] = Applicant.objects.filter(state='Applied').order_by('-apply_date')
+        context['interview'] = Applicant.objects.filter(state='Interview').order_by('-apply_date')
         context['resigned'] = Applicant.objects.filter(state='Resigned').order_by('-apply_date')
         return context
 
@@ -91,67 +93,6 @@ class ApplyHomeView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class ApplyListViewPending(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = Applicant
-    template_name = 'apply/applicant_list_pending.html'
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Applicants-pending'
-        context['applicants_pending'] = self.get_queryset().filter(status=None).order_by('last_name')
-        context['number_pending'] = context['applicants_pending']
-
-        context['applicants'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1).count()
-        context['employed'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1, status=True).count()
-        context['rejected'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1, status=False).count()
-        context['pending'] = Applicant.objects.filter(apply_date__year=datetime.datetime.now().year - 1, status=None).count()
-        context['year'] = str(datetime.datetime.today().year - 1)
-        return context
-
-
-class ApplyListViewEmployed(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = Applicant
-    template_name = 'apply/applicant_list_employed.html'
-    context_object_name = 'objects'
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    # def get_queryset(self):
-    #     return super().get_queryset()
-    
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Applicants-employed'
-        context['applicants_employed'] = self.get_queryset().filter(status=True).order_by('last_name')
-        context['number_pending'] = context['applicants_employed']
-        return context
-
-
-class ApplyListViewRejected(LoginRequiredMixin, UserPassesTestMixin, ListView):
-    model = Applicant
-    template_name = 'apply/applicant_list_rejected.html'
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['rejected_applicants'] = self.get_queryset().filter(status=False).order_by('last_name')
-        return context
-
 
 class ApplyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Applicant
@@ -159,11 +100,22 @@ class ApplyListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = 'all_applicants'
     ordering = 'last_name'
 
+    VALID_STATES = ['Applied', 'Interview', 'Guarantor', 'Employed', 'Rejected', 'Resigned', 'Sacked', 'Re-Engaged']
+
     def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
+        u = self.request.user
+        return u.is_superuser or u.groups.filter(name='HRD').exists()
+
+    def get_queryset(self):
+        state = self.request.GET.get('state', '').strip()
+        if state in self.VALID_STATES:
+            return Applicant.objects.filter(state=state).order_by('last_name')
+        return Applicant.objects.all().order_by('last_name')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_state'] = self.request.GET.get('state', '').strip()
+        return context
 
 
 class ApplyDetailView(LoginRequiredMixin, DetailView):
@@ -264,6 +216,35 @@ class ApplyCreateView(CreateView):
         return super().form_valid(form)
 
 
+class GrantInterview(View):
+
+    def get(self, request, *args, **kwargs):
+        applicant = get_object_or_404(Applicant, id=kwargs['pk'], state='Applied')
+        form = InterviewForm(initial={'date': datetime.date.today()})
+        return render(request, 'apply/interview_form.html', {'applicant': applicant, 'form': form})
+
+    def post(self, request, *args, **kwargs):
+        applicant = get_object_or_404(Applicant, id=kwargs['pk'], state='Applied')
+        form = InterviewForm(request.POST)
+        if not form.is_valid():
+            return render(request, 'apply/interview_form.html', {'applicant': applicant, 'form': form})
+
+        interview = form.save(commit=False)
+        interview.applicant = applicant
+
+        if interview.result == Interview.PASS:
+            applicant.state = 'Interview'
+            messages.success(request, f'{applicant} passed the interview.')
+        else:
+            applicant.state = 'Rejected'
+            applicant.status = False
+            messages.warning(request, f'{applicant} did not pass the interview and has been rejected.')
+
+        applicant.save()
+        interview.save()
+        return redirect(reverse('apply-detail', kwargs={'pk': applicant.id}))
+
+
 class RejectApplicant(View):
 
     def get(self, request, *args, **kwargs):
@@ -313,6 +294,130 @@ class WelcomeView(TemplateView):
         }
         return render(request, 'mails/welcome_applicant.html',
                       context)
+
+
+def guarantor_form_pdf(request, pk):
+    """Generate and return the blank guarantor form as a downloadable PDF."""
+    from pdf.utils import render_to_pdf
+    from pdf.views import Ozone
+    applicant = get_object_or_404(Applicant, id=pk)
+    context = {
+        'title': 'Guarantor Form',
+        'subtitle': f'Employment of {applicant}',
+        'applicant': applicant,
+        'logo_image': Ozone.logo(),
+    }
+    pdf = render_to_pdf('pdf/guarantor_form_blank.html', context)
+    if pdf:
+        pdf['Content-Disposition'] = f'attachment; filename="guarantor-form-{applicant.last_name}.pdf"'
+        return pdf
+    return HttpResponse('Error generating PDF', status=500)
+
+
+def upload_guarantor_doc(request, pk):
+    """HR uploads the completed, signed guarantor form."""
+    applicant = get_object_or_404(Applicant, id=pk, state='Interview')
+    if request.method == 'POST':
+        form = GuarantorDocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            doc = form.save(commit=False)
+            doc.applicant = applicant
+            doc.uploaded_by = request.user
+            doc.save()
+            applicant.state = 'Guarantor'
+            applicant.save()
+            messages.success(request, 'Guarantor document uploaded. You may now proceed to employment.')
+        else:
+            messages.error(request, 'Please select a valid file to upload.')
+    return redirect(reverse('apply-detail', kwargs={'pk': pk}))
+
+
+class RequestInviteView(TemplateView):
+    """Public entry point: applicant submits their email and receives a UUID link."""
+    template_name = 'apply/invite_form.html'
+
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response({'form': InviteRequestForm()})
+
+    def post(self, request, *args, **kwargs):
+        form = InviteRequestForm(request.POST)
+        if not form.is_valid():
+            return self.render_to_response({'form': form})
+
+        email = form.cleaned_data['email']
+        invite = ApplicationInvite.objects.create(email=email)
+        application_url = request.build_absolute_uri(
+            reverse('apply-form', kwargs={'token': invite.token})
+        )
+
+        send_email.delay(
+            None,
+            email,
+            'uzo.nwokoro@ozonefl.com',
+            'Your Application Link — Ozone',
+            {'email': email, 'application_url': application_url},
+            'mail/application_invite.html',
+        )
+        return redirect(reverse('apply-invited'))
+
+
+class PublicApplyView(CreateView):
+    """Token-gated application form — only reachable via the emailed UUID link."""
+    form_class = ApplicantForm
+    template_name = 'apply/applicant_form.html'
+
+    def _get_invite(self):
+        return get_object_or_404(ApplicationInvite, token=self.kwargs['token'])
+
+    def get(self, request, *args, **kwargs):
+        invite = self._get_invite()
+        if not invite.is_valid():
+            return render(request, 'apply/invite_expired.html')
+        return super().get(request, *args, **kwargs)
+
+    def get_initial(self):
+        invite = self._get_invite()
+        return {'email': invite.email}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'New'
+        return context
+
+    def form_valid(self, form):
+        invite = self._get_invite()
+        if not invite.is_valid():
+            return render(self.request, 'apply/invite_expired.html')
+
+        # Mark token as consumed before saving the applicant record
+        invite.used = True
+        invite.save(update_fields=['used'])
+
+        hr_email = 'uzo.nwokoro@ozonefl.com'
+        context = {
+            'first_name': form.instance.first_name,
+            'second_name': form.instance.second_name,
+            'last_name': form.instance.last_name,
+            'gender': form.instance.gender,
+            'marital_status': form.instance.marital_status,
+            'qualification': form.instance.qualification,
+            'date_of_birth': form.instance.birth_date,
+            'course': form.instance.course,
+            'mobile': form.instance.mobile,
+            'email': form.instance.email,
+            'address': form.instance.address,
+            'header': 'Your application received successfully',
+        }
+        if form.instance.email:
+            send_email.delay(
+                None,
+                form.instance.email,
+                hr_email,
+                'Application for a job at Ozone',
+                context,
+                'mail/apply_for_job.html',
+            )
+        return super().form_valid(form)
 
 
 def successful(request):

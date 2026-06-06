@@ -1,0 +1,27 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Check Your Inbox{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:520px;">
+  <div class="ds-card mt-4 text-center py-5">
+    <div class="ds-card__body">
+      <div style="font-size:3.5rem; color:#28a745;" class="mb-3">
+        <i class="fa fa-envelope-open"></i>
+      </div>
+      <h5 class="mb-2">Check Your Email</h5>
+      <p class="text-muted">
+        We have sent a personal application link to your email address.
+        Please open it to complete your application form.
+      </p>
+      <p class="text-muted small">
+        The link expires in <strong>3 days</strong>. If you do not see the email,
+        check your spam or junk folder.
+      </p>
+      <a href="{% url 'apply-invite' %}" class="btn btn-outline-secondary btn-sm mt-2">
+        <i class="fa fa-refresh mr-1"></i> Resend / Use a different email
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

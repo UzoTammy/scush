@@ -1,81 +1,117 @@
 {% extends 'core/base.html' %}
 {% load custom_tags %}
 
-{% block page_title %}Applicant List{% endblock %}
+{% block page_title %}All Applicants{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row m-1">
-        <div class="col">
-            <table data-toggle="table"
-            data-search="true"
-            data-show-footer="true"
-            data-show-columns="true"
-            data-pagination="true"
-            class="table caption-top table-sm">
-                <caption>
-                    <div class="row">
-                    <div class="col text-secondary">
-                        <p>List Of All Applicants</p>
-                    </div>
-                    <div class="col text-right">
-                        <a class="btn btn-secondary"
-                        href="{% url 'pdf-apply-list'%}">
-                            PDF Format</a>
-                        <a class="btn btn-secondary"
-                        href="{% url 'apply-employed' %}">
-                            Employed</a>
-                        <a class="btn btn-secondary"
-                        href="{% url 'apply-rejected' %}">
-                            Rejected</a>
-                        <a class="btn btn-secondary"
-                        href="{% url 'apply-pending' %}">
-                            Pending
-                        </a>
-                    </div>
-                </div>
-                </caption>
-                <thead class="bg-dark text-white">
-                    <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Applicant</th>
-                        <th scope="col">Apply Date</th>
-                        <th scope="col">Birth date</th>
-                        <th scope="col">Qualification</th>
-                        <th scope="col">Course</th>
-                        <th scope="col">Mobile</th>
-                        <th scope="col">Age(yrs)</th>
-                        <th scope="col">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for applicant in all_applicants %}
-                    <tr>
-                    <th scope="row">{{ applicant.id|zeropadding:3 }}</th>
-                    <td><a href="{% url 'apply-detail' applicant.pk %}">{{applicant}}</a></td>
-                    <td>{{applicant.apply_date|date:'d-m-Y'}}</td>
-                    <td>{{applicant.birth_date|date:'d-m-Y'}}</td>
-                    <td>{{applicant.qualification}}</td>
-                    <td>{{applicant.course}}</td>
-                    <td>{{applicant.mobile}}</td>
-                    <td>{{applicant.get_age}}</td>
-                    <td>{{applicant.status|yesno:'Employed, Rejected, Pending'}}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot></tfoot>
-            </table>
-        </div>
-    </div>
 
-    <div class="row m-1">
-        <div class="col text-right">
-        <a class="btn btn-secondary"
-           href="{% url 'home' %}">
-            <i class="fa fa-times-circle"></i> Home
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-users mr-2"></i>All Applicants</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link {% if not active_state %}staff-nav-link--active{% endif %}"
+           href="{% url 'apply' %}">
+          <i class="fa fa-list"></i> All
         </a>
+        <a class="staff-nav-link {% if active_state == 'Applied' %}staff-nav-link--active{% endif %}"
+           href="{% url 'apply' %}?state=Applied">
+          <i class="fa fa-clock-o"></i> Applied
+        </a>
+        <a class="staff-nav-link {% if active_state == 'Interview' %}staff-nav-link--active{% endif %}"
+           href="{% url 'apply' %}?state=Interview">
+          <i class="fa fa-calendar-check-o"></i> Interview
+        </a>
+        <a class="staff-nav-link {% if active_state == 'Guarantor' %}staff-nav-link--active{% endif %}"
+           href="{% url 'apply' %}?state=Guarantor">
+          <i class="fa fa-file-text-o"></i> Guarantor
+        </a>
+        <a class="staff-nav-link {% if active_state == 'Employed' %}staff-nav-link--active{% endif %}"
+           href="{% url 'apply' %}?state=Employed">
+          <i class="fa fa-user-plus"></i> Employed
+        </a>
+        <a class="staff-nav-link {% if active_state == 'Rejected' %}staff-nav-link--active{% endif %}"
+           href="{% url 'apply' %}?state=Rejected">
+          <i class="fa fa-times"></i> Rejected
+        </a>
+        <a class="staff-nav-link {% if active_state == 'Resigned' %}staff-nav-link--active{% endif %}"
+           href="{% url 'apply' %}?state=Resigned">
+          <i class="fa fa-sign-out"></i> Resigned
+        </a>
+        <a class="staff-nav-link {% if active_state == 'Sacked' %}staff-nav-link--active{% endif %}"
+           href="{% url 'apply' %}?state=Sacked">
+          <i class="fa fa-ban"></i> Sacked
+        </a>
+        <a class="staff-nav-link" href="{% url 'home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
-    </div>
-</div>
+  </div>
 
+  <!-- ── Table ──────────────────────────────────────── -->
+  <div class="ds-card">
+    <div class="ds-card__body pb-0 pt-2 px-3">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0"
+               data-toggle="table"
+               data-search="true"
+               data-pagination="true"
+               data-page-size="20"
+               data-show-columns="true">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Apply Date</th>
+              <th>Qualification</th>
+              <th>Mobile</th>
+              <th>Age</th>
+              <th class="text-center">State</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for applicant in all_applicants %}
+            <tr>
+              <td class="text-muted small">{{ applicant.id|zeropadding:3 }}</td>
+              <td>
+                <a href="{% url 'apply-detail' applicant.pk %}">{{ applicant }}</a>
+              </td>
+              <td class="small">{{ applicant.apply_date|date:'d M Y' }}</td>
+              <td class="small">{{ applicant.qualification }}</td>
+              <td class="small">{{ applicant.mobile }}</td>
+              <td class="small">{{ applicant.get_age }}</td>
+              <td class="text-center">
+                {% if applicant.state == 'Employed' %}
+                  <span class="badge badge-success">Employed</span>
+                {% elif applicant.state == 'Rejected' %}
+                  <span class="badge badge-danger">Rejected</span>
+                {% elif applicant.state == 'Interview' %}
+                  <span class="badge badge-warning">Interview</span>
+                {% elif applicant.state == 'Guarantor' %}
+                  <span class="badge badge-info">Guarantor</span>
+                {% elif applicant.state == 'Resigned' %}
+                  <span class="badge badge-secondary">Resigned</span>
+                {% elif applicant.state == 'Sacked' %}
+                  <span class="badge badge-dark">Sacked</span>
+                {% elif applicant.state == 'Re-Engaged' %}
+                  <span class="badge badge-primary">Re-Engaged</span>
+                {% else %}
+                  <span class="badge badge-secondary">{{ applicant.state }}</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" class="text-center text-muted py-4">No applicants found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
 {% endblock %}

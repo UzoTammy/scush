@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guarantor Form — {{ applicant }}</title>
+  <style>
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      font-size: 11pt;
+      color: #000;
+      background: #fff;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── Letterhead ── */
+    .letterhead {
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+    }
+    .letterhead table { width: 100%; border-collapse: collapse; }
+    .letterhead td    { border: none; padding: 0; vertical-align: middle; }
+    .logo-cell        { width: 72px; }
+    .letterhead-logo  { width: 60px; height: 60px; border-radius: 50%; display: block; }
+    .name-cell        { padding-left: 14px; }
+    .company-name     { font-size: 14pt; font-weight: 700; line-height: 1.2; }
+    .company-tagline  { font-size: 8pt; color: #444; margin-top: 2px; }
+    .addr-cell        { width: 190px; text-align: right; font-size: 8pt; color: #444; line-height: 1.5; }
+
+    /* ── Document title ── */
+    .doc-title {
+      text-align: center;
+      border-top: 1px solid #000;
+      border-bottom: 1px solid #000;
+      padding: 6px 0;
+      margin-bottom: 14px;
+    }
+    .doc-title h1 { font-size: 13pt; font-weight: 700; margin: 0; }
+    .doc-title p  { font-size: 9pt;  color: #333; margin: 2px 0 0; }
+
+    /* ── Section headings ── */
+    h2 {
+      font-size: 10.5pt;
+      font-weight: 700;
+      border-bottom: 1px solid #000;
+      padding-bottom: 3px;
+      margin: 18px 0 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    p  { margin: 0 0 8px; font-size: 10.5pt; }
+    ol { margin: 6px 0 10px; padding-left: 20px; }
+    li { margin-bottom: 5px; font-size: 10.5pt; }
+
+    /* ── Tables ── */
+    table.form-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+      font-size: 10.5pt;
+    }
+    table.form-table th {
+      background: #fff;
+      font-weight: 700;
+      border: 1px solid #000;
+      padding: 5px 8px;
+      text-align: left;
+    }
+    table.form-table td {
+      border: 1px solid #000;
+      padding: 5px 8px;
+    }
+    table.form-table td.label-col {
+      width: 36%;
+      font-weight: 600;
+      background: #f5f5f5;
+    }
+    table.form-table td.fill-col {
+      width: 64%;
+    }
+    /* Taller rows for handwriting */
+    table.form-table tr.tall td { height: 30px; }
+    table.form-table tr.xtall td { height: 48px; }
+
+    /* ── Blank fill lines (in paragraph text) ── */
+    .fill-block {
+      margin: 6px 0 4px;
+    }
+    .fill-label {
+      font-size: 8.5pt;
+      color: #555;
+      font-style: italic;
+      display: block;
+      margin-top: 1px;
+    }
+    .fill-line {
+      display: block;
+      border-bottom: 1px solid #000;
+      width: 100%;
+      height: 22px;
+    }
+
+    /* ── Checkboxes ── */
+    .cb-row { margin: 4px 0; font-size: 10.5pt; }
+    .cb-box { border: 1px solid #000; display: inline-block;
+               width: 11px; height: 11px; margin-right: 5px;
+               vertical-align: middle; }
+
+    /* ── Signature section ── */
+    table.sig-table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+    table.sig-table td { border: none; padding: 0; width: 48%; vertical-align: bottom; }
+    table.sig-table td.gap { width: 4%; }
+    .sig-block { padding-top: 28px; border-top: 1px solid #000; font-size: 9pt; color: #333; }
+
+    /* ── Footer ── */
+    .return-note {
+      border-top: 1px solid #000;
+      margin-top: 20px;
+      padding-top: 8px;
+      font-size: 9pt;
+      color: #333;
+    }
+
+    .fill-line-gap   { margin-top: 2px; }
+    .p-mt            { margin-top: 10px; }
+    .id-table        { margin-top: 8px; }
+    .sig-row-second td { padding-top: 28px; }
+
+    .note-box {
+      border: 1px solid #000;
+      padding: 6px 10px;
+      font-size: 9pt;
+      margin: 10px 0;
+      background: #fff;
+    }
+    .note-box strong { font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Letterhead ── -->
+  <div class="letterhead">
+    <table>
+      <tr>
+        <td class="logo-cell">
+          <img src="data:image/png;base64,{{ logo_image }}" class="letterhead-logo" alt="Ozone Logo">
+        </td>
+        <td class="name-cell">
+          <div class="company-name">Ozone F &amp; L Trading Co. Ltd.</div>
+          <div class="company-tagline">A Distribution Company &mdash; Lagos, Nigeria</div>
+        </td>
+        <td class="addr-cell">
+          GOB 1&ndash;4 Zamfara Plaza, Trade Fair<br>
+          Lagos, Nigeria<br>
+          contact@ozonefl.com
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ── Document title ── -->
+  <div class="doc-title">
+    <h1>Guarantor Form &amp; Letter of Indemnity</h1>
+    <p>Employment of <strong>{{ applicant }}</strong> &mdash; To be completed by Guarantor</p>
+  </div>
+
+  <p>
+    This form must be completed in full, signed in the presence of a witness, and returned
+    with a clear photocopy of a valid government-issued means of identification. Employment
+    cannot be finalised until this form is received by the Human Resources department.
+  </p>
+
+  <!-- ── Section A: Applicant (pre-filled) ── -->
+  <h2>Section A &mdash; Applicant Details</h2>
+  <table class="form-table">
+    <tr>
+      <td class="label-col">Full Name</td>
+      <td class="fill-col"><strong>{{ applicant }}</strong></td>
+    </tr>
+    <tr>
+      <td class="label-col">Mobile</td>
+      <td class="fill-col">{{ applicant.mobile }}</td>
+    </tr>
+    <tr>
+      <td class="label-col">Email</td>
+      <td class="fill-col">{{ applicant.email|default:"—" }}</td>
+    </tr>
+    <tr>
+      <td class="label-col">Address</td>
+      <td class="fill-col">{{ applicant.address }}</td>
+    </tr>
+  </table>
+
+  <!-- ── Section B: Letter of Indemnity ── -->
+  <h2>Section B &mdash; Letter of Indemnity</h2>
+
+  <p>I, the undersigned guarantor, whose details are provided below:</p>
+
+  <div class="fill-block">
+    <span class="fill-line">&nbsp;</span>
+    <span class="fill-label">Guarantor&rsquo;s Full Name (print clearly)</span>
+  </div>
+  <div class="fill-block">
+    <span class="fill-line">&nbsp;</span>
+    <span class="fill-line fill-line-gap">&nbsp;</span>
+    <span class="fill-label">Guarantor&rsquo;s Residential Address</span>
+  </div>
+
+  <p class="p-mt">
+    hereby undertake and agree to indemnify and keep indemnified
+    <strong>Ozone F &amp; L Trading Co. Ltd.</strong> (hereinafter referred to as
+    &ldquo;the Company&rdquo;) against all losses, damages, liabilities, costs, claims, and
+    expenses of whatsoever nature that may be suffered, sustained, or incurred by the Company
+    as a direct or indirect result of any act of dishonesty, fraud, misconduct, negligence, or
+    breach of duty by <strong>{{ applicant }}</strong> during the course of their employment
+    with the Company.
+  </p>
+  <p>
+    I confirm that I personally know <strong>{{ applicant }}</strong> and can vouch for their
+    character, integrity, and fitness for the said position. I acknowledge and agree that:
+  </p>
+  <ol>
+    <li>
+      This Letter of Indemnity shall remain in force throughout the duration of
+      <strong>{{ applicant }}</strong>&rsquo;s service with the Company and for a period of
+      <strong>two (2) years</strong> after the cessation of such service.
+    </li>
+    <li>I shall be jointly and severally liable for any claim made under this indemnity.</li>
+    <li>
+      I have provided correct personal information and undertake to notify the Company of any
+      change in my contact details.
+    </li>
+  </ol>
+
+  <!-- ── Section C: Guarantor details ── -->
+  <h2>Section C &mdash; Guarantor&rsquo;s Personal Details</h2>
+  <table class="form-table">
+    <tr class="tall"><td class="label-col">Full Name</td><td class="fill-col"></td></tr>
+    <tr class="xtall"><td class="label-col">Residential Address</td><td class="fill-col"></td></tr>
+    <tr class="tall"><td class="label-col">Occupation / Profession</td><td class="fill-col"></td></tr>
+    <tr class="tall"><td class="label-col">Employer / Place of Business</td><td class="fill-col"></td></tr>
+    <tr class="tall"><td class="label-col">Phone Number</td><td class="fill-col"></td></tr>
+    <tr class="tall"><td class="label-col">Email Address</td><td class="fill-col"></td></tr>
+    <tr class="tall"><td class="label-col">Relationship to Applicant</td><td class="fill-col"></td></tr>
+  </table>
+
+  <!-- ── Section D: ID ── -->
+  <h2>Section D &mdash; Means of Identification</h2>
+
+  <p>Tick the type of ID enclosed and provide the details below:</p>
+
+  <div class="cb-row"><span class="cb-box"></span> National ID Card</div>
+  <div class="cb-row"><span class="cb-box"></span> International Passport</div>
+  <div class="cb-row"><span class="cb-box"></span> Driver&rsquo;s Licence</div>
+  <div class="cb-row"><span class="cb-box"></span> Permanent Voter&rsquo;s Card</div>
+
+  <table class="form-table id-table">
+    <tr class="tall"><td class="label-col">ID Number</td><td class="fill-col"></td></tr>
+    <tr class="tall"><td class="label-col">Expiry Date (if applicable)</td><td class="fill-col"></td></tr>
+  </table>
+
+  <div class="note-box">
+    <strong>Important:</strong> A clear, legible photocopy of the ID must be physically attached
+    to this form. Forms submitted without a copy of a valid ID will not be accepted.
+  </div>
+
+  <!-- ── Section E: Signatures ── -->
+  <h2>Section E &mdash; Declaration &amp; Signatures</h2>
+  <p>
+    By signing below, I confirm that all information provided is true and accurate and that
+    I freely accept the terms of this Letter of Indemnity.
+  </p>
+
+  <table class="sig-table">
+    <tr>
+      <td>
+        <div class="sig-block">Guarantor&rsquo;s Signature &amp; Date</div>
+      </td>
+      <td class="gap"></td>
+      <td>
+        <div class="sig-block">Witness Signature &amp; Date</div>
+      </td>
+    </tr>
+    <tr class="sig-row-second">
+      <td>
+        <div class="sig-block">Witness Full Name</div>
+      </td>
+      <td class="gap"></td>
+      <td>
+        <div class="sig-block">Witness Address</div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- ── Return instructions ── -->
+  <div class="return-note">
+    Return this completed form together with a photocopy of your ID to:<br>
+    <strong>Human Resources Department &mdash; Ozone F &amp; L Trading Co. Ltd.</strong><br>
+    GOB 1&ndash;4 Zamfara Plaza, Trade Fair, Lagos &nbsp;&nbsp;|&nbsp;&nbsp; contact@ozonefl.com
+  </div>
+
+</body>
+</html>

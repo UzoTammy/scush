@@ -15,13 +15,13 @@
       <a class="staff-nav-link flex-grow-1 justify-content-center" href="{% url 'apply' %}">
         <i class="fa fa-list"></i> All Applicants
       </a>
-      <a class="staff-nav-link flex-grow-1 justify-content-center" href="{% url 'apply-pending' %}">
+      <a class="staff-nav-link flex-grow-1 justify-content-center" href="{% url 'apply' %}?state=Applied">
         <i class="fa fa-clock-o"></i> Pending
       </a>
-      <a class="staff-nav-link flex-grow-1 justify-content-center" href="{% url 'apply-employed' %}">
+      <a class="staff-nav-link flex-grow-1 justify-content-center" href="{% url 'apply' %}?state=Employed">
         <i class="fa fa-check-circle"></i> Employed
       </a>
-      <a class="staff-nav-link flex-grow-1 justify-content-center" href="{% url 'apply-rejected' %}">
+      <a class="staff-nav-link flex-grow-1 justify-content-center" href="{% url 'apply' %}?state=Rejected">
         <i class="fa fa-times-circle"></i> Rejected
       </a>
       <a class="staff-nav-link flex-grow-1 justify-content-center" href="{% url 'apply-create' %}">

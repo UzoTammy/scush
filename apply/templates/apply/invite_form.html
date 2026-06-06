@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block page_title %}Apply for a Job{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:520px;">
+
+  <div class="ds-card mt-4">
+    <div class="ds-card__header d-flex align-items-center">
+      <img src="{% static 'customer/logo.png' %}" width="40" height="31" alt="Ozone Logo" class="mr-2">
+      <span><strong>Ozone F &amp; L Trading Co. Ltd.</strong></span>
+    </div>
+    <div class="ds-card__body">
+
+      <h5 class="mb-1">Start Your Application</h5>
+      <p class="text-muted small mb-4">
+        Enter your email address below. We will send you a personal link to access
+        the application form.
+      </p>
+
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="font-weight-600">Email Address <span class="text-danger">*</span></label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <small class="text-danger">{{ form.email.errors|join:", " }}</small>
+          {% endif %}
+        </div>
+        <button type="submit" class="btn btn-primary btn-block mt-3">
+          <i class="fa fa-paper-plane mr-1"></i> Send My Application Link
+        </button>
+      </form>
+
+    </div>
+  </div>
+
+  <p class="text-center text-muted small mt-3">
+    The link will expire after <strong>3 days</strong>.
+    Ensure you use a valid email address you have access to.
+  </p>
+
+</div>
+{% endblock %}

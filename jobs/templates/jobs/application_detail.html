@@ -1,0 +1,406 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}Application — {{ app.applicant_name }}{% endblock %}
+
+{% block head %}
+<style>
+  .info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--color-border); }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: var(--color-muted); font-size: 0.8125rem; }
+  .link-box { background: #f8f9fa; border: 1px dashed #ced4da; border-radius: var(--radius); padding: 0.75rem 1rem; word-break: break-all; font-family: monospace; font-size: 0.8125rem; }
+  .step-badge { display: inline-block; width: 1.5rem; height: 1.5rem; line-height: 1.5rem; text-align: center; border-radius: 50%; font-size: 0.75rem; font-weight: 700; margin-right: 0.4rem; }
+  .step-done  { background: #28a745; color: #fff; }
+  .step-active { background: var(--color-primary); color: #fff; }
+  .step-wait  { background: #dee2e6; color: #6c757d; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-user mr-2"></i>{{ app.applicant_name }} — {{ app.job.title }}</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'app-list' %}">
+          <i class="fa fa-arrow-left"></i> All Applications
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="alert alert-{{ msg.tags }} alert-dismissible fade show mb-3" role="alert">
+        {{ msg }}
+        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="row">
+
+    <!-- ── Left: Application info ───────────────────── -->
+    <div class="col-lg-8">
+
+      <!-- Progress pipeline -->
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span>Employment Pipeline</span></div>
+        <div class="ds-card__body">
+          <div class="d-flex flex-wrap" style="gap:0.5rem; align-items:center;">
+            {% with s=app.status %}
+            <span>
+              <span class="step-badge {% if s == 'pending' %}step-active{% elif s != 'pending' %}step-done{% else %}step-wait{% endif %}">1</span>
+              Link Sent
+            </span>
+            <i class="fa fa-chevron-right text-muted"></i>
+            <span>
+              <span class="step-badge {% if s == 'submitted' %}step-active{% elif s == 'interview' or s == 'accepted' or s == 'employed' or s == 'rejected' %}step-done{% else %}step-wait{% endif %}">2</span>
+              Form Submitted
+            </span>
+            <i class="fa fa-chevron-right text-muted"></i>
+            <span>
+              <span class="step-badge {% if s == 'interview' %}step-active{% elif s == 'accepted' or s == 'employed' or s == 'rejected' %}step-done{% else %}step-wait{% endif %}">3</span>
+              Interview
+            </span>
+            <i class="fa fa-chevron-right text-muted"></i>
+            <span>
+              <span class="step-badge {% if s == 'accepted' %}step-active{% elif s == 'employed' %}step-done{% else %}step-wait{% endif %}">4</span>
+              Guarantor
+            </span>
+            <i class="fa fa-chevron-right text-muted"></i>
+            <span>
+              <span class="step-badge {% if s == 'employed' %}step-done{% elif s == 'rejected' %}step-wait{% else %}step-wait{% endif %} {% if s == 'employed' %}step-done{% endif %}">5</span>
+              {% if app.status == 'rejected' %}
+                <span class="text-danger font-weight-bold">Rejected</span>
+              {% else %}
+                Employed
+              {% endif %}
+            </span>
+            {% endwith %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Applicant details -->
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span>Applicant Details</span></div>
+        <div class="ds-card__body">
+          <div class="info-row">
+            <span class="info-label">Full Name</span>
+            <span>{{ app.applicant_name }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Email</span>
+            <span><a href="mailto:{{ app.applicant_email }}">{{ app.applicant_email }}</a></span>
+          </div>
+          {% if app.phone %}
+          <div class="info-row">
+            <span class="info-label">Phone</span>
+            <span>{{ app.phone }}</span>
+          </div>
+          {% endif %}
+          {% if app.date_of_birth %}
+          <div class="info-row">
+            <span class="info-label">Date of Birth</span>
+            <span>{{ app.date_of_birth|date:"d M Y" }}</span>
+          </div>
+          {% endif %}
+          {% if app.address %}
+          <div class="info-row">
+            <span class="info-label">Address</span>
+            <span>{{ app.address }}</span>
+          </div>
+          {% endif %}
+          {% if app.education %}
+          <div class="info-row">
+            <span class="info-label">Education</span>
+            <span style="max-width:60%;">{{ app.education|linebreaksbr }}</span>
+          </div>
+          {% endif %}
+          {% if app.experience %}
+          <div class="info-row">
+            <span class="info-label">Experience</span>
+            <span style="max-width:60%;">{{ app.experience|linebreaksbr }}</span>
+          </div>
+          {% endif %}
+          {% if app.cover_letter %}
+          <div class="mt-3">
+            <p class="text-muted small mb-1 font-weight-bold text-uppercase" style="letter-spacing:.06em;">Cover Letter</p>
+            <div style="white-space:pre-wrap;">{{ app.cover_letter }}</div>
+          </div>
+          {% endif %}
+          {% if app.status == 'pending' %}
+          <div class="alert alert-warning mt-3 mb-0">
+            <i class="fa fa-clock-o mr-1"></i> Awaiting applicant to fill the form via the link below.
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Guarantor details (if exists) -->
+      {% if app.has_guarantor %}
+      <div class="ds-card mb-4">
+        <div class="ds-card__header d-flex justify-content-between align-items-center">
+          <span>Guarantor — Letter of Indemnity</span>
+          {% if app.guarantor.is_submitted %}
+            {% if app.guarantor.approved is None %}
+              <span class="badge badge-warning">Awaiting HR Review</span>
+            {% elif app.guarantor.approved %}
+              <span class="badge badge-success">Approved</span>
+            {% else %}
+              <span class="badge badge-danger">Rejected</span>
+            {% endif %}
+          {% else %}
+            <span class="badge badge-secondary">Not Yet Submitted</span>
+          {% endif %}
+        </div>
+        <div class="ds-card__body">
+          {% if app.guarantor.is_submitted %}
+            <div class="info-row">
+              <span class="info-label">Full Name</span>
+              <span>{{ app.guarantor.full_name }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Address</span>
+              <span>{{ app.guarantor.address }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Occupation</span>
+              <span>{{ app.guarantor.occupation }}</span>
+            </div>
+            {% if app.guarantor.employer %}
+            <div class="info-row">
+              <span class="info-label">Employer</span>
+              <span>{{ app.guarantor.employer }}</span>
+            </div>
+            {% endif %}
+            <div class="info-row">
+              <span class="info-label">Phone</span>
+              <span>{{ app.guarantor.phone }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email</span>
+              <span><a href="mailto:{{ app.guarantor.email }}">{{ app.guarantor.email }}</a></span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Relationship to Applicant</span>
+              <span>{{ app.guarantor.relationship }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">ID Type</span>
+              <span>{{ app.guarantor.get_id_type_display }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">ID Number</span>
+              <span>{{ app.guarantor.id_number }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Submitted</span>
+              <span>{{ app.guarantor.submitted_at|date:"d M Y, H:i" }}</span>
+            </div>
+
+            {% if app.guarantor.approved is None and app.status != 'rejected' %}
+            <div class="mt-4 d-flex" style="gap:0.75rem;">
+              <form method="post" action="{% url 'app-guarantor-review' app.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="decision" value="approve">
+                <button type="submit" class="btn btn-success"
+                        onclick="return confirm('Approve this guarantor and employ {{ app.applicant_name }}?')">
+                  <i class="fa fa-check mr-1"></i> Approve &amp; Employ
+                </button>
+              </form>
+              <form method="post" action="{% url 'app-guarantor-review' app.pk %}">
+                {% csrf_token %}
+                <input type="hidden" name="decision" value="reject">
+                <button type="submit" class="btn btn-danger"
+                        onclick="return confirm('Reject this guarantor and decline the application?')">
+                  <i class="fa fa-times mr-1"></i> Reject Guarantor
+                </button>
+              </form>
+            </div>
+            {% endif %}
+
+          {% else %}
+            <p class="text-muted mb-0">
+              <i class="fa fa-clock-o mr-1"></i>
+              The guarantor link has been generated. Awaiting the guarantor to complete the Letter of Indemnity.
+            </p>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- ── Right: Actions sidebar ────────────────────── -->
+    <div class="col-lg-4">
+
+      <!-- Current status -->
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span>Current Status</span></div>
+        <div class="ds-card__body text-center py-3">
+          {% if app.status == 'pending' %}
+            <span class="badge badge-secondary" style="font-size:1rem; padding:.5rem 1rem;">Pending</span>
+          {% elif app.status == 'submitted' %}
+            <span class="badge badge-info" style="font-size:1rem; padding:.5rem 1rem;">Form Submitted</span>
+          {% elif app.status == 'interview' %}
+            <span class="badge badge-warning" style="font-size:1rem; padding:.5rem 1rem;">Interview Granted</span>
+          {% elif app.status == 'accepted' %}
+            <span class="badge badge-primary" style="font-size:1rem; padding:.5rem 1rem;">Accepted</span>
+          {% elif app.status == 'employed' %}
+            <span class="badge badge-success" style="font-size:1rem; padding:.5rem 1rem;">Employed</span>
+          {% elif app.status == 'rejected' %}
+            <span class="badge badge-danger" style="font-size:1rem; padding:.5rem 1rem;">Rejected</span>
+          {% endif %}
+          <p class="text-muted small mt-2 mb-0">Applied {{ app.created_at|date:"d M Y" }}</p>
+        </div>
+      </div>
+
+      <!-- Applicant form link -->
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span><i class="fa fa-link mr-1"></i> Applicant Form Link</span></div>
+        <div class="ds-card__body">
+          <p class="small text-muted mb-2">Copy and send this link to the applicant to fill their application form.</p>
+          <div class="link-box mb-2" id="applicant-link">{{ applicant_url }}</div>
+          <button class="btn btn-sm btn-secondary w-100 mb-2" onclick="copyLink('applicant-link', this)">
+            <i class="fa fa-copy mr-1"></i> Copy Link
+          </button>
+          <div class="d-flex justify-content-between align-items-center mt-1">
+            <small class="{% if app.is_link_expired and app.status == 'pending' %}text-danger font-weight-bold{% else %}text-muted{% endif %}">
+              <i class="fa fa-clock-o mr-1"></i>
+              {% if app.is_link_expired and app.status == 'pending' %}
+                Expired {{ app.link_expires_at|date:"d M Y, H:i" }}
+              {% else %}
+                Expires {{ app.link_expires_at|date:"d M Y, H:i" }}
+              {% endif %}
+            </small>
+            {% if app.status == 'pending' %}
+            <form method="post" action="{% url 'app-extend-link' app.pk %}" class="mb-0">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-secondary">
+                <i class="fa fa-refresh mr-1"></i> Extend 14d
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- HR actions -->
+      {% if app.status == 'submitted' %}
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span>HR Actions</span></div>
+        <div class="ds-card__body">
+          <p class="small text-muted mb-3">Application has been submitted. Grant an interview or reject.</p>
+          <form method="post" action="{% url 'app-status' app.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="interview">
+            <button type="submit" class="btn btn-warning btn-block mb-2">
+              <i class="fa fa-calendar mr-1"></i> Grant Interview
+            </button>
+          </form>
+          <form method="post" action="{% url 'app-status' app.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="rejected">
+            <button type="submit" class="btn btn-danger btn-block"
+                    onclick="return confirm('Reject this application?')">
+              <i class="fa fa-times mr-1"></i> Reject Application
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if app.status == 'interview' %}
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span>HR Actions</span></div>
+        <div class="ds-card__body">
+          <p class="small text-muted mb-3">Interview stage. Accept to require a guarantor, or reject.</p>
+          <form method="post" action="{% url 'app-status' app.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="accepted">
+            <button type="submit" class="btn btn-primary btn-block mb-2">
+              <i class="fa fa-check mr-1"></i> Accept — Require Guarantor
+            </button>
+          </form>
+          <form method="post" action="{% url 'app-status' app.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="rejected">
+            <button type="submit" class="btn btn-danger btn-block"
+                    onclick="return confirm('Reject this application?')">
+              <i class="fa fa-times mr-1"></i> Reject Application
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if app.status == 'accepted' and not app.has_guarantor %}
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span>Guarantor Link</span></div>
+        <div class="ds-card__body">
+          <p class="small text-muted mb-3">Generate a unique link for the guarantor to fill the Letter of Indemnity.</p>
+          <form method="post" action="{% url 'app-guarantor-request' app.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fa fa-file-text mr-1"></i> Generate Guarantor Link
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if app.has_guarantor and guarantor_url %}
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span><i class="fa fa-link mr-1"></i> Guarantor Form Link</span></div>
+        <div class="ds-card__body">
+          <p class="small text-muted mb-2">Copy and send this link to the guarantor to complete the Letter of Indemnity.</p>
+          <div class="link-box mb-2" id="guarantor-link">{{ guarantor_url }}</div>
+          <button class="btn btn-sm btn-secondary w-100" onclick="copyLink('guarantor-link', this)">
+            <i class="fa fa-copy mr-1"></i> Copy Link
+          </button>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- HR Notes -->
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span><i class="fa fa-sticky-note mr-1"></i> HR Notes</span></div>
+        <div class="ds-card__body">
+          <form method="post">
+            {% csrf_token %}
+            {{ notes_form|crispy }}
+            <button type="submit" class="btn btn-secondary btn-block mt-2">
+              <i class="fa fa-save mr-1"></i> Save Notes
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyLink(id, btn) {
+  var text = document.getElementById(id).innerText.trim();
+  navigator.clipboard.writeText(text).then(function() {
+    var orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fa fa-check mr-1"></i> Copied!';
+    btn.classList.add('btn-success');
+    btn.classList.remove('btn-secondary');
+    setTimeout(function() {
+      btn.innerHTML = orig;
+      btn.classList.remove('btn-success');
+      btn.classList.add('btn-secondary');
+    }, 2000);
+  });
+}
+</script>
+{% endblock %}

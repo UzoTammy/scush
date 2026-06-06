@@ -1,0 +1,134 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}Letter of Indemnity — Guarantor Form{% endblock %}
+
+{% block head %}
+<style>
+  .loi-header {
+    border: 2px solid var(--color-primary);
+    border-radius: var(--radius);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .loi-header h4 { color: var(--color-primary); font-weight: 700; margin-bottom: 0.25rem; }
+  .loi-header p  { color: var(--color-muted); font-size: 0.875rem; margin: 0; }
+
+  .loi-body {
+    background: #fffdf5;
+    border: 1px solid #e0d8b0;
+    border-radius: var(--radius);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9375rem;
+    line-height: 1.75;
+  }
+  .loi-body p { margin-bottom: 1rem; }
+  .loi-body .placeholder { font-weight: 700; color: var(--color-primary); }
+
+  .section-divider {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.4rem;
+    margin: 1.5rem 0 1rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:780px;">
+
+  <!-- ── Header ─────────────────────────────────────── -->
+  <div class="loi-header">
+    <h4><i class="fa fa-file-text mr-2"></i>Letter of Indemnity</h4>
+    <p>Guarantor Form — Employment of <strong>{{ app.applicant_name }}</strong></p>
+  </div>
+
+  <!-- ── Indemnity text ─────────────────────────────── -->
+  <div class="loi-body">
+    <p>
+      This Letter of Indemnity is to be completed by a guarantor for the purpose of securing
+      the employment of <span class="placeholder">{{ app.applicant_name }}</span> in the position
+      of <span class="placeholder">{{ app.job.title }}</span>
+      ({{ app.job.department }} Department).
+    </p>
+
+    <p>
+      I, the undersigned, hereby undertake and agree to indemnify and keep indemnified
+      <strong>the Company</strong> (hereinafter referred to as "the Company") against all losses,
+      damages, liabilities, costs, claims, and expenses of whatsoever nature that may be
+      suffered, sustained, or incurred by the Company as a direct or indirect result of
+      any act of dishonesty, fraud, misconduct, negligence, or breach of duty by the
+      above-named person during the course of their employment.
+    </p>
+
+    <p>
+      I confirm that I personally know <span class="placeholder">{{ app.applicant_name }}</span>
+      and can vouch for their character, integrity, and fitness for the said position.
+    </p>
+
+    <p>
+      I acknowledge and agree that:
+    </p>
+    <ol>
+      <li>
+        This Letter of Indemnity shall remain in force throughout the duration of
+        <span class="placeholder">{{ app.applicant_name }}</span>'s service with the Company
+        and for a period of <strong>two (2) years</strong> after the cessation of such service,
+        howsoever determined.
+      </li>
+      <li>
+        I shall be jointly and severally liable for any claim made under this indemnity.
+      </li>
+      <li>
+        The Company reserves the right to pursue any legal remedy available to it against
+        me should the employee cause loss or damage to the Company.
+      </li>
+      <li>
+        I have provided my correct personal information below and I undertake to notify
+        the Company of any change in my contact details.
+      </li>
+    </ol>
+
+    <p>
+      By completing and submitting this form, I confirm that I have read and fully
+      understood the terms above and I freely agree to be bound by them.
+    </p>
+  </div>
+
+  <!-- ── Guarantor personal information form ────────── -->
+  <div class="ds-card">
+    <div class="ds-card__header">
+      <span>Guarantor's Personal Information</span>
+    </div>
+    <div class="ds-card__body">
+      <p class="text-muted small mb-4">
+        All fields are required. Please ensure the information provided is accurate and verifiable.
+      </p>
+
+      <form method="post">
+        {% csrf_token %}
+
+        <p class="section-divider">Contact Details</p>
+        {% crispy form %}
+
+        <div class="mt-4 d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fa fa-pen mr-1"></i> Sign &amp; Submit Letter of Indemnity
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <p class="text-center text-muted small mt-3">
+    This link is personal to you. Please do not share it with anyone else.
+  </p>
+
+</div>
+{% endblock %}

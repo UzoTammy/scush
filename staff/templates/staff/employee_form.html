@@ -1,64 +1,202 @@
 {% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block page_title %}Employee Form{% endblock %}
+{% block page_title %}
+  {% if title == 'Update' %}Update Employee{% else %}Employ — {{ applicant_obj }}{% endif %}
+{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row p-3 d-flex justify-content-center">
-        <div class="col-sm-8 p-3 shadow-lg">
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <legend class="text-danger">{{ title }} Employee: {{applicant_obj}}</legend>
-                <fieldset class="bg-light">
-                    <div class="ml-2">{{ form|crispy }}</div>
-                    <div class="ml-2">{{ other_form|crispy }}</div>
-                </fieldset>
-                <div class="form-group p-2">
-                    <button class="btn btn-outline-warning" type="submit">Submit</button>
-                    {% if title == "Update" %}
-                    <a class="btn btn-outline-light float-right"
-                       href="{% url 'employee-detail' object.pk %}">
-                        <i class="fa fa-times-circle"></i> Return</a>
-                    {% else %}
-                    <a class="btn btn-outline-light float-right"
-                       href="{% url 'apply-index' %}">
-                        <i class="fa fa-times-circle"></i> Return</a>
-                    {% endif %}
-                </div>
-            </form>
-        </div>
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span>
+        <i class="fa fa-user-plus mr-2"></i>
+        {% if title == 'Update' %}Update Employee{% else %}Employment — {{ applicant_obj }}{% endif %}
+      </span>
+      <div class="d-flex staff-nav-bar">
+        {% if title == 'Update' %}
+        <a class="staff-nav-link" href="{% url 'employee-detail' object.pk %}">
+          <i class="fa fa-times-circle"></i> Cancel
+        </a>
+        {% else %}
+        <a class="staff-nav-link" href="{% url 'apply-index' %}">
+          <i class="fa fa-times-circle"></i> Cancel
+        </a>
+        {% endif %}
+      </div>
     </div>
+  </div>
+
+  <div class="row">
+
+    <!-- ── Left: Applicant summary ───────────────────── -->
+    {% if title != 'Update' %}
+    <div class="col-md-4 mb-4">
+      <div class="ds-card">
+        <div class="ds-card__header">
+          <span><i class="fa fa-id-card mr-2"></i>Applicant Summary</span>
+        </div>
+        <div class="ds-card__body p-0">
+          <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted small">Full Name</span>
+              <strong>{{ applicant_obj }}</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted small">Gender</span>
+              <span>{{ applicant_obj.gender|title }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted small">Qualification</span>
+              <span>{{ applicant_obj.qualification }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted small">Mobile</span>
+              <span>{{ applicant_obj.mobile }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted small">Email</span>
+              <span>{{ applicant_obj.email|default:"—" }}</span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted small">Applied</span>
+              <span>{{ applicant_obj.apply_date }}</span>
+            </div>
+            {% if applicant_obj.interview %}
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted small">Interview</span>
+              <span class="text-success font-weight-600">
+                <i class="fa fa-check-circle mr-1"></i>Passed
+              </span>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span class="text-muted small">Interviewer</span>
+              <span>{{ applicant_obj.interview.interviewer }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- ── Right: Employment form ─────────────────────── -->
+    <div class="{% if title != 'Update' %}col-md-8{% else %}col-12{% endif %} mb-4">
+      <div class="ds-card">
+        <div class="ds-card__header">
+          <span><i class="fa fa-briefcase mr-2"></i>Employment Details</span>
+        </div>
+        <div class="ds-card__body">
+
+          {% if title != 'Update' %}
+          <div class="alert alert-warning mb-4">
+            <i class="fa fa-exclamation-triangle mr-1"></i>
+            This action will formally employ <strong>{{ applicant_obj }}</strong>.
+            Ensure all details are correct before submitting.
+          </div>
+          {% endif %}
+
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Row 1: Date & Position -->
+            <div class="form-row mb-3">
+              <div class="col-sm-6">
+                <label class="font-weight-600">Date Employed <span class="text-danger">*</span></label>
+                {{ form.date_employed }}
+                {% if form.date_employed.errors %}
+                  <small class="text-danger">{{ form.date_employed.errors|join:", " }}</small>
+                {% endif %}
+              </div>
+              <div class="col-sm-6">
+                <label class="font-weight-600">Position</label>
+                {{ form.position }}
+              </div>
+            </div>
+
+            <!-- Row 2: Department & Branch -->
+            <div class="form-row mb-3">
+              <div class="col-sm-6">
+                <label class="font-weight-600">Department</label>
+                {{ form.department }}
+              </div>
+              <div class="col-sm-6">
+                <label class="font-weight-600">Branch</label>
+                {{ form.branch }}
+              </div>
+            </div>
+
+            <hr>
+
+            <!-- Row 3: Salary -->
+            <div class="form-row mb-3">
+              <div class="col-12">
+                <label class="font-weight-600">
+                  Approved Salary <span class="text-danger">*</span>
+                  <small class="text-muted font-weight-400">(₦ — split 60% basic / 40% allowance)</small>
+                </label>
+                {{ form.salary }}
+                {% if form.salary.errors %}
+                  <small class="text-danger">{{ form.salary.errors|join:", " }}</small>
+                {% endif %}
+              </div>
+            </div>
+
+            <hr>
+
+            <!-- Row 4: Bank details -->
+            <div class="form-row mb-3">
+              <div class="col-sm-6">
+                <label class="font-weight-600">Bank <span class="text-danger">*</span></label>
+                {{ form.banker }}
+                {% if form.banker.errors %}
+                  <small class="text-danger">{{ form.banker.errors|join:", " }}</small>
+                {% endif %}
+              </div>
+              <div class="col-sm-6">
+                <label class="font-weight-600">Account Number <span class="text-danger">*</span></label>
+                {{ form.account_number }}
+                {% if form.account_number.errors %}
+                  <small class="text-danger">{{ form.account_number.errors|join:", " }}</small>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+              {% if title == 'Update' %}
+              <a href="{% url 'employee-detail' object.pk %}" class="btn btn-secondary">Cancel</a>
+              {% else %}
+              <a href="{% url 'apply-index' %}" class="btn btn-secondary">Cancel</a>
+              {% endif %}
+              <button type="submit" class="btn btn-primary">
+                <i class="fa fa-user-plus mr-1"></i>
+                {% if title == 'Update' %}Save Changes{% else %}Employ{% endif %}
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-    
-    const numberInput = document.getElementById('id_salary');
-    
-    numberInput.addEventListener('input', function(event) {
-    const input = event.target.value.replace(/[^\d.-]/g, '');
-    
-    const cursorPosition = event.target.selectionStart;
-
-    const currencyValue = Number(input).toLocaleString(undefined, {
+  const salaryInput = document.getElementById('id_salary');
+  if (salaryInput) {
+    salaryInput.addEventListener('input', function (e) {
+      const raw = e.target.value.replace(/[^\d.]/g, '');
+      const formatted = raw ? Number(raw).toLocaleString(undefined, {
         minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+        maximumFractionDigits: 2,
+      }) : '';
+      const pos = e.target.selectionStart;
+      e.target.value = formatted;
     });
-    event.target.value = currencyValue;
-    const newCursorPosition = calculateCursorPosition(cursorPosition, event.target.value);
-    event.target.setSelectionRange(newCursorPosition, newCursorPosition);
-    
-    });
-
-    function calculateCursorPosition(oldPosition, newValue) {
-        const oldValueLength = numberInput.value.length;
-        const commaCountOld = (numberInput.value.match(/,/g) || []).length;
-        const commaCountNew = (newValue.match(/,/g) || []).length;
-
-        const delta = commaCountNew - commaCountOld;
-
-        return oldPosition + delta;
-    }
-
+  }
 </script>
+
 {% endblock %}

@@ -61,6 +61,8 @@ class EmployeeForm(forms.ModelForm):
         self.fields['branch'].choices     = [(None, '--------')] + _get_json_choices('branches',    [('FG', 'FG')])
         self.fields['position'].choices   = [(None, '--------')] + _get_json_choices('positions',   [('GSM', 'GSM')])
         self.fields['department'].choices = [(None, '--------')] + _get_json_choices('departments', [('Sales', 'Sales')])
+        for field in self.fields.values():
+            field.widget.attrs.setdefault('class', 'form-control')
 
     
 class DateTimeSelectorWidget(forms.MultiWidget):

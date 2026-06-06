@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Letter of Indemnity Received{% endblock %}
+
+{% block head %}
+<style>
+  .success-icon { font-size: 4rem; color: #28a745; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:600px;">
+  <div class="ds-card text-center py-5">
+    <div class="ds-card__body">
+      {% if already %}
+        <div class="success-icon mb-3"><i class="fa fa-check-circle"></i></div>
+        <h4 class="mb-2">Already Submitted</h4>
+        <p class="text-muted">
+          Your Letter of Indemnity for <strong>{{ guarantor.application.applicant_name }}</strong>
+          has already been received. No further action is required from you at this time.
+        </p>
+      {% else %}
+        <div class="success-icon mb-3"><i class="fa fa-check-circle"></i></div>
+        <h4 class="mb-2">Letter of Indemnity Submitted</h4>
+        <p class="text-muted">
+          Thank you, <strong>{{ guarantor.full_name }}</strong>. Your Letter of Indemnity
+          for <strong>{{ guarantor.application.applicant_name }}</strong> has been successfully
+          received and will be reviewed by our HR team.
+        </p>
+        <p class="text-muted">
+          You will be contacted if any further information is required.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

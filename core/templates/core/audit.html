@@ -1,48 +1,163 @@
 {% extends 'core/base.html' %}
-{% load custom_tags %}
 
-{% block page_title %}Audit{% endblock %}
+{% block page_title %}Audit Report{% endblock %}
+
+{% block head %}
+<style>
+  .badge-balanced { background: var(--color-success); color: #fff; }
+  .badge-variance { background: var(--color-danger);  color: #fff; }
+  .badge-missing  { background: var(--color-warning); color: #fff; }
+  .diff-positive  { color: var(--color-success); font-weight: 600; }
+  .diff-negative  { color: var(--color-danger);  font-weight: 600; }
+  .totals-row td  { font-weight: 700; border-top: 2px solid #dee2e6; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-3">
-    <div class="row">
-        
-        <div class="col-sm-3">
-            {% if trade_date == product_date %}
-            <ul style="list-style-type: none;">
-                <li>Date <span class="float-right">{{trade_date}}</span></li>
-                <hr>
-                <li>Cost of Goods <span class="float-right">{{sales_value}}</span></li>
-                <hr>
-                <li>Sales <span class="float-right">{{sales}}</span></li>
-                <hr>
-                <li>Expenses <span class="float-right">{{expenses}}</span></li>
-                <hr>
-                {% with sales|minus:sales_value|minus:expenses as net %}
-                <li>Net Profit <span class="float-right">{{net}}</span></li>
-                <hr>
-                <li>Net Profit <sup class="text-muted">**</sup> <span class="float-right">{{net_profit}}</span></li>
-                <hr>
-                <li>Difference <span class="float-right">{{net|minus:net_profit}}</span></li>
-                <hr>
-                <li><sup>**</sup>Net profit from Profit & Loss</li>
-                {% endwith %}
-                <hr>
-                <li>Stock Out: {{stock_out}}</li>
-            </ul>   
-            {%else%}
-            <h6> Record not ready </h6>   
-            <p>The Trade date ({{trade_date}}) and the Stock date ({{product_date}}) must be the same</p>
-            {% endif %}  
-        </div>
-        
+<div class="container-fluid">
 
+  <!-- ── Top nav ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap staff-nav-bar">
+      <span><i class="fa fa-balance-scale mr-2"></i>Daily Reconciliation Audit Report</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'trade-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
-    
-    <div class="row mb-3">
-        <div class="col">
-            <a class="btn btn-secondary float-right" href="{% url 'trade-home' %}"><i class="fa fa-times-circle"></i></a>
-        </div>
+  </div>
+
+  {% if no_data %}
+  <div class="ds-card">
+    <div class="ds-card__body text-center text-muted py-5">
+      <i class="fa fa-exclamation-circle fa-2x mb-3"></i>
+      <p>No trade records found.</p>
     </div>
+  </div>
+  {% else %}
+
+  <!-- ── Date range filter ─────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__body">
+      <form method="get" class="form-inline">
+        <label for="id_start_date" class="mr-2 font-weight-600">From</label>
+        <input type="date" id="id_start_date" name="start_date" value="{{ start_date }}" class="form-control form-control-sm mr-3" title="Start date">
+        <label for="id_end_date" class="mr-2 font-weight-600">To</label>
+        <input type="date" id="id_end_date" name="end_date" value="{{ end_date }}" class="form-control form-control-sm mr-3" title="End date">
+        <button type="submit" class="staff-nav-link">
+          <i class="fa fa-search mr-1"></i> Run Report
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Summary tiles ────────────────────────────── -->
+  <div class="row mb-4">
+    <div class="col-sm-3 mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label"><i class="fa fa-calendar mr-1"></i> Days in Range</div>
+        <div class="ds-stat__value">{{ total_days }}</div>
+      </div>
+    </div>
+    <div class="col-sm-3 mb-3">
+      <div class="ds-stat ds-stat--success">
+        <div class="ds-stat__label"><i class="fa fa-check-circle mr-1"></i> Balanced</div>
+        <div class="ds-stat__value">{{ balanced_count }}</div>
+      </div>
+    </div>
+    <div class="col-sm-3 mb-3">
+      <div class="ds-stat ds-stat--danger">
+        <div class="ds-stat__label"><i class="fa fa-exclamation-circle mr-1"></i> Variance</div>
+        <div class="ds-stat__value">{{ variance_count }}</div>
+      </div>
+    </div>
+    <div class="col-sm-3 mb-3">
+      <div class="ds-stat ds-stat--accent">
+        <div class="ds-stat__label"><i class="fa fa-question-circle mr-1"></i> No Stock Data</div>
+        <div class="ds-stat__value">{{ missing_count }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Reconciliation table ──────────────────────── -->
+  <div class="ds-card">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-table mr-2"></i>Day-by-Day Reconciliation</span>
+      <small class="text-white opacity-75">{{ start_date }} to {{ end_date }}</small>
+    </div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+          <thead class="thead-accent">
+            <tr>
+              <th>Date</th>
+              <th class="text-right">CoGS (Stock)</th>
+              <th class="text-right">Sales (P&L)</th>
+              <th class="text-right">Expenses</th>
+              <th class="text-right">Computed Net</th>
+              <th class="text-right">Recorded Net</th>
+              <th class="text-right">Difference</th>
+              <th class="text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+            {% if row.status == 'missing' %}
+            <tr class="table-warning">
+              <td>{{ row.date }}</td>
+              <td colspan="6" class="text-muted small text-center">No stock data for this date</td>
+              <td class="text-center">
+                <span class="badge badge-missing">Missing</span>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td class="small">{{ row.date }}</td>
+              <td class="text-right small">{{ row.cogs }}</td>
+              <td class="text-right small">{{ row.sales }}</td>
+              <td class="text-right small">{{ row.expenses }}</td>
+              <td class="text-right small">{{ row.computed_net }}</td>
+              <td class="text-right small">{{ row.recorded_net }}</td>
+              <td class="text-right small {% if row.difference.amount == 0 %}diff-positive{% else %}diff-negative{% endif %}">
+                {{ row.difference }}
+              </td>
+              <td class="text-center">
+                {% if row.status == 'balanced' %}
+                <span class="badge badge-balanced">Balanced</span>
+                {% else %}
+                <span class="badge badge-variance">Variance</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endif %}
+            {% empty %}
+            <tr>
+              <td colspan="8" class="text-center text-muted py-4">No trade records in this date range.</td>
+            </tr>
+            {% endfor %}
+
+            {% if rows %}
+            <tr class="totals-row">
+              <td>Totals</td>
+              <td class="text-right">{{ totals.cogs }}</td>
+              <td class="text-right">{{ totals.sales }}</td>
+              <td class="text-right">{{ totals.expenses }}</td>
+              <td class="text-right">{{ totals.computed_net }}</td>
+              <td class="text-right">{{ totals.recorded_net }}</td>
+              <td class="text-right {% if totals.difference.amount == 0 %}diff-positive{% else %}diff-negative{% endif %}">
+                {{ totals.difference }}
+              </td>
+              <td></td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {% endif %}
+
 </div>
-{% endblock content %}
+{% endblock %}

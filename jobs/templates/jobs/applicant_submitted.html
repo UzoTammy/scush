@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Application Received{% endblock %}
+
+{% block head %}
+<style>
+  .success-icon { font-size: 4rem; color: #28a745; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:600px;">
+  <div class="ds-card text-center py-5">
+    <div class="ds-card__body">
+      {% if already %}
+        <div class="success-icon mb-3"><i class="fa fa-check-circle"></i></div>
+        <h4 class="mb-2">Already Submitted</h4>
+        <p class="text-muted">
+          Your application for <strong>{{ app.job.title }}</strong> has already been received.
+          Our team will be in touch with you shortly.
+        </p>
+      {% else %}
+        <div class="success-icon mb-3"><i class="fa fa-check-circle"></i></div>
+        <h4 class="mb-2">Application Submitted!</h4>
+        <p class="text-muted">
+          Thank you, <strong>{{ app.applicant_name }}</strong>. Your application for
+          <strong>{{ app.job.title }}</strong> has been successfully received.
+        </p>
+        <p class="text-muted">
+          Our HR team will review your submission and contact you at
+          <strong>{{ app.applicant_email }}</strong> regarding the next steps.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

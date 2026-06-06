@@ -1229,27 +1229,85 @@ class AuditorView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = "Welcome to Auditor's page"
+        context['title'] = "Audit Report"
 
-        if ProductExtension.objects.exists():
-            product_date = ProductExtension.objects.latest('date').date
-            product_qs = ProductExtension.objects.filter(date=product_date)
-            product_qs = product_qs.annotate(cost_of_goods_sold=F('cost_price')*F('sell_out'))
-            # product_qs = product_qs.filter(date=product_date)
-        if TradeDaily.objects.exists():
-            trade_date = TradeDaily.objects.latest('date').date
-            trade_obj = TradeDaily.objects.get(date=trade_date)
-        
-            
-        if product_date == trade_date:
-            context['sales_value'] = Money(product_qs.aggregate(sales_value=Sum('cost_of_goods_sold'))['sales_value'], 'NGN')
-            context['sales'] = trade_obj.sales
-            context['expenses'] = trade_obj.direct_expenses + trade_obj.indirect_expenses
-            context['net_profit'] = trade_obj.gross_profit - trade_obj.indirect_expenses
-            context['stock_out'] = trade_obj.opening_value + trade_obj.purchase - trade_obj.closing_value
-        context['product_date'] = product_date
-        context['trade_date'] = trade_date
-        
+        if not TradeDaily.objects.exists():
+            context['no_data'] = True
+            return context
+
+        latest = TradeDaily.objects.latest('date').date
+        earliest = TradeDaily.objects.earliest('date').date
+
+        end_str   = self.request.GET.get('end_date')
+        start_str = self.request.GET.get('start_date')
+        end_date   = datetime.date.fromisoformat(end_str)   if end_str   else latest
+        start_date = datetime.date.fromisoformat(start_str) if start_str else max(earliest, end_date - datetime.timedelta(days=29))
+
+        if start_date > end_date:
+            start_date, end_date = end_date, start_date
+
+        trade_qs = TradeDaily.objects.filter(date__range=[start_date, end_date]).order_by('-date')
+
+        zero = Money(0, 'NGN')
+        rows = []
+        total_cogs = total_sales = total_expenses = total_computed_net = total_recorded_net = total_diff = 0
+        balanced_count = variance_count = missing_count = 0
+
+        for trade in trade_qs:
+            product_qs = ProductExtension.objects.filter(date=trade.date).annotate(
+                cogs=F('cost_price') * F('sell_out')
+            )
+            if not product_qs.exists():
+                missing_count += 1
+                rows.append({'date': trade.date, 'status': 'missing'})
+                continue
+
+            cogs_val      = product_qs.aggregate(total=Sum('cogs'))['total'] or 0
+            sales_val     = trade.sales.amount
+            expenses_val  = trade.direct_expenses.amount + trade.indirect_expenses.amount
+            computed_net  = sales_val - cogs_val - expenses_val
+            recorded_net  = (trade.gross_profit - trade.indirect_expenses).amount
+            difference    = computed_net - recorded_net
+            balanced      = abs(difference) < Decimal('0.01')
+
+            if balanced:
+                balanced_count += 1
+            else:
+                variance_count += 1
+
+            total_cogs         += cogs_val
+            total_sales        += sales_val
+            total_expenses     += expenses_val
+            total_computed_net += computed_net
+            total_recorded_net += recorded_net
+            total_diff         += difference
+
+            rows.append({
+                'date':         trade.date,
+                'status':       'balanced' if balanced else 'variance',
+                'cogs':         Money(cogs_val, 'NGN'),
+                'sales':        trade.sales,
+                'expenses':     trade.direct_expenses + trade.indirect_expenses,
+                'computed_net': Money(computed_net, 'NGN'),
+                'recorded_net': trade.gross_profit - trade.indirect_expenses,
+                'difference':   Money(difference, 'NGN'),
+            })
+
+        context['rows']          = rows
+        context['start_date']    = start_date.strftime('%Y-%m-%d')
+        context['end_date']      = end_date.strftime('%Y-%m-%d')
+        context['total_days']    = len(rows)
+        context['balanced_count']= balanced_count
+        context['variance_count']= variance_count
+        context['missing_count'] = missing_count
+        context['totals'] = {
+            'cogs':         Money(total_cogs, 'NGN'),
+            'sales':        Money(total_sales, 'NGN'),
+            'expenses':     Money(total_expenses, 'NGN'),
+            'computed_net': Money(total_computed_net, 'NGN'),
+            'recorded_net': Money(total_recorded_net, 'NGN'),
+            'difference':   Money(total_diff, 'NGN'),
+        }
         return context
 
 
