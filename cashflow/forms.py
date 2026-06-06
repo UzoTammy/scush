@@ -10,6 +10,22 @@ from .models import (BankAccount, CashCenter, CashCollect, CashDeposit, Disburse
                      InterbankTransfer, CashDepot, BankTransfer, BankCharges,
                      BankTransaction, CashTransaction)
 
+class DatalistWidget(forms.TextInput):
+    """Text input backed by an HTML5 <datalist> for predefined suggestions."""
+    def __init__(self, choices=(), *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.choices = choices
+
+    def render(self, name, value, attrs=None, renderer=None):
+        attrs = attrs or {}
+        list_id = f'{name}-datalist'
+        attrs['list'] = list_id
+        attrs.setdefault('autocomplete', 'off')
+        input_html = super().render(name, value, attrs, renderer)
+        options = ''.join(f'<option value="{v}">' for v, _ in self.choices)
+        return f'{input_html}<datalist id="{list_id}">{options}</datalist>'
+
+
 class ChoiceOrInputWidget(forms.MultiWidget):
     def __init__(self, choices=(), attrs=None):
         # Ensure choices are passed correctly to the Select widget
@@ -70,7 +86,11 @@ class InterCashTransferForm(forms.Form):
     description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
     
     def clean(self):
-        if self.cleaned_data['amount'] > self.cleaned_data['donor'].current_balance:
+        donor = self.cleaned_data.get('donor')
+        receiver = self.cleaned_data.get('receiver')
+        if donor and receiver and donor == receiver:
+            raise forms.ValidationError('Source and destination cash centers must be different.')
+        if donor and self.cleaned_data.get('amount') and self.cleaned_data['amount'] > donor.current_balance:
             raise forms.ValidationError('Not enough cash to transfer !!!')
 
 class DisburseCashForm(forms.Form):
@@ -99,12 +119,18 @@ class DisableAccountForm(forms.Form):
     pass    
 
 class RequestToWithdrawForm(forms.Form):
-    party = ChoiceOrInputField(choices=[
-        ('GN', 'Guinness'), 
-        ('NB', 'Nigerian Breweries'), 
-        ('IB', 'International Breweries'),
+    PARTIES = [
+        ('Guinness', 'Guinness'),
+        ('Nigerian Breweries', 'Nigerian Breweries'),
+        ('International Breweries', 'International Breweries'),
         ('AVAA', 'AVAA'),
-        ('REDBULL', 'Redbull')])
+        ('Redbull', 'Redbull'),
+    ]
+    party = forms.CharField(
+        label='Party',
+        max_length=100,
+        widget=DatalistWidget(choices=PARTIES, attrs={'placeholder': 'Type or pick a party'}),
+    )
     bank = forms.ModelChoiceField(queryset=BankAccount.objects.filter(status=True))
     amount = MoneyField(max_digits=12, decimal_places=2)
     post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
@@ -131,10 +157,12 @@ class InterbankTransferForm(forms.Form):
     description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
     
     def clean(self):
-        if self.cleaned_data['amount'] > self.cleaned_data['donor'].current_balance:
-            raise forms.ValidationError(f'Not enough funds in donor {self.cleaned_data["donor.name"]} !!!')
-        if self.cleaned_data['donor'] == self.cleaned_data['receiver']:
-            raise forms.ValidationError("Donor and receiver account must not be the same")
+        donor = self.cleaned_data.get('donor')
+        receiver = self.cleaned_data.get('receiver')
+        if donor and receiver and donor == receiver:
+            raise forms.ValidationError('Source and destination accounts must be different.')
+        if donor and self.cleaned_data.get('amount') and self.cleaned_data['amount'] > donor.current_balance:
+            raise forms.ValidationError(f'Not enough funds in {donor.name}.')
         
 class ApproveWithdrawalForm(forms.Form):
     remark = forms.CharField(label='Make a note', required=False, 
@@ -185,19 +213,19 @@ class CashCenterCreateForm(forms.ModelForm):
 class CashCollectForm(forms.Form):
     CASHCENTERS = [
         ("Kwara One", "Kwara One"),
-        ("Kwara Two", "kwara Two"),
+        ("Kwara Two", "Kwara Two"),
         ("Kwara Three", "Kwara Three"),
-        ("Front Gate", "Front Gate")
+        ("Front Gate", "Front Gate"),
     ]
 
-    source = ChoiceOrInputField(choices=CASHCENTERS, label='Cash Center or Customer')
+    source = forms.CharField(
+        label='Cash Center or Customer',
+        max_length=100,
+        widget=DatalistWidget(choices=CASHCENTERS, attrs={'placeholder': 'Type or pick a source'}),
+    )
     amount = MoneyField(max_digits=12, decimal_places=2)
     post_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     description = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'comment here if neccessary', 'rows': 2}), required=False)
-    
-    def clean_source(self):
-        data = self.cleaned_data['source']
-        return data
     
     def clean(self):
         

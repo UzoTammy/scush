@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}Interbank Transfer{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-exchange mr-2"></i>Interbank Transfer</span>
+      <a class="staff-nav-link" href="{% url 'cashflow-home' %}">
+        <i class="fa fa-times-circle"></i> Cancel
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Form ───────────────────────────────────────── -->
+  <div class="ds-card ds-card--narrow mx-auto">
+    <div class="ds-card__body">
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="d-flex justify-content-between mt-3">
+          <a href="{% url 'cashflow-home' %}" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-check mr-1"></i> Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

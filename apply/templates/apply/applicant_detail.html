@@ -38,9 +38,11 @@
             <i class="fa fa-times"></i> Reject
           </a>
         {% elif object.state == 'Guarantor' %}
+          {% if user.is_superuser %}
           <a class="staff-nav-link" href="{% url 'employee-create' object.pk %}">
             <i class="fa fa-user-plus"></i> Employ
           </a>
+          {% endif %}
           <a class="staff-nav-link" href="#" data-toggle="modal" data-target="#rejectModal">
             <i class="fa fa-times"></i> Reject
           </a>

@@ -368,13 +368,10 @@ class StaffListPicturesView(LoginRequiredMixin, ListView):
 
 class StaffCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Employee
-    form_class = EmployeeForm    
-    
+    form_class = EmployeeForm
+
     def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
+        return self.request.user.is_superuser
     
     def get_context_data(self, **kwargs):
         applicant_obj = Applicant.objects.get(id=self.kwargs['pk'])

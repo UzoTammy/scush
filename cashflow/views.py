@@ -114,14 +114,9 @@ class CashflowHomeView(LoginRequiredMixin, FormView, ListView):
         return super().form_valid(form)
     
 class CashCollectCreateView(LoginRequiredMixin, FormView):
-    template_name = 'cashflow/create_form.html'
+    template_name = 'cashflow/cash_collect_form.html'
     form_class = CashCollectForm
     success_url = reverse_lazy('cashflow-home')
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['heading'] = 'Cash Collection Form'
-        return context
 
     def form_valid(self, form: Any) -> HttpResponse:
         source = form.cleaned_data['source']
@@ -133,14 +128,9 @@ class CashCollectCreateView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 class CashDepositCreateView(LoginRequiredMixin, FormView):
-    template_name = 'cashflow/create_form.html'
+    template_name = 'cashflow/cash_deposit_form.html'
     form_class = CashDepositForm
     success_url = reverse_lazy('cashflow-home')
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['heading'] = 'Cash Deposit'
-        return context
 
     def get_initial(self) -> dict[str, Any]:
         initial = super().get_initial()
@@ -163,14 +153,9 @@ class CashDepositCreateView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
         
 class InterCashTransferView(LoginRequiredMixin, FormView):
-    template_name = 'cashflow/create_form.html'
+    template_name = 'cashflow/intercash_transfer_form.html'
     form_class = InterCashTransferForm
     success_url = reverse_lazy('cashflow-home')
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['heading'] = 'Disburse Cash Form'
-        return context
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         donor: CashCenter = form.cleaned_data['donor']
@@ -182,14 +167,9 @@ class InterCashTransferView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 class WithdrawalRequestView(LoginRequiredMixin, FormView):
-    template_name = 'cashflow/create_form.html'
+    template_name = 'cashflow/withdrawal_request_form.html'
     form_class = RequestToWithdrawForm
     success_url = reverse_lazy('cashflow-home')
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['heading'] = 'Withdrawal Request Form'
-        return context
     
     def form_valid(self, form):
         form.cleaned_data['requested_by'] = self.request.user
@@ -203,14 +183,9 @@ class WithdrawalRequestView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
   
 class InterbankTransferView(LoginRequiredMixin, FormView):
-    template_name = 'cashflow/create_form.html'
+    template_name = 'cashflow/interbank_transfer_form.html'
     form_class = InterbankTransferForm
     success_url = reverse_lazy('cashflow-home')
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['heading'] = 'Interbank Transfer Form'
-        return context
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         donor: BankAccount = form.cleaned_data['donor']
@@ -223,14 +198,9 @@ class InterbankTransferView(LoginRequiredMixin, FormView):
         return super().form_valid(form)
      
 class DisburseCashView(LoginRequiredMixin, FormView):
-    template_name = 'cashflow/create_form.html'
+    template_name = 'cashflow/disburse_cash_form.html'
     form_class = DisburseCashForm
     success_url = reverse_lazy('cashflow-home')
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['heading'] = 'Disburse Cash Form'
-        return context
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         donor: BankAccount = form.cleaned_data['donor']
@@ -322,13 +292,8 @@ class AdministerWithdrawalView(LoginRequiredMixin, UpdateView):
 
 class BankTransferView(LoginRequiredMixin, FormView):
     form_class = BankTransferForm
-    template_name = 'cashflow/create_form.html'
+    template_name = 'cashflow/bank_transfer_form.html'
     success_url = reverse_lazy('cashflow-home')
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['heading'] = 'Bank Transfer Form'
-        return context
     
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         description = form.cleaned_data['description'] or 'Direct Transfer'
@@ -341,13 +306,8 @@ class BankTransferView(LoginRequiredMixin, FormView):
     
 class BankChargesView(LoginRequiredMixin, FormView):
     form_class = BankTransferForm
-    template_name = 'cashflow/create_form.html'
+    template_name = 'cashflow/bank_charges_form.html'
     success_url = reverse_lazy('cashflow-home')
-
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context['heading'] = 'Bank Charges Form'
-        return context
     
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         description = form.cleaned_data['description'] or 'Bank Reconciliation Charges'
