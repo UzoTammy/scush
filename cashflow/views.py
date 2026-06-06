@@ -344,8 +344,8 @@ class CashStatementView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context['transactions'] = self.get_object().cash_transactions.all().order_by('timestamp')
-        
-        self.get_object().reset_current_balance()
+        obj = self.get_object()
+        obj.reset_current_balance()
+        context['transactions'] = list(obj.cash_transactions.order_by('-timestamp')[:50])
         return context
 
