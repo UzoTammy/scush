@@ -1426,7 +1426,7 @@ class BankBalanceCreateView(LoginRequiredMixin, View):
             'All balances are now derived directly from the cashflow transaction ledger. '
             'Use the cashflow module to record deposits, withdrawals and transfers.'
         )
-        return redirect(reverse('bank-account-home'))
+        return redirect('bank-account-home')
 
     def post(self, request, *args, **kwargs):
         return self.get(request, *args, **kwargs)
@@ -1489,7 +1489,7 @@ class BankBalanceListView(LoginRequiredMixin, ListView):
 class BankBalanceCopyView(LoginRequiredMixin, View):
     """Disabled — manual bank balance entry no longer accepted."""
     def get(self, request, *args, **kwargs):
-        return redirect(reverse('bank-account-home'))
+        return redirect('bank-account-home')
 
 
 class CreditorHomeView(LoginRequiredMixin, TemplateView):

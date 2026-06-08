@@ -1,106 +1,122 @@
 {% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block page_title %}Trademonthly Form{% endblock %}
+{% block page_title %}{{ title|default:'Trade Monthly' }} Trade Monthly{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row d-flex justify-content-center">
-        <div class="col-md-8 shadow-lg">
-            <form method="POST">
-                {% csrf_token %}
-                <fieldset>
-                    <legend>{{title}} Trade Form</legend>
-                    {% if queryset_exist %}
-                        <div class="row">
-                            <div class="col">
-                                <p class="text-primary">The year (<span class="text-danger">{{last_record.year|stringformat:'d'}}</span>) and period 
-                                    (<span class="text-danger">{{last_record.month}}</span>) will be added automatically. 
-                                    Kindly proceed to fill other fields below accordingly. 
-                                </p>
-                            </div>
-                        </div>    
-                    {% else %}
-                        <div class="form-row">
-                            <div class="form-group col-sm-6 mb-0">
-                                {{ form.year|as_crispy_field }}
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-sm-6 mb-0">
-                                {{ form.month|as_crispy_field }}
-                            </div>
-                        </div>
-                    {% endif %}
-                        
-                    <div class="form-row">
-                        <div class="form-group col-md-6 mb-0">
-                            {{ form.sales|as_crispy_field }}
-                        </div>
-                        <div class="form-group col-md-6 mb-0">
-                            {{ form.purchase|as_crispy_field }}
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6 mb-0">
-                            <span id="OS">{{ form.opening_value|as_crispy_field }}</span> 
-                        </div>
-                        <div class="form-group col-md-6 mb-0">
-                            {{ form.closing_value|as_crispy_field }}
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6 mb-0">
-                            {{ form.direct_expenses|as_crispy_field }}
-                        </div>
-                        <div class="form-group col-md-6 mb-0">
-                            {{ form.indirect_expenses|as_crispy_field }}
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6 mb-0">
-                            {{ form.direct_income|as_crispy_field }}
-                        </div>
-                        <div class="form-group col-md-6 mb-0">
-                            {{ form.indirect_income|as_crispy_field }}
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-6 mb-0">
-                            {{ form.gross_profit|as_crispy_field }}
-                        </div>
-                        
-                    </div>
-                    {% if form.non_field_errors %}
-                    <div class="alert alert-warning mt-3">
-                        {% for error in form.non_field_errors %}
-                        <p class="mb-1"><i class="fa fa-exclamation-triangle"></i> {{ error }}</p>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    <div class="form-row mt-2">
-                        <div class="form-group col-12 mb-0">
-                            {{ form.confirm_anomaly|as_crispy_field }}
-                        </div>
-                    </div>
-                </fieldset>
-                <div class="form-row mb-5">
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </div>
-                    <div class="col text-right">
-                        <a class="btn btn-secondary" href="{% url 'trade-home' %}"><i class="fa fa-times-circle"></i> Trade Home</a>
-                    </div>
-                </div>
-                
-            </form>
-        </div>
-    </div>
-</div>
 
-<script>
-    function func() {
-        let os = document.getElementById('OK') 
-    }
-</script>
-{% endblock content%}
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-calendar mr-2"></i>{{ title }} Monthly Trading, Profit and Loss</span>
+      {% if title == 'Update' %}
+      <a class="staff-nav-link" href="{% url 'trade-detail' object.pk %}">
+        <i class="fa fa-times-circle"></i> Cancel
+      </a>
+      {% else %}
+      <a class="staff-nav-link" href="{% url 'trade-home' %}">
+        <i class="fa fa-times-circle"></i> Cancel
+      </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ── Form ───────────────────────────────────────── -->
+  <div class="ds-card">
+    <div class="ds-card__body">
+
+      <form method="POST">
+        {% csrf_token %}
+
+        {% if queryset_exist %}
+        <div class="alert alert-info mb-4">
+          <i class="fa fa-info-circle mr-1"></i>
+          The year (<strong>{{ last_record.year|stringformat:'d' }}</strong>) and period
+          (<strong>{{ last_record.month }}</strong>) will be added automatically.
+          Kindly proceed to fill the other fields below accordingly.
+        </div>
+        {% else %}
+        <div class="form-row">
+          <div class="form-group col-sm-6 mb-0">
+            {{ form.year|as_crispy_field }}
+          </div>
+          <div class="form-group col-sm-6 mb-0">
+            {{ form.month|as_crispy_field }}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="form-row">
+          <div class="form-group col-md-6 mb-0">
+            {{ form.sales|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-6 mb-0">
+            {{ form.purchase|as_crispy_field }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6 mb-0">
+            {{ form.opening_value|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-6 mb-0">
+            {{ form.closing_value|as_crispy_field }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6 mb-0">
+            {{ form.direct_expenses|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-6 mb-0">
+            {{ form.indirect_expenses|as_crispy_field }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6 mb-0">
+            {{ form.direct_income|as_crispy_field }}
+          </div>
+          <div class="form-group col-md-6 mb-0">
+            {{ form.indirect_income|as_crispy_field }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6 mb-0">
+            {{ form.gross_profit|as_crispy_field }}
+          </div>
+        </div>
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-warning mt-3">
+          {% for error in form.non_field_errors %}
+          <p class="mb-1"><i class="fa fa-exclamation-triangle mr-1"></i>{{ error }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="form-row mt-2">
+          <div class="form-group col-12 mb-0">
+            {{ form.confirm_anomaly|as_crispy_field }}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+          {% if title == 'Update' %}
+          <a href="{% url 'trade-detail' object.pk %}" class="btn btn-secondary">
+            <i class="fa fa-times-circle mr-1"></i> Cancel
+          </a>
+          {% else %}
+          <a href="{% url 'trade-home' %}" class="btn btn-secondary">
+            <i class="fa fa-times-circle mr-1"></i> Cancel
+          </a>
+          {% endif %}
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-check mr-1"></i> Submit
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock content %}
