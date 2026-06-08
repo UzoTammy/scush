@@ -310,7 +310,16 @@
             </span>
             <span class="pl-row__value">{{ object.quick_ratio }}</span>
           </div>
-          <div class="pl-row"><span class="pl-row__label">Working Capital</span><span class="pl-row__value {% if working_capital < 0 %}text-danger{% endif %}">{{ working_capital|myriad }}</span></div>
+          <div class="pl-row">
+            <span class="pl-row__label">
+              Working Capital
+              <i class="fa fa-info-circle ml-1 text-muted info-tip"
+                 data-toggle="tooltip"
+                 data-placement="right"
+                 title="Closing Stock + Business Bank Balance + Cash at Main Material Center + Current Liability"></i>
+            </span>
+            <span class="pl-row__value {% if working_capital < 0 %}text-danger{% endif %}">{{ working_capital|myriad }}</span>
+          </div>
 
           {% if kpi_data %}
           <h6 class="text-primary mt-3 mb-2">KPI vs Target</h6>

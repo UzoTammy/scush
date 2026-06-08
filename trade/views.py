@@ -33,6 +33,7 @@ from .forms import (BSForm, TradeMonthlyForm, TradeDailyForm, BankAccountForm, B
 from .models import (TradeDaily, TradeMonthly, BalanceSheet, BankAccount, BankBalance,
                      Creditor, TradeAuditLog, TradeAdjustmentRequest, CashProjection,
                      TradeBudget)
+from cashflow.models import BankAccount as CashflowBankAccount, CashCenter
 
 
 def _capture_changes(form):
@@ -266,17 +267,24 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 context['creditor_outstanding'] = outstanding
                 creditor_net = outstanding
 
-        # Working Capital = (current_asset − sundry_debtor) − liability + creditor_net
-        # creditor_net = capital deployed to business partners (adds to working capital)
+        # Working Capital = closing stock + business bank balance + cash at main material center + current liability
+        daily = context.get('daily')
         bs = context.get('object')
-        if bs:
-            wc = (
-                bs.current_asset.amount
-                - bs.sundry_debtor.amount
-                - bs.liability.amount
-                + creditor_net.amount
-            )
-            context['working_capital'] = round(wc)
+        if daily:
+            closing_stock = daily.closing_value.amount
+
+            biz_bank_sum = CashflowBankAccount.objects.filter(
+                status=True, category='Business'
+            ).aggregate(s=Sum('current_balance'))['s'] or Decimal('0')
+
+            try:
+                main_center_cash = CashCenter.objects.get(name='Main Cash Center').current_balance.amount
+            except CashCenter.DoesNotExist:
+                main_center_cash = Decimal('0')
+
+            current_liability = bs.liability.amount if bs else Decimal('0')
+
+            context['working_capital'] = round(closing_stock + biz_bank_sum + main_center_cash + current_liability)
         return context
   
 
@@ -1032,12 +1040,30 @@ class BSListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return False
 
     def get_queryset(self):
-        bs = BalanceSheet.objects.last()
-        
-        year = bs.date.year
+        year = self.request.GET.get('year')
+        if year:
+            try:
+                year = int(year)
+            except (ValueError, TypeError):
+                year = None
+
+        if not year:
+            bs = BalanceSheet.objects.last()
+            year = bs.date.year
+
+        self.selected_year = year
         return super().get_queryset().filter(date__year=year)
 
-    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['years'] = sorted(
+            {d.year for d in BalanceSheet.objects.dates('date', 'year')},
+            reverse=True
+        )
+        context['selected_year'] = self.selected_year
+        return context
+
+
 class BSCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = BalanceSheet
     form_class = BSForm

@@ -1,12 +1,18 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block page_title %}Policies &amp; Procedures{% endblock %}
+{% block page_title %}Company Policy Manual{% endblock %}
 
 {% block content %}
 <div class="container mt-3">
+
   <div class="ds-page-header">
-    <h2 class="ds-page-header__title">Policies, Procedures &amp; Compliance</h2>
+    <div>
+      <h2 class="ds-page-header__title">Company Policy Manual</h2>
+      <p class="text-muted mb-0" style="font-size:.85rem;">
+        Beverages Limited &mdash; Effective June 2026 &mdash; Applies to all employees, contractors &amp; agents
+      </p>
+    </div>
     <div class="d-flex staff-nav-bar">
       <a class="staff-nav-link" href="{% url 'policies-docs' %}" target="_blank" rel="noopener noreferrer">
         <i class="fa fa-file-pdf-o"></i> Download PDF
@@ -17,115 +23,1159 @@
     </div>
   </div>
 
+  <!-- Tab navigation -->
   <nav>
-    <div class="nav nav-tabs" id="nav-tab" role="tablist">
-      <a class="nav-item nav-link active" id="nav-finance-tab" data-toggle="tab" href="#nav-finance" role="tab"
-         aria-controls="nav-finance" aria-selected="true">Finance</a>
-      <a class="nav-item nav-link" id="nav-abc-tab" data-toggle="tab" href="#nav-abc" role="tab"
-         aria-controls="nav-abc" aria-selected="false">Anti-Bribery</a>
-      <a class="nav-item nav-link" id="nav-compliance-tab" data-toggle="tab" href="#nav-compliance" role="tab"
-         aria-controls="nav-compliance" aria-selected="false">Compliance</a>
+    <div class="nav nav-tabs flex-wrap" id="policy-tab" role="tablist">
+      <a class="nav-item nav-link active" id="tab-hr-tab"       data-toggle="tab" href="#tab-hr"       role="tab" aria-selected="true">
+        <i class="fa fa-users"></i> HR &amp; Employment
+      </a>
+      <a class="nav-item nav-link"        id="tab-conduct-tab"  data-toggle="tab" href="#tab-conduct"  role="tab" aria-selected="false">
+        <i class="fa fa-balance-scale"></i> Conduct &amp; Ethics
+      </a>
+      <a class="nav-item nav-link"        id="tab-sales-tab"    data-toggle="tab" href="#tab-sales"    role="tab" aria-selected="false">
+        <i class="fa fa-truck"></i> Sales &amp; Distribution
+      </a>
+      <a class="nav-item nav-link"        id="tab-hse-tab"      data-toggle="tab" href="#tab-hse"      role="tab" aria-selected="false">
+        <i class="fa fa-shield"></i> HSE &amp; Quality
+      </a>
+      <a class="nav-item nav-link"        id="tab-ops-tab"      data-toggle="tab" href="#tab-ops"      role="tab" aria-selected="false">
+        <i class="fa fa-cubes"></i> Operations &amp; Customer
+      </a>
+      <a class="nav-item nav-link"        id="tab-finance-tab"  data-toggle="tab" href="#tab-finance"  role="tab" aria-selected="false">
+        <i class="fa fa-money"></i> Finance &amp; Anti-Fraud
+      </a>
+      <a class="nav-item nav-link"        id="tab-it-tab"       data-toggle="tab" href="#tab-it"       role="tab" aria-selected="false">
+        <i class="fa fa-lock"></i> IT &amp; Security
+      </a>
     </div>
   </nav>
 
-  <div class="tab-content mt-3" id="nav-tabContent">
+  <div class="tab-content mt-3" id="policy-tabContent">
 
-    <!-- Finance -->
-    <div class="tab-pane fade show active" id="nav-finance" role="tabpanel" aria-labelledby="nav-finance-tab">
-      <div class="ds-card">
-        <div class="ds-card__header"><span>Accounting, Financial &amp; Reporting Policies</span></div>
+    <!-- ══════════════════════════════════════
+         TAB 1: HR & EMPLOYMENT
+         Covers: §1 Employment & HR  |  §3 Compensation, Benefits & Leave
+    ══════════════════════════════════════ -->
+    <div class="tab-pane fade show active" id="tab-hr" role="tabpanel" aria-labelledby="tab-hr-tab">
+
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-user-plus mr-1"></i> Section 1 &mdash; Employment &amp; Human Resources Policy</span>
+        </div>
         <div class="ds-card__body">
-          <ol>
-            <li class="mb-2"><strong>Books and Records Keeping Policy</strong>
-              <ul>
-                <li>All financial transactions must be promptly, accurately, and completely recorded in Ozone's books and records.</li>
-                <li>The books and records must reflect the true nature of transactions, supported by appropriate documentation.</li>
-                <li>Falsification, alteration, or unauthorized destruction of records is strictly prohibited.</li>
-              </ul>
-            </li>
-            <li class="mb-2"><strong>Authority to Approve Payments Policy</strong>
-              <ul>
-                <li>Payments should only be made based on valid and authorized documents.</li>
-                <li>Only authorized individuals with appropriate levels of authority should approve payments.</li>
-                <li>The approval process should ensure appropriate segregation of duties.</li>
-              </ul>
-            </li>
-            <li class="mb-2"><strong>Documents Retention Policy</strong>
-              <ul>
-                <li>Ozone will retain financial documents for periods specified by applicable laws and regulations.</li>
-                <li>Documents should be stored securely and be readily accessible for audit, legal, and regulatory purposes.</li>
-                <li>Proper disposal methods should be employed to protect sensitive information.</li>
-              </ul>
-            </li>
-          </ol>
+
+          <div id="acc-hr" role="tablist">
+
+            <!-- 1.1 Recruitment -->
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-rec">
+                <h6 class="mb-0">
+                  <a data-toggle="collapse" href="#c-rec" aria-expanded="true" aria-controls="c-rec">
+                    1.1 &nbsp;Recruitment &amp; Hiring
+                  </a>
+                </h6>
+              </div>
+              <div id="c-rec" class="collapse show" role="tabpanel" data-parent="#acc-hr">
+                <div class="card-body">
+                  <ul>
+                    <li>All recruitment must follow an open, merit-based process. Nepotism, tribalism, or favouritism in hiring is a dismissible offence.</li>
+                    <li>Vacancies must be approved by management before advertisement.</li>
+                    <li>Candidates must undergo at minimum: interview and guarantor validation.</li>
+                    <li>Employment offers are subject to satisfactory background verification and medical fitness.</li>
+                    <li>No person below the age of <strong>18</strong> shall be employed in any capacity, in compliance with the Nigerian Labour Act Cap L1 LFN 2004.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- 1.2 Onboarding -->
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-onb">
+                <h6 class="mb-0">
+                  <a data-toggle="collapse" href="#c-onb" aria-expanded="false" aria-controls="c-onb" class="collapsed">
+                    1.2 &nbsp;Onboarding
+                  </a>
+                </h6>
+              </div>
+              <div id="c-onb" class="collapse" role="tabpanel" data-parent="#acc-hr">
+                <div class="card-body">
+                  <p>New hires must complete a formal onboarding program within their first two weeks. All employees must sign and receive a copy of their employment contract before resumption.</p>
+                  <p><strong>Required documents at onboarding:</strong></p>
+                  <ul>
+                    <li>Valid government-issued ID (NIN slip, international passport, or driver's licence)</li>
+                    <li>NYSC discharge / exclusion certificate (where applicable)</li>
+                    <li>Tax Identification Number (TIN)</li>
+                    <li>BVN-linked bank account details</li>
+                    <li>PenCom RSA pin or notification of new pension registration</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- 1.3 Employment Categories -->
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-cat">
+                <h6 class="mb-0">
+                  <a data-toggle="collapse" href="#c-cat" aria-expanded="false" aria-controls="c-cat" class="collapsed">
+                    1.3 &nbsp;Employment Categories &amp; Probation
+                  </a>
+                </h6>
+              </div>
+              <div id="c-cat" class="collapse" role="tabpanel" data-parent="#acc-hr">
+                <div class="card-body">
+                  <table class="table table-sm table-bordered">
+                    <thead class="thead-light"><tr><th>Category</th><th>Description</th></tr></thead>
+                    <tbody>
+                      <tr><td>Permanent Staff</td><td>Full-time employees on indefinite contracts</td></tr>
+                      <tr><td>Contract Staff</td><td>Fixed-term employment for defined projects or seasons</td></tr>
+                      <tr><td>Probationary Staff</td><td>New hires within their 3-month probation period</td></tr>
+                      <tr><td>Casual / Daily Workers</td><td>Warehouse, loading, or field support staff on daily engagement</td></tr>
+                    </tbody>
+                  </table>
+                  <ul>
+                    <li>Probationary period is <strong>three (3) months</strong>, renewable once. Confirmation of employment will be communicated in writing.</li>
+                    <li>Contract staff are not entitled to severance pay unless stipulated in their contract.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- 1.4 Working Hours -->
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-hrs">
+                <h6 class="mb-0">
+                  <a data-toggle="collapse" href="#c-hrs" aria-expanded="false" aria-controls="c-hrs" class="collapsed">
+                    1.4 &nbsp;Working Hours &amp; Overtime
+                  </a>
+                </h6>
+              </div>
+              <div id="c-hrs" class="collapse" role="tabpanel" data-parent="#acc-hr">
+                <div class="card-body">
+                  <ul>
+                    <li>Standard hours: <strong>Monday – Saturday, 8:00 AM – 5:30 PM</strong>.</li>
+                    <li>The company does not operate a routine overtime schedule. However, overtime may be requested on an occasional basis and is <strong>optional</strong> for all staff — no employee will be penalized for declining an overtime request.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- 1.5 Transfer -->
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-trf">
+                <h6 class="mb-0">
+                  <a data-toggle="collapse" href="#c-trf" aria-expanded="false" aria-controls="c-trf" class="collapsed">
+                    1.5 &nbsp;Transfer &amp; Redeployment
+                  </a>
+                </h6>
+              </div>
+              <div id="c-trf" class="collapse" role="tabpanel" data-parent="#acc-hr">
+                <div class="card-body">
+                  <ul>
+                    <li>The company reserves the right to redeploy any employee to any branch, state, or territory of operation based on business needs. Adequate written notice will be given to allow ample time for the employee to relocate.</li>
+                    <li>Relocation support will be provided, which may include a financial allowance or the provision of accommodation, as determined by management.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /acc-hr -->
         </div>
       </div>
-    </div>
 
-    <!-- Anti-Bribery -->
-    <div class="tab-pane fade" id="nav-abc" role="tabpanel" aria-labelledby="nav-abc-tab">
-      <div class="ds-card">
-        <div class="ds-card__header"><span>Anti-Bribery and Corruption Policy</span></div>
+      <!-- Section 3: Compensation -->
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-credit-card mr-1"></i> Section 3 &mdash; Compensation, Benefits &amp; Leave Policy</span>
+        </div>
         <div class="ds-card__body">
-          <ol>
-            <li class="mb-2"><strong>Introduction</strong>
-              <p>Ozone is committed to conducting its business with the highest ethical standards. This policy establishes our stance against bribery and corruption.</p>
-            </li>
-            <li class="mb-2"><strong>Policy Statement</strong>
-              <ul>
-                <li>Ozone strictly prohibits bribery and corruption in all its forms.</li>
-                <li>We maintain a zero-tolerance approach; any violation will result in disciplinary action.</li>
-              </ul>
-            </li>
-            <li class="mb-2"><strong>Prohibited Activities</strong>
-              <ul>
-                <li>Offering, giving, receiving, or soliciting bribes, kickbacks, or improper payments.</li>
-                <li>Making facilitation payments to expedite routine government actions.</li>
-                <li>Participating in any activity that could create an actual or perceived conflict of interest.</li>
-              </ul>
-            </li>
-            <li class="mb-2"><strong>Reporting &amp; Whistleblowing</strong>
-              <ul>
-                <li>Employees, contractors, and stakeholders are encouraged to report any suspected instances of bribery or corruption without fear of reprisal.</li>
-                <li>An anonymous reporting mechanism is available to facilitate reporting.</li>
-              </ul>
-            </li>
-          </ol>
+
+          <div id="acc-comp" role="tablist">
+
+            <!-- 3.1 Salary -->
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-sal">
+                <h6 class="mb-0">
+                  <a data-toggle="collapse" href="#c-sal" aria-expanded="true" aria-controls="c-sal">
+                    3.1 &nbsp;Salary &amp; Pay Schedule
+                  </a>
+                </h6>
+              </div>
+              <div id="c-sal" class="collapse show" role="tabpanel" data-parent="#acc-comp">
+                <div class="card-body">
+                  <ul>
+                    <li>Salaries are paid no earlier than the <strong>28th of the current month</strong> and no later than the <strong>2nd of the following month</strong>, directly to the employee's nominated bank account.</li>
+                    <li>Pay slips shall be issued showing gross pay, statutory deductions (PAYE, pension, NHF), and net pay.</li>
+                    <li>The company believes in rewarding excellent performance and may provide additional compensation above standard pay in recognition of outstanding contributions.</li>
+                  </ul>
+                  <p class="mt-2 mb-1"><strong>Salary Structure:</strong></p>
+                  <table class="table table-sm table-bordered">
+                    <thead class="thead-light">
+                      <tr><th>Component</th><th>Proportion</th><th>Tax Treatment</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Basic Salary</td><td>40% of gross</td><td>Taxable (PAYE applies)</td></tr>
+                      <tr><td>Allowances (grouped)</td><td>60% of gross</td><td>Consolidated as a single allowance package</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3.2 Statutory -->
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-stat">
+                <h6 class="mb-0">
+                  <a data-toggle="collapse" href="#c-stat" aria-expanded="false" aria-controls="c-stat" class="collapsed">
+                    3.2 &nbsp;Statutory Deductions &amp; Compliance
+                  </a>
+                </h6>
+              </div>
+              <div id="c-stat" class="collapse" role="tabpanel" data-parent="#acc-comp">
+                <div class="card-body">
+                  <ul>
+                    <li><strong>PAYE Tax</strong> — Deducted at source and remitted to the relevant State Internal Revenue Service by the <strong>10th of the following month</strong>.</li>
+                    <li><strong>Pension</strong> — <strong>8% employee</strong> contribution and <strong>10% employer</strong> contribution remitted to the employee's PFA monthly (Pension Reform Act 2014).</li>
+                    <li><strong>NHF</strong> — <strong>2.5%</strong> of monthly basic salary remitted to the Federal Mortgage Bank of Nigeria (FMBN) for eligible employees.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3.3 Leave -->
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-lv">
+                <h6 class="mb-0">
+                  <a data-toggle="collapse" href="#c-lv" aria-expanded="false" aria-controls="c-lv" class="collapsed">
+                    3.3 &nbsp;Leave Entitlements
+                  </a>
+                </h6>
+              </div>
+              <div id="c-lv" class="collapse" role="tabpanel" data-parent="#acc-comp">
+                <div class="card-body">
+                  <p>The company permits staff to take leave for the following reasons. Due to the nature of our business, the duration of leave is <strong>discretionary and negotiated</strong> with management on a case-by-case basis — no fixed number of days is prescribed.</p>
+                  <table class="table table-sm table-bordered">
+                    <thead class="thead-light">
+                      <tr><th>Leave Type</th><th>Notes</th></tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Annual Leave</td><td>Minimum 12 months of service required</td></tr>
+                      <tr><td>Sick Leave</td><td>Medical certificate required for extended absence</td></tr>
+                      <tr><td>Maternity Leave</td><td>No dismissal during maternity leave</td></tr>
+                      <tr><td>Paternity Leave</td><td>Permanent male staff only</td></tr>
+                      <tr><td>Casual / Emergency Leave</td><td>With line manager approval</td></tr>
+                      <tr><td>Examination Leave</td><td>Approved professional qualifications only</td></tr>
+                      <tr><td>Bereavement Leave</td><td>Spouse, parent, child, or sibling</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3.4 Allowances -->
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-allow">
+                <h6 class="mb-0">
+                  <a data-toggle="collapse" href="#c-allow" aria-expanded="false" aria-controls="c-allow" class="collapsed">
+                    3.4 &nbsp;Allowances &amp; Benefits
+                  </a>
+                </h6>
+              </div>
+              <div id="c-allow" class="collapse" role="tabpanel" data-parent="#acc-comp">
+                <div class="card-body">
+                  <ul>
+                    <li><strong>Management Benefits</strong> — Staff who grow into management positions may be entitled to additional benefits as deemed fit by the business owner. Such benefits remain in place for as long as the staff member continues to be engaged with the company.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /acc-comp -->
         </div>
       </div>
-    </div>
 
-    <!-- Compliance -->
-    <div class="tab-pane fade" id="nav-compliance" role="tabpanel" aria-labelledby="nav-compliance-tab">
-      <div class="ds-card">
-        <div class="ds-card__header"><span>Compliance Roles, Policies &amp; Procedures</span></div>
+    </div><!-- /tab-hr -->
+
+
+    <!-- ══════════════════════════════════════
+         TAB 2: CONDUCT & ETHICS
+         Covers: §2 Code of Conduct  |  §10 Disciplinary & Grievance
+    ══════════════════════════════════════ -->
+    <div class="tab-pane fade" id="tab-conduct" role="tabpanel" aria-labelledby="tab-conduct-tab">
+
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-balance-scale mr-1"></i> Section 2 &mdash; Code of Conduct &amp; Ethics</span>
+        </div>
         <div class="ds-card__body">
-          <ol>
-            <li class="mb-2"><strong>Compliance Manager</strong>
-              <ul>
-                <li>Responsible for overseeing the compliance function and ensuring adherence to all relevant laws, regulations, and internal policies.</li>
-              </ul>
-            </li>
-            <li class="mb-2"><strong>Compliance Policies and Procedures</strong>
-              <ul>
-                <li>The compliance function develops, implements, and maintains comprehensive compliance policies aligned with applicable laws and regulations.</li>
-              </ul>
-            </li>
-            <li class="mb-2"><strong>Risk Assessment and Monitoring</strong>
-              <ul>
-                <li>The compliance team conducts regular risk assessments to identify potential compliance risks and vulnerabilities.</li>
-              </ul>
-            </li>
-            <li class="mb-2"><strong>Training and Awareness</strong>
-              <ul>
-                <li>Training programs are designed and delivered to educate employees on their compliance obligations and promote a culture of ethics and integrity.</li>
-              </ul>
-            </li>
-          </ol>
+          <div id="acc-conduct" role="tablist">
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-vals">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-vals">2.1 &nbsp;Core Values</a></h6>
+              </div>
+              <div id="c-vals" class="collapse show" data-parent="#acc-conduct">
+                <div class="card-body">
+                  <ul>
+                    <li><strong>Integrity</strong> — Honesty in all dealings, internal and external.</li>
+                    <li><strong>Accountability</strong> — Taking responsibility for actions and results.</li>
+                    <li><strong>Respect</strong> — Treating colleagues, customers, and partners with dignity regardless of tribe, religion, gender, or status.</li>
+                    <li><strong>Excellence</strong> — Consistently delivering quality in products and service.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-coi">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-coi" class="collapsed">2.2 &nbsp;Conflict of Interest</a></h6>
+              </div>
+              <div id="c-coi" class="collapse" data-parent="#acc-conduct">
+                <div class="card-body">
+                  <ul>
+                    <li>Employees must not own, operate, or be employed by a competitor or supplier without written disclosure and approval from management.</li>
+                    <li>Employees involved in procurement must declare any relationship with vendors before any contract award.</li>
+                    <li>Gifts valued above <strong>₦10,000</strong> must be declared to a line manager. Gifts above <strong>₦25,000</strong> must be returned or surrendered to the company.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-conf">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-conf" class="collapsed">2.3 &nbsp;Confidentiality</a></h6>
+              </div>
+              <div id="c-conf" class="collapse" data-parent="#acc-conduct">
+                <div class="card-body">
+                  <p>The following are strictly confidential and must not be shared externally during or after employment: pricing structures, customer lists, trade routes, formulas, supplier agreements, and financial data.</p>
+                  <p>Violation of confidentiality obligations is a ground for immediate dismissal and may attract civil or criminal liability.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-sm">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-sm" class="collapsed">2.4 &nbsp;Social Media &amp; Public Communication</a></h6>
+              </div>
+              <div id="c-sm" class="collapse" data-parent="#acc-conduct">
+                <div class="card-body">
+                  <ul>
+                    <li>Employees must not post content that disparages the company, its products, customers, or competitors on any social media platform.</li>
+                    <li>Only the Managing Director or designated spokesperson may make official statements to the press on behalf of the company.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-dress">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-dress" class="collapsed">2.5 &nbsp;Dress Code</a></h6>
+              </div>
+              <div id="c-dress" class="collapse" data-parent="#acc-conduct">
+                <div class="card-body">
+                  <ul>
+                    <li><strong>Office staff:</strong> Formal or smart-casual Monday to Thursday; smart-casual on Fridays.</li>
+                    <li><strong>Field / Sales staff:</strong> Company-branded uniform or polo while on duty.</li>
+                    <li><strong>Warehouse / Logistics:</strong> Company uniform and mandatory PPE at all times on site.</li>
+                    <li>Traditional attire is permitted on designated cultural celebration days.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
-    </div>
 
-  </div>
+      <!-- Section 10: Disciplinary -->
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-gavel mr-1"></i> Section 10 &mdash; Disciplinary &amp; Grievance Policy</span>
+        </div>
+        <div class="ds-card__body">
+          <div id="acc-disc" role="tablist">
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-dprinciple">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-dprinciple">10.1 &nbsp;Principles</a></h6>
+              </div>
+              <div id="c-dprinciple" class="collapse show" data-parent="#acc-disc">
+                <div class="card-body">
+                  <p>All disciplinary actions will be conducted fairly, consistently, and in accordance with the Nigerian Labour Act. No employee will be dismissed without a fair hearing.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-doffence">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-doffence" class="collapsed">10.2 &nbsp;Categories of Offences</a></h6>
+              </div>
+              <div id="c-doffence" class="collapse" data-parent="#acc-disc">
+                <div class="card-body">
+                  <p><strong>Minor Offences</strong> (verbal or written warning):</p>
+                  <ul>
+                    <li>Unpunctuality or unauthorized absence</li>
+                    <li>Dress code violations</li>
+                    <li>Failure to submit reports on time</li>
+                    <li>Minor insubordination</li>
+                  </ul>
+                  <p><strong>Serious Offences</strong> (final written warning or suspension):</p>
+                  <ul>
+                    <li>Repeated minor offences after prior warnings</li>
+                    <li>Deliberate destruction of company property</li>
+                    <li>Harassment of a colleague</li>
+                    <li>Unauthorized disclosure of company information</li>
+                  </ul>
+                  <p><strong>Gross Misconduct</strong> (summary dismissal without notice):</p>
+                  <ul>
+                    <li>Theft or fraud of any amount</li>
+                    <li>Selling expired or counterfeit products</li>
+                    <li>Physical assault on a colleague, customer, or manager</li>
+                    <li>Sexual harassment</li>
+                    <li>Bribery or receipt of kickbacks</li>
+                    <li>Falsification of records or documents</li>
+                    <li>Reporting to work under the influence of alcohol or drugs</li>
+                    <li>Willfully providing false information during recruitment</li>
+                    <li>Unauthorized sale of company stock or assets</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-dproc">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-dproc" class="collapsed">10.3 &nbsp;Disciplinary Procedure</a></h6>
+              </div>
+              <div id="c-dproc" class="collapse" data-parent="#acc-disc">
+                <div class="card-body">
+                  <ol>
+                    <li>Allegation documented and communicated in writing to the employee.</li>
+                    <li>Employee given a minimum of <strong>48 hours</strong> to respond in writing or request a hearing.</li>
+                    <li>Panel hearing held (HR, Line Manager, and a neutral senior staff member).</li>
+                    <li>Decision communicated in writing within <strong>5 working days</strong> of the hearing.</li>
+                    <li>Right of appeal within <strong>7 working days</strong> of receiving the decision.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-grieve">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-grieve" class="collapsed">10.4 &nbsp;Grievance Procedure</a></h6>
+              </div>
+              <div id="c-grieve" class="collapse" data-parent="#acc-disc">
+                <div class="card-body">
+                  <ol>
+                    <li>Raise complaint with immediate line manager.</li>
+                    <li>If unresolved within <strong>5 days</strong>, escalate to HR in writing.</li>
+                    <li>HR will investigate and provide a formal response within <strong>10 working days</strong>.</li>
+                    <li>If still unresolved, the matter is referred to the MD for final resolution.</li>
+                  </ol>
+                  <p class="text-danger mb-0"><i class="fa fa-exclamation-circle"></i> The company will not tolerate victimization of any employee for raising a legitimate grievance.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-conduct -->
+
+
+    <!-- ══════════════════════════════════════
+         TAB 3: SALES & DISTRIBUTION
+         Covers: §4 Sales, Distribution & Trade Policy
+    ══════════════════════════════════════ -->
+    <div class="tab-pane fade" id="tab-sales" role="tabpanel" aria-labelledby="tab-sales-tab">
+
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-truck mr-1"></i> Section 4 &mdash; Sales, Distribution &amp; Trade Policy</span>
+        </div>
+        <div class="ds-card__body">
+          <div id="acc-sales" role="tablist">
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-seg">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-seg">4.1 &nbsp;Customer Classification</a></h6>
+              </div>
+              <div id="c-seg" class="collapse show" data-parent="#acc-sales">
+                <div class="card-body">
+                  <table class="table table-sm table-bordered">
+                    <thead class="thead-light"><tr><th>Segment</th><th>Description</th></tr></thead>
+                    <tbody>
+                      <tr><td><strong>Distributors</strong></td><td>Large-volume partners assigned exclusive or non-exclusive territories</td></tr>
+                      <tr><td><strong>Wholesalers</strong></td><td>Mid-tier buyers supplying retailers within a local government area</td></tr>
+                      <tr><td><strong>Retailers</strong></td><td>Open-market traders, kiosks, restaurants, and provision stores</td></tr>
+                      <tr><td><strong>Key Accounts</strong></td><td>Hotels, eateries, event caterers, and institutional buyers on contract terms</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-price">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-price" class="collapsed">4.2 &nbsp;Pricing &amp; Trade Terms</a></h6>
+              </div>
+              <div id="c-price" class="collapse" data-parent="#acc-sales">
+                <div class="card-body">
+                  <ul>
+                    <li>Official prices are issued by the Sales Director with a minimum of <strong>72-hour notice</strong> to distributors for any change.</li>
+                    <li>Salespeople are not authorized to offer unofficial discounts, extended credit, or free goods without written approval.</li>
+                    <li>All transactions above <strong>₦500,000</strong> must be backed by a Purchase Order or signed invoice before dispatch.</li>
+                    <li>Credit terms are extended only to approved distributors and key accounts as defined in each customer's trade agreement.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-route">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-route" class="collapsed">4.3 &nbsp;Route-to-Market &amp; Territory Management</a></h6>
+              </div>
+              <div id="c-route" class="collapse" data-parent="#acc-sales">
+                <div class="card-body">
+                  <ul>
+                    <li>Each sales representative is assigned a defined territory. Selling outside an assigned territory requires area manager approval.</li>
+                    <li>Daily route plans must be submitted to the area manager every Monday morning.</li>
+                    <li>Sales representatives must visit a minimum of <strong>25 customers per day</strong> and complete call cards or digital logs for every visit.</li>
+                    <li>Poaching customers from a colleague's territory is a disciplinary offence.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-ret">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-ret" class="collapsed">4.4 &nbsp;Returns &amp; Breakages</a></h6>
+              </div>
+              <div id="c-ret" class="collapse" data-parent="#acc-sales">
+                <div class="card-body">
+                  <ul>
+                    <li>Only damaged or expired products with valid reason codes are accepted as returns.</li>
+                    <li>Returns must be documented on an official credit note signed by both the sales rep and the customer.</li>
+                    <li>Products returned due to sales rep negligence (improper loading, wrong delivery) will attract a cost recovery from the responsible staff.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-van">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-van" class="collapsed">4.5 &nbsp;Van Sales &amp; Route Accounting</a></h6>
+              </div>
+              <div id="c-van" class="collapse" data-parent="#acc-sales">
+                <div class="card-body">
+                  <ul>
+                    <li>Van sales representatives must reconcile their stock and cash at the <strong>end of every business day</strong>.</li>
+                    <li>Unremitted cash or missing stock at end of day is the sole financial responsibility of the van sales rep.</li>
+                    <li>Pre-loaded vehicles must be signed off by both the loader and the van sales rep before departure.</li>
+                    <li>Cash collected must <strong>never</strong> be used for personal expenses.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-promo">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-promo" class="collapsed">4.6 &nbsp;Trade Promotions &amp; Activations</a></h6>
+              </div>
+              <div id="c-promo" class="collapse" data-parent="#acc-sales">
+                <div class="card-body">
+                  <ul>
+                    <li>Trade promotions (price-off, free goods, consumer prizes) must be pre-approved by the Sales Director with a written brief stating objectives, cost, duration, and target.</li>
+                    <li>Free goods used for unauthorized promotions or personal gain will result in disciplinary action.</li>
+                    <li>All trade activation materials (branded items, display units, signage) remain company assets and must be tracked.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-sales -->
+
+
+    <!-- ══════════════════════════════════════
+         TAB 4: HSE & QUALITY
+         Covers: §5 HSE  |  §6 NAFDAC & Quality
+    ══════════════════════════════════════ -->
+    <div class="tab-pane fade" id="tab-hse" role="tabpanel" aria-labelledby="tab-hse-tab">
+
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-medkit mr-1"></i> Section 5 &mdash; Health, Safety &amp; Environment (HSE) Policy</span>
+        </div>
+        <div class="ds-card__body">
+          <div id="acc-hse" role="tablist">
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-wsafe">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-wsafe">5.2 &nbsp;General Workplace Safety Rules</a></h6>
+              </div>
+              <div id="c-wsafe" class="collapse show" data-parent="#acc-hse">
+                <div class="card-body">
+                  <ul>
+                    <li>PPE (hairnets, gloves, safety boots, reflective vests) is <strong>mandatory</strong> in production, warehouse, and loading areas.</li>
+                    <li>No smoking on company premises at any time.</li>
+                    <li>Alcohol or controlled substances before or during work hours is strictly prohibited.</li>
+                    <li>All accidents, near-misses, and injuries must be reported to the line manager and HSE officer within <strong>1 hour</strong> of occurrence.</li>
+                    <li>Horseplay or conduct that creates unnecessary risk to colleagues is prohibited.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-road">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-road" class="collapsed">5.3 &nbsp;Road Safety (Drivers &amp; Van Sales Staff)</a></h6>
+              </div>
+              <div id="c-road" class="collapse" data-parent="#acc-hse">
+                <div class="card-body">
+                  <ul>
+                    <li>All company drivers must hold a valid Nigerian driver's licence appropriate for the class of vehicle.</li>
+                    <li>Speeding, use of mobile phone while driving, or driving under the influence is grounds for immediate suspension pending investigation.</li>
+                    <li>Seatbelts must be worn at all times by all vehicle occupants.</li>
+                    <li>Vehicles must undergo pre-trip inspection every morning; no defective vehicle shall be dispatched.</li>
+                    <li>The company complies with <strong>FRSC</strong> regulations and vehicle roadworthiness standards.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-fire">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-fire" class="collapsed">5.4 &nbsp;Fire Safety</a></h6>
+              </div>
+              <div id="c-fire" class="collapse" data-parent="#acc-hse">
+                <div class="card-body">
+                  <ul>
+                    <li>All staff must know the location of fire extinguishers and emergency exits in their work area.</li>
+                    <li>Fire drills will be conducted at least <strong>twice per year</strong>.</li>
+                    <li>Blocking emergency exits with goods or equipment is prohibited.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-env">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-env" class="collapsed">5.6 &nbsp;Environmental Responsibility</a></h6>
+              </div>
+              <div id="c-env" class="collapse" data-parent="#acc-hse">
+                <div class="card-body">
+                  <ul>
+                    <li>Waste (bottles, packaging, chemicals) must be disposed of in designated bins or through approved waste management contractors.</li>
+                    <li>Effluent or liquid waste must not be discharged into drainage without treatment where required.</li>
+                    <li>The company complies with all <strong>NESREA</strong> guidelines applicable to beverage production and distribution.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 6: NAFDAC -->
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-certificate mr-1"></i> Section 6 &mdash; Quality Assurance &amp; NAFDAC Compliance</span>
+        </div>
+        <div class="ds-card__body">
+          <div id="acc-nafdac" role="tablist">
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-nafdac">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-nafdac">6.1 &nbsp;NAFDAC Registration &amp; Compliance</a></h6>
+              </div>
+              <div id="c-nafdac" class="collapse show" data-parent="#acc-nafdac">
+                <div class="card-body">
+                  <ul>
+                    <li>All products sold under the company's brand must be duly registered with <strong>NAFDAC</strong>.</li>
+                    <li>No product modification (formulation, packaging, labeling) may be made without updating the NAFDAC registration.</li>
+                    <li>NAFDAC inspections must be cooperated with fully. No employee shall obstruct or mislead regulatory inspectors.</li>
+                    <li>Any NAFDAC correspondence or directive must be escalated to the Quality Manager and MD within <strong>24 hours</strong> of receipt.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-qstd">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-qstd" class="collapsed">6.2 &nbsp;Product Quality Standards</a></h6>
+              </div>
+              <div id="c-qstd" class="collapse" data-parent="#acc-nafdac">
+                <div class="card-body">
+                  <ul>
+                    <li>All finished goods must meet internal quality specifications before release from the warehouse.</li>
+                    <li>Batch testing records must be maintained for a minimum of <strong>3 years</strong> and made available for audit on demand.</li>
+                    <li>Any batch that fails quality checks must be quarantined, clearly labeled <strong>"HOLD — Not for Sale,"</strong> and disposed of per approved procedures.</li>
+                    <li>Staff must not release, sell, or distribute any product under a quality hold.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-expiry">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-expiry" class="collapsed">6.3 &nbsp;Shelf Life &amp; Expiry Management</a></h6>
+              </div>
+              <div id="c-expiry" class="collapse" data-parent="#acc-nafdac">
+                <div class="card-body">
+                  <ul>
+                    <li>Products with less than <strong>30% of their remaining shelf life</strong> at the time of delivery must not be dispatched without the customer's written consent.</li>
+                    <li>Sales representatives must actively manage near-expiry stock in trade and escalate aging stock to their area manager immediately.</li>
+                    <li class="text-danger"><strong>Selling expired products is a zero-tolerance offence</strong> and may attract legal liability for both the individual and the company.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-hse -->
+
+
+    <!-- ══════════════════════════════════════
+         TAB 5: OPERATIONS & CUSTOMER
+         Covers: §7 Supply Chain & Warehouse  |  §9 Customer Relations
+    ══════════════════════════════════════ -->
+    <div class="tab-pane fade" id="tab-ops" role="tabpanel" aria-labelledby="tab-ops-tab">
+
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-cubes mr-1"></i> Section 7 &mdash; Supply Chain, Inventory &amp; Warehouse Policy</span>
+        </div>
+        <div class="ds-card__body">
+          <div id="acc-sc" role="tablist">
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-proc">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-proc">7.1 &nbsp;Procurement</a></h6>
+              </div>
+              <div id="c-proc" class="collapse show" data-parent="#acc-sc">
+                <div class="card-body">
+                  <ul>
+                    <li>All purchases above <strong>₦100,000</strong> require at least three (3) competitive quotations and must be approved by the Finance Manager and relevant department head.</li>
+                    <li>Purchases above <strong>₦1,000,000</strong> require MD approval.</li>
+                    <li>No purchase order shall be raised by the same person who approves payment — <strong>segregation of duties is mandatory</strong>.</li>
+                    <li>The company gives preference to Nigerian suppliers of comparable quality and price (local content policy).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-recv">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-recv" class="collapsed">7.2 &nbsp;Receiving &amp; Goods-In</a></h6>
+              </div>
+              <div id="c-recv" class="collapse" data-parent="#acc-sc">
+                <div class="card-body">
+                  <ul>
+                    <li>All incoming goods must be inspected against the purchase order for quantity, quality, and specification before acceptance.</li>
+                    <li>A <strong>Goods Received Note (GRN)</strong> must be raised and signed by the storekeeper and supervisor for every delivery.</li>
+                    <li>Unapproved or uninspected goods must not enter the warehouse or production area.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-inv">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-inv" class="collapsed">7.3 &nbsp;Inventory Management</a></h6>
+              </div>
+              <div id="c-inv" class="collapse" data-parent="#acc-sc">
+                <div class="card-body">
+                  <ul>
+                    <li>Physical stock counts must be conducted at the end of <strong>every month</strong>. Surprise spot counts may be ordered at any time.</li>
+                    <li>Any stock variance must be investigated and resolved within <strong>48 hours</strong>.</li>
+                    <li>Inventory discrepancies above <strong>1% of total stock value</strong> without satisfactory explanation will trigger a formal investigation.</li>
+                    <li><strong>FIFO (First In, First Out)</strong> must be applied strictly at all times to manage shelf life.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-wh">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-wh" class="collapsed">7.4 &nbsp;Warehouse Rules</a></h6>
+              </div>
+              <div id="c-wh" class="collapse" data-parent="#acc-sc">
+                <div class="card-body">
+                  <ul>
+                    <li>Access to the warehouse is restricted to authorized personnel only.</li>
+                    <li>No person may remove goods from the warehouse without a signed delivery order.</li>
+                    <li>Eating, drinking (other than water), or smoking inside the warehouse is prohibited.</li>
+                    <li>Pallets and shelves must be maintained in an organized, clearly labeled state.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 9: Customer -->
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-handshake-o mr-1"></i> Section 9 &mdash; Customer Relations &amp; Service Policy</span>
+        </div>
+        <div class="ds-card__body">
+          <div id="acc-cust" role="tablist">
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-cx">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-cx">9.2 &nbsp;Customer Complaints</a></h6>
+              </div>
+              <div id="c-cx" class="collapse show" data-parent="#acc-cust">
+                <div class="card-body">
+                  <ul>
+                    <li>All customer complaints must be acknowledged within <strong>4 hours</strong> and resolved within <strong>48 hours</strong> for routine issues, or <strong>5 working days</strong> for product quality complaints.</li>
+                    <li>Complaints must be logged in the customer complaints register.</li>
+                    <li>Sales representatives must never argue with or insult a customer — complaints beyond the rep's authority must be escalated to the area manager.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-credit">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-credit" class="collapsed">9.3 &nbsp;Credit Customers</a></h6>
+              </div>
+              <div id="c-credit" class="collapse" data-parent="#acc-cust">
+                <div class="card-body">
+                  <ul>
+                    <li>Approved credit customers must receive monthly statements of account.</li>
+                    <li>Outstanding invoices beyond agreed terms must be escalated to the credit control officer.</li>
+                    <li>Concealing bad debts from management is a disciplinary offence.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-dist">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-dist" class="collapsed">9.4 &nbsp;Distributor Agreements</a></h6>
+              </div>
+              <div id="c-dist" class="collapse" data-parent="#acc-cust">
+                <div class="card-body">
+                  <ul>
+                    <li>All distributors must sign a formal distributor agreement before being assigned a territory or receiving credit.</li>
+                    <li>Agreements must define: pricing, minimum purchase commitments, territory, payment terms, non-compete clauses, and termination conditions.</li>
+                    <li>Distributor agreements are reviewed annually.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-ops -->
+
+
+    <!-- ══════════════════════════════════════
+         TAB 6: FINANCE & ANTI-FRAUD
+         Covers: §8 Finance, Expense & Anti-Fraud
+    ══════════════════════════════════════ -->
+    <div class="tab-pane fade" id="tab-finance" role="tabpanel" aria-labelledby="tab-finance-tab">
+
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-money mr-1"></i> Section 8 &mdash; Finance, Expense &amp; Anti-Fraud Policy</span>
+        </div>
+        <div class="ds-card__body">
+          <div id="acc-fin" role="tablist">
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-auth">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-auth">8.1 &nbsp;Financial Authorizations</a></h6>
+              </div>
+              <div id="c-auth" class="collapse show" data-parent="#acc-fin">
+                <div class="card-body">
+                  <table class="table table-sm table-bordered">
+                    <thead class="thead-light"><tr><th>Transaction Value</th><th>Approval Required</th></tr></thead>
+                    <tbody>
+                      <tr><td>Up to ₦50,000</td><td>Department Head</td></tr>
+                      <tr><td>₦50,001 – ₦500,000</td><td>Finance Manager</td></tr>
+                      <tr><td>₦500,001 – ₦2,000,000</td><td>Finance Manager + MD</td></tr>
+                      <tr><td>Above ₦2,000,000</td><td>MD + Board / Chairman</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-petty">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-petty" class="collapsed">8.2 &nbsp;Petty Cash</a></h6>
+              </div>
+              <div id="c-petty" class="collapse" data-parent="#acc-fin">
+                <div class="card-body">
+                  <ul>
+                    <li>Each department maintains a petty cash float not exceeding <strong>₦50,000</strong>.</li>
+                    <li>Petty cash is for minor operational expenses only — it must not be used to split transactions and circumvent the procurement approval process.</li>
+                    <li>Replenishment requires a proper reconciliation submitted with valid receipts.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-exp">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-exp" class="collapsed">8.3 &nbsp;Expense Claims &amp; Reimbursement</a></h6>
+              </div>
+              <div id="c-exp" class="collapse" data-parent="#acc-fin">
+                <div class="card-body">
+                  <ul>
+                    <li>All expense claims must be submitted within <strong>5 working days</strong> of incurring the expense with valid receipts.</li>
+                    <li>Claims submitted after 30 days will not be honored.</li>
+                    <li class="text-danger">Inflating expenses, submitting false receipts, or claiming personal expenditure is fraud and will result in immediate dismissal and possible prosecution.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-bank">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-bank" class="collapsed">8.4 &nbsp;Banking &amp; Cash Handling</a></h6>
+              </div>
+              <div id="c-bank" class="collapse" data-parent="#acc-fin">
+                <div class="card-body">
+                  <ul>
+                    <li>All company revenue must be deposited into the company's bank account within <strong>24 hours</strong> of collection.</li>
+                    <li>No employee shall maintain or operate an unofficial account in the company's name.</li>
+                    <li>Splitting deposits to avoid reporting thresholds or regulatory attention is prohibited.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-fraud">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-fraud" class="collapsed">8.5 &nbsp;Anti-Fraud &amp; Anti-Corruption</a></h6>
+              </div>
+              <div id="c-fraud" class="collapse" data-parent="#acc-fin">
+                <div class="card-body">
+                  <ul>
+                    <li>The company has a <strong>zero-tolerance policy</strong> for fraud, bribery, kickbacks, and financial manipulation of any kind.</li>
+                    <li>Any employee who suspects fraud must report it to the MD or the designated whistleblower contact without fear of retaliation.</li>
+                    <li>Victimizing a whistleblower is itself a dismissible offence.</li>
+                    <li>The company complies with the <strong>Corrupt Practices and Other Related Offences Act</strong> and will cooperate with the ICPC or EFCC in any investigation.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-tax">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-tax" class="collapsed">8.6 &nbsp;Taxes &amp; Government Obligations</a></h6>
+              </div>
+              <div id="c-tax" class="collapse" data-parent="#acc-fin">
+                <div class="card-body">
+                  <ul>
+                    <li><strong>VAT</strong> — Filed and remitted to FIRS on or before the <strong>21st of each month</strong>.</li>
+                    <li><strong>Corporate Income Tax (CIT)</strong> — Annual returns filed in compliance with the Companies Income Tax Act (CITA).</li>
+                    <li><strong>Withholding Tax</strong> — Deducted on applicable contracts and remitted as required by law.</li>
+                    <li>No employee shall advise, arrange, or participate in tax evasion schemes.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-finance -->
+
+
+    <!-- ══════════════════════════════════════
+         TAB 7: IT & SECURITY
+         Covers: §11 IT & Data  |  §12 Security & Asset Protection
+    ══════════════════════════════════════ -->
+    <div class="tab-pane fade" id="tab-it" role="tabpanel" aria-labelledby="tab-it-tab">
+
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-desktop mr-1"></i> Section 11 &mdash; IT, Data &amp; Communication Policy</span>
+        </div>
+        <div class="ds-card__body">
+          <div id="acc-it" role="tablist">
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-dev">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-dev">11.1 &nbsp;Company Devices &amp; Systems</a></h6>
+              </div>
+              <div id="c-dev" class="collapse show" data-parent="#acc-it">
+                <div class="card-body">
+                  <ul>
+                    <li>Company-issued phones, laptops, tablets, and software accounts are for business use only.</li>
+                    <li>Installation of unauthorized software on company devices is prohibited.</li>
+                    <li>Employees must not share their login credentials with any other person.</li>
+                    <li>All company data stored on personal devices must be removed upon separation from the company.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-net">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-net" class="collapsed">11.2 &nbsp;Internet &amp; Email Use</a></h6>
+              </div>
+              <div id="c-net" class="collapse" data-parent="#acc-it">
+                <div class="card-body">
+                  <ul>
+                    <li>Company internet access must not be used for streaming entertainment, gambling, or accessing inappropriate content.</li>
+                    <li>Official company emails must be used for all business communication — personal email accounts must not be used to send company documents.</li>
+                    <li>All outbound emails containing pricing, financial data, or customer information should be treated as sensitive.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-ndpa">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-ndpa" class="collapsed">11.3 &nbsp;Data Privacy (NDPA 2023)</a></h6>
+              </div>
+              <div id="c-ndpa" class="collapse" data-parent="#acc-it">
+                <div class="card-body">
+                  <ul>
+                    <li>Customer and employee personal data is collected and processed only for legitimate business purposes.</li>
+                    <li>Sharing customer or employee data with third parties without authorization is a disciplinary offence.</li>
+                    <li>The company complies with the <strong>Nigeria Data Protection Act 2023 (NDPA)</strong> in all handling of personal data.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 12: Security -->
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-lock mr-1"></i> Section 12 &mdash; Security &amp; Asset Protection Policy</span>
+        </div>
+        <div class="ds-card__body">
+          <div id="acc-sec" role="tablist">
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-premises">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-premises">12.1 &nbsp;Premises Security</a></h6>
+              </div>
+              <div id="c-premises" class="collapse show" data-parent="#acc-sec">
+                <div class="card-body">
+                  <ul>
+                    <li>All visitors must sign in at the gate and be issued a visitor badge. No unaccompanied visitor shall have access to the warehouse, production area, or offices.</li>
+                    <li>Employees must wear their ID cards visibly at all times on company premises.</li>
+                    <li>Suspicious individuals or activities must be reported to security and management immediately.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-fleet">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-fleet" class="collapsed">12.2 &nbsp;Vehicle &amp; Fleet Security</a></h6>
+              </div>
+              <div id="c-fleet" class="collapse" data-parent="#acc-sec">
+                <div class="card-body">
+                  <ul>
+                    <li>Company vehicles must be parked in secure, approved locations overnight.</li>
+                    <li>Drivers must not leave loaded vehicles unattended in open or unsecured locations.</li>
+                    <li>In the event of a robbery, drivers must prioritize personal safety, then call management and the nearest police station immediately.</li>
+                    <li>All company vehicles must have functional trackers. <strong>Tampering with a tracker is a gross misconduct offence.</strong></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-cash-t">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-cash-t" class="collapsed">12.3 &nbsp;Cash-in-Transit</a></h6>
+              </div>
+              <div id="c-cash-t" class="collapse" data-parent="#acc-sec">
+                <div class="card-body">
+                  <ul>
+                    <li>Sales staff carrying cash above <strong>₦500,000</strong> must notify management and follow the approved cash movement protocol.</li>
+                    <li>Cash must not be transported in unmarked bags or displayed openly.</li>
+                    <li>The company will work with licensed security companies for high-value cash movements where applicable.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card mb-2 border">
+              <div class="card-header" role="tab" id="h-diver">
+                <h6 class="mb-0"><a data-toggle="collapse" href="#c-diver" class="collapsed">12.4 &nbsp;Product Diversion &amp; Counterfeiting</a></h6>
+              </div>
+              <div id="c-diver" class="collapse" data-parent="#acc-sec">
+                <div class="card-body">
+                  <ul>
+                    <li>Employees must report any knowledge of product diversion (selling outside approved channels), counterfeiting, or adulteration immediately.</li>
+                    <li class="text-danger">Any employee found complicit in product diversion or counterfeiting will be dismissed and reported to NAFDAC and law enforcement.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Acknowledgement -->
+      <div class="ds-card mb-3">
+        <div class="ds-card__header">
+          <span><i class="fa fa-pencil-square-o mr-1"></i> Employee Acknowledgement</span>
+        </div>
+        <div class="ds-card__body">
+          <p>I confirm that I have received, read, and understood the Company Policy Manual. I agree to abide by all policies contained herein and understand that violation of any policy may result in disciplinary action up to and including dismissal.</p>
+          <div class="row mt-3">
+            <div class="col-md-5">
+              <p class="mb-1"><strong>Employee Name:</strong></p>
+              <div style="border-bottom:1px solid #999; height:28px;"></div>
+            </div>
+            <div class="col-md-3">
+              <p class="mb-1"><strong>Signature:</strong></p>
+              <div style="border-bottom:1px solid #999; height:28px;"></div>
+            </div>
+            <div class="col-md-3">
+              <p class="mb-1"><strong>Date:</strong></p>
+              <div style="border-bottom:1px solid #999; height:28px;"></div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-5">
+              <p class="mb-1"><strong>HR Witness:</strong></p>
+              <div style="border-bottom:1px solid #999; height:28px;"></div>
+            </div>
+            <div class="col-md-3">
+              <p class="mb-1"><strong>Signature:</strong></p>
+              <div style="border-bottom:1px solid #999; height:28px;"></div>
+            </div>
+            <div class="col-md-3">
+              <p class="mb-1"><strong>Date:</strong></p>
+              <div style="border-bottom:1px solid #999; height:28px;"></div>
+            </div>
+          </div>
+          <p class="text-muted mt-3" style="font-size:.8rem;">
+            This policy is subject to periodic review. The most current version is maintained by the Human Resources department.
+          </p>
+        </div>
+      </div>
+
+    </div><!-- /tab-it -->
+
+  </div><!-- /tab-content -->
 </div>
 {% endblock %}
