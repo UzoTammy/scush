@@ -1,7 +1,7 @@
 import datetime
 
 from .models import Stores, StoreLevy, BankAccount, Renewal
-from core.models import JsonDataset
+from core.models import Setting
 
 from django.shortcuts import get_object_or_404
 from django import forms
@@ -87,13 +87,5 @@ class BankAccountForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        try:
-            json_data = JsonDataset.objects.filter(pk=1).first()
-            banks = (
-                list((b, b) for b in json_data.dataset['banks'])
-                if json_data and json_data.dataset.get('banks')
-                else [('UBA', 'UBA')]
-            )
-        except Exception:
-            banks = [('UBA', 'UBA')]
-        self.fields['bank'].choices = banks
+        banks = Setting.get_list('banks', [('UBA', 'UBA')])
+        self.fields['bank'].choices = [(b, b) for b in banks]

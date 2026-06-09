@@ -50,7 +50,7 @@ from trade.models import TradeDaily, BalanceSheet, TradeMonthly, Creditor
 from cashflow.models import BankAccount, CashCenter
 from warehouse.models import Renewal, StoreLevy, Stores
 from .forms import JsonDatasetForm
-from .models import JsonDataset
+from .models import JsonDataset, Setting
 from mail import mailbox
 from core import utils as plotter
 from core.mixins import DateTimeMixin
@@ -644,6 +644,49 @@ class KPIMailSend(LoginRequiredMixin, View):
 
 class PoliciesView(TemplateView):
     template_name = 'core/policies.html'
+
+
+# ── App Settings ──────────────────────────────────────────────────────────────
+
+class SettingsView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/settings.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        all_settings = Setting.objects.all()
+        grouped = {}
+        for s in all_settings:
+            grouped.setdefault(s.category, []).append(s)
+        context['grouped'] = dict(sorted(grouped.items()))
+        return context
+
+
+class SettingListItemAddView(LoginRequiredMixin, View):
+    def post(self, request, key):
+        setting = get_object_or_404(Setting, key=key, value_type=Setting.TYPE_LIST)
+        value = request.POST.get('value', '').strip()
+        if value and value not in setting.list_value:
+            setting.list_value.append(value)
+            setting.save()
+        return redirect('settings')
+
+
+class SettingListItemRemoveView(LoginRequiredMixin, View):
+    def post(self, request, key):
+        setting = get_object_or_404(Setting, key=key, value_type=Setting.TYPE_LIST)
+        value = request.POST.get('value', '')
+        if value in setting.list_value:
+            setting.list_value.remove(value)
+            setting.save()
+        return redirect('settings')
+
+
+class SettingValueUpdateView(LoginRequiredMixin, View):
+    def post(self, request, key):
+        setting = get_object_or_404(Setting, key=key)
+        setting.text_value = request.POST.get('value', '').strip()
+        setting.save()
+        return redirect('settings')
 
 
 class JsonListView(LoginRequiredMixin, ListView):

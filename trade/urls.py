@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (EmailSample, TradeHome, TradeTradingReport, TradeMonthlyCreateView,
                     TradeMonthlyListView, TradeMonthlyDetailView, TradeMonthlyUpdateView,
                     TradeDailyCreateView, TradeDailyListView, TradeDailyDetailView, TradeDailyUpdateView,
-                    PLDailyReportView, TradeWeekly, AuditorView,
+                    TradeWeekly, AuditorView,
                     BSCreateView, BSListView, BSUpdateView, BSDetailView,
                     BankAccountHomeView, BankAccountDetailView, BankAccountListView, BankAccountUpdateView,
                     BankAccountCreateView, BankBalanceCreateView, BankBalanceDetailView, BankBalanceUpdateView,
@@ -31,8 +31,6 @@ urlpatterns += [
         path('daily/list/', TradeDailyListView.as_view(), name='trade-daily-list'),
         path('daily/<int:pk>/detail/', TradeDailyDetailView.as_view(), name='trade-daily-detail'),
         path('daily/<int:pk>/update/', TradeDailyUpdateView.as_view(), name='trade-daily-update'),
-        path('daily/PL/report/', PLDailyReportView.as_view(), name='daily-pl-report'),
-        
 ]
 
 urlpatterns += [
@@ -40,7 +38,6 @@ urlpatterns += [
         path('bs/<int:pk>/detail/', BSDetailView.as_view(), name='trade-bs-detail'),
         path('bs/list/', BSListView.as_view(), name='trade-bs-list'),
         path('bs/<int:pk>/update/', BSUpdateView.as_view(), name='trade-bs-update'),
-        # path('daily/PL/report/', PLDailyReportView.as_view(), name='daily-pl-report'),    
 ]
 
 urlpatterns += [

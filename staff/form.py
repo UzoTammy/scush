@@ -3,7 +3,7 @@ from django import forms
 from django.forms.widgets import DateTimeInput
 from django.shortcuts import get_object_or_404
 from .models import CreditNote, DebitNote, Employee, RequestPermission, Reassign
-from core.models import JsonDataset
+from core.models import Setting
 
 
 class CreditForm(forms.ModelForm):
@@ -29,13 +29,9 @@ class DebitForm(forms.ModelForm):
 
 
 def _get_json_choices(key, fallback):
-    """Load choices from JsonDataset at request time, not import time."""
-    try:
-        content = JsonDataset.objects.filter(pk=1).first()
-        if content and content.dataset.get(key):
-            return sorted((i, i) for i in content.dataset[key])
-    except Exception:
-        pass
+    values = Setting.get_list(key)
+    if values:
+        return sorted((i, i) for i in values)
     return fallback
 
 

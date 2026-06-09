@@ -1,62 +1,162 @@
 {% extends 'core/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block page_title %}Financials Form{% endblock %}
+{% block page_title %}Create P&L & Balance Sheet{% endblock %}
 
 {% block content %}
-<div class="container mt-3">
-    <div class="row d-flex justify-content-end">
-        <div class="col-6">
-            <h4>Unchanged fields</h4>
-            <ul class="list-group">
-                <li class="list-group-item list-group-item-primary">P & L Record</li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Direct Income
-                    <span>{{direct_income}}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Indirect Income
-                    <span>{{indirect_income}}</span>
-                </li>
-                <li class="list-group-item list-group-item-primary">Balance Sheet Record</li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Adjusted Profit
-                    <span>{{adjusted_profit}}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Capital
-                    <span>{{capital}}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Loan Liability
-                    <span>{{loan_liability}}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Fixed Asset
-                    <span>{{fixed_asset}}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Investment
-                    <span>{{investment}}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Suspense
-                    <span>{{suspense}}</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">Difference
-                    <span>{{difference}}</span>
-                </li>
-              </ul>
-            <p class="mt-3">These values are taken from the latest data in the database. If they do not correspond
-                with the data you tend to enter against these fields, either you go ahead and update
-                the record thereafter or you add P & L and Balance sheet on their respective forms.
-            </p> 
-            <a class="btn btn-secondary float-right mr-2" href="{% url 'trade-home' %}"><i class="fa fa-times-circle"></i></a> 
-        </div>
-        <div class="col-6">
-            <form method="post">
-                {% csrf_token %}
-                <h3>Create P & L and Balance Sheet</h3>
-                {{ form|crispy }}
-                <div class="m-3">
-                    <input class="btn btn-primary" type="submit" value="Submit">
-                    <a class="btn btn-secondary float-right" href="{% url 'trade-home' %}"><i class="fa fa-times-circle"></i></a>
-                </div>
-                
-            </form>
-        </div>
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-plus-circle mr-2"></i>Create P&amp;L &amp; Balance Sheet</span>
+      <a class="staff-nav-link" href="{% url 'trade-home' %}">
+        <i class="fa fa-times-circle"></i> Cancel
+      </a>
     </div>
+  </div>
+
+  <div class="row">
+
+    <!-- ── Carried-forward values ──────────────────── -->
+    <div class="col-lg-4 mb-4">
+      <div class="ds-card h-100">
+        <div class="ds-card__header">
+          <i class="fa fa-lock mr-1"></i> Carried-forward Values
+        </div>
+        <div class="ds-card__body p-0">
+
+          <div class="list-group list-group-flush">
+
+            <div class="list-group-item list-group-item-light py-1">
+              <small class="text-muted font-weight-bold text-uppercase">P &amp; L</small>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-muted small">Direct Income</span>
+              <strong>{{ direct_income }}</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-muted small">Indirect Income</span>
+              <strong>{{ indirect_income }}</strong>
+            </div>
+
+            <div class="list-group-item list-group-item-light py-1">
+              <small class="text-muted font-weight-bold text-uppercase">Balance Sheet</small>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-muted small">Adjusted Profit</span>
+              <strong>{{ adjusted_profit }}</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-muted small">Capital</span>
+              <strong>{{ capital }}</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-muted small">Loan Liability</span>
+              <strong>{{ loan_liability }}</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-muted small">Fixed Asset</span>
+              <strong>{{ fixed_asset }}</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-muted small">Investment</span>
+              <strong>{{ investment }}</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-muted small">Suspense</span>
+              <strong>{{ suspense }}</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-muted small">Difference</span>
+              <strong>{{ difference }}</strong>
+            </div>
+
+          </div>
+
+          <p class="px-3 pt-3 pb-2 text-muted small mb-0">
+            These values are copied from the latest records. If they differ from what you expect,
+            submit this form first then update the individual records afterward.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Form ───────────────────────────────────────── -->
+    <div class="col-lg-8 mb-4">
+      <div class="ds-card">
+        <div class="ds-card__body">
+          <form method="post">
+            {% csrf_token %}
+
+            <!-- Date -->
+            <div class="form-row mb-2">
+              <div class="form-group col-md-6 mb-0">
+                {{ form.date|as_crispy_field }}
+              </div>
+            </div>
+
+            <!-- P & L section -->
+            <h6 class="text-uppercase text-muted font-weight-bold mt-3 mb-2"
+                class="form-section-label">
+              <i class="fa fa-file-text-o mr-1"></i> Profit &amp; Loss
+            </h6>
+
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-0">{{ form.sales|as_crispy_field }}</div>
+              <div class="form-group col-md-6 mb-0">{{ form.purchase|as_crispy_field }}</div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-0">{{ form.gross_profit|as_crispy_field }}</div>
+              <div class="form-group col-md-6 mb-0">{{ form.direct_expenses|as_crispy_field }}</div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-0">{{ form.indirect_expenses|as_crispy_field }}</div>
+              <div class="form-group col-md-6 mb-0">{{ form.opening_value|as_crispy_field }}</div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-0">{{ form.closing_value|as_crispy_field }}</div>
+            </div>
+
+            <!-- Balance Sheet section -->
+            <h6 class="text-uppercase text-muted font-weight-bold mt-4 mb-2"
+                class="form-section-label">
+              <i class="fa fa-balance-scale mr-1"></i> Balance Sheet
+            </h6>
+
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-0">{{ form.profit|as_crispy_field }}</div>
+              <div class="form-group col-md-6 mb-0">{{ form.liability|as_crispy_field }}</div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6 mb-0">{{ form.current_asset|as_crispy_field }}</div>
+              <div class="form-group col-md-6 mb-0">{{ form.sundry_debtor|as_crispy_field }}</div>
+            </div>
+
+            <!-- Errors -->
+            {% if form.non_field_errors %}
+            <div class="alert alert-warning mt-3">
+              {% for error in form.non_field_errors %}
+              <p class="mb-1"><i class="fa fa-exclamation-triangle mr-1"></i>{{ error }}</p>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div class="d-flex justify-content-between mt-4">
+              <a href="{% url 'trade-home' %}" class="btn btn-secondary">
+                <i class="fa fa-times-circle mr-1"></i> Cancel
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <i class="fa fa-check mr-1"></i> Submit
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
-{% endblock %}
+{% endblock content %}

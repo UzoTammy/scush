@@ -6,7 +6,7 @@ from django import forms
 from django.forms.renderers import BaseRenderer
 from django.forms.utils import ErrorList
 from django.forms.widgets import DateInput
-from core.models import JsonDataset
+from core.models import Setting
 from .models import (BalanceSheet,
                     TradeMonthly,
                     TradeDaily,
@@ -199,12 +199,7 @@ class CreditorAccountForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        try:
-            data    = JsonDataset.objects.filter(pk=1).first()
-            sources = [(i, i) for i in data.dataset['product-source']] if data else []
-        except Exception:
-            sources = []
-        self.fields['account'].choices = sources
+        self.fields['account'].choices = [(i, i) for i in Setting.get_list('product_source')]
 
 class FinancialForm(forms.ModelForm):
     date = forms.DateField(widget=DateInput(attrs={'type':'date'}))

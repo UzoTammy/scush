@@ -681,6 +681,13 @@ button .fa-times-circle {
 
 .ds-hero h1, .ds-hero h2, .ds-hero h3 { color: #fff; }
 
+/* ─── Form section divider ───────────────────────────────── */
+.form-section-label {
+  letter-spacing: .05em;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: .4rem;
+}
+
 /* ─── Print ──────────────────────────────────────────────── */
 @media print {
   .ds-sidebar, .ds-topbar { display: none !important; }

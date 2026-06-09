@@ -1,35 +1,20 @@
 from django import forms
 from .models import ProductExtension, Product
-from core.models import JsonDataset
+from core.models import Setting
 
 
 def get_choice_options():
-    """Load choices from database at runtime, not at import time."""
-    defaults = {
-        'SOURCES': [('NB', 'NB')],
-        'CATEGORY': [('Malt', 'Malt')],
-        'UNITS': [('Pack', 'Pack')],
-        'PACKS': [('1', '1')],
-        'STATES': [('Liquid', 'Liquid')],
-        'VOLUME_UNITS': [('CL', 'CL')],
+    def choices(key, fallback):
+        return [(i, i) for i in Setting.get_list(key, [fallback])]
+
+    return {
+        'SOURCES':      choices('product_source',       'NB'),
+        'CATEGORY':     choices('product_category',     'Malt'),
+        'UNITS':        choices('product_units',        'Pack'),
+        'PACKS':        choices('product_packs',        '1'),
+        'STATES':       choices('product_states',       'Liquid'),
+        'VOLUME_UNITS': choices('product_volume_units', 'CL'),
     }
-    
-    try:
-        json_obj = JsonDataset.objects.get(pk=1)
-        if json_obj and json_obj.dataset:
-            json_dict = json_obj.dataset
-            return {
-                'SOURCES': [(i, i) for i in json_dict.get('product-source', defaults['SOURCES'])],
-                'CATEGORY': [(i, i) for i in json_dict.get('product-category', defaults['CATEGORY'])],
-                'UNITS': [(i, i) for i in json_dict.get('product-units', defaults['UNITS'])],
-                'PACKS': [(i, i) for i in json_dict.get('product-packs', defaults['PACKS'])],
-                'STATES': [(i, i) for i in json_dict.get('product-states', defaults['STATES'])],
-                'VOLUME_UNITS': [(i, i) for i in json_dict.get('product-volume-units', defaults['VOLUME_UNITS'])],
-            }
-    except (JsonDataset.DoesNotExist, Exception):
-        pass
-    
-    return defaults
 
 
 class FormProduct(forms.ModelForm):

@@ -116,6 +116,13 @@ class BalanceSheet(models.Model):
     def get_absolute_url(self):
         return reverse('trade-bs-detail', kwargs={'pk': self.pk})
     
+    def is_balanced(self):
+        from core.models import Setting
+        tolerance = float(Setting.get_value('balance_tolerance', '1') or '1')
+        left  = self.profit + self.adjusted_profit + self.capital + self.liability
+        right = self.fixed_asset + self.current_asset + self.investment + self.suspense + self.loan_liability + self.difference
+        return abs((left - right).amount) <= tolerance
+
     def growth_ratio(self):
         return round(100*self.profit/self.capital, 2)
 

@@ -29,7 +29,7 @@ from .models import (Employee, EmployeeBalance, CreditNote, DebitNote, Payroll,
                      RequestPermission, Welfare)
 from users.models import Profile
 from apply.models import Applicant
-from core.models import JsonDataset
+from core.models import Setting
 from core.tools import QuerySum as Qsum
 from survey.models import Question
 
@@ -293,10 +293,8 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['permit_count'] = 'None' if consumed == (0, 0) else permit.count()
         # context['balance_days'] = int(leave) - days_consumed
         
-        json_dict = JsonDataset.objects.get(pk=1).dataset
-        
-        context['positions'] = json_dict['positions']
-        context['branches'] = json_dict['branches']
+        context['positions'] = Setting.get_list('positions')
+        context['branches']  = Setting.get_list('branches')
         
         context['reassigned'] = Reassign.objects.filter(staff_id=person)
         context['permissions'] = Permit.objects.filter(staff_id=person)
@@ -307,8 +305,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['payout'] = Payroll.objects.filter(staff_id=self.kwargs['pk']).aggregate(total=Sum('net_pay'))['total']
         context['question_obj'] = Question.objects.filter(staff_id=person).first()
         
-        dic = JsonDataset.objects.get(pk=2).dataset
-        context['gratuity_title'] = dic['gratuity-title'][0]
+        context['gratuity_title'] = Setting.get_value('gratuity_title', '')
 
         context['welfare_last_record'] = Welfare.objects.latest('date')
         qs = Welfare.objects.filter(date=context['welfare_last_record'].date)

@@ -5,7 +5,8 @@ from .views import (HomeView, CompanyPageView, AboutView,
                     JsonListView, JsonDetailView, JsonCreateView, JsonUpdateView,
                     JsonCategoryKeyView, JsonCategoryKeyValueUpdateView, JsonCategoryKeyValueCreateView,
                     KPIMailSend, ImportCSVView, SaveCSVFile, BusinessSummaryView, ScushProfileView,
-                    CompanySummaryView)
+                    CompanySummaryView,
+                    SettingsView, SettingListItemAddView, SettingListItemRemoveView, SettingValueUpdateView)
 from . import views
 
 urlpatterns = [
@@ -22,7 +23,12 @@ urlpatterns = [
     path('policies/', PoliciesView.as_view(), name='policies'),
     path('management/', ManagementProfileView.as_view(), name='management'),
     path('daily_report/', DailyReportView.as_view(), name='daily-report'),
-    # Json model
+    # Settings
+    path('settings/', SettingsView.as_view(), name='settings'),
+    path('settings/<str:key>/add/', SettingListItemAddView.as_view(), name='setting-list-add'),
+    path('settings/<str:key>/remove/', SettingListItemRemoveView.as_view(), name='setting-list-remove'),
+    path('settings/<str:key>/update/', SettingValueUpdateView.as_view(), name='setting-update'),
+    # Json model (legacy)
     path('json/list/', JsonListView.as_view(), name='json-list'),
     path('json/<int:pk>/detail/', JsonDetailView.as_view(), name='json-detail'),
     path('json/new/', JsonCreateView.as_view(), name='json-new'),

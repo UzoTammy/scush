@@ -28,7 +28,7 @@ from pdf.utils import render_to_pdf
 from pdf.views import Ozone
 from .models import (Product, ProductPerformance, ProductExtension)
 from .forms import ProductExtensionUpdateForm
-from core.models import JsonDataset
+from core.models import Setting
 from delivery.models import DeliveryNote
 from django.db.models import Sum, F, Avg
 from ozone import mytools
@@ -37,8 +37,7 @@ from ozone import mytools
 permitted_group_name = 'Sales'
 
 def get_date():
-    dic = JsonDataset.objects.get(pk=2).dataset
-    date_string = dic['closing-stock-date'][0]
+    date_string = Setting.get_value('closing_stock_date', '')
     return datetime.datetime.strptime(date_string, '%Y-%m-%d')
 
     
@@ -122,8 +121,6 @@ class ProductHomeView(LoginRequiredMixin, View):
                 sum(data_others))
 
     def get(self, request):
-        json_data = JsonDataset.objects.get(pk=1).dataset
-        
         context = {
             'total_count': Product.objects.all().count(),
             'nb_count': Product.objects.filter(source='NB').count(),
@@ -153,7 +150,7 @@ class ProductHomeView(LoginRequiredMixin, View):
             'gn_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='GN'))[3]:,.2f}",
             'ib_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[0],
             'ib_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[3]:,.2f}",
-            'sources': json_data['product-source']     
+            'sources': Setting.get_list('product_source'),
         }
         return render(request, 'stock/product_home.html', context=context)
 
@@ -175,21 +172,16 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
        
         context['is_product_extension'] = ProductExtension.objects.exists()
 
-        content_dict = JsonDataset.objects.get(pk=1).dataset
-        context['sources'] = content_dict['product-source']
+        context['sources'] = Setting.get_list('product_source')
 
-        obj = JsonDataset.objects.get(pk=2)
-        date_string = obj.dataset['closing-stock-date'][0]
-        
+        date_string = Setting.get_value('closing_stock_date', '')
+
         context['msg'] = 'Report Based On Fixed Date'
         if self.request.GET != {}:
             if 'theDate' in self.request.GET.keys():
-                content = obj.dataset
-                content['closing-stock-date'] = [self.request.GET['theDate']]
-                obj.dataset = content
-                obj.save()
-                date_string = obj.dataset['closing-stock-date'][0]
-                
+                date_string = self.request.GET['theDate']
+                Setting.objects.filter(key='closing_stock_date').update(text_value=date_string)
+
             if 'reportDate' in self.request.GET.keys():
                 date_string = self.request.GET['reportDate']
                 context['msg'] = 'Report Based On Selected Date'
@@ -273,7 +265,7 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        the_date = JsonDataset.objects.get(pk=2).dataset['closing-stock-date'][0]
+        the_date = Setting.get_value('closing_stock_date', '')
         context['theDate'] = datetime.datetime.strptime(the_date, "%Y-%m-%d").date()
         
         product = Product.objects.get(pk=self.kwargs['pk'])
@@ -296,8 +288,7 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def post(self, request, **kwargs):
         obj = get_object_or_404(Product, pk=self.kwargs['pk'])
-        content_dict = JsonDataset.objects.get(pk=2).dataset
-        date_string = content_dict['closing-stock-date'][0]
+        date_string = Setting.get_value('closing_stock_date', '')
         date_object = datetime.datetime.strptime(date_string, "%Y-%m-%d").date()
         
         if 'quantity' in request.POST:
@@ -391,8 +382,7 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
                 msg = f'{product} cost price is updated !!!'
             product.save()
         else:        
-            json_data = JsonDataset.objects.get(pk=2).dataset
-            date_string = json_data['closing-stock-date'][0]
+            date_string = Setting.get_value('closing_stock_date', '')
             date_obj = datetime.datetime.strptime(date_string, "%Y-%m-%d")
             qs = ProductExtension.objects.filter(product=product).filter(date=date_obj)
             
@@ -504,9 +494,8 @@ class ProductExtensionListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        content_dict = JsonDataset.objects.get(pk=1).dataset
         dataset = list()
-        for source in content_dict['product-source']:
+        for source in Setting.get_list('product_source'):
             data = list()
             qs = self.get_queryset().filter(product__source=source)
             

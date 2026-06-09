@@ -146,7 +146,7 @@
     <!-- ADMIN (superuser only) -->
     {% if user.is_superuser %}
     <span class="ds-sidebar__group-label">Administration</span>
-    <a class="ds-sidebar__link" href="{% url 'json-list' %}">
+    <a class="ds-sidebar__link" href="{% url 'settings' %}">
       <i class="fa fa-cogs"></i> Settings
     </a>
 
