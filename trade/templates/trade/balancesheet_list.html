@@ -61,7 +61,7 @@
             <tr {% if not object.is_balanced %}style="background-color:#fff0f0;"{% endif %}>
               <td>
                 <a href="{% url 'trade-bs-detail' object.pk %}">{{ object.date|date:'d-m-Y' }}</a>
-                {% if not object.is_balanced %}<i class="fa fa-exclamation-triangle text-warning ml-1" title="Unbalanced"></i>{% endif %}
+                {% if not object.is_balanced %}<i class="fa fa-exclamation-triangle text-warning ml-1" title="Unbalanced — difference: {{ object.balance_difference }}"></i>{% endif %}
               </td>
               <td class="text-right">{{ object.profit }}</td>
               <td class="text-right">{{ object.capital }}</td>
