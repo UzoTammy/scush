@@ -10,6 +10,7 @@ from decimal import Decimal
 from django.db.models.query import QuerySet
 from django.db.models import (F, Sum, Avg, Max, Min)
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail, EmailMessage
@@ -18,17 +19,19 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.template import loader
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import (View,TemplateView,ListView,DetailView,CreateView,UpdateView)
 
 from djmoney.money import Money
 
 from ozone import mytools
 from .form import (DebitForm, CreditForm, EmployeeForm, EmployeeEditForm)
-from .models import (Employee, EmployeeBalance, CreditNote, DebitNote, Payroll, 
-                     Reassign, Terminate, Suspend, Permit,SalaryChange, 
+from .models import (Employee, EmployeeBalance, CreditNote, DebitNote, Payroll,
+                     Reassign, Terminate, Suspend, Permit,SalaryChange,
                      RequestPermission, Welfare)
 from users.models import Profile
 from apply.models import Applicant
+from apply.forms import GuarantorDocumentForm
 from core.models import Setting
 from core.tools import QuerySum as Qsum
 
@@ -429,6 +432,68 @@ class StaffDetailUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         context = super().get_context_data(**kwargs)
         context['title'] = 'Edit'
         return context
+
+
+@login_required
+def request_guarantor_reupload(request, pk):
+    """HR flags that the guarantor has declined and a new document is needed."""
+    employee = get_object_or_404(Employee, pk=pk)
+    doc = getattr(employee.staff, 'guarantor_doc', None)
+    if request.method == 'POST' and doc:
+        doc.reupload_requested = True
+        doc.reupload_reason = request.POST.get('reason', '').strip()
+        doc.reupload_requested_by = request.user
+        doc.reupload_requested_at = timezone.now()
+        doc.reupload_approved = False
+        doc.reupload_approved_by = None
+        doc.save()
+        messages.success(request, 'Re-upload request submitted for approval.')
+    return redirect(reverse('employee-detail', kwargs={'pk': pk}))
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def approve_guarantor_reupload(request, pk):
+    """Superuser approves a pending request to re-upload the guarantor document."""
+    employee = get_object_or_404(Employee, pk=pk)
+    doc = getattr(employee.staff, 'guarantor_doc', None)
+    if request.method == 'POST' and doc and doc.reupload_requested:
+        doc.reupload_approved = True
+        doc.reupload_approved_by = request.user
+        doc.save()
+        messages.success(request, 'Re-upload approved. A new guarantor document can now be uploaded.')
+    return redirect(reverse('employee-detail', kwargs={'pk': pk}))
+
+
+@login_required
+def upload_guarantor_reupload(request, pk):
+    """HR uploads a guarantor document — either for the first time, or as a
+    replacement once a re-upload request has been approved."""
+    employee = get_object_or_404(Employee, pk=pk)
+    doc = getattr(employee.staff, 'guarantor_doc', None)
+
+    if doc and not doc.reupload_approved:
+        return redirect(reverse('employee-detail', kwargs={'pk': pk}))
+
+    if request.method == 'POST':
+        form = GuarantorDocumentForm(request.POST, request.FILES, instance=doc)
+        if form.is_valid():
+            new_doc = form.save(commit=False)
+            new_doc.applicant = employee.staff
+            new_doc.uploaded_by = request.user
+            new_doc.uploaded_at = timezone.now()
+            new_doc.reupload_requested = False
+            new_doc.reupload_reason = None
+            new_doc.reupload_requested_by = None
+            new_doc.reupload_requested_at = None
+            new_doc.reupload_approved = False
+            new_doc.reupload_approved_by = None
+            new_doc.save()
+            messages.success(request, 'Guarantor document uploaded successfully.')
+        else:
+            messages.error(request, 'Please select a valid file to upload.')
+    return redirect(reverse('employee-detail', kwargs={'pk': pk}))
+
 
 class PDFProfileView(View):
 

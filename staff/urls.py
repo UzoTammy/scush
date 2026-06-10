@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (StaffMainPageView, StaffListView, StaffPoliciesView, StaffListPicturesView,
                     StaffDetailView, StaffUpdateView, StaffDetailUpdateView, StaffCreateView, StaffListPrivateView,
+                    request_guarantor_reupload, approve_guarantor_reupload, upload_guarantor_reupload,
                     StaffTerminate, StaffSuspend, StaffReassign, StaffPermit, RequestPermissionView,
                     StaffSalaryChange, StaffChangeManagement, TerminatedStaffListView, PKResetView,
                     PKResetPayroll, AddGratuity, GratuityListView, GratuityDetailView, GratuityUpdateView,
@@ -22,6 +23,9 @@ urlpatterns = [
     path('<int:pk>/detail/', StaffDetailView.as_view(), name='employee-detail'),
     path('<int:pk>/update/', StaffUpdateView.as_view(), name='employee-update'),
     path('<int:pk>/edit/', StaffDetailUpdateView.as_view(), name='employee-edit'),
+    path('<int:pk>/guarantor/reupload/request/', request_guarantor_reupload, name='guarantor-reupload-request'),
+    path('<int:pk>/guarantor/reupload/approve/', approve_guarantor_reupload, name='guarantor-reupload-approve'),
+    path('<int:pk>/guarantor/reupload/upload/', upload_guarantor_reupload, name='guarantor-reupload-upload'),
     path('new/<int:pk>/', StaffCreateView.as_view(), name='employee-create'),
     path('private/', StaffListPrivateView.as_view(), name='employee-list-private'),
     path('terminate/<int:pk>/', StaffTerminate.as_view(), name='employee-terminate'),

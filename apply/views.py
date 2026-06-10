@@ -1,6 +1,5 @@
 import datetime
 from typing import Any, Dict
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Applicant
 from staff.models import Terminate, Employee, ReEngage
@@ -316,66 +315,20 @@ def guarantor_form_pdf(request, pk):
 
 
 def upload_guarantor_doc(request, pk):
-    """HR uploads the completed, signed guarantor form (or a re-upload after approval)."""
-    applicant = get_object_or_404(Applicant, id=pk)
-    existing = getattr(applicant, 'guarantor_doc', None)
-
-    if applicant.state != 'Interview' and not (existing and existing.reupload_approved):
-        return redirect(reverse('apply-detail', kwargs={'pk': pk}))
-
+    """HR uploads the completed, signed guarantor form."""
+    applicant = get_object_or_404(Applicant, id=pk, state='Interview')
     if request.method == 'POST':
-        form = GuarantorDocumentForm(request.POST, request.FILES, instance=existing)
+        form = GuarantorDocumentForm(request.POST, request.FILES)
         if form.is_valid():
             doc = form.save(commit=False)
             doc.applicant = applicant
             doc.uploaded_by = request.user
-            doc.uploaded_at = timezone.now()
-            doc.reupload_requested = False
-            doc.reupload_reason = None
-            doc.reupload_requested_by = None
-            doc.reupload_requested_at = None
-            doc.reupload_approved = False
-            doc.reupload_approved_by = None
             doc.save()
-            if applicant.state == 'Interview':
-                applicant.state = 'Guarantor'
-                applicant.save()
-                messages.success(request, 'Guarantor document uploaded. You may now proceed to employment.')
-            else:
-                messages.success(request, 'New guarantor document uploaded successfully.')
+            applicant.state = 'Guarantor'
+            applicant.save()
+            messages.success(request, 'Guarantor document uploaded. You may now proceed to employment.')
         else:
             messages.error(request, 'Please select a valid file to upload.')
-    return redirect(reverse('apply-detail', kwargs={'pk': pk}))
-
-
-@login_required
-def request_guarantor_reupload(request, pk):
-    """HR flags that the guarantor has declined and a new document is needed."""
-    applicant = get_object_or_404(Applicant, id=pk)
-    doc = getattr(applicant, 'guarantor_doc', None)
-    if request.method == 'POST' and doc:
-        doc.reupload_requested = True
-        doc.reupload_reason = request.POST.get('reason', '').strip()
-        doc.reupload_requested_by = request.user
-        doc.reupload_requested_at = timezone.now()
-        doc.reupload_approved = False
-        doc.reupload_approved_by = None
-        doc.save()
-        messages.success(request, 'Re-upload request submitted for approval.')
-    return redirect(reverse('apply-detail', kwargs={'pk': pk}))
-
-
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def approve_guarantor_reupload(request, pk):
-    """Superuser approves a pending request to re-upload the guarantor document."""
-    applicant = get_object_or_404(Applicant, id=pk)
-    doc = getattr(applicant, 'guarantor_doc', None)
-    if request.method == 'POST' and doc and doc.reupload_requested:
-        doc.reupload_approved = True
-        doc.reupload_approved_by = request.user
-        doc.save()
-        messages.success(request, 'Re-upload approved. A new guarantor document can now be uploaded.')
     return redirect(reverse('apply-detail', kwargs={'pk': pk}))
 
 

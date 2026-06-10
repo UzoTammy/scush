@@ -143,69 +143,18 @@
 
   <!-- ── Guarantor document ───────────────────────── -->
   {% if object.state == 'Interview' or object.state == 'Guarantor' or object.state == 'Employed' %}
-  {% with doc=object.guarantor_doc %}
   <div class="ds-card mb-4">
     <div class="ds-card__header d-flex justify-content-between align-items-center">
       <span><i class="fa fa-file-text mr-2"></i>Guarantor Document</span>
       {% if object.state == 'Interview' %}
         <span class="badge badge-warning">Awaiting Upload</span>
-      {% elif doc.reupload_approved %}
-        <span class="badge badge-info">Re-upload Approved</span>
-      {% elif doc.reupload_requested %}
-        <span class="badge badge-warning">Re-upload Requested</span>
-      {% else %}
+      {% elif object.state == 'Guarantor' or object.state == 'Employed' %}
         <span class="badge badge-success">Received</span>
       {% endif %}
     </div>
     <div class="ds-card__body">
 
-      {% if doc and object.state != 'Interview' %}
-        <div class="list-group list-group-flush mb-3">
-          <div class="list-group-item d-flex justify-content-between">
-            <span class="text-muted">Uploaded By</span>
-            <span>{{ doc.uploaded_by.get_full_name|default:doc.uploaded_by }}</span>
-          </div>
-          <div class="list-group-item d-flex justify-content-between">
-            <span class="text-muted">Uploaded On</span>
-            <span>{{ doc.uploaded_at|date:"d M Y, H:i" }}</span>
-          </div>
-          <div class="list-group-item d-flex justify-content-between">
-            <span class="text-muted">Document</span>
-            <a href="{{ doc.document.url }}" target="_blank" rel="noopener noreferrer">
-              <i class="fa fa-file mr-1"></i> View / Download
-            </a>
-          </div>
-        </div>
-
-        {% if doc.reupload_requested %}
-          <div class="alert {% if doc.reupload_approved %}alert-info{% else %}alert-warning{% endif %} small">
-            <i class="fa fa-exclamation-circle mr-1"></i>
-            {% if doc.reupload_approved %}
-              Re-upload approved by {{ doc.reupload_approved_by.get_full_name|default:doc.reupload_approved_by }}.
-              A new document can now be uploaded below.
-            {% else %}
-              Re-upload requested by {{ doc.reupload_requested_by.get_full_name|default:doc.reupload_requested_by }}
-              on {{ doc.reupload_requested_at|date:"d M Y, H:i" }}{% if doc.reupload_reason %}: "{{ doc.reupload_reason }}"{% endif %}.
-              Awaiting superuser approval.
-            {% endif %}
-          </div>
-          {% if not doc.reupload_approved and user.is_superuser %}
-            <form method="post" action="{% url 'guarantor-reupload-approve' object.pk %}" class="mb-3">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-info btn-sm">
-                <i class="fa fa-check mr-1"></i> Approve Re-upload
-              </button>
-            </form>
-          {% endif %}
-        {% else %}
-          <button type="button" class="btn btn-outline-warning btn-sm mb-3" data-toggle="modal" data-target="#reuploadModal">
-            <i class="fa fa-undo mr-1"></i> Guarantor Declined — Request Re-upload
-          </button>
-        {% endif %}
-      {% endif %}
-
-      {% if object.state == 'Interview' or doc.reupload_approved %}
-        {% if object.state == 'Interview' %}
+      {% if object.state == 'Interview' %}
         <p class="text-muted small mb-3">
           Download the blank guarantor form, have it completed and signed by the guarantor
           with a government-issued ID attached, then upload the scanned copy below.
@@ -215,12 +164,11 @@
           <i class="fa fa-download mr-1"></i> Download Blank Guarantor Form
         </a>
         <hr>
-        {% endif %}
         <form method="post" action="{% url 'guarantor-doc-upload' object.pk %}" enctype="multipart/form-data">
           {% csrf_token %}
           <div class="form-group">
             <label class="font-weight-600" for="id_guarantor_doc">
-              Upload {% if doc %}New {% endif %}Completed Form <span class="text-danger">*</span>
+              Upload Completed Form <span class="text-danger">*</span>
               <small class="text-muted font-weight-400">(PDF, JPG, or PNG — with ID attached)</small>
             </label>
             <input type="file" id="id_guarantor_doc" name="document" class="form-control-file mt-1"
@@ -230,11 +178,28 @@
             <i class="fa fa-upload mr-1"></i> Upload Document
           </button>
         </form>
+
+      {% elif object.guarantor_doc %}
+        <div class="list-group list-group-flush">
+          <div class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Uploaded By</span>
+            <span>{{ object.guarantor_doc.uploaded_by.get_full_name|default:object.guarantor_doc.uploaded_by }}</span>
+          </div>
+          <div class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Uploaded On</span>
+            <span>{{ object.guarantor_doc.uploaded_at|date:"d M Y, H:i" }}</span>
+          </div>
+          <div class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Document</span>
+            <a href="{{ object.guarantor_doc.document.url }}" target="_blank" rel="noopener noreferrer">
+              <i class="fa fa-file mr-1"></i> View / Download
+            </a>
+          </div>
+        </div>
       {% endif %}
 
     </div>
   </div>
-  {% endwith %}
   {% endif %}
 
   <!-- ── Interview record ──────────────────────────── -->
@@ -291,36 +256,6 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-danger">Yes, Delete</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- ── Guarantor Re-upload Request modal ─────────────── -->
-<div class="modal fade" id="reuploadModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Request Guarantor Re-upload — {{ object }}</h5>
-        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-      </div>
-      <form action="{% url 'guarantor-reupload-request' object.pk %}" method="post">
-        {% csrf_token %}
-        <div class="modal-body">
-          <p class="text-muted small">
-            Use this if the guarantor has declined or the submitted document is no longer valid.
-            A superuser must approve the request before a new document can be uploaded.
-          </p>
-          <div class="form-group">
-            <label for="reuploadReason">Reason</label>
-            <textarea id="reuploadReason" name="reason" class="form-control" rows="3"
-                      placeholder="e.g. Guarantor has withdrawn and a new guarantor form is required"></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-warning">Submit Request</button>
         </div>
       </form>
     </div>
