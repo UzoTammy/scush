@@ -2,70 +2,116 @@
 {% load static %}
 {% load custom_tags %}
 
-{% block page_title %}Employee Pictures{% endblock %}
+{% block page_title %}Employee Photos{% endblock %}
+
+{% block head %}
+<style>
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  @media (min-width: 576px)  { .photo-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 768px)  { .photo-grid { grid-template-columns: repeat(4, 1fr); } }
+  @media (min-width: 992px)  { .photo-grid { grid-template-columns: repeat(6, 1fr); } }
+  @media (min-width: 1400px) { .photo-grid { grid-template-columns: repeat(8, 1fr); } }
+
+  .photo-card {
+    display: block;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    overflow: hidden;
+    text-align: center;
+    text-decoration: none;
+    color: var(--color-text);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .photo-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  .photo-card__img-wrap {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: var(--color-bg);
+  }
+  .photo-card__img-wrap img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .photo-card__body { padding: 0.5rem 0.4rem; }
+  .photo-card__id   { font-size: 0.7rem; color: var(--color-muted); }
+  .photo-card__name { font-size: 0.8rem; font-weight: 600; line-height: 1.2; margin: 0.1rem 0; }
+  .photo-card__role { font-size: 0.7rem; color: var(--color-accent); }
+
+  .photo-search-wrap { max-width: 320px; }
+  .photo-empty { display: none; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col mt-3">
-            <h3>Staff Photo View Page - ({{page_obj.paginator.count}})</h3>
-        </div>
+<div class="container-fluid">
+
+  <!-- ── Header / search ────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-image mr-2"></i>Employee Photos ({{ object_list|length }})</span>
+      <div class="photo-search-wrap flex-fill ml-3">
+        <input type="text" id="photoSearch" class="form-control form-control-sm"
+               placeholder="Search by name, position or branch...">
+      </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 bg-dark ">
-        {% for object in object_list %}
-        <div class="col-md-3 p-2 d-flex justify-content-center">
-            <div class="card" style="width: 14rem;">
-                <img src={{object.image.url}}
-                     class="card-img-top img-thumbnail mx-auto d-block"
-                     style="height: 300px"
-                     alt="...">
-                <div class="card-body">
-                    <p class="card-text"><img src="{% static 'customer/logo.ico' %}"
-                                              class="rounded-circle"
-                                              width="40px"
-                                              alt="">
-                        <span class="text-bg"> {{object.id|zeropadding:3}}</span><br>{{object.fullname}}<br>
-                        {% if object.position == 'SCM' and object.branch %}
-                        <span class="text-primary">{{object.position}}-{{object.branch}}</span>
-                        {% else %}
-                        <span class="text-primary">{{object.position}}</span>
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
+  </div>
+
+  <!-- ── Photo grid ─────────────────────────────────── -->
+  <div class="photo-grid" id="photoGrid">
+    {% for object in object_list %}
+    <a href="{% url 'employee-detail' object.pk %}" class="photo-card"
+       data-search="{{ object.fullname|lower }} {{ object.position|lower }} {{ object.branch|lower }} {{ object.id|zeropadding:3 }}">
+      <div class="photo-card__img-wrap">
+        <img src="{{ object.image.url }}" alt="{{ object.fullname }}" loading="lazy">
+      </div>
+      <div class="photo-card__body">
+        <div class="photo-card__id">{{ object.id|zeropadding:3 }}</div>
+        <div class="photo-card__name">{{ object.fullname }}</div>
+        <div class="photo-card__role">
+          {% if object.position == 'SCM' and object.branch %}
+            {{ object.position }} &mdash; {{ object.branch }}
+          {% else %}
+            {{ object.position|default:"—" }}
+          {% endif %}
         </div>
-        {% endfor %}
-    </div>
-    <div class="row">
-        <div class="col">
-            <div class="pagination mt-3">
-                <span class="step-links">
-                    {% if page_obj.has_previous %}
-                        <a type="button" class="btn btn-secondary" href="?page=1">
-                            <i class="fa fa-fast-backward"></i>
-                        </a>
-                        <a type="button" class="btn btn-secondary" href="?page={{page_obj.previous_page_number}}">
-                            <i class="fa fa-backward"></i>
-                        </a>
-                    {% endif %}
-                    <span class="current">
-                        Page {{ page_obj.number}} of
-                        {{page_obj.paginator.num_pages}}
-                    </span>
-                    {% if page_obj.has_next %}
-                    <a type="button" class="btn btn-secondary" href="?page={{ page_obj.next_page_number }}">
-                        <i class="fa fa-forward"></i></a>
-                    <a type="button" class="btn btn-secondary" href="?page={{ page_obj.paginator.num_pages }}">
-                        <i class="fa fa-fast-forward"></i></a>
-                    {% endif %}
-                </span>
-            </div>
-        </div>
-        <div class="col mt-3 mb-5">
-            <a type="button" class="btn btn-secondary float-right" href="{% url 'staff-list' %}">
-                <i class="fa fa-times-circle"></i> Return
-            </a>
-        </div>
-    </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+
+  <p class="photo-empty text-muted text-center mt-4" id="photoEmpty">No employees match your search.</p>
+
+  <div class="mt-4 mb-5">
+    <a type="button" class="btn btn-secondary" href="{% url 'staff-list' %}">
+      <i class="fa fa-times-circle"></i> Return
+    </a>
+  </div>
 </div>
+
+<script>
+  const photoSearch = document.getElementById('photoSearch');
+  const photoCards  = document.querySelectorAll('#photoGrid .photo-card');
+  const photoEmpty  = document.getElementById('photoEmpty');
+
+  photoSearch.addEventListener('input', function () {
+    const term = this.value.trim().toLowerCase();
+    let visibleCount = 0;
+    photoCards.forEach(function (card) {
+      const match = card.dataset.search.includes(term);
+      card.style.display = match ? '' : 'none';
+      if (match) visibleCount++;
+    });
+    photoEmpty.style.display = visibleCount === 0 ? 'block' : 'none';
+  });
+</script>
 {% endblock %}

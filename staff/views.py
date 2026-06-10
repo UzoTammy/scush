@@ -359,7 +359,6 @@ class StaffListPicturesView(LoginRequiredMixin, ListView):
     template_name = 'staff/employee_pictures.html'
     queryset = model.active.all()
     ordering = '-pk'
-    paginate_by = 4
 
 class StaffCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Employee
