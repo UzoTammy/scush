@@ -16,11 +16,14 @@
     <div class="ds-card__header d-flex justify-content-between align-items-center">
       <span><i class="fa fa-bullhorn mr-2"></i>Briefs &amp; Announcements</span>
       <div class="d-flex staff-nav-bar">
-        <a class="staff-nav-link" href="{% url 'post-create' %}">
+        <a class="staff-nav-link" href="{% url 'comms-post-create' %}">
           <i class="fa fa-plus"></i> Add Post
         </a>
         <a class="staff-nav-link" href="{% url 'pdf-daily-post' %}">
           <i class="fa fa-file-pdf-o"></i> Today's PDF
+        </a>
+        <a class="staff-nav-link" href="{% url 'comms-project-list' %}">
+          <i class="fa fa-tasks"></i> Projects
         </a>
         <a class="staff-nav-link" href="{% url 'home' %}">
           <i class="fa fa-times-circle"></i> Return
@@ -44,7 +47,7 @@
                 {% if post.author.position %}— {{ post.author.position }}{% endif %}
               </small>
             </div>
-            <a class="btn btn-primary btn-sm ml-3 text-nowrap" href="{% url 'post-detail' post.pk %}">
+            <a class="btn btn-primary btn-sm ml-3 text-nowrap" href="{% url 'comms-post-detail' post.pk %}">
               Read More
             </a>
           </div>
@@ -83,7 +86,7 @@
       <div class="text-center py-5">
         <i class="fa fa-bullhorn fa-3x text-muted mb-3"></i>
         <h5 class="text-muted">No briefs posted yet.</h5>
-        <a href="{% url 'post-create' %}" class="btn btn-primary mt-2">
+        <a href="{% url 'comms-post-create' %}" class="btn btn-primary mt-2">
           <i class="fa fa-plus mr-1"></i> Add First Post
         </a>
       </div>

@@ -1,0 +1,85 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Polls{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-bar-chart mr-2"></i>Polls</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'comms-poll-create' %}">
+          <i class="fa fa-plus"></i> New Poll
+        </a>
+        <a class="staff-nav-link" href="{% url 'home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-card">
+    <div class="ds-card__body p-0">
+      {% if object_list %}
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Created By</th>
+              <th>Closes</th>
+              <th>Status</th>
+              <th>Votes</th>
+              <th>Public Link &amp; PIN</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for poll in object_list %}
+            <tr>
+              <td><a href="{% url 'comms-poll-detail' poll.pk %}">{{ poll.title }}</a></td>
+              <td>{{ poll.created_by }}</td>
+              <td>{{ poll.closes_at|default:'-' }}</td>
+              <td>
+                {% if poll.is_active %}
+                <span class="badge badge-soft-primary">Active</span>
+                {% else %}
+                <span class="badge badge-soft-secondary">Closed</span>
+                {% endif %}
+              </td>
+              <td>{{ poll.total_votes }}</td>
+              <td>
+                <small class="text-muted d-block">
+                  {{ request.scheme }}://{{ request.get_host }}{{ poll.get_public_url }}
+                </small>
+                <small class="text-muted">PIN: <strong>{{ poll.public_pin }}</strong></small>
+              </td>
+              <td>
+                <a class="btn btn-secondary btn-sm" href="{% url 'comms-poll-results' poll.pk %}">Results</a>
+                <form method="post" action="{% url 'comms-poll-toggle' poll.pk %}" class="d-inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm {% if poll.is_active %}btn-warning{% else %}btn-success{% endif %}">
+                    {% if poll.is_active %}Close{% else %}Reopen{% endif %}
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <i class="fa fa-bar-chart fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No polls yet.</h5>
+        <a href="{% url 'comms-poll-create' %}" class="btn btn-primary mt-2">
+          <i class="fa fa-plus mr-1"></i> Create First Poll
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

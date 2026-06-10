@@ -48,11 +48,10 @@ urlpatterns = [
     path('trade/', include('trade.urls')),
     path('outlet/', include('outlet.urls')),
     path('target/', include('target.urls')),
-    path('post/', include('brief.urls')),
+    path('comms/', include('comms.urls')),
     path('users/', include('users.urls')),
     path('material/', include('material.urls')),
     path('model/choices/', user_views.add_choice, name='choices'),
-    path('survey/', include('survey.urls')),
     path('cashflow/', include('cashflow.urls')),
     path('jobs/', include('jobs.urls')),
 

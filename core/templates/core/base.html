@@ -128,13 +128,25 @@
     </a>
     {% endif %}
 
+    <!-- COMMUNICATIONS -->
+    <span class="ds-sidebar__group-label">Communications</span>
+    <a class="ds-sidebar__link" href="{% url 'comms-post-list' %}">
+      <i class="fa fa-bullhorn"></i> Briefs
+    </a>
+    <a class="ds-sidebar__link" href="{% url 'comms-project-list' %}">
+      <i class="fa fa-tasks"></i> Projects
+    </a>
+    <a class="ds-sidebar__link" href="{% url 'comms-task-list' %}">
+      <i class="fa fa-check-square-o"></i> My Tasks
+    </a>
+    <a class="ds-sidebar__link" href="{% url 'comms-poll-list' %}">
+      <i class="fa fa-bar-chart"></i> Polls
+    </a>
+
     <!-- REPORTS -->
     <span class="ds-sidebar__group-label">Reports</span>
     <a class="ds-sidebar__link" href="{% url 'daily-report' %}">
       <i class="fa fa-file-text"></i> Daily Report
-    </a>
-    <a class="ds-sidebar__link" href="{% url 'post-list' %}">
-      <i class="fa fa-bullhorn"></i> Briefs
     </a>
     <a class="ds-sidebar__link" href="{% url 'policies' %}">
       <i class="fa fa-book"></i> Policies &amp; Procedures

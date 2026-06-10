@@ -1,0 +1,32 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Enter PIN{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:520px;">
+  <div class="ds-card mt-4">
+    <div class="ds-card__body text-center py-5">
+      <div style="font-size:3.5rem; color:#0d6efd;" class="mb-3">
+        <i class="fa fa-lock"></i>
+      </div>
+      <h5 class="mb-2">{{ poll.title }}</h5>
+      <p class="text-muted">Enter the PIN provided to you to access this poll.</p>
+
+      {% if error %}
+      <div class="alert alert-danger">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" action="">
+        {% csrf_token %}
+        <div class="form-group">
+          <input type="text" name="pin" class="form-control text-center" maxlength="6"
+                 placeholder="6-digit PIN" autofocus required>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">
+          <i class="fa fa-unlock mr-1"></i> Continue
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

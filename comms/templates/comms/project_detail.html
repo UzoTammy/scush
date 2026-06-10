@@ -1,0 +1,95 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Project Detail{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-tasks mr-2"></i>{{ object.name }}</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'comms-task-create' object.pk %}">
+          <i class="fa fa-plus"></i> Add Task
+        </a>
+        <a class="staff-nav-link" href="{% url 'comms-project-update' object.pk %}">
+          <i class="fa fa-pencil"></i> Update
+        </a>
+        <a class="staff-nav-link" href="{% url 'comms-project-list' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
+    </div>
+    <div class="ds-card__body">
+      <p>{{ object.description }}</p>
+      <small class="text-muted d-block mb-2">
+        Owner: {{ object.owner }} &middot;
+        Status: <span class="badge badge-soft-primary">{{ object.get_status_display }}</span> &middot;
+        Target: {{ object.target_date|default:'-' }}
+      </small>
+      <div class="progress">
+        <div class="progress-bar progress-bar-striped" role="progressbar"
+             style="width: {{ object.progress_percent }}%"
+             aria-valuenow="{{ object.progress_percent }}" aria-valuemin="0" aria-valuemax="100">
+          {{ object.progress_percent }}% complete
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-card">
+    <div class="ds-card__header">Tasks</div>
+    <div class="ds-card__body p-0">
+      {% if tasks %}
+      <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Assigned To</th>
+              <th>Priority</th>
+              <th>Due Date</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for task in tasks %}
+            <tr>
+              <td><a href="{% url 'comms-task-update' task.pk %}">{{ task.title }}</a></td>
+              <td>{{ task.assigned_to|default:'Unassigned' }}</td>
+              <td>{{ task.get_priority_display }}</td>
+              <td>{{ task.due_date|default:'-' }}</td>
+              <td>
+                <form method="post" action="{% url 'comms-task-status' task.pk %}" class="d-flex align-items-center">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ object.get_absolute_url }}">
+                  <select name="status" class="form-control form-control-sm" onchange="this.form.submit()">
+                    {% for value, label in task.STATUS_CHOICES %}
+                    <option value="{{ value }}" {% if task.status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </form>
+              </td>
+              <td>
+                <a class="btn btn-secondary btn-sm" href="{% url 'comms-task-update' task.pk %}">Edit</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <i class="fa fa-check-square-o fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No tasks yet.</h5>
+        <a href="{% url 'comms-task-create' object.pk %}" class="btn btn-primary mt-2">
+          <i class="fa fa-plus mr-1"></i> Add First Task
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

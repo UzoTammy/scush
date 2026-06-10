@@ -159,11 +159,6 @@
             Permissions: <span class="text-danger">{{ consumed_days|first }} day{{ consumed_days|first|pluralize }}, {{ consumed_days|last }} hour{{ consumed_days|last|pluralize }}</span>
           </p>
           {% endif %}
-          {% if question_obj %}
-          <p class="text-muted small mb-0">
-            Survey Code: <span class="badge badge-soft-primary">{{ question_obj.code|slugify }}</span>
-          </p>
-          {% endif %}
           {% if username %}
           <p class="text-muted small mb-0 mt-1">
             <i class="fa fa-user mr-1"></i> Username: <strong>{{ username }}</strong>

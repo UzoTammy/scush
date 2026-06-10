@@ -1,0 +1,30 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}Project Form{% endblock %}
+
+{% block content %}
+<div class="container">
+<form action="" method="post">
+    {% csrf_token %}
+    <legend>{% if object %}Update Project{% else %}New Project{% endif %}</legend>
+    <fieldset>
+    <div class="row mt-3">
+        <div class="col">
+            {{form|crispy}}
+        </div>
+    </div>
+    </fieldset>
+    <div class="row mt-3 mb-3">
+        <div class="col">
+            <button type="submit"
+            class="btn btn-primary">Submit</button>
+            <a class="btn btn-secondary float-right"
+            href="{% url 'comms-project-list' %}">
+                <i class="fa fa-times-circle"></i>
+            </a>
+        </div>
+    </div>
+</form>
+</div>
+{% endblock content %}

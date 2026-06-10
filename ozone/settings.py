@@ -67,9 +67,8 @@ INSTALLED_APPS = [
     'trade.apps.TradeConfig',
     'outlet.apps.OutletConfig',
     'target.apps.TargetConfig', 
-    'brief.apps.BriefConfig',
+    'comms.apps.CommsConfig',
     'material.apps.MaterialConfig',
-    'survey.apps.SurveyConfig',
     'cashflow.apps.CashflowConfig',
     'jobs',
 ]

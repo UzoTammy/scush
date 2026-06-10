@@ -31,7 +31,6 @@ from users.models import Profile
 from apply.models import Applicant
 from core.models import Setting
 from core.tools import QuerySum as Qsum
-from survey.models import Question
 
 
 def duration(start_date, resume_date):
@@ -303,8 +302,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['total_balance'] = total_balance
         context['total_welfare'] = total_welfare
         context['payout'] = Payroll.objects.filter(staff_id=self.kwargs['pk']).aggregate(total=Sum('net_pay'))['total']
-        context['question_obj'] = Question.objects.filter(staff_id=person).first()
-        
+
         context['gratuity_title'] = Setting.get_value('gratuity_title', '')
 
         context['welfare_last_record'] = Welfare.objects.latest('date')

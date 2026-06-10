@@ -14,7 +14,7 @@ from django.views.generic import (View, ListView, DetailView, TemplateView)
 from staff.models import Employee, Payroll, EmployeeBalance
 from trade.models import TradeMonthly, BankBalance
 from stock.models import Product
-from brief.models import Post
+from comms.models import Post
 from material.models import Article
 from django.db.models import Sum, F, Avg, Min, ExpressionWrapper, DecimalField
 from django.contrib.auth.mixins import LoginRequiredMixin

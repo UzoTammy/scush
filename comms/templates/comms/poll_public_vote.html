@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}{{ poll.title }}{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:520px;">
+  <div class="ds-card mt-4">
+    <div class="ds-card__body py-4">
+      <h5 class="mb-2 text-center">{{ poll.title }}</h5>
+      <p class="text-muted text-center">{{ poll.description }}</p>
+
+      {% if voted or not poll.is_active %}
+        {% if not poll.is_active %}
+        <div class="alert alert-secondary text-center">This poll is closed.</div>
+        {% else %}
+        <div class="alert alert-success text-center">Thank you for voting!</div>
+        {% endif %}
+        <small class="text-muted d-block mb-3 text-center">Total votes: {{ poll.total_votes }}</small>
+        {% for option in poll.options.all %}
+        <div class="mb-3">
+          <div class="d-flex justify-content-between">
+            <span>{{ option.text }}</span>
+            <span>{{ option.vote_count }} ({{ option.vote_percent }}%)</span>
+          </div>
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped" role="progressbar"
+                 style="width: {{ option.vote_percent }}%"
+                 aria-valuenow="{{ option.vote_percent }}" aria-valuemin="0" aria-valuemax="100">
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+      <form method="post" action="">
+        {% csrf_token %}
+        {% for option in poll.options.all %}
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="{% if poll.allow_multiple %}checkbox{% else %}radio{% endif %}"
+                 name="option" value="{{ option.pk }}" id="option-{{ option.pk }}" required>
+          <label class="form-check-label" for="option-{{ option.pk }}">{{ option.text }}</label>
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary mt-2 btn-block">Submit Vote</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Poll Results{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-pie-chart mr-2"></i>{{ object.title }} — Results</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'comms-poll-detail' object.pk %}">
+          <i class="fa fa-arrow-left"></i> Poll
+        </a>
+        <a class="staff-nav-link" href="{% url 'comms-poll-list' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
+    </div>
+    <div class="ds-card__body">
+      <p>{{ object.description }}</p>
+      <small class="text-muted d-block mb-3">Total votes: {{ object.total_votes }}</small>
+
+      {% for option in object.options.all %}
+      <div class="mb-3">
+        <div class="d-flex justify-content-between">
+          <span>{{ option.text }}</span>
+          <span>{{ option.vote_count }} ({{ option.vote_percent }}%)</span>
+        </div>
+        <div class="progress">
+          <div class="progress-bar progress-bar-striped" role="progressbar"
+               style="width: {{ option.vote_percent }}%"
+               aria-valuenow="{{ option.vote_percent }}" aria-valuemin="0" aria-valuemax="100">
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}
