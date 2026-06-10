@@ -1,202 +1,150 @@
 {% extends 'core/base.html' %}
 {% load custom_tags %}
 
-{% block page_title %}Employee List Private{% endblock %}
+{% block page_title %}Private Employee Data{% endblock %}
 
 {% block content %}
-<div class="section p-3">
-    <small>
-        <span class="text-warning">GN-Gender</span> |
-        <span class="text-success">MA-Male</span> |
-        <span class="text-primary">FE-Female</span> |
-        <span class="text-warning">MS-Marital Status</span> |
-        <span class="text-success">MS-Married</span> |
-        <span class="text-primary">SN-Single</span> |
-        <span class="text-warning">SG-Status</span> |
-        <span class="text-success">ST-Management</span> |
-        <span class="text-primary">NM-Non Management</span>
-    </small>
-    <table data-toggle="table"
-           data-search="true"
-           data-show-footer="true"
-           data-show-columns="true"
-           data-pagination="true"
-           id="privateEmployeeTable"
-           class="table table-striped caption-top table-sm">
-            <caption>
-                <div class="row">
-                    <div class="col">
-                        All Employees More Private Data
-                    </div>
-                    <div class="col text-right">
-                        <!--  links to variety of listings-->
-                        <a href="#"
-                           class="btn btn-secondary text-right">
-                            <i class="fa fa-plus text-success"></i>
+<div class="container-fluid">
 
-                        </a>
-                        <a href="{% url 'staff-list' %}"
-                           class="btn btn-secondary text-right">
-                            <i class="fa fa-plus text-success"></i>
-                            Basic
-                        </a>
-                        <!-- Button trigger modal -->
-                        <button type="button"
-                                class="btn btn-secondary btn-sm text-right"
-                                data-toggle="modal"
-                                data-target="#newEmployeeModal">
-                            <i class="fa fa-plus text-success"></i>
-                            New Employee note
-                        </button>
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap staff-nav-bar">
+      <span><i class="fa fa-list-alt mr-2"></i>Private Employee Data</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'staff-list' %}">
+          <i class="fa fa-users"></i> Basic
+        </a>
+        <a class="staff-nav-link" href="{% url 'staff-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
+    </div>
+  </div>
 
-                        <!-- Modal -->
-                        <div class="text-left modal fade"
-                             id="newEmployeeModal"
-                             tabindex="-1"
-                             aria-labelledby="newEmployeeModalLabel"
-                             aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title"
-                                            id="newEmployeeModalLabel">
-                                            Ozone-SCUsH | New Employment
-                                        </h5>
-                                        <button type="button" class="fa fa-close text-danger" data-dismiss="modal"
-                                                aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <P>A new staff must come through an application process and cannot be added
-                                            directly.
-                                            Therefore, he or she must have completed the application form in the past,
-                                            and to employ such a person, we must go through the detailed page of the
-                                            applicant.
-                                            An employ link is provided to continue data capture of such staff.
-                                            At the top of the menu, click
-                                            <br>
-                                            <span class="text-center text-danger">
-                                        applicant --> name link --> employ
-                                    </span>
-                                        </P>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </caption>
-            <thead class="bg-warning text-white">
-                <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Fullname</th>
-                <th scope="col">GN</th>
-                <th scope="col">MS</th>
-                <th scope="col">ST</th>
-                <th scope="col">Branch</th>
-                <th scope="col">Banker</th>
-                <th scope="col">Acct.Num</th>
-                <th scope="col">Tax Payable</th>
-                <th scope="col">Basic</th>
-                <th scope="col">Allowance</th>
-                <th scope="col">Total Pay</th>
+  <!-- ── Summary stats ──────────────────────────────── -->
+  <div class="row mb-4">
+    <div class="col-sm-4 col-lg-2 mb-3">
+      <div class="ds-stat ds-stat--accent">
+        <div class="ds-stat__label">Total Salary</div>
+        <div class="ds-stat__value">{{ naira }}{{ salary.total|floatformat:'2g' }}</div>
+      </div>
+    </div>
+    <div class="col-sm-4 col-lg-2 mb-3">
+      <div class="ds-stat ds-stat--success">
+        <div class="ds-stat__label">Management</div>
+        <div class="ds-stat__value">{{ naira }}{{ salary_management.total|floatformat:'2g' }}</div>
+      </div>
+    </div>
+    <div class="col-sm-4 col-lg-2 mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label">Non-Management</div>
+        <div class="ds-stat__value">{{ naira }}{{ salary_non_management.total|floatformat:'2g' }}</div>
+      </div>
+    </div>
+    <div class="col-sm-4 col-lg-2 mb-3">
+      <div class="ds-stat ds-stat--warning">
+        <div class="ds-stat__label">Tax Payable</div>
+        <div class="ds-stat__value">{{ naira }}{{ tax.total|floatformat:'2g' }}</div>
+      </div>
+    </div>
+    <div class="col-sm-4 col-lg-2 mb-3">
+      <div class="ds-stat ds-stat--danger">
+        <div class="ds-stat__label">Balance</div>
+        <div class="ds-stat__value">{{ total }}</div>
+      </div>
+    </div>
+    <div class="col-sm-4 col-lg-2 mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label">Avg. Wage Rate</div>
+        <div class="ds-stat__value">{{ wage_rate }}</div>
+        <small class="ds-stat__sub">{{ monthly_man_hours|floatformat:0 }} man-hours/month</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Legend ─────────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__body py-2">
+      <small class="text-muted">
+        <span class="text-warning font-weight-600">GN</span>&mdash;Gender
+        (<span class="text-success">MA</span>=Male, <span class="text-primary">FE</span>=Female) &middot;
+        <span class="text-warning font-weight-600">MS</span>&mdash;Marital Status
+        (<span class="text-success">MR</span>=Married, <span class="text-primary">SG</span>=Single) &middot;
+        <span class="text-warning font-weight-600">ST</span>&mdash;Status
+        (<span class="text-success">MG</span>=Management, <span class="text-primary">NM</span>=Non-Management)
+      </small>
+    </div>
+  </div>
+
+  <!-- ── Employee table ─────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__body pb-0 pt-2 px-3">
+      <div class="table-responsive">
+        <table data-toggle="table"
+               data-search="true"
+               data-search-align="left"
+               data-show-columns="true"
+               data-pagination="true"
+               data-page-list="[10, 20, 30, 40, 50, All]"
+               data-sort-name="id"
+               data-sort-order="desc"
+               id="privateEmployeeTable"
+               class="table table-striped table-hover mb-0 table-sm">
+          <thead>
+            <tr>
+              <th data-field="id" data-sortable="true" scope="col">
+                ID <i class="fa fa-sort-amount-desc text-muted ml-1" title="Sorted descending"></i>
+              </th>
+              <th scope="col">Fullname</th>
+              <th scope="col">GN</th>
+              <th scope="col">MS</th>
+              <th scope="col">ST</th>
+              <th scope="col">Branch</th>
+              <th scope="col">Banker</th>
+              <th scope="col">Acct. No.</th>
+              <th scope="col" class="text-right">Tax Payable</th>
+              <th scope="col" class="text-right">Basic</th>
+              <th scope="col" class="text-right">Allowance</th>
+              <th scope="col" class="text-right">Total Pay</th>
             </tr>
-            </thead>
-            <tbody>
+          </thead>
+          <tbody>
             {% for employee in object_list %}
             <tr>
-                <th scope="row">
-                    {{ employee.pk|zeropadding:3 }}
-                </th>
-                <td><a href="{% url 'employee-detail' employee.pk %}">
-                    {% if employee.is_management %}
-                    <i class="fa fa-user-circle-o text-success"></i>
-                    {% else %}
-                    <i class="fa fa-user-circle-o text-danger"></i>
-                    {% endif %}
-                    {{employee.fullname}}</a></td>
-                {% if employee.staff.gender == 'MALE' %}<td>MA</td>{% else %}<td>FE</td>{% endif %}
-                {% if employee.staff.marital_status == 'MARRIED' %}<td>MR</td>{% else %}<td>SG</td>{% endif %}
-                <td>{{employee.is_management|yesno:'MG, NM'}}</td>
-                <td>{{employee.branch}}</td>
-                <td>{{employee.banker}}</td>
-                <td>{{employee.account_number|addsep}}</td>
-                <td>{{employee.tax_amount}}</td>
-                <td>{{employee.basic_salary}}</td>
-                <td>{{employee.allowance}}</td>
-                <td>{{employee.basic_salary|add:employee.allowance}}</td>
+              <td>{{ employee.pk|zeropadding:3 }}</td>
+              <td>
+                <a href="{% url 'employee-detail' employee.pk %}">
+                  {% if employee.is_management %}
+                  <i class="fa fa-user-circle-o text-success mr-1"></i>
+                  {% else %}
+                  <i class="fa fa-user-circle-o text-danger mr-1"></i>
+                  {% endif %}
+                  {{ employee.fullname }}
+                </a>
+              </td>
+              <td>{% if employee.staff.gender == 'MALE' %}MA{% else %}FE{% endif %}</td>
+              <td>{% if employee.staff.marital_status == 'MARRIED' %}MR{% else %}SG{% endif %}</td>
+              <td>{{ employee.is_management|yesno:'MG,NM' }}</td>
+              <td>{{ employee.branch }}</td>
+              <td>{{ employee.banker }}</td>
+              <td>{{ employee.account_number|addsep }}</td>
+              <td class="text-right">{{ employee.tax_amount }}</td>
+              <td class="text-right">{{ employee.basic_salary }}</td>
+              <td class="text-right">{{ employee.allowance }}</td>
+              <td class="text-right">{{ employee.basic_salary|add:employee.allowance }}</td>
             </tr>
             {% endfor %}
-            </tbody>
-            <tfoot class="bg-light">
-                <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Fullname</th>
-                <th scope="col">GN</th>
-                <th scope="col">MS</th>
-                <th scope="col">ST</th>
-                <th scope="col">Branch</th>
-                <th scope="col">Banker</th>
-                <th scope="col">Acct.Num</th>
-                <th scope="col">Tax</th>
-                <th scope="col">Basic</th>
-                <th scope="col">Allowance</th>
-                <th scope="col">Balance</th>
-            </tr>
-            </tfoot>
+          </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+
 </div>
-<div class="container">
-    <div class="row">
-        <div class="col">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item text-success">
-                <div class="row">
-                    <div class="col">
-                        Salary : {{salary.total}}
-                    </div>
-                    <div class="col">
-                        Management: {{salary_management.total}}
-                    </div>
-                    <div class="col">
-                        Non-Management: {{salary_non_management.total}}
-                    </div>
-                </div>
 
-            </li>
-            <li class="list-group-item text-success">
-                <div class="row">
-                    <div class="col-4">
-                        Tax: {{tax.total}}
-                    </div>
-                    <div class="col-4">
-                        Balance: {{total}}
-                    </div>
-                </div>
-
-            </li>
-            <li class="list-group-item">
-                Monthly: {{monthly_man_hours}} Man-Hours
-            </li>
-
-            <li class="list-group-item text-danger">
-                AWR: {{wage_rate}} per head
-            </li>
-
-        </ul>
-    </div>
-    </div>
-    <div class="row mt-3 mb-3">
-        <div class="col text-right">
-            <a class="btn btn-secondary" href="{% url 'staff-list' %}"><i class="fa fa-times-circle"></i></a>
-        </div>
-    </div>
-</div>
 <script>
 $(document).ready(function () {
     $('#privateEmployeeTable').DataTable();
-    })
+});
 </script>
-{% endblock content %}
+{% endblock %}
