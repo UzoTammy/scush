@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (StaffMainPageView, StaffListView, StaffPoliciesView, StaffListPicturesView,
-                    StaffDetailView, StaffUpdateView, StaffCreateView, StaffListPrivateView,
+                    StaffDetailView, StaffUpdateView, StaffDetailUpdateView, StaffCreateView, StaffListPrivateView,
                     StaffTerminate, StaffSuspend, StaffReassign, StaffPermit, RequestPermissionView,
                     StaffSalaryChange, StaffChangeManagement, TerminatedStaffListView, PKResetView,
                     PKResetPayroll, AddGratuity, GratuityListView, GratuityDetailView, GratuityUpdateView,
@@ -21,6 +21,7 @@ urlpatterns = [
     path('photos/', StaffListPicturesView.as_view(), name='staff-pictures'),
     path('<int:pk>/detail/', StaffDetailView.as_view(), name='employee-detail'),
     path('<int:pk>/update/', StaffUpdateView.as_view(), name='employee-update'),
+    path('<int:pk>/edit/', StaffDetailUpdateView.as_view(), name='employee-edit'),
     path('new/<int:pk>/', StaffCreateView.as_view(), name='employee-create'),
     path('private/', StaffListPrivateView.as_view(), name='employee-list-private'),
     path('terminate/<int:pk>/', StaffTerminate.as_view(), name='employee-terminate'),

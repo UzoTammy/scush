@@ -1,0 +1,89 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Edit Employee{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-edit mr-2"></i>Edit Employee — {{ object }}</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'employee-detail' object.pk %}">
+          <i class="fa fa-times-circle"></i> Cancel
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-md-8 col-lg-6 mb-4">
+      <div class="ds-card">
+        <div class="ds-card__header">
+          <span><i class="fa fa-id-card mr-2"></i>Employee Details</span>
+        </div>
+        <div class="ds-card__body">
+
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="form-row mb-3">
+              <div class="col-12">
+                <label class="font-weight-600">Official Email</label>
+                {{ form.official_email }}
+                {% if form.official_email.errors %}
+                  <small class="text-danger">{{ form.official_email.errors|join:", " }}</small>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="form-row mb-3">
+              <div class="col-12">
+                <label class="font-weight-600">Official Mobile</label>
+                {{ form.official_mobile }}
+                {% if form.official_mobile.errors %}
+                  <small class="text-danger">{{ form.official_mobile.errors|join:", " }}</small>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="form-row mb-3">
+              <div class="col-sm-6">
+                <label class="font-weight-600">Bank</label>
+                {{ form.banker }}
+                {% if form.banker.errors %}
+                  <small class="text-danger">{{ form.banker.errors|join:", " }}</small>
+                {% endif %}
+              </div>
+              <div class="col-sm-6">
+                <label class="font-weight-600">Account Number</label>
+                {{ form.account_number }}
+                {% if form.account_number.errors %}
+                  <small class="text-danger">{{ form.account_number.errors|join:", " }}</small>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="form-group form-check mb-4">
+              {{ form.is_confirmed }}
+              <label class="form-check-label" for="{{ form.is_confirmed.id_for_label }}">Confirmed</label>
+              {% if form.is_confirmed.errors %}
+                <small class="text-danger">{{ form.is_confirmed.errors|join:", " }}</small>
+              {% endif %}
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+              <a href="{% url 'employee-detail' object.pk %}" class="btn btn-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary">
+                <i class="fa fa-save mr-1"></i> Save Changes
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

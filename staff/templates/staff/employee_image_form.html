@@ -1,0 +1,99 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Update Photo — {{ object }}{% endblock %}
+
+{% block head %}
+<style>
+  .photo-upload-card { max-width: 480px; }
+  .photo-preview-wrap {
+    width: 180px; height: 180px; margin: 0 auto;
+    border-radius: 50%; overflow: hidden;
+    border: 4px solid #fff;
+    box-shadow: 0 0 0 1px var(--color-border), 0 4px 16px rgba(0,0,0,0.08);
+  }
+  .photo-preview-wrap img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .photo-upload-input { display: none; }
+  .photo-upload-label {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    cursor: pointer;
+  }
+  .photo-filename {
+    display: block; margin-top: 0.5rem;
+    color: var(--color-muted); font-size: 0.85rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-camera mr-2"></i>Update Photo — {{ object }}</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'employee-detail' object.pk %}">
+          <i class="fa fa-times-circle"></i> Cancel
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-card photo-upload-card mx-auto">
+    <div class="ds-card__body text-center">
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="photo-preview-wrap mb-3">
+          <img id="photoPreview" src="{{ object.image.url }}" alt="{{ object }}">
+        </div>
+
+        <p class="text-muted small mb-3">Choose a new photo to replace the current profile picture.</p>
+
+        <label for="{{ form.image.id_for_label }}" class="btn btn-outline-primary photo-upload-label">
+          <i class="fa fa-upload"></i> Choose Photo
+        </label>
+        <span id="photoFilename" class="photo-filename"></span>
+
+        <div class="photo-upload-input">
+          {{ form.image }}
+        </div>
+
+        {% if form.image.errors %}
+          <div class="text-danger small mt-2">{{ form.image.errors|join:", " }}</div>
+        {% endif %}
+
+        <div class="d-flex justify-content-between mt-4">
+          <a href="{% url 'employee-detail' object.pk %}" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-save mr-1"></i> Save Photo
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const photoInput = document.getElementById('{{ form.image.id_for_label }}');
+  const photoPreview = document.getElementById('photoPreview');
+  const photoFilename = document.getElementById('photoFilename');
+
+  if (photoInput) {
+    photoInput.addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      photoFilename.textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        photoPreview.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+</script>
+{% endblock %}

@@ -23,7 +23,7 @@ from django.views.generic import (View,TemplateView,ListView,DetailView,CreateVi
 from djmoney.money import Money
 
 from ozone import mytools
-from .form import (DebitForm, CreditForm, EmployeeForm)
+from .form import (DebitForm, CreditForm, EmployeeForm, EmployeeEditForm)
 from .models import (Employee, EmployeeBalance, CreditNote, DebitNote, Payroll, 
                      Reassign, Terminate, Suspend, Permit,SalaryChange, 
                      RequestPermission, Welfare)
@@ -396,6 +396,7 @@ class StaffCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class StaffUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Employee
     fields = ['image']
+    template_name = 'staff/employee_image_form.html'
 
     def test_func(self):
         """if user is a member of of the group HRD then grant access to this view"""
@@ -413,6 +414,22 @@ class StaffUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             form.instance.image.name = 'default.jpg'
             form.save()
         return super().form_valid(form)
+
+class StaffDetailUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Employee
+    form_class = EmployeeEditForm
+    template_name = 'staff/employee_edit_form.html'
+
+    def test_func(self):
+        """if user is a member of of the group HRD then grant access to this view"""
+        if self.request.user.groups.filter(name='HRD').exists():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Edit'
+        return context
 
 class PDFProfileView(View):
 

@@ -94,7 +94,7 @@
           </div>
         </div>
 
-        <a class="staff-nav-link" href="{% url 'employee-update' object.pk %}">
+        <a class="staff-nav-link" href="{% url 'employee-edit' object.pk %}">
           <i class="fa fa-edit"></i> Edit
         </a>
 
@@ -115,7 +115,12 @@
   <div class="ds-card mb-4">
     <div class="ds-card__body">
       <div class="d-flex align-items-start">
-        <img src="{{ object.image.url }}" class="profile-photo mr-4" alt="{{ object }}">
+        <div class="mr-4 text-center">
+          <img src="{{ object.image.url }}" class="profile-photo mb-2" alt="{{ object }}">
+          <a href="{% url 'employee-update' object.pk %}" class="btn btn-sm btn-outline-secondary btn-block">
+            <i class="fa fa-camera mr-1"></i> Upload
+          </a>
+        </div>
         <div class="flex-fill">
           <h4 class="mb-1">{{ object }}</h4>
           <p class="text-muted mb-2 small">

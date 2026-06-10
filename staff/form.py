@@ -61,6 +61,21 @@ class EmployeeForm(forms.ModelForm):
             field.widget.attrs.setdefault('class', 'form-control')
 
     
+class EmployeeEditForm(forms.ModelForm):
+
+    class Meta:
+        model = Employee
+        fields = ('official_email', 'official_mobile', 'banker', 'account_number', 'is_confirmed')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            if name == 'is_confirmed':
+                field.widget.attrs.setdefault('class', 'form-check-input')
+            else:
+                field.widget.attrs.setdefault('class', 'form-control')
+
+
 class DateTimeSelectorWidget(forms.MultiWidget):
     def __init__(self, attrs=None):
         days = [(day, str(day).zfill(2)) for day in range(1, 32)]
