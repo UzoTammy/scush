@@ -17,6 +17,8 @@ urlpatterns = [
     path('<int:pk>/interview/', GrantInterview.as_view(), name='apply-interview'),
     path('<int:pk>/guarantor/download/', views.guarantor_form_pdf, name='guarantor-form-pdf'),
     path('<int:pk>/guarantor/upload/', views.upload_guarantor_doc, name='guarantor-doc-upload'),
+    path('<int:pk>/guarantor/reupload/request/', views.request_guarantor_reupload, name='guarantor-reupload-request'),
+    path('<int:pk>/guarantor/reupload/approve/', views.approve_guarantor_reupload, name='guarantor-reupload-approve'),
 
     path('thanks/', views.successful),
     path('test/', views.test_form, name='test'),

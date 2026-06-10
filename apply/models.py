@@ -137,6 +137,16 @@ class GuarantorDocument(models.Model):
     uploaded_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL,
                                    null=True, related_name='guarantor_uploads')
 
+    # Re-upload (the guarantor declined / document needs replacing) — gated by approval
+    reupload_requested    = models.BooleanField(default=False)
+    reupload_reason       = models.TextField(blank=True, null=True)
+    reupload_requested_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL,
+                                              null=True, blank=True, related_name='guarantor_reupload_requests')
+    reupload_requested_at = models.DateTimeField(null=True, blank=True)
+    reupload_approved     = models.BooleanField(default=False)
+    reupload_approved_by  = models.ForeignKey('auth.User', on_delete=models.SET_NULL,
+                                              null=True, blank=True, related_name='guarantor_reupload_approvals')
+
     def __str__(self):
         return f'Guarantor Doc — {self.applicant}'
 
