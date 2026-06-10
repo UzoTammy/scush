@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     'pdf',
-    'pdf_convert.apps.PdfConvertConfig',
     'mail',
     'storages',
     'crispy_forms',
@@ -63,7 +62,6 @@ INSTALLED_APPS = [
     'apply.apps.ApplyConfig',
     'staff.apps.StaffConfig',
     'stock.apps.StockConfig',
-    'mails.apps.MailsConfig',
     'delivery.apps.DeliveryConfig',
     'warehouse.apps.WarehouseConfig',
     'trade.apps.TradeConfig',

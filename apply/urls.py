@@ -25,4 +25,6 @@ urlpatterns = [
     path('invite/', views.RequestInviteView.as_view(), name='apply-invite'),
     path('invited/', TemplateView.as_view(template_name='apply/invite_done.html'), name='apply-invited'),
     path('form/<uuid:token>/', views.PublicApplyView.as_view(), name='apply-form'),
+
+    path('welcome/', views.WelcomeView.as_view(), name='welcome'),
 ]
