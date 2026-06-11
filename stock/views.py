@@ -26,12 +26,12 @@ from djmoney.money import Money
 from .forms import FormProduct
 from pdf.utils import render_to_pdf
 from pdf.views import Ozone
-from .models import (Product, ProductPerformance, ProductExtension, PriceHistory)
+from .models import (Product, ProductPerformance, ProductExtension, PriceHistory, Source, Category)
 from .forms import ProductExtensionUpdateForm
 from .utils import average_sellout, days_of_cover
 from core.models import Setting
 from delivery.models import DeliveryNote
-from django.db.models import Sum, F, Avg
+from django.db.models import Sum, F, Avg, ProtectedError
 from ozone import mytools
 
 
@@ -93,19 +93,19 @@ class ProductHomeView(LoginRequiredMixin, View):
                 if f'row_{i}' in each_record.products:
                     code = each_record.products[f'row_{i}']['code']
                     category = Product.objects.get(id=int(code)).category
-                    if category == 'Malt':
+                    if category.name == 'Malt':
                         data_malt.append(each_record.products[f'row_{i}']['delivered'])
-                    elif category == 'Lager':
+                    elif category.name == 'Lager':
                         data_lager.append(each_record.products[f'row_{i}']['delivered'])
-                    elif category == 'RTD':
+                    elif category.name == 'RTD':
                         data_rtd.append(each_record.products[f'row_{i}']['delivered'])
-                    elif category == 'Soft':
+                    elif category.name == 'Soft':
                         data_soft.append(each_record.products[f'row_{i}']['delivered'])
-                    elif category == 'Stout':
+                    elif category.name == 'Stout':
                         data_soft.append(each_record.products[f'row_{i}']['delivered'])
-                    elif category == 'NA Wine':
+                    elif category.name == 'NA Wine':
                         data_na_wine.append(each_record.products[f'row_{i}']['delivered'])
-                    elif category == 'Wine':
+                    elif category.name == 'Wine':
                         data_wine.append(each_record.products[f'row_{i}']['delivered'])
                     else:
                         data_others.append(each_record.products[f'row_{i}']['delivered'])
@@ -151,7 +151,7 @@ class ProductHomeView(LoginRequiredMixin, View):
             'gn_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='GN'))[3]:,.2f}",
             'ib_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[0],
             'ib_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[3]:,.2f}",
-            'sources': Setting.get_list('product_source'),
+            'sources': Source.objects.filter(active=True).values_list('code', flat=True),
         }
         return render(request, 'stock/product_home.html', context=context)
 
@@ -173,7 +173,7 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
        
         context['is_product_extension'] = ProductExtension.objects.exists()
 
-        context['sources'] = Setting.get_list('product_source')
+        context['sources'] = Source.objects.filter(active=True).values_list('code', flat=True)
 
         date_string = Setting.get_value('closing_stock_date', '')
 
@@ -519,7 +519,7 @@ class ProductExtensionListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         dataset = list()
-        for source in Setting.get_list('product_source'):
+        for source in Source.objects.filter(active=True).values_list('code', flat=True):
             data = list()
             qs = self.get_queryset().filter(product__source=source)
             
@@ -1387,3 +1387,78 @@ class StockBalancingView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['overstock'] = overstock
         context['unset'] = unset
         return context
+
+
+# ── Category settings (manage from Settings page) ─────────────────────────────
+
+class CategoryAddView(LoginRequiredMixin, View):
+    def post(self, request):
+        name = request.POST.get('name', '').strip()
+        if name:
+            Category.objects.get_or_create(name=name)
+        return redirect('settings')
+
+
+class CategoryRenameView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        category = get_object_or_404(Category, pk=pk)
+        name = request.POST.get('name', '').strip()
+        if name:
+            category.name = name
+            category.save()
+        return redirect('settings')
+
+
+class CategoryToggleView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        category = get_object_or_404(Category, pk=pk)
+        category.active = not category.active
+        category.save()
+        return redirect('settings')
+
+
+class CategoryRemoveView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        category = get_object_or_404(Category, pk=pk)
+        try:
+            category.delete()
+        except ProtectedError:
+            messages.error(request, f"Cannot remove category '{category}' — it is still used by one or more products.")
+        return redirect('settings')
+
+
+# ── Source settings (manage from Settings page) ───────────────────────────────
+
+class SourceAddView(LoginRequiredMixin, View):
+    def post(self, request):
+        code = request.POST.get('code', '').strip()
+        label = request.POST.get('label', '').strip()
+        if code:
+            Source.objects.get_or_create(pk=code, defaults={'label': label})
+        return redirect('settings')
+
+
+class SourceRenameView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        source = get_object_or_404(Source, pk=pk)
+        source.label = request.POST.get('label', '').strip()
+        source.save()
+        return redirect('settings')
+
+
+class SourceToggleView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        source = get_object_or_404(Source, pk=pk)
+        source.active = not source.active
+        source.save()
+        return redirect('settings')
+
+
+class SourceRemoveView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        source = get_object_or_404(Source, pk=pk)
+        try:
+            source.delete()
+        except ProtectedError:
+            messages.error(request, f"Cannot remove source '{source}' — it is still used by one or more products.")
+        return redirect('settings')

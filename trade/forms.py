@@ -6,7 +6,7 @@ from django import forms
 from django.forms.renderers import BaseRenderer
 from django.forms.utils import ErrorList
 from django.forms.widgets import DateInput
-from core.models import Setting
+from stock.models import Source
 from .models import (BalanceSheet,
                     TradeMonthly,
                     TradeDaily,
@@ -199,7 +199,7 @@ class CreditorAccountForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['account'].choices = [(i, i) for i in Setting.get_list('product_source')]
+        self.fields['account'].choices = [(c, c) for c in Source.objects.filter(active=True).values_list('code', flat=True)]
 
 class FinancialForm(forms.ModelForm):
     date = forms.DateField(widget=DateInput(attrs={'type':'date'}))

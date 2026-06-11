@@ -45,3 +45,15 @@ urlpatterns += [
     path('analysis/', ProductAnalysisView.as_view(), name='product-analysis'),
     path('balancing/', StockBalancingView.as_view(), name='stock-balancing'),
 ]
+
+urlpatterns += [
+    path('settings/categories/add/', CategoryAddView.as_view(), name='category-add'),
+    path('settings/categories/<int:pk>/rename/', CategoryRenameView.as_view(), name='category-rename'),
+    path('settings/categories/<int:pk>/toggle/', CategoryToggleView.as_view(), name='category-toggle'),
+    path('settings/categories/<int:pk>/remove/', CategoryRemoveView.as_view(), name='category-remove'),
+
+    path('settings/sources/add/', SourceAddView.as_view(), name='source-add'),
+    path('settings/sources/<str:pk>/rename/', SourceRenameView.as_view(), name='source-rename'),
+    path('settings/sources/<str:pk>/toggle/', SourceToggleView.as_view(), name='source-toggle'),
+    path('settings/sources/<str:pk>/remove/', SourceRemoveView.as_view(), name='source-remove'),
+]

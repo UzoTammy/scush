@@ -1,7 +1,7 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Field
-from .models import ProductExtension, Product
+from .models import ProductExtension, Product, Category, Source
 from core.models import Setting
 
 
@@ -10,8 +10,6 @@ def get_choice_options():
         return [(i, i) for i in Setting.get_list(key, [fallback])]
 
     return {
-        'SOURCES':      choices('product_source',       'NB'),
-        'CATEGORY':     choices('product_category',     'Malt'),
         'UNITS':        choices('product_units',        'Pack'),
         'PACKS':        choices('product_packs',        '1'),
         'STATES':       choices('product_states',       'Liquid'),
@@ -25,8 +23,14 @@ class FormProduct(forms.ModelForm):
         super().__init__(*args, **kwargs)
         choices = get_choice_options()
         
-        self.fields['source'] = forms.ChoiceField(choices=choices['SOURCES'], initial='NB')
-        self.fields['category'] = forms.ChoiceField(choices=choices['CATEGORY'], initial='Malt')
+        self.fields['source'] = forms.ModelChoiceField(
+            queryset=Source.objects.filter(active=True),
+            initial=Source.objects.filter(pk='NB').first(),
+        )
+        self.fields['category'] = forms.ModelChoiceField(
+            queryset=Category.objects.filter(active=True),
+            initial=Category.objects.filter(name='Malt').first(),
+        )
         self.fields['units'] = forms.ChoiceField(choices=choices['UNITS'], initial='Pack')
         self.fields['packs'] = forms.ChoiceField(choices=choices['PACKS'])
         self.fields['product_state'] = forms.ChoiceField(choices=choices['STATES'], initial='Liquid')

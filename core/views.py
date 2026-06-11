@@ -38,6 +38,7 @@ from django.contrib import messages
 from django.template import loader
 from django.urls import reverse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.paginator import Paginator
 from django.views.generic import (View, TemplateView, ListView, CreateView, DetailView, UpdateView)
 from django.db.models import F, Sum, Q, Avg, Min
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -51,6 +52,7 @@ from cashflow.models import BankAccount, CashCenter
 from warehouse.models import Renewal, StoreLevy, Stores
 from .forms import JsonDatasetForm
 from .models import JsonDataset, Setting
+from stock.models import Category, Source
 from mail import mailbox
 from core import utils as plotter
 from core.mixins import DateTimeMixin
@@ -650,6 +652,7 @@ class PoliciesView(TemplateView):
 
 class SettingsView(LoginRequiredMixin, TemplateView):
     template_name = 'core/settings.html'
+    PAGE_SIZE = 8
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -658,6 +661,12 @@ class SettingsView(LoginRequiredMixin, TemplateView):
         for s in all_settings:
             grouped.setdefault(s.category, []).append(s)
         context['grouped'] = dict(sorted(grouped.items()))
+
+        cat_page = self.request.GET.get('cat_page')
+        src_page = self.request.GET.get('src_page')
+        context['categories'] = Paginator(Category.objects.all(), self.PAGE_SIZE).get_page(cat_page)
+        context['sources'] = Paginator(Source.objects.all(), self.PAGE_SIZE).get_page(src_page)
+        context['active_tab'] = 'Products' if (cat_page or src_page) else None
         return context
 
 

@@ -8,10 +8,34 @@ from djmoney.money import Money
 from outlet.models import SalesCenter
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name_plural = 'Categories'
+
+    def __str__(self):
+        return self.name
+
+
+class Source(models.Model):
+    code = models.CharField(max_length=50, primary_key=True)
+    label = models.CharField(max_length=100, blank=True, default='')
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['code']
+
+    def __str__(self):
+        return self.code
+
+
 class Product(models.Model):
     name = models.CharField(max_length=20)
-    source = models.CharField(max_length=50)
-    category = models.CharField(max_length=50)
+    source = models.ForeignKey(Source, on_delete=models.PROTECT, related_name='products')
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name='products')
     unit_price = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN', default=0.0)
     pack_type = models.CharField(max_length=20, default='Pack')
     quantity_per_pack = models.IntegerField(default=24)
