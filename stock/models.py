@@ -3,6 +3,7 @@ from djmoney.models.fields import MoneyField
 from django.shortcuts import reverse
 from django.utils import timezone
 from django.core.validators import MinValueValidator
+from django.contrib.auth.models import User
 from djmoney.money import Money
 from outlet.models import SalesCenter
 
@@ -40,7 +41,15 @@ class Product(models.Model):
     is_stock_valued = models.BooleanField(default=False) #
     watchlist = models.BooleanField(default=False, verbose_name='watchlist')
     velocity = models.IntegerField(default=-1)
-    
+    min_stock_level = models.IntegerField(default=0, verbose_name='Minimum Stock Level',
+                                          help_text='Minimum stock to hold (in units). 0 = not set')
+    max_stock_level = models.IntegerField(default=0, verbose_name='Maximum Stock Level',
+                                          help_text='Maximum stock to hold (in units). 0 = not set')
+    reorder_point = models.IntegerField(default=0, verbose_name='Reorder Point',
+                                        help_text='Trigger reorder when stock falls to/below this. 0 = not set')
+    reorder_qty = models.IntegerField(default=0, verbose_name='Reorder Quantity',
+                                      help_text='Suggested quantity to reorder. 0 = not set')
+
     def __str__(self):
         if self.parameter == 'Standard':
             return f"{self.name}~{self.size_value}{self.size_value_unit}x{self.quantity_per_pack}{self.pack_type}"
@@ -51,10 +60,48 @@ class Product(models.Model):
 
     def margin(self):
         return self.unit_price - self.cost_price
-    
+
     def nickname(self):
         return f"{self.name} {int(self.size_value)}{self.size_value_unit},{self.pack_type}"
-   
+
+    def current_stock(self):
+        """Quantity from the most recent ProductExtension record, or None if none exist."""
+        latest = self.productextension_set.order_by('-date').first()
+        return latest.stock_value if latest else None
+
+    def stock_status(self):
+        """Returns 'LOW', 'OVER', 'OK' or 'UNSET' based on current stock vs reorder/max levels."""
+        if self.reorder_point == 0 and self.max_stock_level == 0:
+            return 'UNSET'
+        stock = self.current_stock()
+        if stock is None:
+            return 'UNSET'
+        if self.reorder_point and stock <= self.reorder_point:
+            return 'LOW'
+        if self.max_stock_level and stock >= self.max_stock_level:
+            return 'OVER'
+        return 'OK'
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            previous = Product.objects.filter(pk=self.pk).first()
+            if previous is not None:
+                changed_by = getattr(self, '_changed_by', None)
+                if previous.cost_price != self.cost_price:
+                    PriceHistory.objects.create(
+                        product=self, price_type='COST',
+                        old_price=previous.cost_price, new_price=self.cost_price,
+                        changed_by=changed_by,
+                    )
+                if previous.unit_price != self.unit_price:
+                    PriceHistory.objects.create(
+                        product=self, price_type='SELLING',
+                        old_price=previous.unit_price, new_price=self.unit_price,
+                        changed_by=changed_by,
+                    )
+        super(Product, self).save(*args, **kwargs)
+
+
 class ProductPerformance(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     outlet = models.ForeignKey(SalesCenter, on_delete=models.CASCADE)
@@ -109,3 +156,19 @@ class ProductExtension(models.Model):
         if self.cost_price == Money(0, 'NGN') and self.sell_out != Money(0, 'NGN'):
             self.cost_price = self.product.cost_price
         super(ProductExtension, self).save(*args, **kwargs)
+
+
+class PriceHistory(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='price_history')
+    price_type = models.CharField(max_length=10, choices=[('COST', 'Cost'), ('SELLING', 'Selling')])
+    old_price = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN')
+    new_price = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN')
+    changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    date = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ['-date']
+        verbose_name_plural = 'Price histories'
+
+    def __str__(self):
+        return f'{self.product} {self.get_price_type_display()} price: {self.old_price} -> {self.new_price}'

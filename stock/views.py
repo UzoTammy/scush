@@ -26,8 +26,9 @@ from djmoney.money import Money
 from .forms import FormProduct
 from pdf.utils import render_to_pdf
 from pdf.views import Ozone
-from .models import (Product, ProductPerformance, ProductExtension)
+from .models import (Product, ProductPerformance, ProductExtension, PriceHistory)
 from .forms import ProductExtensionUpdateForm
+from .utils import average_sellout, days_of_cover
 from core.models import Setting
 from delivery.models import DeliveryNote
 from django.db.models import Sum, F, Avg
@@ -193,18 +194,21 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         for source in context['sources']:
             qs = ProductExtension.objects.filter(date=context['current_date'], product__source=source)
             qs = qs.annotate(value=F('stock_value')*F('cost_price'))
+            qs = qs.annotate(sellout_value=F('sell_out')*F('selling_price'))
             source_list.append(qs.order_by('-value'))
             total_list.append(
                 (qs.aggregate(Sum('stock_value'))['stock_value__sum'],
                 qs.aggregate(Sum('value'))['value__sum'],
-                qs.aggregate(Sum('sell_out'))['sell_out__sum'])
+                qs.aggregate(Sum('sell_out'))['sell_out__sum'],
+                qs.aggregate(Sum('sellout_value'))['sellout_value__sum'])
             )
             sources.append((
                     {'source': source,
                     'qty': qs.aggregate(Sum('stock_value'))['stock_value__sum'],
                     'value': qs.aggregate(Sum('value'))['value__sum'],
                     'percent': '%',
-                    'sellout': qs.aggregate(Sum('sell_out'))['sell_out__sum']
+                    'sellout': qs.aggregate(Sum('sell_out'))['sell_out__sum'],
+                    'sellout_value': qs.aggregate(Sum('sellout_value'))['sellout_value__sum']
                     }
                     ))
 
@@ -214,13 +218,14 @@ class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         context['totals'] = total_list
         lis = [i for i in sources if i['qty'] is not None and i['sellout'] is not None]
         context['source_total'] = sorted(lis, key=lambda i: i['value'], reverse=True)
-        qty, val, sellout = 0, Decimal('0'), 0
-        for x, y, z in total_list:
+        qty, val, sellout, sellout_val = 0, Decimal('0'), 0, Decimal('0')
+        for x, y, z, w in total_list:
             qty += x
             val += y
             sellout += z
+            sellout_val += w or Decimal('0')
 
-        context['grand_total'] = (qty, val, sellout)
+        context['grand_total'] = (qty, val, sellout, sellout_val)
         context['months'] = (calendar.month_name[x] for x in range(1, 13))
         return context
     
@@ -350,6 +355,10 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context['title'] = 'Update'
         return context
 
+    def form_valid(self, form):
+        form.instance._changed_by = self.request.user
+        return super().form_valid(form)
+
 class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Product
     success_url = '/products/list/'
@@ -380,6 +389,7 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
                 # Cost price gotten from modal form for cost price update only
                 product.cost_price = request.POST['cost']
                 msg = f'{product} cost price is updated !!!'
+            product._changed_by = request.user
             product.save()
         else:        
             date_string = Setting.get_value('closing_stock_date', '')
@@ -401,7 +411,21 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
             
         messages.info(request, msg)
         return redirect(product)
-       
+
+class PriceHistoryListView(LoginRequiredMixin, ListView):
+    model = PriceHistory
+    template_name = 'stock/price_history.html'
+    paginate_by = 30
+
+    def get_queryset(self):
+        self.product = get_object_or_404(Product, pk=self.kwargs['pk'])
+        return PriceHistory.objects.filter(product=self.product)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product'] = self.product
+        return context
+
 class ProductPerformanceListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = ProductPerformance
     template_name = 'stock/performance/product_list.html'
@@ -1269,11 +1293,15 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
         for product in active_products:
             product_data = ProductExtension.objects.filter(product=product)
             product_data = product_data.annotate(profit=F('sell_out')*(F('selling_price')-F('cost_price')))
-            
+
             if product_data.exists():
                 product_data_3days_ago = product_data.filter(date__range=[date1, date2])
-                average_sellout = product_data.aggregate(Avg('sell_out'))['sell_out__avg']
-                run_rate = 0 if average_sellout is None else int(18*average_sellout)
+
+                product_obj = Product.objects.get(pk=product)
+                closing_stock = product_data.last().stock_value
+                avg_7d = average_sellout(product_obj, 7)
+                avg_30d = average_sellout(product_obj, 30)
+                cover = days_of_cover(closing_stock, avg_7d)
 
                 sellout = product_data_3days_ago.aggregate(Sum('sell_out'))['sell_out__sum']
                 sellout = 0 if sellout is None else sellout
@@ -1282,12 +1310,15 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
                 profit = 0 if profit is None else profit
 
                 all_products_qs.append({
-                    'name': product_data.first().product, 
-                    'run_rate': run_rate,
-                    'closing_stock': product_data.last().stock_value,
-                    'sellout': sellout, 
+                    'name': product_data.first().product,
+                    'avg_7d': avg_7d,
+                    'avg_30d': avg_30d,
+                    'closing_stock': closing_stock,
+                    'days_of_cover': cover,
+                    'status': product_obj.stock_status(),
+                    'sellout': sellout,
                     'profit': profit
-                    })      
+                    })
         
         if all_products_qs: 
             sort_qs_by_sellout = sorted(all_products_qs, key=lambda x:x['sellout'], reverse=True)[:10]
@@ -1313,6 +1344,46 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
                     'date': date
                 }
             )            
-        context['no_sellout'] = no_sellout 
-        
+        context['no_sellout'] = no_sellout
+
+        return context
+
+class StockBalancingView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'stock/balancing/home.html'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        understock, overstock, unset = list(), list(), list()
+
+        for product in Product.objects.filter(active=True):
+            stock = product.current_stock()
+            status = product.stock_status()
+
+            if status == 'UNSET':
+                unset.append({'product': product, 'closing_stock': stock})
+            elif status == 'LOW':
+                suggested_qty = product.reorder_qty or max(product.max_stock_level - (stock or 0), 0)
+                understock.append({
+                    'product': product,
+                    'closing_stock': stock,
+                    'reorder_point': product.reorder_point,
+                    'suggested_qty': suggested_qty,
+                })
+            elif status == 'OVER':
+                overstock.append({
+                    'product': product,
+                    'closing_stock': stock,
+                    'max_stock_level': product.max_stock_level,
+                    'excess_qty': stock - product.max_stock_level,
+                })
+
+        context['understock'] = understock
+        context['overstock'] = overstock
+        context['unset'] = unset
         return context

@@ -1,4 +1,6 @@
 from django import forms
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Row, Column, Field
 from .models import ProductExtension, Product
 from core.models import Setting
 
@@ -30,15 +32,31 @@ class FormProduct(forms.ModelForm):
         self.fields['product_state'] = forms.ChoiceField(choices=choices['STATES'], initial='Liquid')
         self.fields['size_value_unit'] = forms.ChoiceField(choices=choices['VOLUME_UNITS'], initial='CL')
         self.fields['velocity'] = forms.ChoiceField(choices=[
-            [-1, "Not Determined"], 
-            [0, "No Sellout"], 
-            [1, "Very Low Sellout"], 
-            [2, "Low Sellout"], 
+            [-1, "Not Determined"],
+            [0, "No Sellout"],
+            [1, "Very Low Sellout"],
+            [2, "Low Sellout"],
             [3, "Moderate Sellout"],
             [4, "High Sellout"],
             [5, "Very High Sellout"]
         ])
-    
+
+        # Split fields into two columns to keep the form compact
+        field_names = list(self.fields.keys())
+        midpoint = (len(field_names) + 1) // 2
+        left_fields = field_names[:midpoint]
+        right_fields = field_names[midpoint:]
+
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.disable_csrf = True
+        self.helper.layout = Layout(
+            Row(
+                Column(*[Field(f) for f in left_fields], css_class='col-md-6'),
+                Column(*[Field(f) for f in right_fields], css_class='col-md-6'),
+            )
+        )
+
     class Meta:
         model = Product
         exclude = ['date_modified', 'units']

@@ -1,94 +1,127 @@
 {% extends 'core/base.html' %}
 {% load custom_tags %}
 
-{% block page_title %}Home{% endblock %}
+{% block page_title %}Stock Report{% endblock %}
 
 {% block content %}
-<div class="container-fluid p-3">
-  <div class="row">
-      <div class="col text-center">
-          <h3>Stock Report Page</h3>
-          <ul class="list-group list-group-active">
-            <li class="list-group-item text-left">
-              <span class="text-danger">Username:</span> {{user.username}}({{user.first_name}} {{user.last_name}}), 
-              <span class="text-danger">email:</span> {{user.email}},  
-              <span class="text-danger">Logged-in at:</span> {{user.last_login}}
-              <span class="btn btn-light btn-sm float-right">
-                  <!-- Button trigger modal -->
-                  <a class="btn btn-secondary" 
-                    href="." 
-                    data-toggle="modal" 
-                    data-target="#stockReportDateModal">
-                    Set Date 
-                  </a>
-                  <!-- <a class="btn btn-secondary" 
-                  href="." 
-                  data-toggle="modal" 
-                  data-target="#fileUploadModal">
-                    File Upload <sup class="text-warning">2</sup>
-                  </a>
-                  <a class="btn btn-secondary" 
-                    href="#">
-                    View Upload <sup class="text-warning">3</sup>
-                  </a> -->
-              </span>
-            </li>
-        </ul>
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-clipboard mr-2"></i>Stock Report - {{ user.username }}</span>
+      <div class="d-flex staff-nav-bar">
+        <button type="button" class="staff-nav-link" data-toggle="modal" data-target="#stockReportDateModal">
+          <i class="fa fa-calendar"></i> Set Date
+        </button>
+        <a class="staff-nav-link" href="{% url 'stock-report' %}">
+          <i class="fa fa-eye"></i> View
+        </a>
+        <a class="staff-nav-link" href="{% url 'product-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
       </div>
-  </div>
-  <h6 class="m-3">Report Date: {{user.profile.stock_report_date}}</h6>
-  <div class="row ml-3">
-    <div class="col">
-        Number of Product's Report Created: <a href="#">{{product_report.count}}</a>
     </div>
-    <div class="col">
-      Total Sellout - {{sellout_total}}
-    </div>
-    <div class="col">
-      Total Stock Value - {{stock_value_total}}
-    </div>
-  </div>
-  <hr>
-  
-  <div class="row m-3">
-    {% for qs in querysets %}
-    <div class="col-sm-4 mt-2">
-      <ul class="list-group">
-        <span class="text-danger ml-2">{{qs|first}}</span>
-        {% for product in qs|last %}
-          <li class="list-group-item">{{product}}
-            {% if not product.id in existing_id %}
-            <a class="float-right ml-1" href="{% url 'stock-report-new' user.profile.stock_report_date product.pk %}"><i class="fa fa-plus"></i></a>
-            {% else %}
-            <a class="float-right" href="{% url 'stock-report-update' user.profile.stock_report_date product.pk %}"> <i class="fa fa-edit"></i></a>
-            <a class="float-right mr-2" href="{% url 'stock-report-detail' user.profile.stock_report_date product.pk %}"><i class="fa fa-navicon"></i></a>
-            
-            {% endif %}
-          </li>
-        {% endfor %}  
-      </ul>
-    </div>
-    {% endfor %}
   </div>
 
-  <div class="row ml-3">
-    <div class="col text-muted">
-      <i class="fa fa-edit">Edit</i>  | <i class="fa fa-plus">Add</i> | <i class="fa fa-navicon">View</i>
+  <!-- ── Report summary + products ─────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header">
+      <span><i class="fa fa-user mr-2"></i>Report Summary</span>
+    </div>
+    <div class="ds-card__body">
+      <div class="row">
+        <div class="col-6 col-sm-3 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">User</div>
+            <div class="ds-stat__value ds-stat__value--lg">{{ user.first_name }} {{ user.last_name }}</div>
+            <small class="ds-stat__sub">{{ user.username }}</small>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3 mb-3">
+          <div class="ds-stat ds-stat--accent">
+            <div class="ds-stat__label">Report Date</div>
+            <div class="ds-stat__value ds-stat__value--lg">{{ user.profile.stock_report_date|date:'d-M-Y' }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3 mb-3">
+          <div class="ds-stat ds-stat--success">
+            <div class="ds-stat__label">Products Reported</div>
+            <div class="ds-stat__value">{{ product_report.count }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3 mb-3">
+          <div class="ds-stat ds-stat--warning">
+            <div class="ds-stat__label">Total Sellout</div>
+            <div class="ds-stat__value">{{ sellout_total|default:0 }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">Total Stock Value</div>
+            <div class="ds-stat__value">{{ stock_value_total|default:0 }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">Last Login</div>
+            <div class="ds-stat__value ds-stat__value--lg">{{ user.last_login|date:'d-M-Y H:i' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <h6 class="mb-3"><i class="fa fa-cubes mr-2"></i>Products</h6>
+      <div class="row">
+        {% for qs in querysets %}
+        <div class="col-12 col-md-6 col-lg-4 mb-3">
+          <div class="ds-card ds-card--narrow h-100 mb-0">
+            <div class="ds-card__header py-2">
+              <span>{{ qs|first }}</span>
+            </div>
+            <div class="ds-card__body p-0">
+              <div class="list-group list-group-flush">
+                {% for product in qs|last %}
+                <div class="list-group-item d-flex justify-content-between align-items-center py-2">
+                  <span>{{ product }}</span>
+                  <span>
+                    {% if not product.id in existing_id %}
+                    <a class="text-success" title="Add"
+                       href="{% url 'stock-report-new' user.profile.stock_report_date product.pk %}">
+                      <i class="fa fa-plus"></i>
+                    </a>
+                    {% else %}
+                    <a class="text-primary mr-2" title="Edit"
+                       href="{% url 'stock-report-update' user.profile.stock_report_date product.pk %}">
+                      <i class="fa fa-edit"></i>
+                    </a>
+                    <a class="text-secondary" title="View"
+                       href="{% url 'stock-report-detail' user.profile.stock_report_date product.pk %}">
+                      <i class="fa fa-navicon"></i>
+                    </a>
+                    {% endif %}
+                  </span>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="text-muted small">
+        <i class="fa fa-edit text-primary"></i> Edit &nbsp;|&nbsp;
+        <i class="fa fa-plus text-success"></i> Add &nbsp;|&nbsp;
+        <i class="fa fa-navicon text-secondary"></i> View
+      </div>
     </div>
   </div>
+
 </div>
 
-  <div class="row m-3">
-    <div class="col">
-      <a class="btn btn-primary" href="{% url 'stock-report' %}">View</a>
-      <a class="btn btn-secondary float-right" href="{% url 'product-home' %}"><i class="fa fa-times-circle"></i></a> 
-    </div>
-  </div>
-</div>
-
-
-<section>
-<!-- Modal -->
+<!-- ── Set Date Modal ─────────────────────────────── -->
 <div class="modal fade" id="stockReportDateModal" tabindex="-1" aria-labelledby="stockReportDateModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -101,9 +134,9 @@
       <form action="." method="POST">
         {% csrf_token %}
         <div class="modal-body">
-            <div class="form-group">
-                <input class="form-control" type="date" name="date" required>
-            </div>
+          <div class="form-group">
+            <input class="form-control" type="date" name="date" required>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -113,57 +146,4 @@
     </div>
   </div>
 </div>
-
-<!-- Modal bulk Update -->
-<div class="modal fade" id="fileUploadModal" tabindex="-1" aria-labelledby="stockReportDateModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="fileUploadModalLabel">Moving Data from csv file into database</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-          <form action="." method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="row">
-              <div class="col">
-                  <P class="text-primary">Set Date is: {{user.profile.stock_report_date|date:'d-m-Y'}} <br>
-                    <small class="text-muted">The file to be uploaded has got a date with it.
-                      If records exist in the database for this date, it will be updated and if not, it will be added
-                      <span class="text-danger">!!!</span>
-                    </small>
-                  </P>
-              </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col">
-                  <label for="">Select CSV File</label>
-                  <input id="fileInput" class="form-control" type="file" name="fileName" accept=".csv" required />
-                </div>
-            </div>
-            
-            <div class="row mt-3">
-              <div class="col">
-                <button type="button" class="btn btn-secondary btn-sm float-right" data-dismiss="modal">Close</button>
-                <input type="submit" class="float-right btn btn-primary btn-sm mr-2"  value="Upload File">
-            </div>
-          </form>
-      </div>
-      
-    </div>
-  </div>
-</div>
-
-<script>
-  const fileInput = document.getElementById('fileInput');
-  
-  fileInput.addEventListener('change', () => {
-      const fr = new FileReader();
-      fr.readAsDataURL(fileInput.files[0])  
-  })
-</script>
-
-</section>
 {% endblock %}

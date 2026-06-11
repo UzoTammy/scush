@@ -11,6 +11,7 @@ urlpatterns = [
 
     path('price/list/', PricePageView.as_view(), name='price-list'),
     path('<int:pk>/price/update/', PriceUpdate.as_view(), name='price-update'),
+    path('<int:pk>/price/history/', PriceHistoryListView.as_view(), name='price-history'),
     path('home/footnote/', PriceUpdateFootNote.as_view(), name='price-update-footnote'),
     
     path('stock/report/', ReportHomeView.as_view(), name='stock-report'),
@@ -41,5 +42,6 @@ urlpatterns += [
     path('<str:date>/<int:code>/detail/', StockReportDetail.as_view(), name='stock-report-detail'),
     path('<int:pk>/status/', ProductStatusUpdate.as_view(), name='product-status'),
     # path('<int:pk>/velocity/', ProductVelocity.as_view(), name='product-velocity'),
-    path('analysis/', ProductAnalysisView.as_view(), name='product-analysis')
+    path('analysis/', ProductAnalysisView.as_view(), name='product-analysis'),
+    path('balancing/', StockBalancingView.as_view(), name='stock-balancing'),
 ]

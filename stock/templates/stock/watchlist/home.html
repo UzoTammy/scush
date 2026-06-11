@@ -1,57 +1,64 @@
 {% extends 'core/base.html' %}
 
-{% block page_title %}Home{% endblock %}
+{% block page_title %}Watchlist{% endblock %}
 
-{% block content %} 
-<div class="container py-3">
-    <h3 class="text-center">Watchlist Home Page</h3>
-    <div class="row">
-        <div class="col">
-            <table 
-                class="table"
-                data-pagination="true" 
-                data-toggle="table">
-                <caption>Current Watchlist - {{date}}</caption>
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th class="text-right">Selling</th>
-                        <th class="text-right">Sell Out</th>
-                        <th class="text-right">Cost</th>
-                        <th class="text-right">Qty</th>
-                        <th class="text-right">Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in products %}
-                    <tr>
-                        <td>{{product.product}}</td>
-                        <td class="text-right">{{product.selling_price}}</td>
-                        <td class="text-right">{{product.sell_out}}</td>
-                        <td class="text-right">{{product.cost_price}}</td>
-                        <td class="text-right">{{product.stock_value}}</td>
-                        <td class="text-right">{{product.value_of_stock}}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+{% block content %}
+<div class="container-fluid">
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-eye mr-2"></i>Watchlist{% if date %} - {{ date|date:'d-M-Y' }}{% endif %}</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'watchlist-update' 'add' %}">
+          <i class="fa fa-plus"></i> Add
+        </a>
+        <a class="staff-nav-link" href="{% url 'watchlist-update' 'remove' %}">
+          <i class="fa fa-minus"></i> Remove
+        </a>
+        <a class="staff-nav-link" href="{% url 'product-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
-    
-    <div class="container text-center">
-        <div class="row">
-            <div class="col">
-                <a class="btn btn-success" href="{% url 'watchlist-update' 'add' %}">Add</a>
-            </div>
-            <div class="col">
-                <a class="btn btn-danger" href="{% url 'watchlist-update' 'remove' %}">Remove</a>
-            </div>
-            <div class="col">
-                <a class="btn btn-secondary" href="{% url 'product-home' %}"><i class="fa fa-times-circle"></i></a>
-            </div>
-        </div>
-        
+  </div>
+
+  <!-- ── Watchlist table ───────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header">
+      <span><i class="fa fa-cubes mr-2"></i>Tracked Products</span>
     </div>
-    
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm table-hover mb-0">
+          <thead class="bg-dark text-white">
+            <tr class="text-center">
+              <th>Product</th>
+              <th class="text-right">Selling</th>
+              <th class="text-right">Sell Out</th>
+              <th class="text-right">Cost</th>
+              <th class="text-right">Qty</th>
+              <th class="text-right">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for product in products %}
+            <tr>
+              <td>{{ product.product }}</td>
+              <td class="text-right">{{ product.selling_price }}</td>
+              <td class="text-right">{{ product.sell_out }}</td>
+              <td class="text-right">{{ product.cost_price }}</td>
+              <td class="text-right">{{ product.stock_value }}</td>
+              <td class="text-right font-weight-600">{{ product.value_of_stock }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center text-muted">No products on the watchlist</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

@@ -87,6 +87,10 @@
                     <!-- <li><a href="{% url 'product-ext-update' object.pk %}">Edit</a></li> -->
                     <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#costPriceReview">
                       <i class="fa fa-list text-warning"></i> Update Cost Price</a></li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'price-history' object.pk %}">
+                        <i class="fa fa-history text-warning"></i> Price History</a>
+                    </li>
                   <hr class="dropdown-divider">
                   <li class="nav-item"><a class="nav-link" href="{% url 'stock-report-source' 'All' %}">
                     <i class="fa fa-times-circle"></i> Return
@@ -173,15 +177,50 @@
                   <li class="list-group-item">Name: <span class="float-right">{{object.name}}</span> </li>
                 </ul>
             </div>
-            <div class="col-sm-6"> 
-                  <ul class="list-group list-group-flush">     
+            <div class="col-sm-6">
+                  <ul class="list-group list-group-flush">
                     <li class="list-group-item">Product State: <span class="float-right">{{object.product_state }}</span> </li>
-                    
+
+                </ul>
+            </div>
+        </div>
+            <div class="row p-2">
+              <button type="button"
+                class="list-group-item list-group-item-action bg-light"
+                aria-current="true">
+                <b class="text-center">Stock Levels</b>
+              </button>
+            <div class="col-sm-6">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">Current Stock: <span class="float-right">{{object.current_stock|default:"-"}}</span> </li>
+                  <li class="list-group-item">Status:
+                    <span class="float-right">
+                      {% with status=object.stock_status %}
+                      {% if status == 'LOW' %}
+                      <span class="badge badge-danger">Low</span>
+                      {% elif status == 'OVER' %}
+                      <span class="badge badge-warning">Overstock</span>
+                      {% elif status == 'OK' %}
+                      <span class="badge badge-success">OK</span>
+                      {% else %}
+                      <span class="badge badge-secondary">Unset</span>
+                      {% endif %}
+                      {% endwith %}
+                    </span>
+                  </li>
+                </ul>
+            </div>
+            <div class="col-sm-6">
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Min Stock Level: <span class="float-right">{{object.min_stock_level}}</span> </li>
+                    <li class="list-group-item">Max Stock Level: <span class="float-right">{{object.max_stock_level}}</span> </li>
+                    <li class="list-group-item">Reorder Point: <span class="float-right">{{object.reorder_point}}</span> </li>
+                    <li class="list-group-item">Reorder Qty: <span class="float-right">{{object.reorder_qty}}</span> </li>
                 </ul>
             </div>
         </div>
         </div>
-        
+
     </div>
 </div>
 

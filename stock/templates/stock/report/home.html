@@ -1,183 +1,248 @@
 {% extends 'core/base.html' %}
 {% load custom_tags %}
 
-{% block page_title %}Home{% endblock %}
+{% block page_title %}Stock Report{% endblock %}
+
+{% block head %}
+<style>
+  .stock-nav-bar { gap: 0.375rem; flex-wrap: wrap; }
+
+  .stock-nav-bar .dropdown-toggle {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  .stock-nav-bar .dropdown-toggle:hover,
+  .stock-nav-bar .show > .dropdown-toggle {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+  }
+
+  .stock-nav-bar .dropdown-menu {
+    min-width: 160px;
+    padding: 0.25rem 0;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  .stock-nav-bar .dropdown-item {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    color: var(--color-text);
+  }
+
+  .stock-nav-bar .dropdown-item:hover {
+    background: var(--color-primary);
+    color: #fff;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-  <div class="row">
-      <nav class="col-sm-2 bg-dark">
-        <button
-            class="navbar-toggler bg-light float-right mt-1 mb-1 myBtn" 
-            type="button" 
-            data-toggle="collapse" 
-            data-target="#dropdown"
-            aria-controls="dropdown"
-            aria-expanded="false"
-            aria-label="Toggle navigation">
-            <i class="fa fa-navicon text-primary"></i>
+
+  <!-- ── Nav strip ──────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap staff-nav-bar">
+      <span><i class="fa fa-bar-chart mr-2"></i>Stock Report</span>
+      <div class="d-flex align-items-center stock-nav-bar">
+
+        <button type="button" class="staff-nav-link" data-toggle="modal" data-target="#stockReport">
+          <i class="fa fa-calendar"></i> Change Date
         </button>
-        <div class="collapse collapse-sm" id="dropdown">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="#" 
-                    data-toggle="modal" 
-                    data-target="#stockReport"><i class="fa fa-vcard text-danger"></i> Change Date</a>
-                </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'stock-report-all-products' %}">Products</a>
-              </li>
-              {% now 'Y' as current_year %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'stock-month' current_year %}">{{current_year}}</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" 
-                  data-toggle="dropdown"
-                  href="#">Monthly
-                </a> 
-                <ul class="dropdown-menu">
-                  {% for month in months %}
-                  <li class="nav-item dropdown">
-                    <a class="nav-link" href="{% url 'stock-month' month %}">{{month}}</a></li>
-                  {% endfor %}
-                </ul>
-              </li>
-              
-              <li class=" nav-item dropdown">
-                <a class="nav-link dropdown-toggle" 
-                    data-toggle="dropdown"
-                    href="#">Sources
-                </a> 
-                <ul class="dropdown-menu">
-                  {% for source in sources %}
-                  <li class="dropdown-item">
-                    <a href="{% url 'stock-report-source' source %}">{{source}}</a>
-                  </li>
-                  {% endfor %}
-                </ul>
-              </li>
-                
-              <li class="nav-item">
-                  <a class="nav-link" href="{% url 'product-home' %}"><i class="fa fa-times-circle"></i> Return</a>
-              </li>
-            </ul>
-        </div>
-      </nav>
-      <div class="col-sm-10">
-        <h3 class="text-center">Stock Report Page</h3>
-        <h5 class="text-italics text-left">{{msg}}: {{current_date|date:'d-M-Y'}}</h5>
-        {% if not obj %}
-        <h6 class="ml-5">No Record Found 
-          <i class="fa fa-exclamation text-danger"></i>
-          <i class="fa fa-exclamation text-danger"></i>
-          <i class="fa fa-exclamation text-danger"></i>
-        </h6>
-        {% else %}
-        {% if grand_total|first != 0 %}
-        
-        <div class="row mb-3">
-          <div class="col">
-            <div class="accordion" id="accordionExample">
-              <div class="card">
-                <div class="card-header" id="headingOne">
-                  <h2 class="mb-0">
-                    <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                      <h6>Grand Total: Quantity: {{grand_total|first}} and Value: N{{grand_total|array:2|floatformat:'2g'}}</h6>
-                    </button>
-                  </h2>
-                </div>
-            
-                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
-                  <div class="card-body">
-                    <table class="table table-responsive">
-                      <thead>
-                        <tr class="text-right">
-                          <th class="text-left">Source</th>
-                          <th>Qty</th>
-                          <th>Value</th>
-                          <th>%</th>
-                          <th>Sellout</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for dict_object in source_total %}
-                        <tr class="text-right">
-                          <td class="text-left">{{dict_object.source}}</td>
-                          <td>{{dict_object.qty}}</td>
-                          <td>{{dict_object.value|floatformat:'2g'}}</td>
-                          {% with grand_total|array:2 as gtl %}
-                          <td>{{dict_object.value|div:gtl|multiply:100|floatformat:'2g'}}</td>
-                          {% endwith %}
-                          <td>{{dict_object.sellout}}</td>
-                        </tr>
-                        {% endfor%}
-                      </tbody>
-                    </table>
-                    
-                  </div>
-                </div>
-              </div>
-            </div>
+        <a class="staff-nav-link" href="{% url 'stock-report-all-products' %}">
+          <i class="fa fa-cubes mr-1"></i> Products
+        </a>
+        {% now 'Y' as current_year %}
+        <a class="staff-nav-link" href="{% url 'stock-month' current_year %}">
+          <i class="fa fa-calendar-o mr-1"></i> {{ current_year }}
+        </a>
 
+        <!-- Monthly dropdown -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-calendar mr-1"></i> Monthly
+          </button>
+          <div class="dropdown-menu">
+            {% for month in months %}
+            <a class="dropdown-item" href="{% url 'stock-month' month %}">{{ month }}</a>
+            {% endfor %}
           </div>
         </div>
-        
-        {% endif %}
 
-        <div class="row">
-          {% for source in obj %}
-          <div class="col">
-              <table class="table table-responsive">
-                {% with source|first as first_source %}
-                <legend class="text-danger">{{first_source.product.source}}</legend>
-                {% endwith %}
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th class="text-right">Cost</th>
-                    <th class="text-right">Balance</th>
-                    <th class="text-right">Value</th>
-                    <th class="text-right">Selling</th>
-                    <th class="text-right">Sellout</th>
-                    <th class="text-right">Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  
-                  {% for item in source %}
-                  <tr>
-                    <td>{{item.product}}</td>
-                    <td class="text-right">{{item.cost_price.amount}}</td>
-                    <td class="text-right">{{item.stock_value}}</td>
-                    <td class="text-right">{{item.value|floatformat:'2g'}}</td>
-                    <td class="text-right">{{item.selling_price.amount}}</td>
-                    <td class="text-right">{{item.sell_out}}</td>
-                    <td class="text-right">{{item.sell_out|multiply:item.selling_price.amount}}</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-                <tfoot>
-                  <tr class="text-danger text-right">
-                    <td colspan="2">Total</td>
-                    <td>{{totals|array:forloop.counter|array:1}}</td>
-                    <td>{{totals|array:forloop.counter|array:2|floatformat:'2g'}}</td>
-                    <td>**</td>
-                    <td>{{totals|array:forloop.counter|array:3}}</td>
-                    
-                  </tr>
-                </tfoot>
-              </table>
+        <!-- Sources dropdown -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-database mr-1"></i> Sources
+          </button>
+          <div class="dropdown-menu">
+            {% for source in sources %}
+            <a class="dropdown-item" href="{% url 'stock-report-source' source %}">{{ source }}</a>
+            {% endfor %}
           </div>
-          
-          {% endfor %}
         </div>
-        {% endif %}      
+
+        <a class="staff-nav-link" href="{% url 'product-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
       </div>
+    </div>
   </div>
-</div>  
 
-<!-- Stock report Modal -->
+  <h6 class="text-muted mb-4">{{ msg }}: {{ current_date|date:'d-M-Y' }}</h6>
+
+  {% if not obj %}
+  <div class="ds-card mb-4">
+    <div class="ds-card__body text-center text-muted">
+      <i class="fa fa-exclamation-triangle text-warning mr-1"></i> No Record Found
+    </div>
+  </div>
+  {% else %}
+
+  {% if grand_total|first != 0 %}
+  <!-- ── Grand total ──────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-calculator mr-2"></i>Grand Total</span></div>
+    <div class="ds-card__body">
+      <div class="row mb-3">
+        <div class="col-6 col-sm-3 mb-3 mb-sm-0">
+          <div class="ds-stat">
+            <div class="ds-stat__label">Closing Stock Qty</div>
+            <div class="ds-stat__value">{{ grand_total|first }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3 mb-3 mb-sm-0">
+          <div class="ds-stat ds-stat--success">
+            <div class="ds-stat__label">Closing Stock Value</div>
+            <div class="ds-stat__value ds-stat__value--lg">N{{ grand_total|array:2|floatformat:'2g' }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3 mb-3 mb-sm-0">
+          <div class="ds-stat ds-stat--accent">
+            <div class="ds-stat__label">Sellout Qty</div>
+            <div class="ds-stat__value">{{ grand_total|array:3 }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3">
+          <div class="ds-stat ds-stat--warning">
+            <div class="ds-stat__label">Sellout Value</div>
+            <div class="ds-stat__value ds-stat__value--lg">N{{ grand_total|array:4|floatformat:'2g' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm mb-0">
+          <thead class="bg-dark text-white">
+            <tr class="text-right">
+              <th class="text-left">Source</th>
+              <th>Closing Stock Qty</th>
+              <th>Closing Stock Value</th>
+              <th>%</th>
+              <th>Sellout Qty</th>
+              <th>Sellout Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for dict_object in source_total %}
+            <tr class="text-right">
+              <td class="text-left">{{ dict_object.source }}</td>
+              <td>{{ dict_object.qty }}</td>
+              <td>{{ dict_object.value|floatformat:'2g' }}</td>
+              {% with grand_total|array:2 as gtl %}
+              <td>{{ dict_object.value|div:gtl|multiply:100|floatformat:'2g' }}</td>
+              {% endwith %}
+              <td>{{ dict_object.sellout }}</td>
+              <td>{{ dict_object.sellout_value|floatformat:'2g' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── Per-source breakdown ────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-cube mr-2"></i>Products by Source</span>
+      <select id="sourceSelect" class="form-control form-control-sm w-auto" aria-label="Select source to display">
+        {% for source in obj %}
+        {% with source|first as first_source %}
+        <option value="source-panel-{{ forloop.counter }}">{{ first_source.product.source }}</option>
+        {% endwith %}
+        {% endfor %}
+      </select>
+    </div>
+    <div class="ds-card__body p-3">
+      {% for source in obj %}
+      <div id="source-panel-{{ forloop.counter }}" class="source-panel" {% if not forloop.first %}style="display:none;"{% endif %}>
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+            <thead class="bg-secondary text-white">
+              <tr class="text-right">
+                <th class="text-left">Product</th>
+                <th>Cost</th>
+                <th>Balance</th>
+                <th>Value</th>
+                <th>Selling</th>
+                <th>Sellout</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in source %}
+              <tr>
+                <td>{{ item.product }}</td>
+                <td class="text-right">{{ item.cost_price.amount }}</td>
+                <td class="text-right">{{ item.stock_value }}</td>
+                <td class="text-right">{{ item.value|floatformat:'2g' }}</td>
+                <td class="text-right">{{ item.selling_price.amount }}</td>
+                <td class="text-right">{{ item.sell_out }}</td>
+                <td class="text-right">{{ item.sell_out|multiply:item.selling_price.amount }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr class="text-right font-weight-600">
+                <td class="text-left" colspan="2">Total</td>
+                <td>{{ totals|array:forloop.counter|array:1 }}</td>
+                <td>{{ totals|array:forloop.counter|array:2|floatformat:'2g' }}</td>
+                <td>**</td>
+                <td>{{ totals|array:forloop.counter|array:3 }}</td>
+                <td>{{ totals|array:forloop.counter|array:4|floatformat:'2g' }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <script>
+    document.getElementById('sourceSelect').addEventListener('change', function () {
+      document.querySelectorAll('.source-panel').forEach(function (panel) {
+        panel.style.display = (panel.id === this.value) ? '' : 'none';
+      }, this);
+    });
+  </script>
+
+</div>
+
+<!-- ── Stock report modal (date / pdf) ───────────────── -->
 <div class="modal fade" id="stockReport" tabindex="-1" aria-labelledby="stockReportTitle" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -188,79 +253,28 @@
         </button>
       </div>
       <form action="." method="GET">
-          <div class="modal-body">
-              <div class="form-group">
-                  <label class="form-label" for="#">Pick a Date</label>
-                  <input id="stockReportInput" class="form-control" type="date" name="reportDate" onchange="reportDateFunc()">
-              </div>
-              <div class="form-group form-check ml-2 mb-0">
-                <input id="checkPDF" type="checkbox" class="form-check-input" name="reportPDF">
-                <label class="form-check-label" for="checkPDF">Report in PDF</label>
-              </div>   
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="stockReportInput">Pick a Date</label>
+            <input id="stockReportInput" class="form-control" type="date" name="reportDate" onchange="reportDateFunc()">
           </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> 
-              <button id="btnReportOK" type="submit" class="btn btn-secondary" disabled>OK</button>        
+          <div class="form-group form-check ml-2 mb-0">
+            <input id="checkPDF" type="checkbox" class="form-check-input" name="reportPDF">
+            <label class="form-check-label" for="checkPDF">Report in PDF</label>
           </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Stock add Modal -->
-<div class="modal fade" id="stockAddModal" tabindex="-1" aria-labelledby="stockAddModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="stockUpdateModalLabel">Stock Report - Change Date</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="." method="GET">
-          <div class="modal-body">
-              <div class="form-group">
-                  <label class="form-label" for="">Pick a Date</label>
-                  <input id="stockAddInput" class="form-control" type="date" name="theDate" onchange="addFunc()">
-              </div>   
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button id="btnAdd" type="submit" class="btn btn-primary" disabled>Fix Date</button>           
-          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="btnReportOK" type="submit" class="btn btn-primary" disabled>OK</button>
+        </div>
       </form>
     </div>
   </div>
 </div>
 
 <script>
-    function reportDateFunc() {
-      
-      if (document.getElementById('stockReportInput').value == '') {
-          document.getElementById('btnReportOK').disabled = true;
-      } else {
-          document.getElementById('btnReportOK').disabled = false;
-      }  
-    }
-
-    function addFunc() {
-      
-      if (document.getElementById('stockAddInput').value == '') {
-          document.getElementById('btnAdd').disabled = true;
-          console.log('true')
-      } else {
-          document.getElementById('btnAdd').disabled = false;
-          console.log(false)
-      }  
-    }
-
-    function reportFunc() {
-      
-      if (document.getElementById('stockReportInput').value == '') {
-          document.getElementById('btnReport').disabled = true;
-      } else {
-          document.getElementById('btnReport').disabled = false;
-      }  
-    }
+  function reportDateFunc() {
+    document.getElementById('btnReportOK').disabled = (document.getElementById('stockReportInput').value == '');
+  }
 </script>
 {% endblock %}
