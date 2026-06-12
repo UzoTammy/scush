@@ -26,6 +26,7 @@
               <th>Current Stock</th>
               <th>Reorder Point</th>
               <th>Suggested Order Qty</th>
+              <th>Supplier Lead Time</th>
             </tr>
           </thead>
           <tbody>
@@ -35,9 +36,12 @@
               <td class="text-right">{{ item.closing_stock|default:"-" }}</td>
               <td class="text-right">{{ item.reorder_point }}</td>
               <td class="text-right">{{ item.suggested_qty }}</td>
+              <td class="text-center">
+                {% if item.product.source.lead_time_days %}{{ item.product.source.lead_time_days }} day(s){% else %}-{% endif %}
+              </td>
             </tr>
             {% empty %}
-            <tr><td colspan="4" class="text-center text-muted">Nothing below reorder point</td></tr>
+            <tr><td colspan="5" class="text-center text-muted">Nothing below reorder point</td></tr>
             {% endfor %}
           </tbody>
         </table>

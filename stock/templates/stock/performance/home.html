@@ -494,6 +494,7 @@
                             <tr class="text-center">
                                 <th>Product</th>
                                 <th>Balance</th>
+                                <th>Reorder Point</th>
                                 <th>Sellout</th>
                             </tr>
                         </thead>
@@ -502,6 +503,7 @@
                             <tr>
                                 <td>{{record.product}}</td>
                                 <td class="text-right">{{record.stock_value}}</td>
+                                <td class="text-right">{{record.product.reorder_point|default:"-"}}</td>
                                 <td class="text-right">{{record.sell_out}}</td>
                             </tr>
                             {% endfor %}
@@ -509,6 +511,9 @@
                     </table>
                 </div>
                 <div class="modal-footer">
+                    <a class="btn btn-outline-primary btn-sm" href="{% url 'stock-balancing' %}">
+                        <i class="fa fa-balance-scale"></i> View Reorder Suggestions
+                    </a>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         Close
                     </button>

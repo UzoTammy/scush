@@ -1,7 +1,7 @@
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Field
-from .models import ProductExtension, Product, Category, Source
+from .models import ProductExtension, Product, Category, Source, StockMovement, StockLocation
 from core.models import Setting
 
 
@@ -71,3 +71,23 @@ class ProductExtensionUpdateForm(forms.ModelForm):
     class Meta:
         model = ProductExtension
         fields = ('cost_price', 'selling_price', 'stock_value', 'sell_out', 'sales_amount')
+
+
+class StockMovementForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['location'].queryset = StockLocation.objects.filter(active=True)
+        self.fields['location'].required = False
+
+    class Meta:
+        model = StockMovement
+        fields = ('movement_type', 'quantity', 'date', 'location', 'reference', 'note')
+        widgets = {
+            'movement_type': forms.Select(attrs={'class': 'form-control'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'location': forms.Select(attrs={'class': 'form-control'}),
+            'reference': forms.TextInput(attrs={'class': 'form-control'}),
+            'note': forms.TextInput(attrs={'class': 'form-control'}),
+        }

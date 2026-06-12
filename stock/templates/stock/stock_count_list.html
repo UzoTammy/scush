@@ -1,0 +1,71 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Stock Counts{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-tasks mr-2"></i>Stock Count History</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'stock-count-new' %}">
+          <i class="fa fa-plus"></i> New Count
+        </a>
+        <a class="staff-nav-link" href="{% url 'product-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
+    </div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm mb-0">
+          <thead class="bg-dark text-white">
+            <tr class="text-center">
+              <th>Date</th>
+              <th>Note</th>
+              <th>Lines Counted</th>
+              <th>Net Variance</th>
+              <th>Recorded By</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for session in object_list %}
+            <tr>
+              <td class="text-center">{{ session.date|date:'d-M-Y' }}</td>
+              <td>{{ session.note|default:"-" }}</td>
+              <td class="text-center">{{ session.lines.count }}</td>
+              <td class="text-center">{{ session.net_variance }}</td>
+              <td class="text-center">{{ session.created_by|default:"-" }}</td>
+              <td class="text-center">
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'stock-count-detail' session.pk %}">
+                  <i class="fa fa-navicon"></i> View
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center text-muted">No stock counts recorded yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {% if is_paginated %}
+  <nav>
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+      {% endif %}
+      <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+      {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+</div>
+{% endblock %}

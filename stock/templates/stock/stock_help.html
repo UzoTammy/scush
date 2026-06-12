@@ -1,0 +1,220 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Stock & Inventory Help{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- ── Header ─────────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-question-circle mr-2"></i>Stock & Inventory Management — Help</span>
+      <a class="staff-nav-link" href="{% url 'product-home' %}">
+        <i class="fa fa-times-circle"></i> Return
+      </a>
+    </div>
+    <div class="ds-card__body">
+      <p class="mb-0">
+        This page is a quick guide to the Stock &amp; Inventory Management section: where things live,
+        what each tool does, and how stock numbers stay accurate. Use the links below to jump to a topic.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Table of contents ─────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-list mr-2"></i>Topics</span></div>
+    <div class="ds-card__body">
+      <div class="row">
+        <div class="col-md-6">
+          <ul class="mb-md-0">
+            <li><a href="#getting-around">Getting Around the Stock Management Page</a></li>
+            <li><a href="#stock-card">Stock Card &amp; the Movement Ledger</a></li>
+            <li><a href="#deliveries">Deliveries &amp; Automatic Stock Updates</a></li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <ul class="mb-0">
+            <li><a href="#stock-count">Stock Count (Physical Count)</a></li>
+            <li><a href="#reorder">Reorder Suggestions &amp; Low Stock</a></li>
+            <li><a href="#transfer">Stock Transfer Between Locations</a></li>
+            <li><a href="#settings">Settings: Categories, Suppliers &amp; Locations</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Getting around ─────────────────────────────── -->
+  <div class="ds-card mb-4" id="getting-around">
+    <div class="ds-card__header"><span><i class="fa fa-compass mr-2"></i>Getting Around the Stock Management Page</span></div>
+    <div class="ds-card__body">
+      <p>
+        From <a href="{% url 'product-home' %}">Stock Management</a>, the top bar groups every tool into
+        three menus:
+      </p>
+      <ul>
+        <li>
+          <strong><i class="fa fa-bar-chart mr-1"></i>Reports</strong> — Stock Report, All Products,
+          <a href="{% url 'performance-home' %}">Performance</a>, Run Rate, and
+          <a href="{% url 'stock-balancing' %}">Stock Balancing</a> (reorder suggestions).
+        </li>
+        <li>
+          <strong><i class="fa fa-truck mr-1"></i>Operations</strong> — day-to-day stock work:
+          <a href="{% url 'delivery-home' %}">Deliveries</a>, Watchlist, Sellout &amp; Balance reporting,
+          <a href="{% url 'stock-count-new' %}">Stock Count</a>,
+          <a href="{% url 'stock-count-list' %}">Stock Count History</a>, and
+          <a href="{% url 'stock-transfer' %}">Stock Transfer</a>.
+        </li>
+        <li>
+          <strong><i class="fa fa-file-pdf-o mr-1"></i>PDF</strong> — printable price lists and
+          price-update notes by source.
+        </li>
+      </ul>
+      <p class="mb-0">
+        Every individual product also has a <strong>Stock Card</strong> link on its detail page —
+        this is where you see and adjust that product's running stock balance.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Stock Card ─────────────────────────────────── -->
+  <div class="ds-card mb-4" id="stock-card">
+    <div class="ds-card__header"><span><i class="fa fa-exchange mr-2"></i>Stock Card &amp; the Movement Ledger</span></div>
+    <div class="ds-card__body">
+      <p>
+        Every stock change for a product — receipts, sales, returns, transfers, adjustments and
+        write-offs — is recorded as a <strong>Stock Movement</strong>. The Stock Card (open it from
+        a product's detail page) shows:
+      </p>
+      <ul>
+        <li><strong>Ledger Balance</strong> — the running total of all movements. This is the system's "true" stock figure.</li>
+        <li><strong>Reported Stock</strong> — the most recent figure entered through the daily/weekly stock report (for comparison).</li>
+        <li>A breakdown of the balance at each <a href="#transfer">stock location</a>, if you use more than one.</li>
+        <li>A form to record a new movement, and a history table of everything recorded so far.</li>
+      </ul>
+      <p class="mb-0">
+        <strong>Recording a movement manually:</strong> choose a movement type (Opening Balance, Receipt,
+        Sale, Return, Transfer, Adjustment or Write-off), enter the quantity — use a <strong>negative</strong>
+        number to reduce stock (e.g. a sale or write-off) and a positive number to increase it (e.g. a
+        receipt) — pick a date, optionally a location, a reference (PO number, delivery note, etc.) and a
+        note, then save.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Deliveries ─────────────────────────────────── -->
+  <div class="ds-card mb-4" id="deliveries">
+    <div class="ds-card__header"><span><i class="fa fa-truck mr-2"></i>Deliveries &amp; Automatic Stock Updates</span></div>
+    <div class="ds-card__body">
+      <p>
+        A delivery moves through five stages on the
+        <a href="{% url 'delivery-home' %}">Delivery Management</a> home page:
+        <strong>Created → Delivered → Returned → Confirmed → Credited</strong>. Click any stage tile to
+        see the deliveries currently sitting at that stage.
+      </p>
+      <p class="mb-0">
+        When a delivery is moved to the <strong>Returned</strong> stage (i.e. the outlet has confirmed
+        what was delivered vs. received), the system automatically creates Stock Movements for you:
+        a <strong>Sale</strong> movement for the quantity delivered, and — if anything was sent back —
+        a matching <strong>Return</strong> movement for the quantity credited. You don't need to update
+        the Stock Card separately for deliveries; this happens once per delivery, so resubmitting the
+        same return won't double-count it.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Stock Count ────────────────────────────────── -->
+  <div class="ds-card mb-4" id="stock-count">
+    <div class="ds-card__header"><span><i class="fa fa-tasks mr-2"></i>Stock Count (Physical Count)</span></div>
+    <div class="ds-card__body">
+      <p>
+        Use <a href="{% url 'stock-count-new' %}">Stock Count</a> when you physically count what's on
+        the shelves/in the warehouse and want to reconcile it with the system's ledger balance.
+      </p>
+      <ol>
+        <li>Set the count date and an optional note.</li>
+        <li>Products are grouped into tabs by source — switch tabs and enter the counted quantity for
+            each product you checked. Leave a product blank to skip it.</li>
+        <li>Submit. The system compares your counted quantity to the ledger balance for each product.</li>
+        <li>Any difference (variance) is automatically recorded as an <strong>Adjustment</strong> stock
+            movement, so the ledger balance matches what you counted — giving you a clean audit trail of
+            shrinkage or overages.</li>
+      </ol>
+      <p class="mb-0">
+        Past counts — including the variance for every line — can be reviewed from
+        <a href="{% url 'stock-count-list' %}">Stock Count History</a>.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Reorder ────────────────────────────────────── -->
+  <div class="ds-card mb-4" id="reorder">
+    <div class="ds-card__header"><span><i class="fa fa-balance-scale mr-2"></i>Reorder Suggestions &amp; Low Stock</span></div>
+    <div class="ds-card__body">
+      <p>
+        Each product can have a <strong>Reorder Point</strong>, <strong>Reorder Quantity</strong>,
+        <strong>Minimum Stock Level</strong> and <strong>Maximum Stock Level</strong> set on its edit page.
+        These drive two things:
+      </p>
+      <ul>
+        <li>
+          The <a href="{% url 'stock-balancing' %}">Stock Balancing</a> page lists products that need
+          reordering (at or below their reorder point, with a suggested order quantity and the
+          supplier's lead time), products that are overstocked (at or above their maximum level), and
+          products that have no levels configured yet.
+        </li>
+        <li>
+          The <a href="{% url 'performance-home' %}">Performance</a> dashboard's "Low Stock" widget
+          flags products whose reported balance has fallen to or below their reorder point (or minimum
+          stock level if no reorder point is set).
+        </li>
+      </ul>
+      <p class="mb-0">
+        If a product shows under "Needs Configuration", open it from
+        <a href="{% url 'product-home' %}">Stock Management</a> and set its stock levels via
+        <em>Update Product</em> so it can be tracked properly.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Transfer ───────────────────────────────────── -->
+  <div class="ds-card mb-4" id="transfer">
+    <div class="ds-card__header"><span><i class="fa fa-map-marker mr-2"></i>Stock Transfer Between Locations</span></div>
+    <div class="ds-card__body">
+      <p>
+        If stock is held in more than one place (e.g. a main warehouse and a depot), set up each place
+        as a <strong>Stock Location</strong> in <a href="{% url 'settings' %}">App Settings</a>.
+      </p>
+      <p class="mb-0">
+        Use <a href="{% url 'stock-transfer' %}">Stock Transfer</a> to move stock from one location to
+        another: pick the product, quantity, source and destination locations, and a date. This creates
+        two linked movements (a deduction at the source location and an addition at the destination), so
+        the total company-wide balance is unchanged — only the per-location split moves. The Stock Card
+        for each product shows its balance broken down by location.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Settings ───────────────────────────────────── -->
+  <div class="ds-card mb-4" id="settings">
+    <div class="ds-card__header"><span><i class="fa fa-cog mr-2"></i>Settings: Categories, Suppliers &amp; Locations</span></div>
+    <div class="ds-card__body">
+      <p>
+        The Products tab of <a href="{% url 'settings' %}">App Settings</a> is where the building
+        blocks of the stock system are managed:
+      </p>
+      <ul class="mb-0">
+        <li><strong>Product Categories</strong> — group products (Malt, Lager, Stout, etc.) for reporting.</li>
+        <li>
+          <strong>Product Sources</strong> — also act as suppliers. Click the
+          <i class="fa fa-address-card"></i> icon next to a source to record its contact person, phone,
+          email and typical lead time (used on the Reorder Suggestions page).
+        </li>
+        <li><strong>Stock Locations</strong> — the physical places stock is held, used for Stock Transfers and per-location balances on the Stock Card.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

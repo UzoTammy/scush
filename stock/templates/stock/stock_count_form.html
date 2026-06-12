@@ -1,0 +1,87 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Stock Count{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-tasks mr-2"></i>New Stock Count</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'stock-count-list' %}">
+          <i class="fa fa-list"></i> Past Counts
+        </a>
+        <a class="staff-nav-link" href="{% url 'product-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <form method="post" action="{% url 'stock-count-new' %}">
+    {% csrf_token %}
+
+    <div class="ds-card mb-4">
+      <div class="ds-card__body">
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            <label>Count Date</label>
+            <input type="date" name="date" class="form-control" value="{{ date|date:'Y-m-d' }}">
+          </div>
+          <div class="form-group col-md-9">
+            <label>Note</label>
+            <input type="text" name="note" class="form-control" placeholder="Optional note for this count session">
+          </div>
+        </div>
+        <p class="text-muted small mb-0">
+          Enter the physically counted quantity for each product. Leave a field blank to skip that product.
+          Any difference from the system balance will be recorded automatically as a stock adjustment.
+        </p>
+      </div>
+    </div>
+
+    <div class="ds-card mb-4">
+      <div class="ds-card__body">
+        <!-- Source tabs -->
+        <ul class="nav nav-tabs mb-0" id="sourceTabs" role="tablist">
+          {% for qs in querysets %}
+          <li class="nav-item">
+            <a class="nav-link {% if forloop.first %}active{% endif %}"
+               id="tab-source-{{ qs|first|slugify }}"
+               data-toggle="tab"
+               href="#pane-source-{{ qs|first|slugify }}"
+               role="tab">
+              {{ qs|first }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+
+        <div class="tab-content border border-top-0 rounded-bottom mb-3">
+          {% for qs in querysets %}
+          <div class="tab-pane fade {% if forloop.first %}show active{% endif %} p-2"
+               id="pane-source-{{ qs|first|slugify }}"
+               role="tabpanel">
+            <div class="row">
+              {% for product in qs|last %}
+              <div class="col-12 col-sm-6 col-lg-4 col-xl-3 mb-2">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="text-truncate mr-2 small">{{ product }}</span>
+                  <input type="number" class="form-control form-control-sm" style="width: 90px;"
+                         name="counted_{{ product.pk }}" placeholder="{{ product.stock_balance }}">
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mb-4">Save Stock Count</button>
+  </form>
+
+</div>
+{% endblock %}

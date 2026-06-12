@@ -1,7 +1,7 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_list_or_404
 from .models import DeliveryNote
-from stock.models import Product
+from stock.models import Product, StockMovement
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic.edit import (CreateView,
@@ -26,6 +26,83 @@ class DeliveryHomeView(LoginRequiredMixin, UserPassesTestMixin, View):
             return True
         return False
 
+    @staticmethod
+    def delivery_qty_values(obj):
+        qty_delivered, qty_rejected, amount, amount_credit = list(), list(), list(), list()
+        (total_delivered,
+         total_rejected,
+         percent_rejected,
+         total_amount,
+         total_amount_credit,
+         percent_credited) = 0, 0, '', 0, 0, ''
+        for each_record in obj:
+            if 'totals' in each_record.products:
+                delivered = int(each_record.products['totals']['total_delivered'].replace(',', ''))
+                qty_delivered.append(delivered)
+                qty_rejected.append(delivered - int(each_record.products['totals']['total_received'].replace(',', '')))
+
+                # values
+                value = each_record.products['totals']['total_amount'].replace(',', '')
+                value = value.replace(chr(8358), '')
+                value_credit = each_record.products['totals']['total_amount_credit'].replace(',', '')
+                value_credit = value_credit.replace(chr(8358), '')
+
+                amount.append(float(value))
+                amount_credit.append(float(value_credit))
+
+            total_delivered = sum(qty_delivered)
+            total_rejected = sum(qty_rejected)
+            percent_rejected = f'{100 * total_rejected / total_delivered:,.2f}%'
+            total_amount = sum(amount)
+            total_amount_credit = sum(amount_credit)
+            percent_credited = f"{100 * total_amount_credit / total_amount:,.2f}%"
+        return total_delivered, total_rejected, percent_rejected, total_amount, total_amount_credit, percent_credited
+
+    @staticmethod
+    def category():
+        data_malt = list()
+        data_lager = list()
+        data_rtd = list()
+        data_soft = list()
+        data_stout = list()
+        data_ed = list()
+        data_bitters = list()
+        data_na_wine = list()
+        data_wine = list()
+        data_others = list()
+        for each_record in DeliveryNote.objects.all():
+            for i in range(1, 4):
+                if f'row_{i}' in each_record.products:
+                    code = each_record.products[f'row_{i}']['code']
+                    category = Product.objects.get(id=int(code)).category
+                    if category.name == 'Malt':
+                        data_malt.append(each_record.products[f'row_{i}']['delivered'])
+                    elif category.name == 'Lager':
+                        data_lager.append(each_record.products[f'row_{i}']['delivered'])
+                    elif category.name == 'RTD':
+                        data_rtd.append(each_record.products[f'row_{i}']['delivered'])
+                    elif category.name == 'Soft':
+                        data_soft.append(each_record.products[f'row_{i}']['delivered'])
+                    elif category.name == 'Stout':
+                        data_soft.append(each_record.products[f'row_{i}']['delivered'])
+                    elif category.name == 'NA Wine':
+                        data_na_wine.append(each_record.products[f'row_{i}']['delivered'])
+                    elif category.name == 'Wine':
+                        data_wine.append(each_record.products[f'row_{i}']['delivered'])
+                    else:
+                        data_others.append(each_record.products[f'row_{i}']['delivered'])
+
+        return (sum(data_malt),
+                sum(data_lager),
+                sum(data_rtd),
+                sum(data_soft),
+                sum(data_stout),
+                sum(data_ed),
+                sum(data_bitters),
+                sum(data_wine),
+                sum(data_na_wine),
+                sum(data_others))
+
     def get(self, request):
         context = {
             'title': 'Delivery',
@@ -39,6 +116,28 @@ class DeliveryHomeView(LoginRequiredMixin, UserPassesTestMixin, View):
             'returned': self.model.filter(stage='RETURNED'),
             'confirmed': self.model.filter(stage='CONFIRMED'),
             'credited': self.model.filter(stage='CREDITED'),
+            'total_malt_delivered': self.category()[0],
+            'total_lager_delivered': self.category()[1],
+            'total_rtd_delivered': self.category()[2],
+            'total_soft_delivered': self.category()[3],
+            'total_stout_delivered': self.category()[4],
+            'total_ed_delivered': self.category()[5],
+            'total_bitters_delivered': self.category()[6],
+            'total_wine_delivered': self.category()[7],
+            'total_na_wine_delivered': self.category()[8],
+            'total_others_delivered': self.category()[9],
+            'quantity_delivered': self.delivery_qty_values(DeliveryNote.objects.all())[0],
+            'quantity_rejected': self.delivery_qty_values(DeliveryNote.objects.all())[1],
+            'percent_rejected': self.delivery_qty_values(DeliveryNote.objects.all())[2],
+            'total_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.all())[3]:,.2f}",
+            'total_amount_credit': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.all())[4]:,.2f}",
+            'percent_credited': self.delivery_qty_values(DeliveryNote.objects.all())[5],
+            'nb_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='NB'))[0],
+            'nb_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='NB'))[3]:,.2f}",
+            'gn_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='GN'))[0],
+            'gn_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='GN'))[3]:,.2f}",
+            'ib_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[0],
+            'ib_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[3]:,.2f}",
         }
         return render(request, 'delivery/home.html', context)
 
@@ -134,6 +233,7 @@ class DeliveryReturnUpdateView(LoginRequiredMixin, UserPassesTestMixin, FormView
 
     def post(self, request, *args, **kwargs):
         json_data = dict()
+        movement_rows = list()
         total_delivered, total_received, total_amount, total_amount_credit = 0, 0, 0, 0
         for i in range(1, 4):
             product_id = request.POST[f'product_{i}']
@@ -182,6 +282,8 @@ class DeliveryReturnUpdateView(LoginRequiredMixin, UserPassesTestMixin, FormView
                         }
                 })
 
+                movement_rows.append((product_qs, qty_delivered, qty_to_be_credited))
+
                 total_delivered += qty_delivered
                 total_received += qty_received
                 total_amount += amount
@@ -195,6 +297,7 @@ class DeliveryReturnUpdateView(LoginRequiredMixin, UserPassesTestMixin, FormView
         }
 
         qs = DeliveryNote.objects.get(id=kwargs['pk'])
+        already_processed = qs.stage in ('RETURNED', 'CONFIRMED', 'CREDITED')
         qs.stage = 'RETURNED'
         qs.products = json_data
         if json_data['row_1']['received'] > json_data['row_1']['delivered']:
@@ -203,6 +306,28 @@ class DeliveryReturnUpdateView(LoginRequiredMixin, UserPassesTestMixin, FormView
 the quantity delivered. Data was not saved. Kindly re-enter record""")
         else:
             qs.save()
+            if not already_processed:
+                movement_date = qs.delivery_date or qs.created_date
+                for product, qty_delivered, qty_to_be_credited in movement_rows:
+                    StockMovement.objects.create(
+                        product=product,
+                        movement_type='SALE',
+                        quantity=-qty_delivered,
+                        date=movement_date,
+                        reference=qs.delivery_number,
+                        note=f'Delivered to {qs.delivered_to}',
+                        created_by=request.user,
+                    )
+                    if qty_to_be_credited > 0:
+                        StockMovement.objects.create(
+                            product=product,
+                            movement_type='RETURN',
+                            quantity=qty_to_be_credited,
+                            date=movement_date,
+                            reference=qs.delivery_number,
+                            note=f'Returned from {qs.delivered_to}',
+                            created_by=request.user,
+                        )
             messages.success(request, 'Return stage saved successfully, proceed to confirm')
         return redirect('delivery-detail', pk=kwargs['pk'])
 

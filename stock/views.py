@@ -26,12 +26,12 @@ from djmoney.money import Money
 from .forms import FormProduct
 from pdf.utils import render_to_pdf
 from pdf.views import Ozone
-from .models import (Product, ProductPerformance, ProductExtension, PriceHistory, Source, Category)
-from .forms import ProductExtensionUpdateForm
+from .models import (Product, ProductPerformance, ProductExtension, PriceHistory, Source, Category, StockMovement,
+                     StockCountSession, StockCountLine, StockLocation)
+from .forms import ProductExtensionUpdateForm, StockMovementForm
 from .utils import average_sellout, days_of_cover
 from core.models import Setting
-from delivery.models import DeliveryNote
-from django.db.models import Sum, F, Avg, ProtectedError
+from django.db.models import Sum, F, Q, Avg, ProtectedError
 from ozone import mytools
 
 
@@ -44,113 +44,25 @@ def get_date():
     
 class ProductHomeView(LoginRequiredMixin, View):
 
-    @staticmethod
-    def delivery_qty_values(obj):
-        qty_delivered, qty_rejected, amount, amount_credit = list(), list(), list(), list()
-        (total_delivered,
-         total_rejected,
-         percent_rejected,
-         total_amount,
-         total_amount_credit,
-         percent_credited) = 0, 0, '', 0, 0, ''
-        for each_record in obj:
-            if 'totals' in each_record.products:
-                delivered = int(each_record.products['totals']['total_delivered'].replace(',', ''))
-                qty_delivered.append(delivered)
-                qty_rejected.append(delivered - int(each_record.products['totals']['total_received'].replace(',', '')))
-
-                # values
-                value = each_record.products['totals']['total_amount'].replace(',', '')
-                value = value.replace(chr(8358), '')
-                value_credit = each_record.products['totals']['total_amount_credit'].replace(',', '')
-                value_credit = value_credit.replace(chr(8358), '')
-
-                amount.append(float(value))
-                amount_credit.append(float(value_credit))
-
-            total_delivered = sum(qty_delivered)
-            total_rejected = sum(qty_rejected)
-            percent_rejected = f'{100 * total_rejected / total_delivered:,.2f}%'
-            total_amount = sum(amount)
-            total_amount_credit = sum(amount_credit)
-            percent_credited = f"{100 * total_amount_credit / total_amount:,.2f}%"
-        return total_delivered, total_rejected, percent_rejected, total_amount, total_amount_credit, percent_credited
-
-    @staticmethod
-    def category():
-        data_malt = list()
-        data_lager = list()
-        data_rtd = list()
-        data_soft = list()
-        data_stout = list()
-        data_ed = list()
-        data_bitters = list()
-        data_na_wine = list()
-        data_wine = list()
-        data_others = list()
-        for each_record in DeliveryNote.objects.all():
-            for i in range(1, 4):
-                if f'row_{i}' in each_record.products:
-                    code = each_record.products[f'row_{i}']['code']
-                    category = Product.objects.get(id=int(code)).category
-                    if category.name == 'Malt':
-                        data_malt.append(each_record.products[f'row_{i}']['delivered'])
-                    elif category.name == 'Lager':
-                        data_lager.append(each_record.products[f'row_{i}']['delivered'])
-                    elif category.name == 'RTD':
-                        data_rtd.append(each_record.products[f'row_{i}']['delivered'])
-                    elif category.name == 'Soft':
-                        data_soft.append(each_record.products[f'row_{i}']['delivered'])
-                    elif category.name == 'Stout':
-                        data_soft.append(each_record.products[f'row_{i}']['delivered'])
-                    elif category.name == 'NA Wine':
-                        data_na_wine.append(each_record.products[f'row_{i}']['delivered'])
-                    elif category.name == 'Wine':
-                        data_wine.append(each_record.products[f'row_{i}']['delivered'])
-                    else:
-                        data_others.append(each_record.products[f'row_{i}']['delivered'])
-
-        return (sum(data_malt),
-                sum(data_lager),
-                sum(data_rtd),
-                sum(data_soft),
-                sum(data_stout),
-                sum(data_ed),
-                sum(data_bitters),
-                sum(data_wine),
-                sum(data_na_wine),
-                sum(data_others))
-
     def get(self, request):
+        current_stock_value = 0
+        total_quantity = 0
+        latest_extension = ProductExtension.objects.order_by('-date').first()
+        if latest_extension:
+            qs_day = ProductExtension.objects.filter(date=latest_extension.date)
+            qs_day = qs_day.annotate(value=F('cost_price') * F('stock_value'))
+            current_stock_value = qs_day.aggregate(Sum('value'))['value__sum'] or 0
+            total_quantity = qs_day.aggregate(Sum('stock_value'))['stock_value__sum'] or 0
+
         context = {
+            'current_stock_value': current_stock_value,
+            'total_quantity': total_quantity,
             'total_count': Product.objects.all().count(),
             'nb_count': Product.objects.filter(source='NB').count(),
             'gn_count': Product.objects.filter(source='GN').count(),
             'mss_count': Product.objects.filter(source='MSS').count(),
             'ips_count': Product.objects.filter(source='IPS').count(),
             'ib_count': Product.objects.filter(source='IB').count(),
-            'quantity_delivered': self.delivery_qty_values(DeliveryNote.objects.all())[0],
-            'quantity_rejected': self.delivery_qty_values(DeliveryNote.objects.all())[1],
-            'percent_rejected': self.delivery_qty_values(DeliveryNote.objects.all())[2],
-            'total_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.all())[3]:,.2f}",
-            'total_amount_credit': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.all())[4]:,.2f}",
-            'percent_credited': self.delivery_qty_values(DeliveryNote.objects.all())[5],
-            'total_malt_delivered': self.category()[0],
-            'total_lager_delivered': self.category()[1],
-            'total_rtd_delivered': self.category()[2],
-            'total_soft_delivered': self.category()[3],
-            'total_stout_delivered': self.category()[4],
-            'total_ed_delivered': self.category()[5],
-            'total_bitters_delivered': self.category()[6],
-            'total_wine_delivered': self.category()[7],
-            'total_na_wine_delivered': self.category()[8],
-            'total_others_delivered': self.category()[9],
-            'nb_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='NB'))[0],
-            'nb_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='NB'))[3]:,.2f}",
-            'gn_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='GN'))[0],
-            'gn_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='GN'))[3]:,.2f}",
-            'ib_delivered': self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[0],
-            'ib_amount': f"{chr(8358)}{self.delivery_qty_values(DeliveryNote.objects.filter(source='IB'))[3]:,.2f}",
             'sources': Source.objects.filter(active=True).values_list('code', flat=True),
         }
         return render(request, 'stock/product_home.html', context=context)
@@ -255,9 +167,12 @@ class ReportStockCategory(LoginRequiredMixin, ListView):
     ordering = 'name'
 
     def get_queryset(self):
-        if self.kwargs['source'] == 'All':
-            return super().get_queryset()
-        return super().get_queryset().filter(source=self.kwargs['source'])
+        qs = super().get_queryset()
+        if self.kwargs['source'] != 'All':
+            qs = qs.filter(source=self.kwargs['source'])
+        if self.request.GET.get('show') != 'all':
+            qs = qs.filter(active=True)
+        return qs
 
 class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Product
@@ -425,6 +340,211 @@ class PriceHistoryListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['product'] = self.product
         return context
+
+class StockCardView(LoginRequiredMixin, ListView):
+    model = StockMovement
+    template_name = 'stock/stock_card.html'
+    paginate_by = 30
+
+    def get_queryset(self):
+        self.product = get_object_or_404(Product, pk=self.kwargs['pk'])
+        return StockMovement.objects.filter(product=self.product)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product'] = self.product
+        context['form'] = StockMovementForm(initial={'date': timezone.now().date()})
+        context['location_balances'] = [
+            {'location': location, 'balance': self.product.stock_balance(location=location)}
+            for location in StockLocation.objects.filter(active=True)
+        ]
+        return context
+
+
+class StockMovementCreateView(LoginRequiredMixin, View):
+
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        form = StockMovementForm(request.POST)
+        if form.is_valid():
+            movement = form.save(commit=False)
+            movement.product = product
+            movement.created_by = request.user
+            movement.save()
+            messages.success(request, 'Stock movement recorded successfully')
+        else:
+            messages.error(request, f'Could not save movement: {form.errors.as_text()}')
+        return redirect('stock-card', pk=pk)
+
+
+class StockCountCreateView(LoginRequiredMixin, UserPassesTestMixin, View):
+    template_name = 'stock/stock_count_form.html'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    def get(self, request):
+        sources = Product.objects.filter(active=True).values_list('source', flat=True).distinct()
+        querysets = list((source, Product.objects.filter(active=True, source=source)) for source in sources)
+        context = {
+            'querysets': querysets,
+            'date': timezone.now().date(),
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        session = StockCountSession.objects.create(
+            date=request.POST.get('date') or timezone.now().date(),
+            note=request.POST.get('note', ''),
+            created_by=request.user,
+        )
+        for product in Product.objects.filter(active=True):
+            counted_value = request.POST.get(f'counted_{product.pk}', '').strip()
+            if counted_value == '':
+                continue
+            counted_qty = int(counted_value)
+            system_qty = product.stock_balance()
+            StockCountLine.objects.create(
+                session=session,
+                product=product,
+                system_qty=system_qty,
+                counted_qty=counted_qty,
+            )
+            variance = counted_qty - system_qty
+            if variance != 0:
+                StockMovement.objects.create(
+                    product=product,
+                    movement_type='ADJUSTMENT',
+                    quantity=variance,
+                    date=session.date,
+                    reference=f'Stock Count #{session.pk}',
+                    note='Adjustment from physical stock count',
+                    created_by=request.user,
+                )
+        messages.success(request, 'Stock count recorded and adjustments applied')
+        return redirect('stock-count-detail', pk=session.pk)
+
+
+class StockCountListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = StockCountSession
+    template_name = 'stock/stock_count_list.html'
+    paginate_by = 30
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+
+class StockCountDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = StockCountSession
+    template_name = 'stock/stock_count_detail.html'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+
+class StockTransferView(LoginRequiredMixin, UserPassesTestMixin, View):
+    template_name = 'stock/stock_transfer.html'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    def get(self, request):
+        context = {
+            'locations': StockLocation.objects.filter(active=True),
+            'products': Product.objects.filter(active=True),
+            'date': timezone.now().date(),
+            'transfers': StockMovement.objects.filter(movement_type='TRANSFER').order_by('-date', '-created_at')[:30],
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        product = get_object_or_404(Product, pk=request.POST['product'])
+        from_location = get_object_or_404(StockLocation, pk=request.POST['from_location'])
+        to_location = get_object_or_404(StockLocation, pk=request.POST['to_location'])
+        quantity = int(request.POST['quantity'])
+        date = request.POST.get('date') or timezone.now().date()
+        note = request.POST.get('note', '')
+
+        if from_location == to_location:
+            messages.error(request, 'Source and destination locations must be different')
+        elif quantity <= 0:
+            messages.error(request, 'Transfer quantity must be greater than zero')
+        else:
+            reference = f'Transfer {from_location} -> {to_location}'
+            StockMovement.objects.create(
+                product=product, movement_type='TRANSFER', quantity=-quantity,
+                date=date, location=from_location, reference=reference, note=note, created_by=request.user,
+            )
+            StockMovement.objects.create(
+                product=product, movement_type='TRANSFER', quantity=quantity,
+                date=date, location=to_location, reference=reference, note=note, created_by=request.user,
+            )
+            messages.success(request, f'Transferred {quantity} x {product} from {from_location} to {to_location}')
+
+        return redirect('stock-transfer')
+
+
+class StockLocationAddView(LoginRequiredMixin, View):
+    def post(self, request):
+        name = request.POST.get('name', '').strip()
+        address = request.POST.get('address', '').strip()
+        if name:
+            StockLocation.objects.get_or_create(name=name, defaults={'address': address})
+        return redirect('settings')
+
+
+class StockLocationRenameView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        location = get_object_or_404(StockLocation, pk=pk)
+        location.name = request.POST.get('name', location.name).strip()
+        location.address = request.POST.get('address', '').strip()
+        location.save()
+        return redirect('settings')
+
+
+class StockLocationToggleView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        location = get_object_or_404(StockLocation, pk=pk)
+        location.active = not location.active
+        location.save()
+        return redirect('settings')
+
+
+class StockLocationRemoveView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        location = get_object_or_404(StockLocation, pk=pk)
+        try:
+            location.delete()
+        except ProtectedError:
+            messages.error(request, f"Cannot remove location '{location}' — it is still referenced by stock movements.")
+        return redirect('settings')
+
+
+class SourceDetailUpdateView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        source = get_object_or_404(Source, pk=pk)
+        source.contact_person = request.POST.get('contact_person', '').strip()
+        source.phone = request.POST.get('phone', '').strip()
+        source.email = request.POST.get('email', '').strip()
+        try:
+            source.lead_time_days = int(request.POST.get('lead_time_days') or 0)
+        except ValueError:
+            source.lead_time_days = 0
+        source.save()
+        return redirect('settings')
+
 
 class ProductPerformanceListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = ProductPerformance
@@ -1051,12 +1171,21 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
             context['no_stock'] = Product.objects.filter(pk__in=products)
             
-            context['low_stock'] = qs_day.filter(stock_value__lt=10).exclude(stock_value__lte=0)
+            # A product is "low stock" once its reported balance falls to/below its
+            # configured reorder point (or min stock level if no reorder point is set).
+            # Products with neither configured fall back to the old fixed threshold.
+            low_stock_filter = (
+                Q(product__reorder_point__gt=0, stock_value__lte=F('product__reorder_point')) |
+                Q(product__reorder_point=0, product__min_stock_level__gt=0, stock_value__lte=F('product__min_stock_level')) |
+                Q(product__reorder_point=0, product__min_stock_level=0, stock_value__lt=10)
+            )
+
+            context['low_stock'] = qs_day.filter(stock_value__gt=0).filter(low_stock_filter)
             context['no_sellout'] = qs_day.filter(stock_value__gt=0).filter(sell_out=0)
             context['low_sellout'] = qs_day.filter(sell_out__lt=10).exclude(sell_out=0)
 
             context['no_stock_month'] = self.month_process(qs_month, qs_month.filter(stock_value__lte=0))
-            context['low_stock_month'] = self.month_process(qs_month, qs_month.filter(stock_value__lt=10).exclude(stock_value__lte=0))
+            context['low_stock_month'] = self.month_process(qs_month, qs_month.filter(stock_value__gt=0).filter(low_stock_filter))
             zero_sellout = self.month_process(qs_month, qs_month.filter(stock_value__gt=0).filter(sell_out=0))
             context['low_sellout_month'] = self.month_process(qs_month, qs_month.filter(sell_out__lt=10).exclude(sell_out=0))
 

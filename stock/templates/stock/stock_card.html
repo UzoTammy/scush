@@ -1,0 +1,131 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Stock Card{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-exchange mr-2"></i>Stock Card - {{ product }}</span>
+      <a class="staff-nav-link" href="{% url 'product-detail' product.pk %}">
+        <i class="fa fa-times-circle"></i> Return
+      </a>
+    </div>
+    <div class="ds-card__body">
+      <div class="row">
+        <div class="col-6 col-sm-3 mb-3">
+          <div class="ds-stat ds-stat--accent">
+            <div class="ds-stat__label">Ledger Balance</div>
+            <div class="ds-stat__value ds-stat__value--lg">{{ product.stock_balance }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-3 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">Reported Stock</div>
+            <div class="ds-stat__value ds-stat__value--lg">{{ product.current_stock|default:"-" }}</div>
+            <small class="ds-stat__sub">From latest stock report</small>
+          </div>
+        </div>
+        {% for location_balance in location_balances %}
+        <div class="col-6 col-sm-3 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">{{ location_balance.location }}</div>
+            <div class="ds-stat__value ds-stat__value--lg">{{ location_balance.balance }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Record movement ──────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-plus mr-2"></i>Record Stock Movement</span></div>
+    <div class="ds-card__body">
+      <form method="post" action="{% url 'stock-movement-add' product.pk %}">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="form-group col-md-2">
+            <label>{{ form.movement_type.label }}</label>
+            {{ form.movement_type }}
+          </div>
+          <div class="form-group col-md-2">
+            <label>{{ form.quantity.label }}</label>
+            {{ form.quantity }}
+          </div>
+          <div class="form-group col-md-2">
+            <label>{{ form.date.label }}</label>
+            {{ form.date }}
+          </div>
+          <div class="form-group col-md-2">
+            <label>{{ form.location.label }}</label>
+            {{ form.location }}
+          </div>
+          <div class="form-group col-md-2">
+            <label>{{ form.reference.label }}</label>
+            {{ form.reference }}
+          </div>
+          <div class="form-group col-md-2">
+            <label>{{ form.note.label }}</label>
+            {{ form.note }}
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Save Movement</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Movement history ────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-list mr-2"></i>Movement History</span></div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm mb-0">
+          <thead class="bg-dark text-white">
+            <tr class="text-center">
+              <th>Date</th>
+              <th>Type</th>
+              <th>Quantity</th>
+              <th>Location</th>
+              <th>Reference</th>
+              <th>Note</th>
+              <th>Recorded By</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in object_list %}
+            <tr>
+              <td class="text-center">{{ item.date|date:'d-M-Y' }}</td>
+              <td class="text-center">{{ item.get_movement_type_display }}</td>
+              <td class="text-right">{{ item.quantity }}</td>
+              <td class="text-center">{{ item.location|default:"-" }}</td>
+              <td class="text-center">{{ item.reference|default:"-" }}</td>
+              <td>{{ item.note|default:"-" }}</td>
+              <td class="text-center">{{ item.created_by|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted">No stock movements recorded yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {% if is_paginated %}
+  <nav>
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+      {% endif %}
+      <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+      {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+</div>
+{% endblock %}

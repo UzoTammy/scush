@@ -24,12 +24,29 @@ class Source(models.Model):
     code = models.CharField(max_length=50, primary_key=True)
     label = models.CharField(max_length=100, blank=True, default='')
     active = models.BooleanField(default=True)
+    contact_person = models.CharField(max_length=100, blank=True, default='')
+    phone = models.CharField(max_length=30, blank=True, default='')
+    email = models.EmailField(blank=True, default='')
+    lead_time_days = models.PositiveIntegerField(default=0, verbose_name='Lead Time (days)',
+                                                  help_text='Typical number of days from order to delivery. 0 = not set')
 
     class Meta:
         ordering = ['code']
 
     def __str__(self):
         return self.code
+
+
+class StockLocation(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    address = models.CharField(max_length=255, blank=True, default='')
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 
 class Product(models.Model):
@@ -92,6 +109,13 @@ class Product(models.Model):
         """Quantity from the most recent ProductExtension record, or None if none exist."""
         latest = self.productextension_set.order_by('-date').first()
         return latest.stock_value if latest else None
+
+    def stock_balance(self, location=None):
+        """Running stock balance from the stock movement ledger, optionally for one location."""
+        qs = self.stock_movements.all()
+        if location is not None:
+            qs = qs.filter(location=location)
+        return qs.aggregate(total=models.Sum('quantity'))['total'] or 0
 
     def stock_status(self):
         """Returns 'LOW', 'OVER', 'OK' or 'UNSET' based on current stock vs reorder/max levels."""
@@ -180,6 +204,67 @@ class ProductExtension(models.Model):
         if self.cost_price == Money(0, 'NGN') and self.sell_out != Money(0, 'NGN'):
             self.cost_price = self.product.cost_price
         super(ProductExtension, self).save(*args, **kwargs)
+
+
+class StockMovement(models.Model):
+    MOVEMENT_TYPES = [
+        ('OPENING', 'Opening Balance'),
+        ('RECEIPT', 'Receipt'),
+        ('SALE', 'Sale'),
+        ('RETURN', 'Return'),
+        ('TRANSFER', 'Transfer'),
+        ('ADJUSTMENT', 'Adjustment'),
+        ('WRITE_OFF', 'Write-off'),
+    ]
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stock_movements')
+    movement_type = models.CharField(max_length=20, choices=MOVEMENT_TYPES)
+    quantity = models.IntegerField(help_text='Use a negative number to reduce stock')
+    date = models.DateField(default=timezone.now)
+    reference = models.CharField(max_length=100, blank=True, default='')
+    note = models.CharField(max_length=255, blank=True, default='')
+    location = models.ForeignKey(StockLocation, on_delete=models.SET_NULL, null=True, blank=True, related_name='stock_movements')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date', '-created_at']
+
+    def __str__(self):
+        return f'{self.product} {self.get_movement_type_display()} {self.quantity:+d} on {self.date}'
+
+
+class StockCountSession(models.Model):
+    date = models.DateField(default=timezone.now)
+    note = models.CharField(max_length=255, blank=True, default='')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date', '-created_at']
+
+    def __str__(self):
+        return f'Stock Count - {self.date}'
+
+    def get_absolute_url(self):
+        return reverse('stock-count-detail', kwargs={'pk': self.pk})
+
+    def net_variance(self):
+        return sum(line.variance for line in self.lines.all())
+
+
+class StockCountLine(models.Model):
+    session = models.ForeignKey(StockCountSession, on_delete=models.CASCADE, related_name='lines')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    system_qty = models.IntegerField()
+    counted_qty = models.IntegerField()
+
+    @property
+    def variance(self):
+        return self.counted_qty - self.system_qty
+
+    def __str__(self):
+        return f'{self.product}: counted {self.counted_qty} (system {self.system_qty})'
 
 
 class PriceHistory(models.Model):

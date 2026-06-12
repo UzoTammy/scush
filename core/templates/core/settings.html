@@ -136,6 +136,10 @@
                       </form>
                     </td>
                     <td class="py-1 text-right align-middle" style="white-space:nowrap;width:1%;">
+                      <button type="button" class="btn btn-sm btn-outline-secondary px-2 mr-1" title="Supplier details"
+                              data-toggle="modal" data-target="#supplierModal-{{ src.pk|slugify }}">
+                        <i class="fa fa-address-card"></i>
+                      </button>
                       <form method="post" action="{% url 'source-toggle' src.pk %}" class="d-inline-block custom-control custom-switch align-middle mr-1">
                         {% csrf_token %}
                         <input type="checkbox" class="custom-control-input" id="src-active-{{ forloop.counter }}"
@@ -189,6 +193,128 @@
           </div>
         </div>
       </div>
+
+      <div class="row mb-4">
+        <!-- ── Stock Locations ── -->
+        <div class="col-md-6">
+          <div class="ds-card mb-0 h-100">
+            <div class="ds-card__header">
+              <span><i class="fa fa-map-marker mr-1"></i> Stock Locations</span>
+              <span class="badge badge-light text-dark">{{ locations.paginator.count }}</span>
+            </div>
+            <div class="ds-card__body p-2">
+              <table class="table table-sm table-borderless mb-2" style="font-size:.85rem;">
+                <tbody>
+                  {% for loc in locations %}
+                  <tr>
+                    <td class="py-1">
+                      <form method="post" action="{% url 'stock-location-rename' loc.pk %}" class="form-inline flex-nowrap">
+                        {% csrf_token %}
+                        <input type="text" name="name" value="{{ loc.name }}" placeholder="Name"
+                               class="form-control form-control-sm mr-1" style="min-width:0;flex:1 1 auto;max-width:120px;">
+                        <input type="text" name="address" value="{{ loc.address }}" placeholder="Address"
+                               class="form-control form-control-sm mr-1" style="min-width:0;flex:2 1 auto;">
+                        <button type="submit" class="btn btn-sm btn-outline-primary px-2" title="Save">
+                          <i class="fa fa-check"></i>
+                        </button>
+                      </form>
+                    </td>
+                    <td class="py-1 text-right align-middle" style="white-space:nowrap;width:1%;">
+                      <form method="post" action="{% url 'stock-location-toggle' loc.pk %}" class="d-inline-block custom-control custom-switch align-middle mr-1">
+                        {% csrf_token %}
+                        <input type="checkbox" class="custom-control-input" id="loc-active-{{ loc.pk }}"
+                               {% if loc.active %}checked{% endif %} onchange="this.form.submit()">
+                        <label class="custom-control-label" for="loc-active-{{ loc.pk }}"
+                               title="{% if loc.active %}Active — click to deactivate{% else %}Inactive — click to activate{% endif %}"></label>
+                      </form>
+                      <form method="post" action="{% url 'stock-location-remove' loc.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger px-2" title="Remove">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr><td class="text-muted small">No stock locations yet.</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if locations.paginator.num_pages > 1 %}
+              <nav aria-label="Location pages">
+                <ul class="pagination pagination-sm justify-content-center mb-2">
+                  {% if locations.has_previous %}
+                  <li class="page-item"><a class="page-link" href="?loc_page={{ locations.previous_page_number }}#pane-products">«</a></li>
+                  {% else %}
+                  <li class="page-item disabled"><span class="page-link">«</span></li>
+                  {% endif %}
+                  <li class="page-item disabled"><span class="page-link">{{ locations.number }} / {{ locations.paginator.num_pages }}</span></li>
+                  {% if locations.has_next %}
+                  <li class="page-item"><a class="page-link" href="?loc_page={{ locations.next_page_number }}#pane-products">»</a></li>
+                  {% else %}
+                  <li class="page-item disabled"><span class="page-link">»</span></li>
+                  {% endif %}
+                </ul>
+              </nav>
+              {% endif %}
+
+              <form method="post" action="{% url 'stock-location-add' %}" class="form-inline flex-nowrap">
+                {% csrf_token %}
+                <input type="text" name="name" class="form-control form-control-sm mr-2" style="min-width:0;flex:1 1 auto;"
+                       placeholder="Name">
+                <input type="text" name="address" class="form-control form-control-sm mr-2" style="min-width:0;flex:2 1 auto;"
+                       placeholder="Address (optional)">
+                <button type="submit" class="btn btn-sm btn-outline-primary text-nowrap">
+                  <i class="fa fa-plus"></i> Add
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Supplier detail modals ── -->
+      {% for src in sources %}
+      <div class="modal fade" id="supplierModal-{{ src.pk|slugify }}" tabindex="-1" role="dialog"
+           aria-labelledby="supplierModalLabel-{{ src.pk|slugify }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <form method="post" action="{% url 'source-update-details' src.pk %}">
+              {% csrf_token %}
+              <div class="modal-header">
+                <h5 class="modal-title" id="supplierModalLabel-{{ src.pk|slugify }}">Supplier Details — {{ src.code }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="form-group">
+                  <label>Contact Person</label>
+                  <input type="text" name="contact_person" value="{{ src.contact_person }}" class="form-control form-control-sm">
+                </div>
+                <div class="form-group">
+                  <label>Phone</label>
+                  <input type="text" name="phone" value="{{ src.phone }}" class="form-control form-control-sm">
+                </div>
+                <div class="form-group">
+                  <label>Email</label>
+                  <input type="email" name="email" value="{{ src.email }}" class="form-control form-control-sm">
+                </div>
+                <div class="form-group mb-0">
+                  <label>Lead Time (days)</label>
+                  <input type="number" min="0" name="lead_time_days" value="{{ src.lead_time_days }}" class="form-control form-control-sm">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
       {% endif %}
 
       {% for setting in items %}

@@ -1,9 +1,11 @@
 from django.urls import path
+from django.views.generic import TemplateView
 from .views import *
 from pdf.views import PriceUpdateFootNote
 
 urlpatterns = [
     path('home/', ProductHomeView.as_view(), name='product-home'),
+    path('help/', TemplateView.as_view(template_name='stock/stock_help.html'), name='stock-help'),
     path('<int:pk>/detail/', ProductDetailedView.as_view(), name='product-detail'),
     path('new/', ProductCreateView.as_view(), name='product-create'),
     path('<int:pk>/update/', ProductUpdateView.as_view(), name='product-update'),
@@ -12,6 +14,8 @@ urlpatterns = [
     path('price/list/', PricePageView.as_view(), name='price-list'),
     path('<int:pk>/price/update/', PriceUpdate.as_view(), name='price-update'),
     path('<int:pk>/price/history/', PriceHistoryListView.as_view(), name='price-history'),
+    path('<int:pk>/stock-card/', StockCardView.as_view(), name='stock-card'),
+    path('<int:pk>/stock-card/add/', StockMovementCreateView.as_view(), name='stock-movement-add'),
     path('home/footnote/', PriceUpdateFootNote.as_view(), name='price-update-footnote'),
     
     path('stock/report/', ReportHomeView.as_view(), name='stock-report'),
@@ -44,6 +48,12 @@ urlpatterns += [
     # path('<int:pk>/velocity/', ProductVelocity.as_view(), name='product-velocity'),
     path('analysis/', ProductAnalysisView.as_view(), name='product-analysis'),
     path('balancing/', StockBalancingView.as_view(), name='stock-balancing'),
+
+    path('stock-count/new/', StockCountCreateView.as_view(), name='stock-count-new'),
+    path('stock-count/list/', StockCountListView.as_view(), name='stock-count-list'),
+    path('stock-count/<int:pk>/', StockCountDetailView.as_view(), name='stock-count-detail'),
+
+    path('stock-transfer/', StockTransferView.as_view(), name='stock-transfer'),
 ]
 
 urlpatterns += [
@@ -56,4 +66,10 @@ urlpatterns += [
     path('settings/sources/<str:pk>/rename/', SourceRenameView.as_view(), name='source-rename'),
     path('settings/sources/<str:pk>/toggle/', SourceToggleView.as_view(), name='source-toggle'),
     path('settings/sources/<str:pk>/remove/', SourceRemoveView.as_view(), name='source-remove'),
+    path('settings/sources/<str:pk>/details/', SourceDetailUpdateView.as_view(), name='source-update-details'),
+
+    path('settings/locations/add/', StockLocationAddView.as_view(), name='stock-location-add'),
+    path('settings/locations/<int:pk>/rename/', StockLocationRenameView.as_view(), name='stock-location-rename'),
+    path('settings/locations/<int:pk>/toggle/', StockLocationToggleView.as_view(), name='stock-location-toggle'),
+    path('settings/locations/<int:pk>/remove/', StockLocationRemoveView.as_view(), name='stock-location-remove'),
 ]

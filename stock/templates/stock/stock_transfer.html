@@ -1,0 +1,103 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Stock Transfer{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-exchange mr-2"></i>Stock Transfer Between Locations</span>
+      <a class="staff-nav-link" href="{% url 'product-home' %}">
+        <i class="fa fa-times-circle"></i> Return
+      </a>
+    </div>
+    <div class="ds-card__body">
+      {% if locations|length < 2 %}
+      <p class="text-muted mb-0">
+        You need at least two active stock locations to record a transfer.
+        Add locations from <a href="{% url 'settings' %}">App Settings</a> under the Products tab.
+      </p>
+      {% else %}
+      <form method="post" action="{% url 'stock-transfer' %}">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label>Product</label>
+            <select name="product" class="form-control" required>
+              {% for product in products %}
+              <option value="{{ product.pk }}">{{ product }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group col-md-2">
+            <label>Quantity</label>
+            <input type="number" name="quantity" min="1" class="form-control" required>
+          </div>
+          <div class="form-group col-md-2">
+            <label>From</label>
+            <select name="from_location" class="form-control" required>
+              {% for location in locations %}
+              <option value="{{ location.pk }}">{{ location }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group col-md-2">
+            <label>To</label>
+            <select name="to_location" class="form-control" required>
+              {% for location in locations %}
+              <option value="{{ location.pk }}">{{ location }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group col-md-2">
+            <label>Date</label>
+            <input type="date" name="date" class="form-control" value="{{ date|date:'Y-m-d' }}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Note</label>
+          <input type="text" name="note" class="form-control" placeholder="Optional note">
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Record Transfer</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-list mr-2"></i>Recent Transfers</span></div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm mb-0">
+          <thead class="bg-dark text-white">
+            <tr class="text-center">
+              <th>Date</th>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Location</th>
+              <th>Reference</th>
+              <th>Recorded By</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in transfers %}
+            <tr>
+              <td class="text-center">{{ item.date|date:'d-M-Y' }}</td>
+              <td>{{ item.product }}</td>
+              <td class="text-right">{{ item.quantity }}</td>
+              <td class="text-center">{{ item.location|default:"-" }}</td>
+              <td class="text-center">{{ item.reference|default:"-" }}</td>
+              <td class="text-center">{{ item.created_by|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center text-muted">No transfers recorded yet</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

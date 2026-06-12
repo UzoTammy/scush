@@ -4,97 +4,112 @@
 {% block page_title %}Product List{% endblock %}
 
 {% block content %}
-<div class="row m-2">
-    <div class="col-sm-12">
-            <table data-search="true"
-                   data-pagination="true"
-                   data-page-list="[10,20,30, All]"
-                   data-toggle="table"
-                   class="table caption-top table-bordered table-sm">
-                <caption>
-                    <div class="row">
-                        <div class="col">
-                            Product List for {{view.kwargs.source}}
-                        </div>
-                        <div class="col text-right">
-                            <!-- Pdf format -->
-                            <a href="{% url 'pdf-stock-list' %}"
-                                class="btn btn-secondary text-right">
-                                <i class="fa fa-file-pdf-o text-white"></i>
-                            </a>
-                            <a href="{% url 'product-create' %}"
-                                class="btn btn-secondary text-right">
-                                <i class="fa fa-plus text-success"></i>
-                                Product
-                            </a>
-                        </div>
-                    </div>
-                </caption>
-                <thead class="bg-danger text-white">
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Image</th>
-                    <th scope="col">Product Description</th>
-                    <th scope="col">Velocity</th>
-                    {% if view.kwargs.source == 'All' %}
-                    <th scope="col">Source</th>
-                    {% endif %}
+<div class="container-fluid">
 
-                    <th scope="col">Category</th>
-                    <th scope="col">Cost Price</th>
-                    <th scope="col">Sales Price</th>
-                    <th scope="col">Margin</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for product in object_list %}
-                <tr>
-                    <th scope="row">{{ product.id|zeropadding:3 }}</th>
-                    <th class="text-center" scope="col">
-                        <img src="{{ product.image.url }}"
-                             class="rounded-circle mr-3"
-                             width="64px"
-                             height="64px"
-                             alt="">
-                    </th>
-                    {% if product.active %}
-                    <td><a href="{% url 'product-detail' product.pk %}">{{product}}</a> <sup><i class="fa fa-check-square-o text-success"></i> </sup></td>
-                    {% else %}
-                    <td><a href="{% url 'product-detail' product.pk %}">{{product}}</a> <sup><i class="fa fa-times-circle-o text-danger"></i></sup></td>
-                    {% endif %}
-                    {% if product.velocity == -1 %}
-                    <td class="text-center">ND</td>
-                    {% elif product.velocity == 0 %}
-                    <td class="text-center">NS</td>
-                    {% elif product.velocity == 1 %}
-                    <td class="text-center">VL</td>
-                    {% elif product.velocity == 2 %}
-                    <td class="text-center">L</td>
-                    {% elif product.velocity == 3 %}
-                    <td class="text-center">M</td>
-                    {% elif product.velocity == 4 %}
-                    <td class="text-center">H</td>
-                    {% elif product.velocity == 5 %}
-                    <td class="text-center">VH</td>
-                    {% endif %}
-                    {% if view.kwargs.source == 'All' %}
-                    <td class="text-center">{{product.source}}</td>
-                    {% endif %}
-                    <td class="text-center">{{product.category}}</td>
-                    <td class="text-right">{{product.cost_price}}</td>
-                    <td class="text-right">{{product.unit_price}}</td>
-                    <th class="text-right">{{product.margin}}</th>
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            <p class="text-danger">ND-Not Determined, VL-Very Low, L-Low, M-Moderate, H-High, VH-Very High</p>
-            <div class="row">
-                <div class="col">
-                    <a class="btn btn-secondary float-right" href="{% url 'product-home' %}"><i class="fa fa-times-circle"></i></a>
-                </div>
-            </div>
-        </div>
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-cubes mr-2"></i>Product List - {% if request.GET.show == 'all' %}All{% else %}Active{% endif %}</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'pdf-stock-list' %}">
+          <i class="fa fa-file-pdf-o"></i> PDF
+        </a>
+        <a class="staff-nav-link" href="{% url 'product-create' %}">
+          <i class="fa fa-plus"></i> New Product
+        </a>
+        {% if request.GET.show == 'all' %}
+        <a class="staff-nav-link" href="?">
+          <i class="fa fa-eye"></i> Active Only
+        </a>
+        {% else %}
+        <a class="staff-nav-link" href="?show=all">
+          <i class="fa fa-eye"></i> Show All
+        </a>
+        {% endif %}
+        <a class="staff-nav-link" href="{% url 'product-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
+    </div>
+    <div class="ds-card__body p-3">
+      <div class="table-responsive">
+        <table data-search="true"
+               data-pagination="true"
+               data-page-list="[10,20,30, All]"
+               data-toggle="table"
+               class="table table-bordered mb-0">
+          <thead class="bg-dark text-white">
+            <tr class="text-center">
+              <th>ID</th>
+              <th>Product Description</th>
+              <th>Velocity</th>
+              {% if view.kwargs.source == 'All' %}
+              <th>Source</th>
+              {% endif %}
+              <th>Category</th>
+              <th>Cost Price</th>
+              <th>Sales Price</th>
+              <th>Margin</th>
+              <th>Stock Balance</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for product in object_list %}
+            <tr{% if product.stock_balance < 0 or product.margin < 0 %} class="table-danger"{% endif %}>
+              <th class="text-center" scope="row">{{ product.id|zeropadding:3 }}</th>
+              {% if product.active %}
+              <td><a class="text-reset text-decoration-none" href="{% url 'product-detail' product.pk %}">{{ product }}</a> <sup><i class="fa fa-check-square-o text-success"></i></sup></td>
+              {% else %}
+              <td><a class="text-reset text-decoration-none" href="{% url 'product-detail' product.pk %}">{{ product }}</a> <sup><i class="fa fa-times-circle-o text-danger"></i></sup></td>
+              {% endif %}
+              {% if product.velocity == -1 %}
+              <td class="text-center">ND</td>
+              {% elif product.velocity == 0 %}
+              <td class="text-center">NS</td>
+              {% elif product.velocity == 1 %}
+              <td class="text-center">VL</td>
+              {% elif product.velocity == 2 %}
+              <td class="text-center">L</td>
+              {% elif product.velocity == 3 %}
+              <td class="text-center">M</td>
+              {% elif product.velocity == 4 %}
+              <td class="text-center">H</td>
+              {% elif product.velocity == 5 %}
+              <td class="text-center">VH</td>
+              {% endif %}
+              {% if view.kwargs.source == 'All' %}
+              <td class="text-center">{{ product.source }}</td>
+              {% endif %}
+              <td class="text-center">{{ product.category }}</td>
+              <td class="text-right">{{ product.cost_price }}</td>
+              <td class="text-right">{{ product.unit_price }}</td>
+              <td class="text-right">{{ product.margin }}</td>
+              <td class="text-right">
+                <a href="{% url 'stock-card' product.pk %}">{{ product.stock_balance }}</a>
+              </td>
+              <td class="text-center">
+                {% with status=product.stock_status %}
+                {% if status == 'LOW' %}
+                <span class="badge badge-danger">Low</span>
+                {% elif status == 'OVER' %}
+                <span class="badge badge-warning">Over</span>
+                {% elif status == 'OK' %}
+                <span class="badge badge-success">OK</span>
+                {% else %}
+                <span class="badge badge-secondary">Unset</span>
+                {% endif %}
+                {% endwith %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="ds-card__body pt-2">
+      <p class="text-danger small mb-0">ND-Not Determined, VL-Very Low, L-Low, M-Moderate, H-High, VH-Very High</p>
+    </div>
+  </div>
+
 </div>
-
 {% endblock content %}
