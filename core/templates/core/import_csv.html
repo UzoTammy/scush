@@ -1,12 +1,10 @@
 {% extends 'core/base.html' %}
-{% load custom_tags %}
 
 {% block page_title %}Import CSV{% endblock %}
 
 {% block head %}
 <style>
   .prog { width: {{ stage|last }}%; }
-  .import-form-actions { border-top: 1px solid var(--color-border); padding-top: 1.25rem; }
   .import-progress { height: 1.5rem; }
 </style>
 {% endblock %}
@@ -17,41 +15,10 @@
   <!-- ── Nav card ───────────────────────────────────── -->
   <div class="ds-card mb-4">
     <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
-      <span><i class="fa fa-upload mr-2"></i>Import CSV into SCusH</span>
+      <span><i class="fa fa-upload mr-2"></i>Import Stock Status CSV</span>
       <a class="staff-nav-link" href="{% url 'home' %}">
-        <i class="fa fa-times-circle"></i> Cancel
+        <i class="fa fa-times-circle"></i> Return
       </a>
-    </div>
-    <div class="ds-card__body">
-      <form id="radio-form" action="{% url 'import-csv' %}" method="GET">
-        <ol>
-          <li>Get the file and its location</li>
-          <li>Prepare the file for import</li>
-          <li>Select Type <small class="text-danger">(Required)</small>
-            <div class="form-check ml-2 mt-1">
-              <input class="form-check-input" type="radio" onclick="submitForm()"
-                     name="selectedItem" id="stock-status" value="stock_status" {{ status }}>
-              <label class="form-check-label" for="stock-status">Stock Status</label>
-            </div>
-            <div class="form-check ml-2">
-              <input class="form-check-input" type="radio" onclick="submitForm()"
-                     name="selectedItem" id="standard" value="standard" {{ standard }}>
-              <label class="form-check-label" for="standard">
-                Standard
-                <a href="#" data-toggle="tooltip" title="{{ standard_message }}">
-                  <i class="fa fa-info-circle"></i>
-                </a>
-              </label>
-            </div>
-          </li>
-        </ol>
-        <div class="d-flex justify-content-end align-items-center mt-3 import-form-actions">
-          <button id="submitButtonCSVUpload" data-toggle="modal"
-                  data-target="#loadCSVModal" type="button" class="btn btn-primary">
-            Next <i class="fa fa-arrow-right ml-1"></i>
-          </button>
-        </div>
-      </form>
     </div>
   </div>
 
@@ -62,7 +29,6 @@
         <div class="progress-bar progress-bar-striped progress-bar-animated prog"
              role="progressbar"
              aria-label="Import progress"
-             aria-valuenow="0"
              aria-valuemin="0"
              aria-valuemax="100"
              data-value="{{ stage|last }}">
@@ -72,128 +38,123 @@
     </div>
   </div>
 
-  {% if switch == 2 %}
-  <div class="ds-card mb-4" id="tableForMap">
-    {% if title == 'Stock Status' %}
-    <div class="ds-card__header"><span><i class="fa fa-table mr-2"></i>Field Mapping — {{ title }}</span></div>
-    <div class="ds-card__body p-0">
-      <div class="table-responsive">
-        <table class="table table-striped mb-0" data-toggle="table" data-pagination="true">
-          <thead>
-            <tr>
-              <th>Database Field</th>
-              <th>CSV Heading</th>
-              <th class="text-center">Mapped</th>
-              <th class="text-center">Note</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for field in fieldset %}
-            <tr>
-              <td>{{ field|array:1 }}</td>
-              <td>{{ field|array:2 }}</td>
-              <td class="text-center">
-                {% if field|array:2 != 'Auto' %}<i class="fa fa-check text-success"></i>{% endif %}
-              </td>
-              <td class="text-center {% if field|array:3 == 'Failed' %}text-danger{% else %}text-muted{% endif %}">
-                {{ field|array:3 }}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    {% else %}
-    <div class="ds-card__header"><span><i class="fa fa-table mr-2"></i>CSV Content — {{ title }}</span></div>
-    <div class="ds-card__body p-0">
-      <div class="table-responsive">
-        <table class="table table-striped mb-0" data-toggle="table" data-pagination="true">
-          <thead>
-            <tr>{% for field in fieldset %}<th>{{ field }}</th>{% endfor %}</tr>
-          </thead>
-          <tbody>
-            {% for record in records %}
-            <tr>{% for row in record %}<td>{{ row }}</td>{% endfor %}</tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    {% endif %}
-    <div class="ds-card__body border-top d-flex justify-content-between">
-      <a class="btn btn-primary" href="{% url 'save-csv' %}">
-        <i class="fa fa-save mr-1"></i> Save
-      </a>
-      <a class="btn btn-secondary" href="{% url 'home' %}">Cancel</a>
+  {% if stage.1 == 33 %}
+  <!-- ── Stage 1: Upload ───────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-file-text mr-2"></i>Select File</span></div>
+    <div class="ds-card__body">
+      <p>Upload the daily <strong>Stock Status</strong> export from the POS system as-is. No editing required.</p>
+      <ul class="mb-3">
+        <li>Expected columns (in order): Product Code, Item Name, Qty Out, Avg Price, Amt Out, Closing Qty, Price.</li>
+        <li>Existing records for the same product and date will be <strong>updated</strong>; new ones will be <strong>created</strong>.</li>
+        <li>Rows that can't be read (unknown product code, bad numbers) will be listed so you can review before saving.</li>
+      </ul>
+      <form action="{% url 'import-csv' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="fileInput">Select CSV File</label>
+          <input id="fileInput" class="form-control" type="file" name="fileName" accept=".csv" required>
+        </div>
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-arrow-right mr-1"></i> Upload &amp; Validate
+          </button>
+        </div>
+      </form>
     </div>
   </div>
   {% endif %}
 
-  {% if switch == 3 %}
+  {% if report %}
+  <!-- ── Stage 2: Review ───────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-search mr-2"></i>Review Before Saving</span></div>
+    <div class="ds-card__body">
+      <div class="row">
+        <div class="col-sm-6 col-md-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">Stock Date</div>
+            <div class="ds-stat__value">{{ report.date }}</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+          <div class="ds-stat ds-stat--success">
+            <div class="ds-stat__label">Will Create</div>
+            <div class="ds-stat__value">{{ report.will_create }}</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+          <div class="ds-stat ds-stat--accent">
+            <div class="ds-stat__label">Will Update</div>
+            <div class="ds-stat__value">{{ report.will_update }}</div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+          <div class="ds-stat {% if report.errors %}ds-stat--danger{% endif %}">
+            <div class="ds-stat__label">Skipped Rows</div>
+            <div class="ds-stat__value">{{ report.errors|length }}</div>
+          </div>
+        </div>
+      </div>
+
+      {% if report.errors %}
+      <div class="table-responsive mb-3">
+        <table class="table table-striped table-sm mb-0">
+          <thead>
+            <tr>
+              <th>Row</th>
+              <th>Product Code</th>
+              <th>Item Name</th>
+              <th>Reason Skipped</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for error in report.errors %}
+            <tr>
+              <td>{{ error.row_number }}</td>
+              <td>{{ error.code }}</td>
+              <td>{{ error.name }}</td>
+              <td class="text-danger">{{ error.reason }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <div class="d-flex justify-content-between">
+        <a class="btn btn-secondary" href="{% url 'import-csv' %}?cancel=1">
+          <i class="fa fa-times mr-1"></i> Cancel
+        </a>
+        <a class="btn btn-primary" href="{% url 'save-csv' %}">
+          <i class="fa fa-save mr-1"></i> Confirm Import
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if stage.1 == 100 %}
+  <!-- ── Stage 3: Complete ───────────────────────────────────── -->
   <div class="ds-card mb-4">
     <div class="ds-card__header"><span><i class="fa fa-check-circle mr-2"></i>Import Complete</span></div>
     <div class="ds-card__body">
-      <p>Records <strong>Created</strong>: {{ obj_created_updated|first }}</p>
-      <p class="mb-0">Records <strong>Updated</strong>: {{ obj_created_updated|last }}</p>
+      <p>Stock date: <strong>{{ date|date:'d M Y' }}</strong></p>
+      <p>Records <strong>Created</strong>: {{ obj_created }}</p>
+      <p>Records <strong>Updated</strong>: {{ obj_updated }}</p>
+      <p class="mb-3">Rows <strong>Skipped</strong>: {{ skipped }}</p>
+      <a class="btn btn-primary" href="{% url 'import-csv' %}">
+        <i class="fa fa-upload mr-1"></i> Import Another File
+      </a>
     </div>
   </div>
   {% endif %}
-</div>
 
-<!-- Upload modal -->
-<div class="modal fade" id="loadCSVModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Upload CSV File</h5>
-        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-      </div>
-      <div class="modal-body">
-        <form action="." method="POST" enctype="multipart/form-data">
-          {% csrf_token %}
-          <ul>
-            <li>Existing records in database can only be updated</li>
-            <li>Records not in database will be created</li>
-            {% if status == 'checked' %}
-            <li>Confirm the date of the CSV file on the note column <span class="text-danger">!!!</span></li>
-            {% endif %}
-          </ul>
-          <div class="form-group mt-2">
-            <label for="fileInput">Select CSV File</label>
-            <input id="fileInput" class="form-control" type="file" name="fileName" accept=".csv" required>
-          </div>
-          <div class="d-flex justify-content-end mt-3">
-            <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Close</button>
-            <input type="submit" class="btn btn-primary" value="Upload File">
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
-  const myButton = document.querySelector('#submitButtonCSVUpload');
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-  const firstKey = Array.from(urlParams.keys())[0];
-
-  if (queryString === '') {
-    window.onload = function () { myButton.disabled = true; };
-  }
-  if (firstKey === 'fileName') {
-    window.onload = function () { myButton.disabled = true; };
-  }
-
-  // Set real progress value from data attribute (avoids linter false-positive on template var)
   document.querySelectorAll('[data-value]').forEach(function(el) {
     el.setAttribute('aria-valuenow', el.dataset.value);
   });
-
-  function submitForm() {
-    document.getElementById('radio-form').submit();
-    myButton.removeAttribute('disabled');
-  }
 </script>
 {% endblock %}

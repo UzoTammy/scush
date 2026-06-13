@@ -33,6 +33,7 @@ from decouple import config
 import itertools
 
 from django.conf import settings
+from django.db import transaction
 from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.template import loader
@@ -55,6 +56,7 @@ from .models import JsonDataset, Setting
 from stock.models import Category, Source, StockLocation
 from mail import mailbox
 from core import utils as plotter
+from core.csv_import import parse_stock_status_csv
 from core.mixins import DateTimeMixin
 from .tools import QuerySum as QSum
 from .tools import get_directory_size, count_files_and_directories
@@ -777,202 +779,84 @@ class JsonCategoryKeyValueUpdateView(LoginRequiredMixin, View):
 
 
 class ImportCSVView(LoginRequiredMixin, TemplateView):
-    template_name = 'core/import_csv.html'  
-    
+    """Three-stage Stock Status CSV import: upload, review, confirm.
+
+    The validation report from the uploaded file is held in the session
+    (request.session['csv_import']) between the upload and confirm steps.
+    """
+    template_name = 'core/import_csv.html'
+
+    def get(self, request, *args, **kwargs):
+        if 'cancel' in request.GET:
+            request.session.pop('csv_import', None)
+            return redirect(reverse('import-csv'))
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Build paths inside the project like this: BASE_DIR / 'subdir'.
-        BASE_DIR = Path(__file__).resolve().parent.parent
-
-        filepath = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
-        """
-            There are two major considerations here
-            1. When CSV Type has been selected (stock status or standard) 
-            2. When json file exist or do not exist
-            These considerations decide the process and the stage we are in
-            and the documentations below details them.
-        """
-        if 'selectedItem' in self.request.GET:
-            selected_item = self.request.GET['selectedItem']
-            if selected_item == 'stock_status':
-                context['status'], context['standard'] = 'checked', ''
-                model_fields = ProductExtension._meta.get_fields()
-                fieldset = [field.name for field in model_fields]
-                # filepath = os.path.join('core', 'data.json')
-                data = {'fieldset': fieldset, 'title': 'Stock Status', 'switch': 1}
-                with open(filepath, 'w') as wf:
-                    json.dump(data, wf, indent=2)
-            else:
-                """Import into a json file using the username to create the file"""
-                data = {'title': 'Standard', 'switch': 1}
-                with open(filepath, 'w') as wf:
-                    json.dump(data, wf)
-                context['status'], context['standard'] = '', 'checked'
-            context['selectedItem'] = selected_item
-        
-        filepath = os.path.join('core', f'{self.request.user}.json')
-        if os.path.exists(filepath):
-            """
-                The page needs to load again when CSV Type is selected.
-                At this stage, the created json file will be opened just to
-                access the switch so that it can keep away from stage 3.
-            """
-            with open(filepath, 'r') as rf:
-                content = rf.read()
-                data = json.loads(content)
-            stage = ('Stage 2: Click Next to chose file', 50)
-            if data['switch'] == 2:
-                """The switch directed the process to follow this path
-                    because its value was defined in the post function which
-                    reversed its page using the reverse function. note: stage is defined.
-                    At this stage, the json file exists and the fields of the model object,
-                    the headings of the csv file has been mapped into a json object
-                    has been extracted into it and brought to the page.
-                """
-
-                context['title'] = data['title']
-                if 'date' in data:
-                    context['date'] = data['date']
-            
-                context['fieldset'] = data['fieldset']
-                stage = ('Stage 3: File Uploaded, Save if Satisfied? Select Type again if Not satisfied?', 75)
-                if 'records' in data:
-                    context['records'] = data['records']
+        context['title'] = 'Stock Status'
+        report = self.request.session.get('csv_import')
+        if report:
+            context['report'] = report
+            context['stage'] = ('Stage 2: Review and confirm', 66)
         else:
-            """The initial path of the process
-                Json file is created and switch is added to control process flow.
-                Stage is added to define position of the flow.
-
-                This process occurs when json file do not exist.
-                Which is the case when starting the upload process.
-                Note: Json file is deleted when leaving of the page.
-            """
-            with open(filepath, 'w') as wf:
-                data = {'switch': 0}
-                json.dump(data, wf)
-            stage = ('Stage 1: Select CSV file to upload', 25)
-        context['switch'] = data['switch']
-        context['stage'] = stage
-        context['standard_message'] = (
-            "Chose this if your CSV file is prepared with first row as the heading and the rest rows as the records."
-            )
+            context['stage'] = ('Stage 1: Select CSV file to upload', 33)
         return context
-    
+
     def post(self, request, *args, **kwargs):
-        try:
-            # Build paths inside the project like this: BASE_DIR / 'subdir'.
-            BASE_DIR = Path(__file__).resolve().parent.parent
+        if 'fileName' in request.FILES:
+            raw_bytes = request.FILES['fileName'].read()
+            result = parse_stock_status_csv(raw_bytes)
+            if result['error']:
+                messages.error(request, result['error'])
+            else:
+                if result['header_warning']:
+                    messages.warning(request, result['header_warning'])
+                request.session['csv_import'] = result
+        return redirect(reverse('import-csv'))
 
-            filepath = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
-            with open(filepath, 'r') as rf:
-                content = rf.read()
-                data = json.loads(content)
-            
-            if 'fileName' in self.request.FILES:
-                filename = self.request.FILES['fileName']
-                # Read the contents of the file into memory
-                csv_file = filename.read().decode('utf-8')
-                # Parse the CSV data using the csv module
-                reader = csv.reader(csv_file.splitlines(), delimiter=',')
-                if data['title'] == 'Stock Status':
-                    head_0, head_1, head_2, head_3, head_4 = next(reader), next(reader), next(reader), next(reader), next(reader)
-                    # code to look into the file
-                    
-                    records = [content for content in reader]
-                
-                    head_4[6], head_4[2] = head_4[2], head_4[6]
-                    notes = ['Passed' if head_4[0].strip().lower() == 'product code' else 'Failed']
-                    notes.append('Passed' if head_4[1].strip().lower() == 'item name' else 'Failed')
-                    head_4.insert(2, '')
-                    notes.append('Auto')
-                    notes.append('Passed' if head_4[3].strip().lower() == 'cost price' else 'Failed')
-                    head_4.insert(4, '')
-                    notes.append('Auto')
-                    notes.append('Passed' if head_4[5].strip().lower() == 'selling price' else 'Failed')
-                    head_4[6], head_4[7] = head_4[7], head_4[6]
-                    notes.append('Passed' if head_4[6].strip().lower() == 'closing balance' else 'Failed')
-                    head_4[8], head_4[7] = head_4[7], head_4[8]
-                    head_4.insert(7, '')
-                    notes.append(head_2[0].split()[1])
-                    notes.append('Passed' if head_4[8].strip().lower() == 'sellout' else 'Failed')
-                    head_4.insert(9, '')
-                    notes.append('Auto')
-                    notes.append('Passed' if head_4[10].strip().lower() == 'sales amount' else 'Failed')
-                    
-                    fieldset = list((a, b, c) for a, b, c in zip(data['fieldset'], head_4, notes))
-                    data['fieldset'] = fieldset
-                    data['records'] = records
-                    data['date'] = head_2[0].split()[1]
-                else:
-                    data['fieldset'] = next(reader)
-                    data['records'] = [content for content in reader]
-                    
-                data['switch'] = 2    
-                with open(filepath, 'w') as wf:
-                    json.dump(data, wf, indent=2)
-        except Exception as err:
-            messages.warning(request, f"{err} {err.with_traceback()} - **File not uploaded. Check file imported, something is not right**")
-        return redirect(reverse('import-csv')) #super().get(request, **kwargs) 
 
-class SaveCSVFile(LoginRequiredMixin, View):  
-    
+class SaveCSVFile(LoginRequiredMixin, View):
+
     def get(self, request, *args, **kwargs):
-        context = {}
-        # Build paths inside the project like this: BASE_DIR / 'subdir'.
-        BASE_DIR = Path(__file__).resolve().parent.parent
+        report = request.session.get('csv_import')
+        if not report:
+            return redirect(reverse('import-csv'))
 
-        filepath = os.path.join(BASE_DIR, 'core', f'{self.request.user}.json')
-        with open(filepath, 'r') as rf:
-            content = rf.read() 
-            json_data = json.loads(content) # this makes it a python object
-            with open(filepath, 'w') as wf:
-                json_data['switch'] = 3
-                json_data['queryset_before'] = ProductExtension.objects.count()
-                json.dump(json_data, wf, indent=2) # taking a dictionary object into a json object
-            
-        if json_data['title'] == 'Stock Status':
-            context['date'] = json_data['date']
-            context['switch'] = json_data['switch']
-            date = datetime.datetime.strptime(json_data['date'], '%d-%m-%Y').date() 
-            
-            if 'records' in json_data:
-                obj_created, obj_updated = 0, 0
-                product_list = Product.objects.filter(active=True).values_list('pk', flat=True)
-                for record in json_data['records']:
-                    
-                    try:
-                        if record[0] == '' or int(record[0]) not in product_list:
-                            continue
-                        product_id = int(record[0].strip())
-                        sellout = int(record[2].strip().replace(',', ''))
-                        selling_price = float(record[3].strip().replace(',', ''))
-                        sales_amount = float(record[4].strip().replace(',', ''))
-                        stock_value = int(record[5].strip().replace(',', ''))
-                        cost_price = float(record[6].strip().replace(',', ''))
-                    
-                        obj, created = ProductExtension.objects.update_or_create(
-                            product_id=product_id,
-                            date=date,
-                            defaults={
-                                'sell_out': sellout,
-                                'selling_price': selling_price,
-                                'sales_amount': sales_amount,
-                                'stock_value': stock_value,
-                                'cost_price': cost_price
-                                }
-                            )
-                        if created:
-                            obj_created += 1
-                        else:
-                            obj_updated += 1
-                    except Exception as err:
-                            context['stage'] = ('Stage 4: Process aborted due to error encountered', 100)
-                            messages.info(request, f"Error {err} @ {obj.product.id}!!!")
-                            context['obj_created_updated'] = (obj_created, obj_updated)
-                            return render(request, 'core/import_csv.html', context=context)
-        context['stage'] = ('Stage 4: congrats process is complete', 100)
-        messages.success(request, "Uploaded file saved Successfully !!!")
-        context['obj_created_updated'] = (obj_created, obj_updated)
+        date = datetime.datetime.strptime(report['date'], '%Y-%m-%d').date()
+        obj_created, obj_updated = 0, 0
+        try:
+            with transaction.atomic():
+                for row in report['valid_rows']:
+                    obj, created = ProductExtension.objects.update_or_create(
+                        product_id=row['product_id'],
+                        date=date,
+                        defaults={
+                            'sell_out': row['sell_out'],
+                            'selling_price': decimal.Decimal(row['selling_price']),
+                            'sales_amount': decimal.Decimal(row['sales_amount']),
+                            'stock_value': row['stock_value'],
+                            'cost_price': decimal.Decimal(row['cost_price']),
+                        }
+                    )
+                    if created:
+                        obj_created += 1
+                    else:
+                        obj_updated += 1
+        except Exception as err:
+            messages.error(request, f"Import failed, no changes were saved: {err}")
+            return redirect(reverse('import-csv'))
+
+        del request.session['csv_import']
+        messages.success(request, "Uploaded file saved successfully!")
+        context = {
+            'title': 'Stock Status',
+            'stage': ('Stage 3: Import complete', 100),
+            'date': date,
+            'obj_created': obj_created,
+            'obj_updated': obj_updated,
+            'skipped': len(report['errors']),
+        }
         return render(request, 'core/import_csv.html', context=context)
 
 class BusinessSummaryView(LoginRequiredMixin, TemplateView):
