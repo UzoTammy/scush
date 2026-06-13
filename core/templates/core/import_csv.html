@@ -6,13 +6,22 @@
 {% block head %}
 <style>
   .prog { width: {{ stage|last }}%; }
+  .import-form-actions { border-top: 1px solid var(--color-border); padding-top: 1.25rem; }
+  .import-progress { height: 1.5rem; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-3">
-  <div class="ds-card mb-3">
-    <div class="ds-card__header"><span>Import CSV into SCusH</span></div>
+<div class="container-fluid">
+
+  <!-- ── Nav card ───────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-upload mr-2"></i>Import CSV into SCusH</span>
+      <a class="staff-nav-link" href="{% url 'home' %}">
+        <i class="fa fa-times-circle"></i> Cancel
+      </a>
+    </div>
     <div class="ds-card__body">
       <form id="radio-form" action="{% url 'import-csv' %}" method="GET">
         <ol>
@@ -36,35 +45,37 @@
             </div>
           </li>
         </ol>
-        <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex justify-content-end align-items-center mt-3 import-form-actions">
           <button id="submitButtonCSVUpload" data-toggle="modal"
-                  data-target="#loadCSVModal" type="button" class="btn btn-primary btn-sm">
+                  data-target="#loadCSVModal" type="button" class="btn btn-primary">
             Next <i class="fa fa-arrow-right ml-1"></i>
           </button>
-          <a class="btn btn-secondary" href="{% url 'home' %}">
-            <i class="fa fa-times-circle mr-1"></i> Cancel
-          </a>
         </div>
       </form>
     </div>
   </div>
 
-  <div class="progress mb-3">
-    <div class="progress-bar progress-bar-striped progress-bar-animated prog"
-         role="progressbar"
-         aria-label="Import progress"
-         aria-valuenow="0"
-         aria-valuemin="0"
-         aria-valuemax="100"
-         data-value="{{ stage|last }}">
-      {{ stage|first }}
+  <!-- ── Progress ───────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__body">
+      <div class="progress import-progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated prog"
+             role="progressbar"
+             aria-label="Import progress"
+             aria-valuenow="0"
+             aria-valuemin="0"
+             aria-valuemax="100"
+             data-value="{{ stage|last }}">
+          {{ stage|first }}
+        </div>
+      </div>
     </div>
   </div>
 
   {% if switch == 2 %}
-  <div class="ds-card mb-3" id="tableForMap">
+  <div class="ds-card mb-4" id="tableForMap">
     {% if title == 'Stock Status' %}
-    <div class="ds-card__header"><span>Field Mapping — {{ title }}</span></div>
+    <div class="ds-card__header"><span><i class="fa fa-table mr-2"></i>Field Mapping — {{ title }}</span></div>
     <div class="ds-card__body p-0">
       <div class="table-responsive">
         <table class="table table-striped mb-0" data-toggle="table" data-pagination="true">
@@ -94,7 +105,7 @@
       </div>
     </div>
     {% else %}
-    <div class="ds-card__header"><span>CSV Content — {{ title }}</span></div>
+    <div class="ds-card__header"><span><i class="fa fa-table mr-2"></i>CSV Content — {{ title }}</span></div>
     <div class="ds-card__body p-0">
       <div class="table-responsive">
         <table class="table table-striped mb-0" data-toggle="table" data-pagination="true">
@@ -111,7 +122,7 @@
     </div>
     {% endif %}
     <div class="ds-card__body border-top d-flex justify-content-between">
-      <a class="btn btn-secondary" href="{% url 'save-csv' %}">
+      <a class="btn btn-primary" href="{% url 'save-csv' %}">
         <i class="fa fa-save mr-1"></i> Save
       </a>
       <a class="btn btn-secondary" href="{% url 'home' %}">Cancel</a>
@@ -120,11 +131,11 @@
   {% endif %}
 
   {% if switch == 3 %}
-  <div class="ds-card">
-    <div class="ds-card__header"><span>Import Complete</span></div>
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-check-circle mr-2"></i>Import Complete</span></div>
     <div class="ds-card__body">
       <p>Records <strong>Created</strong>: {{ obj_created_updated|first }}</p>
-      <p>Records <strong>Updated</strong>: {{ obj_created_updated|last }}</p>
+      <p class="mb-0">Records <strong>Updated</strong>: {{ obj_created_updated|last }}</p>
     </div>
   </div>
   {% endif %}
@@ -153,8 +164,8 @@
             <input id="fileInput" class="form-control" type="file" name="fileName" accept=".csv" required>
           </div>
           <div class="d-flex justify-content-end mt-3">
-            <button type="button" class="btn btn-secondary btn-sm mr-2" data-dismiss="modal">Close</button>
-            <input type="submit" class="btn btn-primary btn-sm" value="Upload File">
+            <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Close</button>
+            <input type="submit" class="btn btn-primary" value="Upload File">
           </div>
         </form>
       </div>

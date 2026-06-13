@@ -202,6 +202,9 @@
       <i class="fa fa-bars"></i>
     </button>
     <h1 class="ds-topbar__title">{% block page_title %}SCusH{% endblock %}</h1>
+    {% if latest_stock_date %}
+    <span class="ds-topbar__clock" title="Latest stock record date">{{ latest_stock_date|date:'d M Y' }}</span>
+    {% endif %}
   </div>
 
   <div class="ds-topbar__right">

@@ -16,7 +16,8 @@
     <div class="ds-card__body">
       <p class="mb-0">
         This page is a quick guide to the Stock &amp; Inventory Management section: where things live,
-        what each tool does, and how stock numbers stay accurate. Use the links below to jump to a topic.
+        what each tool does, what the dashboard numbers mean, and how stock figures stay accurate.
+        Use the links below to jump to a topic.
       </p>
     </div>
   </div>
@@ -29,6 +30,9 @@
         <div class="col-md-6">
           <ul class="mb-md-0">
             <li><a href="#getting-around">Getting Around the Stock Management Page</a></li>
+            <li><a href="#home-dashboard">The Stock Management Dashboard</a></li>
+            <li><a href="#performance">Performance Dashboard</a></li>
+            <li><a href="#run-rate">Run Rate &amp; Product Analysis</a></li>
             <li><a href="#stock-card">Stock Card &amp; the Movement Ledger</a></li>
             <li><a href="#deliveries">Deliveries &amp; Automatic Stock Updates</a></li>
           </ul>
@@ -38,7 +42,9 @@
             <li><a href="#stock-count">Stock Count (Physical Count)</a></li>
             <li><a href="#reorder">Reorder Suggestions &amp; Low Stock</a></li>
             <li><a href="#transfer">Stock Transfer Between Locations</a></li>
-            <li><a href="#settings">Settings: Categories, Suppliers &amp; Locations</a></li>
+            <li><a href="#prices">Prices &amp; Price History</a></li>
+            <li><a href="#watchlist">Watchlist</a></li>
+            <li><a href="#settings">Settings: Categories, Sources &amp; Locations</a></li>
           </ul>
         </div>
       </div>
@@ -50,31 +56,140 @@
     <div class="ds-card__header"><span><i class="fa fa-compass mr-2"></i>Getting Around the Stock Management Page</span></div>
     <div class="ds-card__body">
       <p>
-        From <a href="{% url 'product-home' %}">Stock Management</a>, the top bar groups every tool into
-        three menus:
+        <a href="{% url 'product-home' %}">Stock Management</a> is the home base for this section. Its
+        top bar groups every tool into three menus, plus two direct links:
       </p>
       <ul>
         <li>
-          <strong><i class="fa fa-bar-chart mr-1"></i>Reports</strong> — Stock Report, All Products,
-          <a href="{% url 'performance-home' %}">Performance</a>, Run Rate, and
+          <strong><i class="fa fa-bar-chart mr-1"></i>Stock Reports</strong> — Stock Report (all products,
+          grouped by source), <a href="{% url 'performance-home' %}">Performance</a> (the daily
+          performance dashboard), Run Rate (sellout velocity and days of cover), and
           <a href="{% url 'stock-balancing' %}">Stock Balancing</a> (reorder suggestions).
         </li>
         <li>
-          <strong><i class="fa fa-truck mr-1"></i>Operations</strong> — day-to-day stock work:
-          <a href="{% url 'delivery-home' %}">Deliveries</a>, Watchlist, Sellout &amp; Balance reporting,
-          <a href="{% url 'stock-count-new' %}">Stock Count</a>,
-          <a href="{% url 'stock-count-list' %}">Stock Count History</a>, and
-          <a href="{% url 'stock-transfer' %}">Stock Transfer</a>.
+          <strong><i class="fa fa-cubes mr-1"></i>Products</strong> — All Products (browse/search every
+          product), <a href="{% url 'watchlist-home' %}">Watchlist</a>, and New Product (create a product).
         </li>
         <li>
-          <strong><i class="fa fa-file-pdf-o mr-1"></i>PDF</strong> — printable price lists and
-          price-update notes by source.
+          <strong><i class="fa fa-truck mr-1"></i>Inventory Operations</strong> — day-to-day stock work:
+          Sellout &amp; Balance reporting, <a href="{% url 'stock-count-list' %}">Stock Count</a>,
+          <a href="{% url 'stock-transfer' %}">Stock Transfer</a>, and
+          <a href="{% url 'delivery-home' %}">Deliveries</a>.
+        </li>
+        <li>
+          <strong><i class="fa fa-tag mr-1"></i>Price Update</strong> — quickly increase or decrease a
+          single product's selling price.
         </li>
       </ul>
       <p class="mb-0">
         Every individual product also has a <strong>Stock Card</strong> link on its detail page —
         this is where you see and adjust that product's running stock balance.
       </p>
+    </div>
+  </div>
+
+  <!-- ── Stock Management dashboard ─────────────────── -->
+  <div class="ds-card mb-4" id="home-dashboard">
+    <div class="ds-card__header"><span><i class="fa fa-tachometer mr-2"></i>The Stock Management Dashboard</span></div>
+    <div class="ds-card__body">
+      <p>The cards at the top of <a href="{% url 'product-home' %}">Stock Management</a> summarise current stock:</p>
+      <ul>
+        <li><strong>Current Stock Value</strong> — the total value of stock on hand, valued at cost price.</li>
+        <li><strong>Total Quantity</strong> — total units currently in stock across all active products.</li>
+        <li><strong>Quantity Received</strong> — total units received through Deliveries.</li>
+        <li><strong>Quantity Transferred</strong> — total units moved between stock locations via Stock Transfer.</li>
+      </ul>
+      <p>
+        <strong>Top Ten Sellout Stocks</strong> — the ten products with the biggest movement over the
+        last 3 days (4 if the period spans a weekend), ranked by the size of their profit or loss —
+        so both your best earners and your biggest loss-makers show up here. Losses are shown in red
+        with a leading minus sign (e.g. <span class="text-danger">-N53,650.27</span>).
+      </p>
+      <p class="mb-0">
+        <strong>Price Changes</strong> — every price increase or decrease made this month, who made it,
+        and the old vs. new price. Use this to audit recent price activity.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Performance ─────────────────────────────────── -->
+  <div class="ds-card mb-4" id="performance">
+    <div class="ds-card__header"><span><i class="fa fa-line-chart mr-2"></i>Performance Dashboard</span></div>
+    <div class="ds-card__body">
+      <p>
+        <a href="{% url 'performance-home' %}">Performance</a> gives a daily snapshot of how stock is
+        moving, as at the most recent date with recorded figures. The KPI row at the top shows:
+      </p>
+      <ul>
+        <li><strong>Active Products</strong> — how many products are currently active and tracked.</li>
+        <li>
+          <strong>Availability</strong> — the percentage of active products that currently have stock
+          on hand (i.e. are not at zero/negative balance). A low percentage means many products are
+          out of stock.
+        </li>
+        <li>
+          <strong>Sales Activity</strong> — of the products currently in stock, what percentage sold at
+          least one unit today. A low percentage means stock is sitting still even though it's available.
+        </li>
+        <li>
+          <strong>Products Sold</strong> — how many products recorded a sale today. Click the number to
+          open the <em>Products Sold - Yield</em> breakdown (sellout quantity, selling price, sales
+          amount, stock value and profit per product, with totals).
+        </li>
+        <li><strong>Profit From Sales</strong> — total profit earned from today's sales across all products.</li>
+        <li>
+          <strong>LDC (Locked Down Capital)</strong> — the value of stock that has not sold a single
+          unit in the last month. This is cash tied up in slow-moving stock.
+        </li>
+      </ul>
+      <p>Below the KPIs, four cards highlight top performers for Today / This Month / Year-to-Date:</p>
+      <ul>
+        <li><strong>Most Sold - Quantity</strong> — the product with the highest sellout quantity.</li>
+        <li><strong>Most Profitable</strong> — the product that generated the most profit.</li>
+        <li>
+          <strong>Today's Margin</strong> — the product with the best and worst margin today, plus the
+          average margin across all sales. A worst margin shown in red with <sup>**</sup> means that
+          product was sold below cost price (a loss).
+        </li>
+        <li><strong>Highest Gross Sales</strong> — the product with the highest total sales amount (before deducting cost).</li>
+      </ul>
+      <p class="mb-0">
+        The <strong>Stock &amp; Sellout Watch</strong> table flags products needing attention, both for
+        today and for the current month — click any number to see the product list:
+      </p>
+      <ul class="mb-0">
+        <li><strong>No Stock</strong> — products with a zero or negative balance.</li>
+        <li><strong>Low Stock</strong> — products at or below their reorder point (see <a href="#reorder">Reorder Suggestions</a>).</li>
+        <li><strong>No Sellout</strong> — products in stock that recorded no sales. The daily view is sorted by days since last sale (longest first).</li>
+        <li><strong>Low Sellout</strong> — products in stock with sellout below their expected level.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── Run Rate ─────────────────────────────────────── -->
+  <div class="ds-card mb-4" id="run-rate">
+    <div class="ds-card__header"><span><i class="fa fa-cloud mr-2"></i>Run Rate &amp; Product Analysis</span></div>
+    <div class="ds-card__body">
+      <p>The Run Rate page (Product Analysis) helps you understand how fast stock is selling and how long it will last:</p>
+      <ul>
+        <li>
+          <strong>Product Velocity - Sellout</strong> — every active product is bucketed by sellout
+          speed (Not Designated, Not Selling, Very Low, Low, Moderate, High, Very High), showing the
+          stock value and quantity in each bucket. Click a quantity to see which products are in that bucket.
+        </li>
+        <li>
+          <strong>Run Rate &amp; Days of Cover</strong> — for each product, the average daily sellout
+          over the last 7 and 30 days, the current balance, the resulting <em>days of cover</em>
+          (how many days the current stock will last at the recent sellout rate), and a status badge:
+          <ul>
+            <li><span class="badge badge-danger">Low</span> — days of cover is below the safe threshold; consider reordering.</li>
+            <li><span class="badge badge-warning">Overstock</span> — stock is well above what's needed; consider slowing down orders.</li>
+            <li><span class="badge badge-success">OK</span> — stock levels are healthy.</li>
+            <li><span class="badge badge-secondary">Unset</span> — stock levels haven't been configured for this product yet.</li>
+          </ul>
+        </li>
+        <li><strong>Products Not Sold</strong> — products in stock that haven't sold in 7 days or more, with their current stock and when/how much they last sold.</li>
+      </ul>
     </div>
   </div>
 
@@ -165,9 +280,9 @@
           products that have no levels configured yet.
         </li>
         <li>
-          The <a href="{% url 'performance-home' %}">Performance</a> dashboard's "Low Stock" widget
-          flags products whose reported balance has fallen to or below their reorder point (or minimum
-          stock level if no reorder point is set).
+          The <a href="{% url 'performance-home' %}">Performance</a> dashboard's "Low Stock" row in
+          the Stock &amp; Sellout Watch table flags products whose reported balance has fallen to or
+          below their reorder point (or minimum stock level if no reorder point is set).
         </li>
       </ul>
       <p class="mb-0">
@@ -196,9 +311,37 @@
     </div>
   </div>
 
+  <!-- ── Prices ─────────────────────────────────────── -->
+  <div class="ds-card mb-4" id="prices">
+    <div class="ds-card__header"><span><i class="fa fa-money mr-2"></i>Prices &amp; Price History</span></div>
+    <div class="ds-card__body">
+      <ul>
+        <li><strong>Price Update</strong> — select a product, see its current selling price, then increase or decrease it by an amount. The preview shows the new price before you save.</li>
+        <li><strong>Price List</strong> — browse the cost and selling price of every product.</li>
+        <li><strong>Price History</strong> — open from a product's detail page to see every past price change for that product, who made it and when.</li>
+      </ul>
+      <p class="mb-0">
+        Every price change recorded here also appears in the <strong>Price Changes</strong> card on the
+        <a href="{% url 'product-home' %}">Stock Management</a> dashboard for the current month.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Watchlist ──────────────────────────────────── -->
+  <div class="ds-card mb-4" id="watchlist">
+    <div class="ds-card__header"><span><i class="fa fa-eye mr-2"></i>Watchlist</span></div>
+    <div class="ds-card__body mb-0">
+      <p class="mb-0">
+        The <a href="{% url 'watchlist-home' %}">Watchlist</a> is a shortlist of products you want to
+        keep a closer eye on (e.g. new arrivals, problem stock, fast movers). Add or remove products
+        from the Watchlist page itself.
+      </p>
+    </div>
+  </div>
+
   <!-- ── Settings ───────────────────────────────────── -->
   <div class="ds-card mb-4" id="settings">
-    <div class="ds-card__header"><span><i class="fa fa-cog mr-2"></i>Settings: Categories, Suppliers &amp; Locations</span></div>
+    <div class="ds-card__header"><span><i class="fa fa-cog mr-2"></i>Settings: Categories, Sources &amp; Locations</span></div>
     <div class="ds-card__body">
       <p>
         The Products tab of <a href="{% url 'settings' %}">App Settings</a> is where the building
