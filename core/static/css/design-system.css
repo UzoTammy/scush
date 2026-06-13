@@ -624,6 +624,28 @@ button.staff-nav-link {
   color: #ffffff;
 }
 
+/* Dropdown toggle inside a dark ds-card__header, matching staff-nav-link */
+.ds-card__header .dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.4rem 0.875rem;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: #ffffff;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.ds-card__header .dropdown-toggle:hover,
+.ds-card__header .show > .dropdown-toggle {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #ffffff;
+}
+
 /* ─── Return / close icon — orange fa-times-circle ──────── */
 a .fa-times-circle,
 button .fa-times-circle {

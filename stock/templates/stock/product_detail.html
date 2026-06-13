@@ -7,232 +7,194 @@
 
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
-        <nav class="col-sm-2 bg-dark">
-          <button
-              class="navbar-toggler bg-light mt-1 mb-1 float-right myBtn"
-              type="button"
-              data-toggle="collapse"
-              data-target="#Dropdown2"
-              aria-controls="Dropdown2"
-              aria-expanded="true"
-              aria-label="toggle navigation">
-              <i class="fa fa-navicon fa-1x text-primary"></i>
+
+  <!-- ── Header / nav ───────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-cube mr-2"></i>{{ object }}</span>
+      <div class="d-flex align-items-center staff-nav-bar flex-wrap">
+
+        <!-- Quick Update -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-bolt mr-1"></i> Quick Update
           </button>
-          <div class="collapse collapse-sm" id="Dropdown2">
-              <ul class="nav flex-column mt-3">
-                  <li class="text-white"><i class="fa fa-minus text-warning"></i> Quick Update</li>
-                    {% if not object.active %}
-                      <li class="nav-item">
-                        <a class="nav-link" data-toggle="modal" data-target="#productStatus">
-                          <i class="fa fa-check-square-o text-warning"></i> Activate</a> </li>
-                    {% else %}
-                      <li class="nav-item">
-                        <a class="nav-link" data-toggle="modal" data-target="#productStatus">
-                          <i class="fa fa-times text-warning"></i> Disable</a>
-                      </li>
-                    {% endif %}
-                    <li class="nav-item ml-3">
-                      <a href="{% url 'stock-report-new' theDate object.pk %}">
-                        <i class="fa fa-plus text-warning"></i> Sellout & Balance</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" 
-                      data-toggle="modal" 
-                      data-target="#priceReview">
-                      <i class="fa fa-plus text-warning"></i> Selling Price
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="." 
-                    class="nav-link" 
-                    data-toggle="modal" 
-                    data-target="#productVelocity">
-                    <i class="fa fa-plus text-warning"></i> Velocity
-                  </a>
-                </li> 
-                  <hr class="dropdown-divider">
-                  <li class="text-white"><i class="fa fa-minus text-warning"></i> Complete Update</li>
-                  
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'product-update' object.pk %}">
-                      <i class="fa fa-plus text-warning"></i> Update</a>
-                  </li>
-                  {% if user.is_superuser %}
-                  <li class="nav-item">
-                    <a class="nav-link" href="{% url 'product-delete' object.pk %}">
-                      <i class="fa fa-times text-warning"></i> Delete</a>
-                  </li>
-                  {% endif %}
-
-                  <hr class="dropdown-divider">
-                  <li class="text-white"><i class="fa fa-minus text-warning"></i> Closing Stock</li>
-                    
-                    {% if is_qs %}
-                    <li class="nav-item">
-                      <a class="nav-link" data-toggle="modal" data-target="#addStockExist">
-                        <i class="fa fa-plus text-warning"></i> Add
-                      </a>
-                    </li> 
-                    {% else %}
-                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#addStock">
-                      <i class="fa fa-plus text-warning"></i> Add</a>
-                    </li>
-                    
-                    {% endif %}
-                    <li class="nav-item">
-                      <a class="nav-link" href="." data-toggle="modal" data-target="#editStock">
-                        <i class="fa fa-edit text-warning"></i> Edit</a>
-                    </li>
-                    <!-- <li><a href="{% url 'product-ext-update' object.pk %}">Edit</a></li> -->
-                    <li class="nav-item"><a class="nav-link" data-toggle="modal" data-target="#costPriceReview">
-                      <i class="fa fa-list text-warning"></i> Update Cost Price</a></li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{% url 'price-history' object.pk %}">
-                        <i class="fa fa-history text-warning"></i> Price History</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{% url 'stock-card' object.pk %}">
-                        <i class="fa fa-exchange text-warning"></i> Stock Card</a>
-                    </li>
-                  <hr class="dropdown-divider">
-                  <li class="nav-item"><a class="nav-link" href="{% url 'stock-report-source' 'All' %}">
-                    <i class="fa fa-times-circle"></i> Return
-                  </a>
-                </li>
-              </ul>  
+          <div class="dropdown-menu">
+            {% if not object.active %}
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#productStatus"><i class="fa fa-check-square-o mr-1"></i> Activate</a>
+            {% else %}
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#productStatus"><i class="fa fa-times mr-1"></i> Disable</a>
+            {% endif %}
+            <a class="dropdown-item" href="{% url 'stock-report-new' theDate object.pk %}"><i class="fa fa-plus mr-1"></i> Sellout &amp; Balance</a>
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#priceReview"><i class="fa fa-tag mr-1"></i> Selling Price</a>
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#productVelocity"><i class="fa fa-tachometer mr-1"></i> Velocity</a>
           </div>
-        </nav>
-        
-        <div class="col-sm-10">
-          <h2 class="text-secondary text-center mt-3">{{object}}</h2>
-            <div class="media">
-              <img src="{{object.image.url}}"
-                   width="150px"
-                   height="150px"
-                   class="rounded mr-3 float-right"
-                   alt="...">
-              <div class="media-body">
-                <h3 class="text-primary">Product Code: {{object.id|zeropadding:4}}</h3>
-                {% if object.active %}
-                <h5 class="text-success">Active</h5>
-                {% else %}
-                <h5 class="text-danger">Disabled</h5>
-                {% endif %}
-              </div>
-            </div>
-            <div class="row p-2">
-                  <button type="button"
-                    class="list-group-item list-group-item-action bg-light"
-                    aria-current="true">
-                    <b class="text-center">{{object.name}} {{object.unit_type}} {{object.parameter}}</b>
-                  </button>
-                <div class="col-sm-6">
-                    <ul class="list-group list-group-flush">
-                      <li class="list-group-item">Name: <span class="float-right">{{object.name}}</span> </li>
-                      <li class="list-group-item">Date & Time Last Modified: <span class="float-right"> {{object.date_modified}} </span></li>
-                      <li class="list-group-item">Source: <span class="float-right">{{object.source}}</span> </li>
-                      <li class="list-group-item">Category: <span class="float-right">{{object.category}}</span></li>
-                      <li class="list-group-item">Unit Selling Price: <span class="float-right">{{object.unit_price}}</span> </li>
-                      <li class="list-group-item">Cost Price: <span class="float-right">{{object.cost_price}}</span></li>
-                      <li class="list-group-item">Pack Type: <span class="float-right">{{object.pack_type}}</span> </li>
-                      <li class="list-group-item">Quantity Per Pack: <span class="float-right">{{object.quantity_per_pack}}</span></li>
-                      <li class="list-group-item">Unit Type: <span class="float-right">{{object.unit_type}}</span> </li>
-                    </ul>
-                </div>
-                <div class="col-sm-6"> 
-                      <ul class="list-group list-group-flush">     
-                        <li class="list-group-item">Product Velocity: 
-                          {% if object.velocity == -1 %}
-                          <span class="float-right">Not Assigned</span> 
-                          {% elif object.velocity == 0 %}
-                          <span class="float-right">No Sellout</span> 
-                          {% elif object.velocity == 1 %}
-                          <span class="float-right">Very Low</span> 
-                          {% elif object.velocity == 2 %}
-                          <span class="float-right">Low</span> 
-                          {% elif object.velocity == 3 %}
-                          <span class="float-right">Moderate</span> 
-                          {% elif object.velocity == 4 %}
-                          <span class="float-right">High</span> 
-                          {% elif object.velocity == 0 %}
-                          <span class="float-right">Very High</span>
-                          {% endif %}
-                        </li>
-                        <li class="list-group-item">Size Value: <span class="float-right">{{object.size_value}}{{object.size_value_unit}}</span></li>
-                        <li class="list-group-item">Alcoholic Content: <span class="float-right">{{object.alcohol_content}}</span></li>
-                        <li class="list-group-item">VAT (in %): <span class="float-right">{{object.vat}}</span></li>
-                        <li class="list-group-item">Parameter: <span class="float-right">{{object.parameter }}</span></li>
-                        <li class="list-group-item">Active: <span class="float-right">{{object.active|yesno:'Yes, No'}}</span> </li>
-                        <li class="list-group-item">Discount: <span class="float-right">{{object.discount}}</span></li>
-                        <li class="list-group-item">Discount Type: <span class="float-right">{{object.discount_type}}</span> </li>
-                        <li class="list-group-item">Product Description: <span class="float-right">{{object}}</span> </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="row p-2">
-              <button type="button"
-                class="list-group-item list-group-item-action bg-light"
-                aria-current="true">
-                <b class="text-center">Derivatives</b>
-              </button>
-            <div class="col-sm-6">
-                <ul class="list-group list-group-flush">
-                  <li class="list-group-item">Name: <span class="float-right">{{object.name}}</span> </li>
-                </ul>
-            </div>
-            <div class="col-sm-6">
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Product State: <span class="float-right">{{object.product_state }}</span> </li>
-
-                </ul>
-            </div>
-        </div>
-            <div class="row p-2">
-              <button type="button"
-                class="list-group-item list-group-item-action bg-light"
-                aria-current="true">
-                <b class="text-center">Stock Levels</b>
-              </button>
-            <div class="col-sm-6">
-                <ul class="list-group list-group-flush">
-                  <li class="list-group-item">Current Stock: <span class="float-right">{{object.current_stock|default:"-"}}</span> </li>
-                  <li class="list-group-item">Status:
-                    <span class="float-right">
-                      {% with status=object.stock_status %}
-                      {% if status == 'LOW' %}
-                      <span class="badge badge-danger">Low</span>
-                      {% elif status == 'OVER' %}
-                      <span class="badge badge-warning">Overstock</span>
-                      {% elif status == 'OK' %}
-                      <span class="badge badge-success">OK</span>
-                      {% else %}
-                      <span class="badge badge-secondary">Unset</span>
-                      {% endif %}
-                      {% endwith %}
-                    </span>
-                  </li>
-                </ul>
-            </div>
-            <div class="col-sm-6">
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Min Stock Level: <span class="float-right">{{object.min_stock_level}}</span> </li>
-                    <li class="list-group-item">Max Stock Level: <span class="float-right">{{object.max_stock_level}}</span> </li>
-                    <li class="list-group-item">Reorder Point: <span class="float-right">{{object.reorder_point}}</span> </li>
-                    <li class="list-group-item">Reorder Qty: <span class="float-right">{{object.reorder_qty}}</span> </li>
-                </ul>
-            </div>
-        </div>
         </div>
 
+        <!-- Closing Stock -->
+        <div class="dropdown">
+          <button type="button" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-archive mr-1"></i> Closing Stock
+          </button>
+          <div class="dropdown-menu">
+            {% if is_qs %}
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addStockExist"><i class="fa fa-plus mr-1"></i> Add</a>
+            {% else %}
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addStock"><i class="fa fa-plus mr-1"></i> Add</a>
+            {% endif %}
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editStock"><i class="fa fa-edit mr-1"></i> Edit</a>
+            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#costPriceReview"><i class="fa fa-list mr-1"></i> Update Cost Price</a>
+            <a class="dropdown-item" href="{% url 'price-history' object.pk %}"><i class="fa fa-history mr-1"></i> Price History</a>
+            <a class="dropdown-item" href="{% url 'stock-card' object.pk %}"><i class="fa fa-exchange mr-1"></i> Stock Card</a>
+          </div>
+        </div>
+
+        <a class="staff-nav-link" href="{% url 'product-update' object.pk %}">
+          <i class="fa fa-edit"></i> Update
+        </a>
+        {% if user.is_superuser %}
+        <a class="staff-nav-link" href="{% url 'product-delete' object.pk %}">
+          <i class="fa fa-trash"></i> Delete
+        </a>
+        {% endif %}
+        <a class="staff-nav-link" href="{% url 'stock-report-source' 'All' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
+    <div class="ds-card__body">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <img src="{{ object.image.url }}" width="100" height="100" class="rounded" alt="">
+        </div>
+        <div class="col">
+          <h4 class="mb-1">{{ object }}</h4>
+          <p class="mb-1 text-muted">Product Code: {{ object.id|zeropadding:4 }}</p>
+          {% if object.active %}
+          <span class="badge badge-success">Active</span>
+          {% else %}
+          <span class="badge badge-danger">Disabled</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Product details ─────────────────────────────── -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span><i class="fa fa-info-circle mr-2"></i>Product Details</span></div>
+        <div class="ds-card__body p-0">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between"><span>Name</span><span>{{ object.name }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Date &amp; Time Last Modified</span><span>{{ object.date_modified }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Source</span><span>{{ object.source }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Category</span><span>{{ object.category }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Unit Selling Price</span><span>{{ object.unit_price }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Cost Price</span><span>{{ object.cost_price }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Pack Type</span><span>{{ object.pack_type }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Quantity Per Pack</span><span>{{ object.quantity_per_pack }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Unit Type</span><span>{{ object.unit_type }}</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="ds-card mb-4">
+        <div class="ds-card__header"><span><i class="fa fa-list-alt mr-2"></i>Attributes</span></div>
+        <div class="ds-card__body p-0">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between">
+              <span>Product Velocity</span>
+              <span>
+                {% if object.velocity == -1 %}Not Assigned
+                {% elif object.velocity == 0 %}No Sellout
+                {% elif object.velocity == 1 %}Very Low
+                {% elif object.velocity == 2 %}Low
+                {% elif object.velocity == 3 %}Moderate
+                {% elif object.velocity == 4 %}High
+                {% elif object.velocity == 5 %}Very High
+                {% endif %}
+              </span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between"><span>Size Value</span><span>{{ object.size_value }}{{ object.size_value_unit }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Alcoholic Content</span><span>{{ object.alcohol_content }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>VAT (%)</span><span>{{ object.vat }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Parameter</span><span>{{ object.parameter }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Product State</span><span>{{ object.product_state }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Discount</span><span>{{ object.discount }}</span></li>
+            <li class="list-group-item d-flex justify-content-between"><span>Discount Type</span><span>{{ object.discount_type }}</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Stock levels ─────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-cubes mr-2"></i>Stock Levels</span></div>
+    <div class="ds-card__body">
+      <div class="row">
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat ds-stat--accent">
+            <div class="ds-stat__label">Current Stock</div>
+            <div class="ds-stat__value">{{ object.current_stock|default:"-" }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">Status</div>
+            <div class="ds-stat__value">
+              {% with status=object.stock_status %}
+              {% if status == 'LOW' %}
+              <span class="badge badge-danger">Low</span>
+              {% elif status == 'OVER' %}
+              <span class="badge badge-warning">Overstock</span>
+              {% elif status == 'OK' %}
+              <span class="badge badge-success">OK</span>
+              {% else %}
+              <span class="badge badge-secondary">Unset</span>
+              {% endif %}
+              {% endwith %}
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">Min Stock Level</div>
+            <div class="ds-stat__value">{{ object.min_stock_level }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">Max Stock Level</div>
+            <div class="ds-stat__value">{{ object.max_stock_level }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">Reorder Point</div>
+            <div class="ds-stat__value">{{ object.reorder_point }}</div>
+          </div>
+        </div>
+        <div class="col-6 col-sm-4 col-md-2 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">Reorder Qty</div>
+            <div class="ds-stat__value">{{ object.reorder_qty }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- Selling Price Update Modal -->
-<div class="modal fade" 
-id="priceReview" 
+<div class="modal fade"
+id="priceReview"
 data-backdrop="static"
-role="dialog" 
+role="dialog"
 tabindex="-1">
     <form action="{% url 'price-update' object.pk %}" method="post">
       {% csrf_token %}
@@ -240,9 +202,9 @@ tabindex="-1">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{object}}</h5>
-          <button type="button" 
-          class="close" 
-          data-dismiss="modal" 
+          <button type="button"
+          class="close"
+          data-dismiss="modal"
           aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -253,29 +215,29 @@ tabindex="-1">
                 <div class="col">
                     <p>Selling Price:  <span class="text-primary">{{object.unit_price}}</span></p>
                 </div>
-                
+
               </div>
               <div class="form-group">
                 <div class="row">
                   <div class="col">
-                    <input id="inputSelling" placeholder="Enter New Selling Price" 
+                    <input id="inputSelling" placeholder="Enter New Selling Price"
                     type="number"
                     min="0.1"
                     max="200000"
                     step=".01"
-                    onchange="sellingFunc()" 
-                    class="form-control" 
+                    onchange="sellingFunc()"
+                    class="form-control"
                     name="selling" value="" required>
                   </div>
-                  
+
                 </div>
-                
+
               </div>
           </fieldset>
         </div>
         <div class="modal-footer">
 
-          <button id="btnSellingPrice" type="submit" class="btn btn-primary">Update</button>  
+          <button id="btnSellingPrice" type="submit" class="btn btn-primary">Update</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>
@@ -285,7 +247,7 @@ tabindex="-1">
 
 
 <!-- Add Stock Modal -->
-<div class="modal fade" tabindex="-1" 
+<div class="modal fade" tabindex="-1"
     data-backdrop="static" id="addStockExist">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -300,16 +262,16 @@ tabindex="-1">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        
+
       </div>
     </div>
   </div>
 </div>
 
-<div class="modal fade" 
-id="addStock" 
+<div class="modal fade"
+id="addStock"
 data-backdrop="static"
-role="dialog" 
+role="dialog"
 tabindex="-1">
     <form action="." method="post">
       {% csrf_token %}
@@ -317,14 +279,14 @@ tabindex="-1">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Add Stock Quantity for {{object}}</h5>
-          <button type="button" 
-          class="close" 
-          data-dismiss="modal" 
+          <button type="button"
+          class="close"
+          data-dismiss="modal"
           aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <div class="modal-body">                  
+        <div class="modal-body">
           <fieldset>
             <div class="row">
               <div class="col ml-2">
@@ -335,24 +297,24 @@ tabindex="-1">
                 <p>Date: {{theDate|date:'d-M-Y'}}</p>
               </div>
             </div>
-              
+
               <div class="form-group">
-                
-                <input 
-                id="inputStock" 
-                type="number" 
+
+                <input
+                id="inputStock"
+                type="number"
                 max="100000"
                 min="-100000"
                 step="1"
                 placeholder="Enter Closing Stock Quantity Here"
-                class="form-control" 
+                class="form-control"
                 name="quantity" value="" required>
                 <span class="help-block text-danger ml-3">Quantity between -100,000 and 100,000</span>
               </div>
           </fieldset>
         </div>
         <div class="modal-footer">
-            <button id="btnStock" type="submit" class="btn btn-primary">Submit</button>  
+            <button id="btnStock" type="submit" class="btn btn-primary">Submit</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>
@@ -361,10 +323,10 @@ tabindex="-1">
 </div>
 
 <!-- Edit Stock Modal -->
-<div class="modal fade" 
-id="editStock" 
+<div class="modal fade"
+id="editStock"
 data-backdrop="static"
-role="dialog" 
+role="dialog"
 tabindex="-1">
     <form action="." method="post">
       {% csrf_token %}
@@ -372,9 +334,9 @@ tabindex="-1">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Edit Stock for {{object}}</h5>
-          <button type="button" 
-          class="close" 
-          data-dismiss="modal" 
+          <button type="button"
+          class="close"
+          data-dismiss="modal"
           aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -391,17 +353,17 @@ tabindex="-1">
               </div>
             </div>
               <div class="form-group">
-                
+
                 <input id="inputEditStock" min="1" type="number"
                 placeholder="Edit Stock Quantity here"
-                class="form-control" 
+                class="form-control"
                 name="edit_quantity" value="" required>
                 <span class="help-block text-danger ml-3">Quantity between -100,000 and 100,000</span>
               </div>
           </fieldset>
         </div>
         <div class="modal-footer">
-            <button id="btnEditStock" type="submit" class="btn btn-primary">Submit</button>  
+            <button id="btnEditStock" type="submit" class="btn btn-primary">Submit</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>
@@ -410,20 +372,20 @@ tabindex="-1">
 </div>
 
 <!-- Cost Price Update Modal -->
-<div class="modal fade" 
-id="costPriceReview" 
+<div class="modal fade"
+id="costPriceReview"
 data-backdrop="static"
-role="dialog" 
+role="dialog"
 tabindex="-1">
-  
+
     <form action="{% url 'price-update' object.pk %}" method="post">{% csrf_token %}
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{object}}</h5>
-          <button type="button" 
-          class="close" 
-          data-dismiss="modal" 
+          <button type="button"
+          class="close"
+          data-dismiss="modal"
           aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -434,30 +396,30 @@ tabindex="-1">
                 <div class="col">
                     <p>Cost Price:  <span class="text-primary">{{object.cost_price}}</span></p>
                 </div>
-                
+
               </div>
               <div class="form-group">
                 <div class="row">
                   <div class="col">
-                    <input id="inputCost" placeholder="Enter New Cost Price" 
+                    <input id="inputCost" placeholder="Enter New Cost Price"
                     type="number"
                     min="0.1"
                     max="200000"
                     step=".01"
-                    class="form-control" 
+                    class="form-control"
                     name="cost" value="" required>
                     <span class="help-block text-muted ml-3">Maximum price allowed is NGN200,000.00</span>
-                    
+
                   </div>
-                  
+
                 </div>
-                
+
               </div>
           </fieldset>
         </div>
         <div class="modal-footer">
 
-          <button id="btnCostPrice" type="submit" class="btn btn-primary">Update</button>  
+          <button id="btnCostPrice" type="submit" class="btn btn-primary">Update</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>
@@ -467,10 +429,10 @@ tabindex="-1">
 
 
 <!--Product status Modal -->
-<div class="modal fade" 
-id="productStatus" 
+<div class="modal fade"
+id="productStatus"
 data-backdrop="static"
-role="dialog" 
+role="dialog"
 tabindex="-1">
     <form action="{% url 'product-status' object.pk %}" method="post">
       {% csrf_token %}
@@ -478,9 +440,9 @@ tabindex="-1">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{object}}</h5>
-          <button type="button" 
-          class="close" 
-          data-dismiss="modal" 
+          <button type="button"
+          class="close"
+          data-dismiss="modal"
           aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -490,22 +452,22 @@ tabindex="-1">
               <div class="row">
                 <div class="col">
                   {% if object.active %}
-                    <p><i class="fa fa-times-circle-o text-danger"></i> 
+                    <p><i class="fa fa-times-circle-o text-danger"></i>
                       Are you sure you want to Disable {{object}}?
                     </p>
                   {% else %}
-                    <p><i class="fa fa-times-circle-o text-danger"></i> 
+                    <p><i class="fa fa-times-circle-o text-danger"></i>
                       Are you sure you want to Activate {{object}}?
                     </p>
-                  {% endif %}  
+                  {% endif %}
                 </div>
-                
+
               </div>
-              
+
           </fieldset>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-danger">Yes</button>  
+          <button type="submit" class="btn btn-danger">Yes</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
         </div>
       </div>
@@ -513,21 +475,21 @@ tabindex="-1">
     </form>
 </div>
 
-<!--Product Volocity Modal -->
-<div class="modal fade" 
-id="productVelocity" 
+<!--Product Velocity Modal -->
+<div class="modal fade"
+id="productVelocity"
 data-backdrop="static"
-role="dialog" 
+role="dialog"
 tabindex="-1">
-  
+
     <form action="." method="post">{% csrf_token %}
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{object}}</h5>
-          <button type="button" 
-          class="close" 
-          data-dismiss="modal" 
+          <button type="button"
+          class="close"
+          data-dismiss="modal"
           aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -553,17 +515,17 @@ tabindex="-1">
                         {% endfor %}
                       </select>
                     </div>
-                    
+
                   </div>
-                  
+
                 </div>
-                
+
               </div>
           </fieldset>
         </div>
         <div class="modal-footer">
 
-          <button id="btnCostPrice" type="submit" class="btn btn-primary">Update</button>  
+          <button id="btnVelocity" type="submit" class="btn btn-primary">Update</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         </div>
       </div>

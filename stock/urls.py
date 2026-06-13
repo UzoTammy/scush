@@ -12,6 +12,7 @@ urlpatterns = [
     path('<int:pk>/delete/', ProductDeleteView.as_view(), name='product-delete'),
 
     path('price/list/', PricePageView.as_view(), name='price-list'),
+    path('price/quick-update/', PriceQuickUpdateView.as_view(), name='price-quick-update'),
     path('<int:pk>/price/update/', PriceUpdate.as_view(), name='price-update'),
     path('<int:pk>/price/history/', PriceHistoryListView.as_view(), name='price-history'),
     path('<int:pk>/stock-card/', StockCardView.as_view(), name='stock-card'),
@@ -22,8 +23,6 @@ urlpatterns = [
     path('stock/<str:source>/', ReportStockCategory.as_view(), name='stock-report-source'),
     path('stock/<int:pk>/update/', ProductExtensionUpdateView.as_view(), name='product-ext-update'),
     path('stock/<int:pk>/detail/', ProductExtensionDetailView.as_view(), name='product-ext-detail'),
-    path('stock/report/<str:month>/', ProductExtensionListView.as_view(), name='stock-month'),
-    path('stock/report/<str:month>/<str:source>/', ProductExtensionProduct.as_view(), name='stock-report-product'),
     path('report/all-products/', StockReportAllProducts.as_view(), name='stock-report-all-products'),
     path('report/<int:pk>/a-product/', StockReportOneProducts.as_view(), name='stock-report-one-product')
 ]
@@ -48,6 +47,7 @@ urlpatterns += [
     # path('<int:pk>/velocity/', ProductVelocity.as_view(), name='product-velocity'),
     path('analysis/', ProductAnalysisView.as_view(), name='product-analysis'),
     path('balancing/', StockBalancingView.as_view(), name='stock-balancing'),
+    path('<int:pk>/levels/', ProductLevelUpdateView.as_view(), name='product-set-levels'),
 
     path('stock-count/new/', StockCountCreateView.as_view(), name='stock-count-new'),
     path('stock-count/list/', StockCountListView.as_view(), name='stock-count-list'),

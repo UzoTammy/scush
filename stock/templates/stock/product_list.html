@@ -49,13 +49,13 @@
               <th>Cost Price</th>
               <th>Sales Price</th>
               <th>Margin</th>
-              <th>Stock Balance</th>
+              <th>Reported Stock</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {% for product in object_list %}
-            <tr{% if product.stock_balance < 0 or product.margin < 0 %} class="table-danger"{% endif %}>
+            <tr{% if product.current_stock < 0 or product.margin < 0 %} class="table-danger"{% endif %}>
               <th class="text-center" scope="row">{{ product.id|zeropadding:3 }}</th>
               {% if product.active %}
               <td><a class="text-reset text-decoration-none" href="{% url 'product-detail' product.pk %}">{{ product }}</a> <sup><i class="fa fa-check-square-o text-success"></i></sup></td>
@@ -85,7 +85,7 @@
               <td class="text-right">{{ product.unit_price }}</td>
               <td class="text-right">{{ product.margin }}</td>
               <td class="text-right">
-                <a href="{% url 'stock-card' product.pk %}">{{ product.stock_balance }}</a>
+                <a href="{% url 'stock-card' product.pk %}">{{ product.current_stock|default:"-" }}</a>
               </td>
               <td class="text-center">
                 {% with status=product.stock_status %}

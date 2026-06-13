@@ -110,6 +110,13 @@ class Product(models.Model):
         latest = self.productextension_set.order_by('-date').first()
         return latest.stock_value if latest else None
 
+    def days_since_last_sale(self):
+        """Number of days since the last ProductExtension record with sell_out > 0, or None if never sold."""
+        last_sale = self.productextension_set.filter(sell_out__gt=0).order_by('-date').first()
+        if last_sale is None:
+            return None
+        return (timezone.now().date() - last_sale.date).days
+
     def stock_balance(self, location=None):
         """Running stock balance from the stock movement ledger, optionally for one location."""
         qs = self.stock_movements.all()
