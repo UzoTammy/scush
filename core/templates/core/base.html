@@ -113,6 +113,11 @@
     <a class="ds-sidebar__link" href="{% url 'warehouse-home' %}">
       <i class="fa fa-building"></i> Stores
     </a>
+    {% if user.is_superuser %}
+    <a class="ds-sidebar__link" href="{% url 'import-csv' %}">
+      <i class="fa fa-upload"></i> Upload Stock Status
+    </a>
+    {% endif %}
 
     <!-- CAREERS -->
     <span class="ds-sidebar__group-label">Careers</span>
@@ -172,8 +177,6 @@
     </button>
     <div class="collapse show" id="adminSub">
       <ul class="ds-sidebar__sub">
-        <li><a class="ds-sidebar__sub-link" href="{% url 'import-csv' %}">
-          <i class="fa fa-upload"></i> Import CSV</a></li>
         <li><a class="ds-sidebar__sub-link" href="{% url 'payroll-process' %}">
           <i class="fa fa-money"></i> Create Payroll</a></li>
         <li><a class="ds-sidebar__sub-link" href="{% url 'json-new' %}">

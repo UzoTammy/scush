@@ -41,7 +41,7 @@ urlpatterns += [
 urlpatterns += [
     path('<str:user>/home/', StockReportHome.as_view(), name='stock-report-home'),
     path('<str:date>/<int:pk>/new/', StockReportNew.as_view(), name='stock-report-new'),
-    path('<str:date>/<int:code>/update/', StockReportUpdate.as_view(), name='stock-report-update'),
+    path('<str:date>/<int:code>/update/', StockReportUpdate.as_view(), name='stock-report-record-update'),
     path('<str:date>/<int:code>/detail/', StockReportDetail.as_view(), name='stock-report-detail'),
     path('<int:pk>/status/', ProductStatusUpdate.as_view(), name='product-status'),
     # path('<int:pk>/velocity/', ProductVelocity.as_view(), name='product-velocity'),
@@ -54,6 +54,7 @@ urlpatterns += [
     path('stock-count/<int:pk>/', StockCountDetailView.as_view(), name='stock-count-detail'),
 
     path('stock-transfer/', StockTransferView.as_view(), name='stock-transfer'),
+    path('stock-receipt/', StockReceiptView.as_view(), name='stock-receipt'),
 ]
 
 urlpatterns += [

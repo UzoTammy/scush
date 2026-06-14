@@ -311,6 +311,20 @@
     </div>
   </div>
 
+  <!-- ── Goods Received ─────────────────────────────── -->
+  <div class="ds-card mb-4" id="receipt">
+    <div class="ds-card__header"><span><i class="fa fa-truck mr-2"></i>Goods Received</span></div>
+    <div class="ds-card__body">
+      <p class="mb-0">
+        Use <a href="{% url 'stock-receipt' %}">Goods Received</a> to record a supplier delivery covering
+        several products at once. Pick a date, optional receiving location and reference (e.g. an invoice
+        or PO number), then enter the quantity received for each product — leave a product blank to skip it.
+        Each entry is saved as a stock receipt, increasing that product's balance, and shows up in the
+        Recent Receipts list and the product's Stock Card.
+      </p>
+    </div>
+  </div>
+
   <!-- ── Prices ─────────────────────────────────────── -->
   <div class="ds-card mb-4" id="prices">
     <div class="ds-card__header"><span><i class="fa fa-money mr-2"></i>Prices &amp; Price History</span></div>

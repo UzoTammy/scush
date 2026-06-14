@@ -239,7 +239,11 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         date_object = datetime.datetime.strptime(date_string, "%Y-%m-%d").date()
         
         if 'quantity' in request.POST:
-            quantity = request.POST['quantity']    
+            try:
+                quantity = int(request.POST['quantity'])
+            except (ValueError, TypeError):
+                messages.error(request, "Enter a valid whole number for stock quantity.")
+                return redirect(obj)
             ProductExtension.objects.create(
                 product=obj,
                 stock_value=quantity,
@@ -256,7 +260,11 @@ class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             qs = ProductExtension.objects.filter(product=obj).filter(date=date_object)
             if qs.exists():
                 stock_obj = qs.first()
-                stock_obj.stock_value = request.POST['edit_quantity']
+                try:
+                    stock_obj.stock_value = int(request.POST['edit_quantity'])
+                except (ValueError, TypeError):
+                    messages.error(request, "Enter a valid whole number for stock quantity.")
+                    return redirect(obj)
                 stock_obj.cost_price = obj.cost_price
                 stock_obj.selling_price = obj.unit_price
                 stock_obj.save()
@@ -554,6 +562,66 @@ class StockTransferView(LoginRequiredMixin, UserPassesTestMixin, View):
         return redirect('stock-transfer')
 
 
+class StockReceiptView(LoginRequiredMixin, UserPassesTestMixin, View):
+    template_name = 'stock/stock_receipt.html'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        if self.request.user.groups.filter(name=permitted_group_name).exists():
+            return True
+        return False
+
+    def get(self, request):
+        sources = Product.objects.filter(active=True).values_list('source', flat=True).distinct()
+        querysets = list((source, Product.objects.filter(active=True, source=source)) for source in sources)
+        context = {
+            'querysets': querysets,
+            'locations': StockLocation.objects.filter(active=True),
+            'date': timezone.now().date(),
+            'recent': StockMovement.objects.filter(movement_type='RECEIPT').order_by('-date', '-created_at')[:30],
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        date = request.POST.get('date') or timezone.now().date()
+        location_pk = request.POST.get('location')
+        location = StockLocation.objects.filter(pk=location_pk).first() if location_pk else None
+        reference = request.POST.get('reference', '')
+        note = request.POST.get('note', '')
+
+        created, errors = 0, []
+        for product in Product.objects.filter(active=True):
+            received_value = request.POST.get(f'received_{product.pk}', '').strip()
+            if received_value == '':
+                continue
+            try:
+                quantity = int(received_value)
+            except ValueError:
+                errors.append(f'{product}: enter a valid whole number')
+                continue
+            if quantity <= 0:
+                errors.append(f'{product}: quantity must be greater than zero')
+                continue
+            StockMovement.objects.create(
+                product=product,
+                movement_type='RECEIPT',
+                quantity=quantity,
+                date=date,
+                location=location,
+                reference=reference,
+                note=note,
+                created_by=request.user,
+            )
+            created += 1
+
+        if created:
+            messages.success(request, f'{created} goods received record(s) saved')
+        for err in errors:
+            messages.warning(request, f'Skipped - {err}')
+
+        return redirect('stock-receipt')
+
+
 class StockLocationAddView(LoginRequiredMixin, View):
     def post(self, request):
         name = request.POST.get('name', '').strip()
@@ -738,22 +806,24 @@ class StockReportUpdateView(LoginRequiredMixin, ListView):
         return context
 
     def get(self, request, *args, **kwargs):
-        
+
         if request.GET != {}:
-            # convert the request.GET data into a python list of dictionaries
-            content_dic = eval(str(request.GET).split('<QueryDict:')[1][:-1])
-            
-            for key, value in content_dic.items():
+            updated, errors = 0, []
+            for key in request.GET.keys():
+                code = key.replace(',', '').strip()
+                values = request.GET.getlist(key)
                 try:
-                    product = ProductExtension.objects.get(pk=key.replace(',', ''))
-                    product.sell_out = int(value[0].replace(',', ''))
-                    product.stock_value = int(value[1].replace(',', ''))
+                    product = ProductExtension.objects.get(pk=int(code))
+                    product.sell_out = int(values[0].replace(',', '').strip() or 0)
+                    product.stock_value = int(values[1].replace(',', '').strip() or 0)
                     product.save()
-                    msg = f"Sellout for {kwargs['source']} product(s) added successfully"
-                except Exception as err:
-                    messages.info(request, f"Records not updated due to {err}. Previous records reloaded")
-                    return super().get(request, *args, **kwargs)
-            messages.info(request, msg)
+                    updated += 1
+                except (ValueError, ProductExtension.DoesNotExist, IndexError) as err:
+                    errors.append(f'Product {code}: {err}')
+            if updated:
+                messages.success(request, f"{updated} record(s) updated for {kwargs['source']}.")
+            for err in errors:
+                messages.warning(request, f'Skipped - {err}')
             return redirect('stock-report')
 
         return super().get(request, *args, **kwargs)
@@ -775,29 +845,32 @@ class StockReportAddView(LoginRequiredMixin, ListView):
         return context
 
     def get(self, request, *args, **kwargs):
-        
+
         if request.GET != {}:
-            # convert the request.GET data into a python list of dictionaries
-            content_dic = eval(str(request.GET).split('<QueryDict:')[1][:-1])
-            i = 0
-            for key, value in content_dic.items():
-                i += 1
+            created, errors = 0, []
+            for key in request.GET.keys():
+                code = key.replace(',', '').strip()
+                values = request.GET.getlist(key)
                 try:
-                    code = key.replace(',', '')
-                    obj = self.get_queryset().get(pk=code)
-                    ProductExtension.objects.create(
-                        product=obj,
-                        cost_price=obj.cost_price,
-                        selling_price=obj.unit_price,
-                        stock_value=value[1].replace(',', ''),
-                        date=get_date(),
-                        sell_out=value[0].replace(',', ''),
-                    )
-                    msg = f'{i} Stock Report Generated SUCCESSFULLY !!!'
-                except Exception as err:
-                    msg = f'Stock Report generation interrupted due to {err}'
-                
-            messages.info(request, msg)
+                    obj = self.get_queryset().get(pk=int(code))
+                    sell_out = int(values[0].replace(',', '').strip() or 0)
+                    stock_value = int(values[1].replace(',', '').strip() or 0)
+                except (ValueError, Product.DoesNotExist, IndexError) as err:
+                    errors.append(f'Product {code}: {err}')
+                    continue
+                ProductExtension.objects.create(
+                    product=obj,
+                    cost_price=obj.cost_price,
+                    selling_price=obj.unit_price,
+                    stock_value=stock_value,
+                    date=get_date(),
+                    sell_out=sell_out,
+                )
+                created += 1
+            if created:
+                messages.success(request, f'{created} stock report record(s) created successfully.')
+            for err in errors:
+                messages.warning(request, f'Skipped - {err}')
             return redirect('stock-report')
         return super().get(request, *args, **kwargs)
 
