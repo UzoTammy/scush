@@ -91,14 +91,13 @@
         <!-- Inventory Operations group -->
         <div class="dropdown">
           <button type="button" class="dropdown-toggle" data-toggle="dropdown">
-            <i class="fa fa-truck mr-1"></i> Inventory Operations
+            <i class="fa fa-cogs mr-1"></i> Inventory Operations
           </button>
           <div class="dropdown-menu">
             <a class="dropdown-item" href="{% url 'stock-report-home' user %}"><i class="fa fa-plus mr-1"></i> Sellout &amp; Balance</a>
             <a class="dropdown-item" href="{% url 'stock-count-list' %}"><i class="fa fa-tasks mr-1"></i> Stock Count</a>
             <a class="dropdown-item" href="{% url 'stock-transfer' %}"><i class="fa fa-exchange mr-1"></i> Stock Transfer</a>
-            <a class="dropdown-item" href="{% url 'stock-receipt' %}"><i class="fa fa-truck-loading mr-1"></i> Goods Received</a>
-            <a class="dropdown-item" href="{% url 'delivery-home' %}"><i class="fa fa-truck mr-1"></i> Deliveries</a>
+            <a class="dropdown-item" href="{% url 'stock-receipt' %}"><i class="fa fa-truck mr-1"></i> Goods Received</a>
           </div>
         </div>
 

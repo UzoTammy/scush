@@ -34,7 +34,8 @@
             <li><a href="#performance">Performance Dashboard</a></li>
             <li><a href="#run-rate">Run Rate &amp; Product Analysis</a></li>
             <li><a href="#stock-card">Stock Card &amp; the Movement Ledger</a></li>
-            <li><a href="#deliveries">Deliveries &amp; Automatic Stock Updates</a></li>
+            <li><a href="#sellout-balance">Sellout &amp; Balance (Daily Reporting)</a></li>
+            <li><a href="#receipt">Goods Received</a></li>
           </ul>
         </div>
         <div class="col-md-6">
@@ -71,10 +72,10 @@
           product), <a href="{% url 'watchlist-home' %}">Watchlist</a>, and New Product (create a product).
         </li>
         <li>
-          <strong><i class="fa fa-truck mr-1"></i>Inventory Operations</strong> — day-to-day stock work:
+          <strong><i class="fa fa-cogs mr-1"></i>Inventory Operations</strong> — day-to-day stock work:
           Sellout &amp; Balance reporting, <a href="{% url 'stock-count-list' %}">Stock Count</a>,
           <a href="{% url 'stock-transfer' %}">Stock Transfer</a>, and
-          <a href="{% url 'delivery-home' %}">Deliveries</a>.
+          <a href="{% url 'stock-receipt' %}">Goods Received</a>.
         </li>
         <li>
           <strong><i class="fa fa-tag mr-1"></i>Price Update</strong> — quickly increase or decrease a
@@ -96,7 +97,7 @@
       <ul>
         <li><strong>Current Stock Value</strong> — the total value of stock on hand, valued at cost price.</li>
         <li><strong>Total Quantity</strong> — total units currently in stock across all active products.</li>
-        <li><strong>Quantity Received</strong> — total units received through Deliveries.</li>
+        <li><strong>Quantity Received</strong> — total units received through Goods Received.</li>
         <li><strong>Quantity Transferred</strong> — total units moved between stock locations via Stock Transfer.</li>
       </ul>
       <p>
@@ -218,23 +219,23 @@
     </div>
   </div>
 
-  <!-- ── Deliveries ─────────────────────────────────── -->
-  <div class="ds-card mb-4" id="deliveries">
-    <div class="ds-card__header"><span><i class="fa fa-truck mr-2"></i>Deliveries &amp; Automatic Stock Updates</span></div>
+  <!-- ── Sellout & Balance ──────────────────────────── -->
+  <div class="ds-card mb-4" id="sellout-balance">
+    <div class="ds-card__header"><span><i class="fa fa-pencil-square-o mr-2"></i>Sellout &amp; Balance (Daily Reporting)</span></div>
     <div class="ds-card__body">
       <p>
-        A delivery moves through five stages on the
-        <a href="{% url 'delivery-home' %}">Delivery Management</a> home page:
-        <strong>Created → Delivered → Returned → Confirmed → Credited</strong>. Click any stage tile to
-        see the deliveries currently sitting at that stage.
+        <a href="{% url 'stock-report-home' user %}">Sellout &amp; Balance</a> is where you enter each
+        product's figures for the day (or current reporting period), grouped by source so you can work
+        through one supplier/category at a time. For every product you enter:
       </p>
-      <p class="mb-0">
-        When a delivery is moved to the <strong>Returned</strong> stage (i.e. the outlet has confirmed
-        what was delivered vs. received), the system automatically creates Stock Movements for you:
-        a <strong>Sale</strong> movement for the quantity delivered, and — if anything was sent back —
-        a matching <strong>Return</strong> movement for the quantity credited. You don't need to update
-        the Stock Card separately for deliveries; this happens once per delivery, so resubmitting the
-        same return won't double-count it.
+      <ul class="mb-0">
+        <li><strong>Sellout</strong> — how many units were sold.</li>
+        <li><strong>Stock Value</strong> — the value of what's left on the shelf at the end of the day. This becomes the <strong>Reported Stock</strong> figure shown on the product's <a href="#stock-card">Stock Card</a>.</li>
+        <li><strong>Sales Amount</strong> — the money taken in from sales.</li>
+      </ul>
+      <p class="mb-0 mt-2">
+        Products you've already entered for the day are marked so you can see at a glance what's left to
+        do. Click a product to add its figures, or to open and adjust an entry you've already saved.
       </p>
     </div>
   </div>

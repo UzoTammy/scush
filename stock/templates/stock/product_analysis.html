@@ -12,6 +12,17 @@
     padding: 0.6rem 0.85rem;
   }
 
+  /* bootstrap-table pads header text via .th-inner, not th itself */
+  .ds-card__body .bootstrap-table .table.table-sm .th-inner {
+    padding: 0.6rem 0.85rem;
+  }
+
+  /* search/pagination toolbar overflows a p-0 card body without its own padding */
+  .ds-card__body .bootstrap-table .fixed-table-toolbar,
+  .ds-card__body .bootstrap-table .fixed-table-pagination {
+    padding: 0.6rem 0.85rem;
+  }
+
   .bg-faint-danger  { background-color: #ffebee !important; color: #b71c1c !important; }
   .bg-faint-warning { background-color: #fff3e0 !important; color: #e65100 !important; }
   .bg-faint-success { background-color: #e8f5e9 !important; color: #1b5e20 !important; }
@@ -145,10 +156,13 @@
   {% endfor %}
   {% endif %}
 
-  {% if all_products_qs %}
+  {% if moving_products_qs %}
   <!-- ── Run rate & days of cover ─────────────────────── -->
   <div class="ds-card mb-4">
-    <div class="ds-card__header"><span><i class="fa fa-line-chart mr-2"></i>Run Rate &amp; Days of Cover</span></div>
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-line-chart mr-2"></i>Run Rate &amp; Days of Cover</span>
+      <small class="text-light">sorted by lowest days of cover first</small>
+    </div>
     <div class="ds-card__body p-0">
       <div class="table-responsive">
         <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
@@ -163,7 +177,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for item in all_products_qs %}
+            {% for item in moving_products_qs %}
             <tr>
               <td>{{ item.name }}</td>
               <td class="text-right">{{ item.avg_7d|floatformat:1|default:"-" }}</td>
@@ -190,6 +204,42 @@
   </div>
   {% endif %}
 
+  {% if all_products_qs %}
+  <!-- ── Non-moving stock ──────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-pause-circle mr-2"></i>Non-Moving Stock</span>
+      <small class="text-light">in stock, zero sellout in the last 30 days</small>
+    </div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+          <thead class="thead-light">
+            <tr class="text-center">
+              <th>Product</th>
+              <th>Balance</th>
+              <th>Stock Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in all_products_qs %}
+            <tr>
+              <td>{{ item.name }}</td>
+              <td class="text-right">{{ item.closing_stock }}</td>
+              <td class="text-right">{{ item.stock_value }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="ds-card__body d-flex justify-content-between align-items-center">
+      <strong>Capital tied up in non-moving stock</strong>
+      <strong>{{ non_moving_value }}</strong>
+    </div>
+  </div>
+  {% endif %}
+
   {% if no_sellout %}
   <!-- ── Products not sold ────────────────────────────── -->
   <div class="ds-card mb-4">
@@ -199,7 +249,7 @@
     </div>
     <div class="ds-card__body p-0">
       <div class="table-responsive">
-        <table class="table table-bordered table-sm mb-0">
+        <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
           <thead class="thead-light">
             <tr class="text-center">
               <th>Product</th>

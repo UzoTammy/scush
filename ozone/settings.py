@@ -62,7 +62,6 @@ INSTALLED_APPS = [
     'apply.apps.ApplyConfig',
     'staff.apps.StaffConfig',
     'stock.apps.StockConfig',
-    'delivery.apps.DeliveryConfig',
     'warehouse.apps.WarehouseConfig',
     'trade.apps.TradeConfig',
     'outlet.apps.OutletConfig',

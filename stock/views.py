@@ -1484,6 +1484,10 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
         else:
             return context
 
+        moving_products_qs = list() # products that are selling - run rate & days of cover tells a story here
+        no_sellout = list()
+        date3 = date2 - datetime.timedelta(days=7)
+
         for product in active_products:
             product_data = ProductExtension.objects.filter(product=product)
 
@@ -1492,37 +1496,49 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
                 closing_stock = product_data.last().stock_value
                 avg_7d = average_sellout(product_obj, 7)
                 avg_30d = average_sellout(product_obj, 30)
-                cover = days_of_cover(closing_stock, avg_7d)
+                cover = days_of_cover(closing_stock, avg_7d) or days_of_cover(closing_stock, avg_30d)
 
-                all_products_qs.append({
-                    'name': product_data.first().product,
-                    'avg_7d': avg_7d,
-                    'avg_30d': avg_30d,
-                    'closing_stock': closing_stock,
-                    'days_of_cover': cover,
-                    'status': product_obj.stock_status(),
-                    })
+                if avg_7d or avg_30d:
+                    # selling stock - run rate & days of cover are meaningful here
+                    moving_products_qs.append({
+                        'name': product_data.first().product,
+                        'avg_7d': avg_7d,
+                        'avg_30d': avg_30d,
+                        'closing_stock': closing_stock,
+                        'days_of_cover': cover,
+                        'status': product_obj.stock_status(),
+                        })
+                elif closing_stock:
+                    # available but not moving - flag for attention
+                    all_products_qs.append({
+                        'name': product_data.first().product,
+                        'closing_stock': closing_stock,
+                        'stock_value': product_data.last().value_of_stock(),
+                        })
+
+                # products that have not sold out in the last 7 days even though they are available
+                product_data_7days_ago = product_data.filter(date__range=[date3, date2]).filter(stock_value__gt=0).filter(sell_out=0)
+
+                if product_data_7days_ago.exists():
+                    sold = product_data.filter(sell_out__gt=0)
+                    last_sale = sold.last()
+
+                    no_sellout.append(
+                        {
+                            'product': product_data_7days_ago.first().product,
+                            'closing_stock': product_data_7days_ago.last().stock_value,
+                            'sold': last_sale.sell_out if last_sale else 0,
+                            'date': last_sale.date if last_sale else datetime.date(datetime.date.today().year, 1, 1)
+                        }
+                    )
+
+        # most urgent (lowest days of cover) first
+        moving_products_qs.sort(key=lambda x: x['days_of_cover'])
 
         context['current_date'] = date2
+        context['moving_products_qs'] = moving_products_qs
         context['all_products_qs'] = all_products_qs
-    
-        # products that have not sold out in the last 7 days even though they are available        
-        no_sellout = list()
-        date3 = date2 - datetime.timedelta(days=7)
-        product_data_7days_ago = product_data.filter(date__range=[date3, date2]).filter(stock_value__gt=0).filter(sell_out=0)
-        
-        if product_data_7days_ago.exists():
-            sold = ProductExtension.objects.filter(product=product).filter(sell_out__gt=0)
-            date = sold.last().date if sold.exists() else datetime.date(1, 1, datetime.date.today().year)
-
-            no_sellout.append(
-                {
-                    'product': product_data_7days_ago.first().product,
-                    'closing_stock': product_data_7days_ago.last().stock_value,
-                    'sold': sold.last().sell_out,
-                    'date': date
-                }
-            )            
+        context['non_moving_value'] = sum((item['stock_value'] for item in all_products_qs), Money(0, 'NGN'))
         context['no_sellout'] = no_sellout
 
         return context

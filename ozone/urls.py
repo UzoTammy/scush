@@ -43,7 +43,6 @@ urlpatterns = [
     path('product/', include('stock.urls')),
     path('store/', include('warehouse.urls')),
     path('PDF/', include('pdf.urls')),
-    path('delivery/', include('delivery.urls')),
     path('staff/', include('staff.urls')),
     path('trade/', include('trade.urls')),
     path('outlet/', include('outlet.urls')),
