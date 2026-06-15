@@ -73,6 +73,20 @@ class ProductExtensionUpdateForm(forms.ModelForm):
         fields = ('cost_price', 'selling_price', 'stock_value', 'sell_out', 'sales_amount')
 
 
+class StockLocationForm(forms.ModelForm):
+
+    class Meta:
+        model = StockLocation
+        fields = ('name', 'code', 'branch', 'address', 'active')
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'code': forms.TextInput(attrs={'class': 'form-control'}),
+            'branch': forms.Select(attrs={'class': 'form-control'}),
+            'address': forms.TextInput(attrs={'class': 'form-control'}),
+            'active': forms.CheckboxInput(attrs={'class': 'custom-control-input'}),
+        }
+
+
 class StockMovementForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):

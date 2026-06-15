@@ -53,7 +53,7 @@ from cashflow.models import BankAccount, CashCenter
 from warehouse.models import Renewal, StoreLevy, Stores
 from .forms import JsonDatasetForm
 from .models import JsonDataset, Setting
-from stock.models import Category, Source, StockLocation
+from stock.models import Category, Source
 from mail import mailbox
 from core import utils as plotter
 from core.csv_import import parse_stock_status_csv
@@ -666,11 +666,9 @@ class SettingsView(LoginRequiredMixin, TemplateView):
 
         cat_page = self.request.GET.get('cat_page')
         src_page = self.request.GET.get('src_page')
-        loc_page = self.request.GET.get('loc_page')
         context['categories'] = Paginator(Category.objects.all(), self.PAGE_SIZE).get_page(cat_page)
         context['sources'] = Paginator(Source.objects.all(), self.PAGE_SIZE).get_page(src_page)
-        context['locations'] = Paginator(StockLocation.objects.all(), self.PAGE_SIZE).get_page(loc_page)
-        context['active_tab'] = 'Products' if (cat_page or src_page or loc_page) else None
+        context['active_tab'] = 'Products' if (cat_page or src_page) else None
         return context
 
 

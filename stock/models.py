@@ -39,11 +39,13 @@ class Source(models.Model):
 
 class StockLocation(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=20, blank=True, default='')
+    branch = models.ForeignKey(SalesCenter, on_delete=models.PROTECT, related_name='material_centers')
     address = models.CharField(max_length=255, blank=True, default='')
     active = models.BooleanField(default=True)
 
     class Meta:
-        ordering = ['name']
+        ordering = ['branch__name', 'name']
 
     def __str__(self):
         return self.name

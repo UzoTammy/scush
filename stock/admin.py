@@ -18,9 +18,10 @@ class StockMovementAdmin(admin.ModelAdmin):
 
 @admin.register(StockLocation)
 class StockLocationAdmin(admin.ModelAdmin):
-    list_display = ['name', 'address', 'active']
-    list_editable = ['address', 'active']
-    search_fields = ['name']
+    list_display = ['name', 'code', 'branch', 'address', 'active']
+    list_editable = ['code', 'address', 'active']
+    list_filter = ['branch', 'active']
+    search_fields = ['name', 'code']
 
 
 class StockCountLineInline(admin.TabularInline):

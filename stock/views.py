@@ -6,6 +6,7 @@ import datetime
 from decimal import Decimal
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic.base import TemplateView
 from django.contrib.auth.models import User
@@ -27,7 +28,7 @@ from pdf.utils import render_to_pdf
 from pdf.views import Ozone
 from .models import (Product, ProductPerformance, ProductExtension, PriceHistory, Source, Category, StockMovement,
                      StockCountSession, StockCountLine, StockLocation)
-from .forms import ProductExtensionUpdateForm, StockMovementForm
+from .forms import ProductExtensionUpdateForm, StockMovementForm, StockLocationForm
 from .utils import average_sellout, days_of_cover
 from core.models import Setting
 from django.db.models import Sum, F, Q, Avg, ProtectedError
@@ -622,30 +623,35 @@ class StockReceiptView(LoginRequiredMixin, UserPassesTestMixin, View):
         return redirect('stock-receipt')
 
 
-class StockLocationAddView(LoginRequiredMixin, View):
-    def post(self, request):
-        name = request.POST.get('name', '').strip()
-        address = request.POST.get('address', '').strip()
-        if name:
-            StockLocation.objects.get_or_create(name=name, defaults={'address': address})
-        return redirect('settings')
+class MaterialCenterListView(LoginRequiredMixin, ListView):
+    model = StockLocation
+    template_name = 'stock/material_center_list.html'
+    context_object_name = 'locations'
+
+    def get_queryset(self):
+        return StockLocation.objects.select_related('branch').all()
 
 
-class StockLocationRenameView(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        location = get_object_or_404(StockLocation, pk=pk)
-        location.name = request.POST.get('name', location.name).strip()
-        location.address = request.POST.get('address', '').strip()
-        location.save()
-        return redirect('settings')
+class MaterialCenterCreateView(LoginRequiredMixin, CreateView):
+    model = StockLocation
+    form_class = StockLocationForm
+    template_name = 'stock/material_center_form.html'
+    success_url = reverse_lazy('material-center-list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Material center added successfully')
+        return super().form_valid(form)
 
 
-class StockLocationToggleView(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        location = get_object_or_404(StockLocation, pk=pk)
-        location.active = not location.active
-        location.save()
-        return redirect('settings')
+class MaterialCenterUpdateView(LoginRequiredMixin, UpdateView):
+    model = StockLocation
+    form_class = StockLocationForm
+    template_name = 'stock/material_center_form.html'
+    success_url = reverse_lazy('material-center-list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Material center updated successfully')
+        return super().form_valid(form)
 
 
 class StockLocationRemoveView(LoginRequiredMixin, View):
@@ -655,7 +661,7 @@ class StockLocationRemoveView(LoginRequiredMixin, View):
             location.delete()
         except ProtectedError:
             messages.error(request, f"Cannot remove location '{location}' — it is still referenced by stock movements.")
-        return redirect('settings')
+        return redirect('material-center-list')
 
 
 class SourceDetailUpdateView(LoginRequiredMixin, View):

@@ -1,0 +1,53 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Material Center{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-map-marker mr-2"></i>{% if object %}Edit{% else %}Add{% endif %} Material Center</span>
+      <a class="staff-nav-link" href="{% url 'material-center-list' %}">
+        <i class="fa fa-times-circle"></i> Cancel
+      </a>
+    </div>
+    <div class="ds-card__body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>{{ form.name.label }}</label>
+            {{ form.name }}
+          </div>
+          <div class="form-group col-md-3">
+            <label>{{ form.code.label }}</label>
+            {{ form.code }}
+          </div>
+          <div class="form-group col-md-3">
+            <label>{{ form.branch.label }}</label>
+            {{ form.branch }}
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-9">
+            <label>{{ form.address.label }}</label>
+            {{ form.address }}
+          </div>
+          <div class="form-group col-md-3">
+            <label>{{ form.active.label }}</label>
+            <div class="custom-control custom-switch mt-2">
+              {{ form.active }}
+              <label class="custom-control-label" for="{{ form.active.id_for_label }}">Active</label>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">
+          <i class="fa fa-save mr-1"></i> Save
+        </button>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

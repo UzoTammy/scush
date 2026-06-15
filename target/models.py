@@ -15,7 +15,7 @@ class Sales(models.Model):
     date_created = models.DateField(default=timezone.now)
     target = MoneyField(max_digits=12, default_currency='NGN', decimal_places=2)
     achieved = MoneyField(max_digits=12, default_currency='NGN', decimal_places=2)
-    sales_center = models.ForeignKey(SalesCenter, on_delete=models.CASCADE, default=1)
+    sales_center = models.ForeignKey(SalesCenter, on_delete=models.CASCADE, default=3)
     
     
     def __str__(self):

@@ -69,8 +69,11 @@ urlpatterns += [
     path('settings/sources/<str:pk>/remove/', SourceRemoveView.as_view(), name='source-remove'),
     path('settings/sources/<str:pk>/details/', SourceDetailUpdateView.as_view(), name='source-update-details'),
 
-    path('settings/locations/add/', StockLocationAddView.as_view(), name='stock-location-add'),
-    path('settings/locations/<int:pk>/rename/', StockLocationRenameView.as_view(), name='stock-location-rename'),
-    path('settings/locations/<int:pk>/toggle/', StockLocationToggleView.as_view(), name='stock-location-toggle'),
-    path('settings/locations/<int:pk>/remove/', StockLocationRemoveView.as_view(), name='stock-location-remove'),
+]
+
+urlpatterns += [
+    path('material-centers/', MaterialCenterListView.as_view(), name='material-center-list'),
+    path('material-centers/add/', MaterialCenterCreateView.as_view(), name='material-center-add'),
+    path('material-centers/<int:pk>/edit/', MaterialCenterUpdateView.as_view(), name='material-center-update'),
+    path('material-centers/<int:pk>/remove/', StockLocationRemoveView.as_view(), name='material-center-remove'),
 ]

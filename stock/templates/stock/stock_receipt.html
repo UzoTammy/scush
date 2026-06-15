@@ -28,8 +28,13 @@
             <label>Receiving Location</label>
             <select name="location" class="form-control">
               <option value="">-- Not specified --</option>
-              {% for location in locations %}
-              <option value="{{ location.pk }}">{{ location }}</option>
+              {% regroup locations by branch as branch_groups %}
+              {% for group in branch_groups %}
+              <optgroup label="{{ group.grouper }}">
+                {% for location in group.list %}
+                <option value="{{ location.pk }}">{{ location }}</option>
+                {% endfor %}
+              </optgroup>
               {% endfor %}
             </select>
           </div>

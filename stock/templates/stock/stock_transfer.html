@@ -15,8 +15,8 @@
     <div class="ds-card__body">
       {% if locations|length < 2 %}
       <p class="text-muted mb-0">
-        You need at least two active stock locations to record a transfer.
-        Add locations from <a href="{% url 'settings' %}">App Settings</a> under the Products tab.
+        You need at least two active material centers to record a transfer.
+        Add material centers from the <a href="{% url 'material-center-list' %}">Material Centers</a> page.
       </p>
       {% else %}
       <form method="post" action="{% url 'stock-transfer' %}">
@@ -37,16 +37,25 @@
           <div class="form-group col-md-2">
             <label>From</label>
             <select name="from_location" class="form-control" required>
-              {% for location in locations %}
-              <option value="{{ location.pk }}">{{ location }}</option>
+              {% regroup locations by branch as branch_groups %}
+              {% for group in branch_groups %}
+              <optgroup label="{{ group.grouper }}">
+                {% for location in group.list %}
+                <option value="{{ location.pk }}">{{ location }}</option>
+                {% endfor %}
+              </optgroup>
               {% endfor %}
             </select>
           </div>
           <div class="form-group col-md-2">
             <label>To</label>
             <select name="to_location" class="form-control" required>
-              {% for location in locations %}
-              <option value="{{ location.pk }}">{{ location }}</option>
+              {% for group in branch_groups %}
+              <optgroup label="{{ group.grouper }}">
+                {% for location in group.list %}
+                <option value="{{ location.pk }}">{{ location }}</option>
+                {% endfor %}
+              </optgroup>
               {% endfor %}
             </select>
           </div>

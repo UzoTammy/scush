@@ -30,7 +30,7 @@
         {% for location_balance in location_balances %}
         <div class="col-6 col-sm-3 mb-3">
           <div class="ds-stat">
-            <div class="ds-stat__label">{{ location_balance.location }}</div>
+            <div class="ds-stat__label">{{ location_balance.location.branch }} - {{ location_balance.location }}</div>
             <div class="ds-stat__value ds-stat__value--lg">{{ location_balance.balance }}</div>
           </div>
         </div>
