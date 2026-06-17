@@ -1,10 +1,11 @@
+{% load humanize %}
 {% if no_sellout %}
 <div class="ds-card mb-4">
   <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
     <span><i class="fa fa-exclamation-triangle mr-2"></i>Products Not Sold <span class="badge badge-light ml-1">{{ no_sellout|length }}</span></span>
     <small class="text-light">in stock but no sale in the last 7 days</small>
   </div>
-  <div class="ds-card__body p-0">
+  <div class="ds-card__body">
     <div class="table-responsive">
       <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
         <thead class="thead-light">
@@ -28,6 +29,10 @@
           {% endfor %}
         </tbody>
       </table>
+    </div>
+    <div class="d-flex justify-content-between pt-2 font-weight-bold">
+      <span>Total Current Stock: {{ no_sellout_total_stock|intcomma }}</span>
+      <span>Total Stock Value: N{{ no_sellout_total_value.amount|floatformat:2|intcomma }}</span>
     </div>
   </div>
 </div>

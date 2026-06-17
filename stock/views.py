@@ -90,6 +90,22 @@ class ProductHomeView(LoginRequiredMixin, View):
             sellout_quantity = qs_day.aggregate(Sum('sell_out'))['sell_out__sum'] or 0
             sellout_value = qs_day.aggregate(Sum('sales_amount'))['sales_amount__sum'] or 0
 
+            qs_with_min = qs_day.filter(product__active=True, product__min_stock_level__gt=0)
+            total_with_min = qs_with_min.count()
+            above_min = qs_with_min.filter(stock_value__gt=F('product__min_stock_level')).count()
+            availability = round(100 * above_min / total_with_min, 1) if total_with_min > 0 else 0
+
+            date3 = latest_extension.date - datetime.timedelta(days=7)
+            sold_ids = ProductExtension.objects.filter(
+                date__range=[date3, latest_extension.date], sell_out__gt=0
+            ).values_list('product_id', flat=True).distinct()
+            stale_qs = qs_day.filter(stock_value__gt=0, product__active=True).exclude(product_id__in=sold_ids)
+            stale_value = stale_qs.aggregate(total=Sum('value'))['total'] or 0
+            stale_pct = round(100 * float(stale_value) / float(current_stock_value), 1) if current_stock_value else 0
+        else:
+            availability = 0
+            stale_pct = 0
+
         quantity_received = StockMovement.objects.filter(movement_type='RECEIPT').aggregate(Sum('quantity'))['quantity__sum'] or 0
 
         # Each transfer creates a pair of movements (- at source, + at destination); count only the incoming leg.
@@ -107,6 +123,8 @@ class ProductHomeView(LoginRequiredMixin, View):
             'total_quantity': total_quantity,
             'sellout_quantity': sellout_quantity,
             'sellout_value': sellout_value,
+            'availability': availability,
+            'stale_pct': stale_pct,
             'quantity_received': quantity_received,
             'quantity_transferred': quantity_transferred,
             'price_changes': price_changes,
@@ -140,15 +158,20 @@ class NoSelloutFragment(LoginRequiredMixin, TemplateView):
                     sold = product_data.filter(sell_out__gt=0)
                     last_sale = sold.last()
                     last_date = last_sale.date if last_sale else datetime.date(datetime.date.today().year, 1, 1)
+                    last_entry = last_7_data.last()
+                    item_value = last_entry.cost_price * last_entry.stock_value
                     no_sellout.append({
                         'product': last_7_data.first().product,
-                        'closing_stock': last_7_data.last().stock_value,
+                        'closing_stock': last_entry.stock_value,
+                        'value': item_value,
                         'sold': last_sale.sell_out if last_sale else 0,
                         'date': last_date,
                         'days_since': (date2 - last_date).days,
                     })
 
         context['no_sellout'] = no_sellout
+        context['no_sellout_total_value'] = sum((item['value'] for item in no_sellout), Money(0, 'NGN'))
+        context['no_sellout_total_stock'] = sum(item['closing_stock'] for item in no_sellout)
         return context
 
 
