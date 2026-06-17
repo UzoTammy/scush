@@ -1,0 +1,307 @@
+{% load custom_tags %}
+{% if record_exist %}
+<div class="row">
+  <!-- ── Stock & sellout watch ─────────────────────── -->
+  <div class="col-md-12 mb-4">
+    <div class="ds-card h-100">
+      <div class="ds-card__header"><span><i class="fa fa-exclamation-triangle mr-2"></i>Stock &amp; Sellout Watch</span></div>
+      <div class="ds-card__body p-0">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm mb-0">
+            <thead class="thead-light">
+              <tr class="text-center"><th class="text-left">Category</th><th>Daily</th><th>Monthly</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>No Stock</td>
+                <td class="text-center">{% if no_stock.count %}<a href="#" data-toggle="modal" data-target="#noStockModal" class="modal-link text-accent">{{ no_stock.count }}</a>{% else %}0{% endif %}</td>
+                <td class="text-center">{% if no_stock_month|length %}<a href="#" data-toggle="modal" data-target="#noStockMonthModal" class="modal-link text-accent">{{ no_stock_month|length }}</a>{% else %}0{% endif %}</td>
+              </tr>
+              <tr>
+                <td>Low Stock</td>
+                <td class="text-center">{% if low_stock.count %}<a href="#" data-toggle="modal" data-target="#lowStockModal" class="modal-link text-accent">{{ low_stock.count }}</a>{% else %}0{% endif %}</td>
+                <td class="text-center">{% if low_stock_month|length %}<a href="#" data-toggle="modal" data-target="#lowStockMonthModal" class="modal-link text-accent">{{ low_stock_month|length }}</a>{% else %}0{% endif %}</td>
+              </tr>
+              <tr>
+                <td>No Sellout</td>
+                <td class="text-center">{% if no_sellout.count %}<a href="#" data-toggle="modal" data-target="#noSelloutModal" class="modal-link text-accent">{{ no_sellout.count }}</a>{% else %}0{% endif %}</td>
+                <td class="text-center">{% if no_sellout_month|length %}<a href="#" data-toggle="modal" data-target="#noSelloutMonthModal" class="modal-link text-accent">{{ no_sellout_month|length }}</a>{% else %}0{% endif %}</td>
+              </tr>
+              <tr>
+                <td>Low Sellout</td>
+                <td class="text-center">{% if low_sellout.count %}<a href="#" data-toggle="modal" data-target="#lowSelloutModal" class="modal-link text-accent">{{ low_sellout.count }}</a>{% else %}0{% endif %}</td>
+                <td class="text-center">{% if low_sellout_month|length %}<a href="#" data-toggle="modal" data-target="#lowSelloutMonthModal" class="modal-link text-accent">{{ low_sellout_month|length }}</a>{% else %}0{% endif %}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- No Stock - Daily -->
+<div class="modal fade" id="noStockModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Products with Zero/Negative Balance - Daily</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+            <thead class="thead-light"><tr class="text-center"><th>Product</th></tr></thead>
+            <tbody>
+              {% for product in no_stock %}
+              <tr><td>{{ product.nickname }}</td></tr>
+              {% empty %}
+              <tr><td class="text-center text-muted">None</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Low Stock - Daily -->
+<div class="modal fade" id="lowStockModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Products with Low Balance - Daily</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+            <thead class="thead-light">
+              <tr class="text-center"><th>Product</th><th>Balance</th><th>Reorder Point</th><th>Sellout</th></tr>
+            </thead>
+            <tbody>
+              {% for record in low_stock %}
+              <tr>
+                <td>{{ record.product }}</td>
+                <td class="text-right">{{ record.stock_value }}</td>
+                <td class="text-right">{{ record.product.reorder_point|default:"-" }}</td>
+                <td class="text-right">{{ record.sell_out }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" class="text-center text-muted">None</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a class="staff-nav-link" href="{% url 'stock-balancing' %}">
+          <i class="fa fa-balance-scale"></i> View Reorder Suggestions
+        </a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- No Sellout - Daily -->
+<div class="modal fade" id="noSelloutModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Products with No Sellout - Daily</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+            <thead class="thead-light"><tr class="text-center"><th>Product</th><th>Balance</th><th>Days Since Last Sale</th></tr></thead>
+            <tbody>
+              {% for record in no_sellout_sorted %}
+              <tr>
+                <td>{{ record.product }}</td>
+                <td class="text-right">{{ record.stock_value }}</td>
+                <td class="text-right">{{ record.product.days_since_last_sale|default:"Never" }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="3" class="text-center text-muted">None</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Low Sellout - Daily -->
+<div class="modal fade" id="lowSelloutModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Products with Low Sellout - Daily</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+            <thead class="thead-light"><tr class="text-center"><th>Product</th><th>Balance</th><th>Sellout</th></tr></thead>
+            <tbody>
+              {% for record in low_sellout %}
+              <tr>
+                <td>{{ record.product }}</td>
+                <td class="text-right">{{ record.stock_value }}</td>
+                <td class="text-right">{{ record.sell_out }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="3" class="text-center text-muted">None</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- No Stock - Monthly -->
+<div class="modal fade" id="noStockMonthModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Products with Zero/Negative Balance - Monthly</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+            <thead class="thead-light"><tr class="text-center"><th>Product</th><th>Balance</th><th>Cost Price</th><th>Selling Price</th></tr></thead>
+            <tbody>
+              {% for queryset in no_stock_month %}{% for object in queryset %}
+              <tr>
+                <td>{{ object.product.nickname }}</td>
+                <td class="text-right">{{ object.stock_value }}</td>
+                <td class="text-right">{{ object.cost_price }}</td>
+                <td class="text-right">{{ object.selling_price }}</td>
+              </tr>
+              {% endfor %}{% empty %}
+              <tr><td colspan="4" class="text-center text-muted">None</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Low Stock - Monthly -->
+<div class="modal fade" id="lowStockMonthModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Products with Low Balance - Monthly</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+            <thead class="thead-light"><tr class="text-center"><th>Product</th><th>Balance</th></tr></thead>
+            <tbody>
+              {% for object in low_stock_month %}
+              <tr>
+                <td>{{ object.product }}</td>
+                <td class="text-right">{{ object.stock_value }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="2" class="text-center text-muted">None</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- No Sellout - Monthly -->
+<div class="modal fade" id="noSelloutMonthModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Products with No Sellout - Monthly</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+            <thead class="thead-light"><tr class="text-center"><th>Product</th><th>Balance</th></tr></thead>
+            <tbody>
+              {% for object in no_sellout_month %}
+              <tr>
+                <td>{{ object.product.nickname }}</td>
+                <td class="text-right">{{ object.stock_value }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="2" class="text-center text-muted">None</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Low Sellout - Monthly -->
+<div class="modal fade" id="lowSelloutMonthModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Products with Low Sellout - Monthly</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+            <thead class="thead-light"><tr class="text-center"><th>Product</th><th>Balance</th><th>Sellout</th></tr></thead>
+            <tbody>
+              {% for object in low_sellout_month %}
+              <tr>
+                <td>{{ object.product.nickname }}</td>
+                <td class="text-right">{{ object.stock_value }}</td>
+                <td class="text-right">{{ object.sell_out }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="3" class="text-center text-muted">None</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

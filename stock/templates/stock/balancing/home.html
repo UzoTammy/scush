@@ -8,6 +8,12 @@
   .ds-card__body table.table-bordered td {
     padding: 0.6rem 0.85rem;
   }
+
+  .ds-frag-loading {
+    padding: 1.75rem;
+    text-align: center;
+    color: var(--color-text-muted, #6c757d);
+  }
 </style>
 {% endblock %}
 
@@ -23,143 +29,12 @@
     </div>
   </div>
 
-  <!-- ── Reorder / Understock ───────────────────────── -->
-  <div class="ds-card mb-4">
-    <div class="ds-card__header"><span><i class="fa fa-arrow-down mr-2"></i>Needs Reorder ({{ understock|length }})</span></div>
-    <div class="ds-card__body p-0">
-      <div class="table-responsive">
-        <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
-          <thead class="bg-danger text-white">
-            <tr class="text-center">
-              <th>Product</th>
-              <th>Current Stock</th>
-              <th>Reorder Point</th>
-              <th>Suggested Order Qty</th>
-              <th>Supplier Lead Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in understock %}
-            <tr>
-              <td><a href="{% url 'product-detail' item.product.pk %}">{{ item.product }}</a></td>
-              <td class="text-right">{{ item.closing_stock|default:"-" }}</td>
-              <td class="text-right">{{ item.reorder_point }}</td>
-              <td class="text-right">{{ item.suggested_qty }}</td>
-              <td class="text-center">
-                {% if item.product.source.lead_time_days %}{{ item.product.source.lead_time_days }} day(s){% else %}-{% endif %}
-              </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5" class="text-center text-muted">Nothing below reorder point</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Overstock ───────────────────────────────────── -->
-  <div class="ds-card mb-4">
-    <div class="ds-card__header"><span><i class="fa fa-arrow-up mr-2"></i>Overstocked ({{ overstock|length }})</span></div>
-    <div class="ds-card__body p-0">
-      <div class="table-responsive">
-        <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
-          <thead class="bg-warning">
-            <tr class="text-center">
-              <th>Product</th>
-              <th>Current Stock</th>
-              <th>Max Stock Level</th>
-              <th>Excess Qty</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in overstock %}
-            <tr>
-              <td><a href="{% url 'product-detail' item.product.pk %}">{{ item.product }}</a></td>
-              <td class="text-right">{{ item.closing_stock|default:"-" }}</td>
-              <td class="text-right">{{ item.max_stock_level }}</td>
-              <td class="text-right">{{ item.excess_qty }}</td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4" class="text-center text-muted">Nothing above maximum level</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Unconfigured ────────────────────────────────── -->
-  <div class="ds-card mb-4">
-    <div class="ds-card__header"><span><i class="fa fa-question-circle mr-2"></i>Needs Configuration ({{ unset|length }})</span></div>
-    <div class="ds-card__body p-0">
-      <div class="table-responsive">
-        <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
-          <thead class="bg-secondary text-white">
-            <tr class="text-center">
-              <th>Product</th>
-              <th>Current Stock</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for item in unset %}
-            <tr>
-              <td><a href="{% url 'product-detail' item.product.pk %}">{{ item.product }}</a></td>
-              <td class="text-right">{{ item.closing_stock|default:"-" }}</td>
-              <td class="text-center">
-                <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#setLevelsModal{{ item.product.pk }}">
-                  <i class="fa fa-cog"></i> Set Levels
-                </button>
-              </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="3" class="text-center text-muted">All active products have stock levels configured</td></tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+  <!-- ── Balancing tables (lazy) ──────────────────────── -->
+  <div hx-get="{% url 'stock-balancing-tables' %}" hx-trigger="load" hx-swap="outerHTML">
+    <div class="ds-card mb-4"><div class="ds-frag-loading">
+      <i class="fa fa-spinner fa-spin mr-2"></i>Evaluating stock levels across all products…
+    </div></div>
   </div>
 
 </div>
-
-<!-- ── Set Levels modals ─────────────────────────────── -->
-{% for item in unset %}
-<div class="modal fade" id="setLevelsModal{{ item.product.pk }}" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form method="POST" action="{% url 'product-set-levels' item.product.pk %}">
-        {% csrf_token %}
-        <div class="modal-header">
-          <h5 class="modal-title">Set Stock Levels - {{ item.product }}</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="minStockLevel{{ item.product.pk }}">Minimum Stock Level</label>
-            <input type="number" min="0" class="form-control" id="minStockLevel{{ item.product.pk }}" name="min_stock_level" value="{{ item.product.min_stock_level }}">
-          </div>
-          <div class="form-group">
-            <label for="maxStockLevel{{ item.product.pk }}">Maximum Stock Level</label>
-            <input type="number" min="0" class="form-control" id="maxStockLevel{{ item.product.pk }}" name="max_stock_level" value="{{ item.product.max_stock_level }}">
-          </div>
-          <div class="form-group">
-            <label for="reorderPoint{{ item.product.pk }}">Reorder Point</label>
-            <input type="number" min="0" class="form-control" id="reorderPoint{{ item.product.pk }}" name="reorder_point" value="{{ item.product.reorder_point }}">
-          </div>
-          <div class="form-group mb-0">
-            <label for="reorderQty{{ item.product.pk }}">Reorder Quantity</label>
-            <input type="number" min="0" class="form-control" id="reorderQty{{ item.product.pk }}" name="reorder_qty" value="{{ item.product.reorder_qty }}">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary"><i class="fa fa-save mr-1"></i> Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-{% endfor %}
 {% endblock %}

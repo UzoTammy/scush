@@ -5,6 +5,7 @@ from pdf.views import PriceUpdateFootNote
 
 urlpatterns = [
     path('home/', ProductHomeView.as_view(), name='product-home'),
+    path('home/fragment/no-sellout/', NoSelloutFragment.as_view(), name='home-no-sellout'),
     path('help/', TemplateView.as_view(template_name='stock/stock_help.html'), name='stock-help'),
     path('<int:pk>/detail/', ProductDetailedView.as_view(), name='product-detail'),
     path('new/', ProductCreateView.as_view(), name='product-create'),
@@ -36,6 +37,9 @@ urlpatterns += [
     path('update/<str:source>/', StockReportUpdateView.as_view(), name='stock-report-update'),
     path('add/<str:source>/', StockReportAddView.as_view(), name='stock-report-add'),
     path('performance/home/', PerformanceHome.as_view(), name='performance-home'),
+    path('performance/fragment/kpis/', PerformanceKpiFragment.as_view(), name='performance-kpis'),
+    path('performance/fragment/top/', PerformanceTopFragment.as_view(), name='performance-top'),
+    path('performance/fragment/watch/', PerformanceWatchFragment.as_view(), name='performance-watch'),
 
 ]
 urlpatterns += [
@@ -46,7 +50,9 @@ urlpatterns += [
     path('<int:pk>/status/', ProductStatusUpdate.as_view(), name='product-status'),
     # path('<int:pk>/velocity/', ProductVelocity.as_view(), name='product-velocity'),
     path('analysis/', ProductAnalysisView.as_view(), name='product-analysis'),
+    path('analysis/fragment/details/', ProductAnalysisDetailFragment.as_view(), name='product-analysis-details'),
     path('balancing/', StockBalancingView.as_view(), name='stock-balancing'),
+    path('balancing/fragment/tables/', StockBalancingTablesFragment.as_view(), name='stock-balancing-tables'),
     path('<int:pk>/levels/', ProductLevelUpdateView.as_view(), name='product-set-levels'),
 
     path('stock-count/new/', StockCountCreateView.as_view(), name='stock-count-new'),

@@ -1,0 +1,34 @@
+{% if no_sellout %}
+<div class="ds-card mb-4">
+  <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+    <span><i class="fa fa-exclamation-triangle mr-2"></i>Products Not Sold <span class="badge badge-light ml-1">{{ no_sellout|length }}</span></span>
+    <small class="text-light">in stock but no sale in the last 7 days</small>
+  </div>
+  <div class="ds-card__body p-0">
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+        <thead class="thead-light">
+          <tr class="text-center">
+            <th>Product</th>
+            <th>Current Stock</th>
+            <th>Sold Last On</th>
+            <th>Qty Last Sold</th>
+            <th>Days Since Last Sale</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in no_sellout %}
+          <tr>
+            <td>{{ item.product }}</td>
+            <td class="text-right">{{ item.closing_stock }}</td>
+            <td class="text-center">{{ item.date }}</td>
+            <td class="text-right">{{ item.sold }}</td>
+            <td class="text-right">{{ item.days_since }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}

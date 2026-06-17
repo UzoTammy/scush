@@ -1,0 +1,92 @@
+{% load custom_tags %}
+{% if moving_products_qs %}
+<!-- ── Run rate & days of cover ─────────────────────── -->
+<div class="ds-card mb-4">
+  <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+    <span><i class="fa fa-line-chart mr-2"></i>Run Rate &amp; Days of Cover</span>
+    <small class="text-light">sorted by lowest days of cover first</small>
+  </div>
+  <div class="ds-card__body p-0">
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+        <thead class="thead-light">
+          <tr class="text-center">
+            <th>Product</th>
+            <th>Avg Sellout (7d)</th>
+            <th>Avg Sellout (30d)</th>
+            <th>Balance</th>
+            <th>Days of Cover</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in moving_products_qs %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td class="text-right">{{ item.avg_7d|floatformat:1|default:"-" }}</td>
+            <td class="text-right">{{ item.avg_30d|floatformat:1|default:"-" }}</td>
+            <td class="text-right">{{ item.closing_stock }}</td>
+            <td class="text-right">{{ item.days_of_cover|floatformat:1|default:"-" }}</td>
+            <td class="text-center">
+              {% if item.status == 'LOW' %}
+              <span class="badge badge-danger">Low</span>
+              {% elif item.status == 'OVER' %}
+              <span class="badge badge-warning">Overstock</span>
+              {% elif item.status == 'OK' %}
+              <span class="badge badge-success">OK</span>
+              {% else %}
+              <span class="badge badge-secondary">Unset</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if all_products_qs %}
+<!-- ── Non-moving stock ──────────────────────────────── -->
+<div class="ds-card mb-4">
+  <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+    <span><i class="fa fa-pause-circle mr-2"></i>Non-Moving Stock</span>
+    <small class="text-light">in stock, zero sellout in the last 30 days</small>
+  </div>
+  <div class="ds-card__body p-0">
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+        <thead class="thead-light">
+          <tr class="text-center">
+            <th>Product</th>
+            <th>Balance</th>
+            <th>Stock Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in all_products_qs %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td class="text-right">{{ item.closing_stock }}</td>
+            <td class="text-right">{{ item.stock_value }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="ds-card__body d-flex justify-content-between align-items-center">
+    <strong>Capital tied up in non-moving stock</strong>
+    <strong>{{ non_moving_value }}</strong>
+  </div>
+</div>
+{% endif %}
+
+{% if not moving_products_qs and not all_products_qs %}
+<div class="ds-card mb-4">
+  <div class="ds-card__body text-center text-muted">
+    <i class="fa fa-check-circle text-success mr-1"></i> No run-rate exceptions to report.
+  </div>
+</div>
+{% endif %}

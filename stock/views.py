@@ -115,6 +115,43 @@ class ProductHomeView(LoginRequiredMixin, View):
         }
         return render(request, 'stock/product_home.html', context=context)
 
+
+class NoSelloutFragment(LoginRequiredMixin, TemplateView):
+    """Fragment: products that had stock but zero sales in the last 7 days."""
+    template_name = 'stock/fragments/no_sellout.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if not ProductExtension.objects.exists():
+            return context
+
+        active_products = Product.objects.filter(active=True).values_list('pk', flat=True).distinct()
+        date2 = ProductExtension.objects.latest('date').date
+        date3 = date2 - datetime.timedelta(days=7)
+        no_sellout = []
+
+        for product in active_products:
+            product_data = ProductExtension.objects.filter(product=product)
+            if product_data.exists():
+                last_7_data = product_data.filter(date__range=[date3, date2])
+                had_stock = last_7_data.filter(stock_value__gt=0).exists()
+                had_sales = last_7_data.filter(sell_out__gt=0).exists()
+                if had_stock and not had_sales:
+                    sold = product_data.filter(sell_out__gt=0)
+                    last_sale = sold.last()
+                    last_date = last_sale.date if last_sale else datetime.date(datetime.date.today().year, 1, 1)
+                    no_sellout.append({
+                        'product': last_7_data.first().product,
+                        'closing_stock': last_7_data.last().stock_value,
+                        'sold': last_sale.sell_out if last_sale else 0,
+                        'date': last_date,
+                        'days_since': (date2 - last_date).days,
+                    })
+
+        context['no_sellout'] = no_sellout
+        return context
+
+
 class ReportHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'stock/report/home.html'
 
@@ -1150,9 +1187,30 @@ class ProductStatusUpdate(LoginRequiredMixin, UserPassesTestMixin, View):
         product.save() 
         return redirect(product)
 
-class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+class PerformanceAccessMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        return self.request.user.groups.filter(name=permitted_group_name).exists()
+
+
+class PerformanceHome(PerformanceAccessMixin, TemplateView):
+    """Lightweight shell. The heavy KPI / top-performer / watch sections are
+    loaded as independent HTMX fragments so the page paints immediately."""
     template_name = 'stock/performance/home.html'
-    
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['record_exist'] = ProductExtension.objects.exists()
+        context['inactive_products'] = Product.objects.filter(active=False)
+        if context['record_exist']:
+            context['current_date'] = ProductExtension.objects.latest('date').date
+        return context
+
+
+class PerformanceDataMixin(PerformanceAccessMixin):
+    """Heavy performance computations, sliced into independent sections so each
+    HTMX fragment only runs the queries it needs."""
+
     def color(self, indicator):
         if indicator < 50:
             x = ('text-danger', 'Poor')
@@ -1184,315 +1242,344 @@ class PerformanceHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             N = 0
             for date in dates:
                 obj = qs_month.filter(product=product).filter(date=date)
-                
+
                 if obj.exists():
                     N += 1
             if number_of_dates == N:
-                product_list.append(obj.get()) 
-        return product_list  # a list of object 
-            
-    def product_analyzer(self, ops, field, field_type, qs):
-        """
-            This function is to give a tuple of the product object and the sum
-            or average of a field in the ProductExtension model
-        """
-        products = Product.objects.all()
-        str_ops = 'sum' if ops == Sum else 'avg'
-        sell_out_list = [
-                (product, qs.filter(product=product).aggregate(ops(field))[f'{field}__{str_ops}']) 
+                product_list.append(obj.get())
+        return product_list  # a list of object
+
+    @staticmethod
+    def low_stock_filter():
+        # A product is "low stock" once its reported balance falls to/below its
+        # configured reorder point (or min stock level if no reorder point is set).
+        # Products with neither configured fall back to the old fixed threshold.
+        return (
+            Q(product__reorder_point__gt=0, stock_value__lte=F('product__reorder_point')) |
+            Q(product__reorder_point=0, product__min_stock_level__gt=0, stock_value__lte=F('product__min_stock_level')) |
+            Q(product__reorder_point=0, product__min_stock_level=0, stock_value__lt=10)
+        )
+
+    def kpi_context(self):
+        """KPI stat row: availability, sales activity, profit, locked-down capital."""
+        context = {}
+        dataset = ProductExtension.objects.all()
+        context['record_exist'] = dataset.exists()
+        if not context['record_exist']:
+            return context
+
+        latest_record = dataset.latest('date')
+        qs = dataset.filter(date__year=latest_record.date.year)
+        qs_month = qs.filter(date__month=latest_record.date.month)
+
+        qs_day = dataset.filter(date=latest_record.date)
+        qs_day = qs_day.annotate(value=F('cost_price') * F('stock_value'))
+        qs_day = qs_day.annotate(profit=F('sell_out') * (F('selling_price') - F('cost_price')))
+
+        context['sales'] = qs_day.filter(sell_out__gt=0)
+        context['products'] = Product.objects.filter(active=True)
+        context['sales_amount_total'] = qs_day.aggregate(Sum('sales_amount'))['sales_amount__sum']
+        context['sellout_total'] = qs_day.aggregate(Sum('sell_out'))['sell_out__sum']
+        context['stock_value_total'] = qs_day.aggregate(Sum('value'))['value__sum']
+        context['profit_total'] = qs_day.aggregate(Sum('profit'))['profit__sum']
+
+        products_1 = Product.objects.filter(active=True).values_list('pk', flat=True)
+        products_2 = qs_day.values_list('product', flat=True).distinct()
+        products = products_1.difference(products_2)
+        products = products.union(qs_day.filter(stock_value__lte=0).values_list('product', flat=True))
+        context['no_stock'] = Product.objects.filter(pk__in=products)
+
+        context['no_sellout'] = qs_day.filter(stock_value__gt=0).filter(sell_out=0)
+
+        # Locked down capital: value of stock that has not sold even once in the month
+        zero_sellout = self.month_process(qs_month, qs_month.filter(stock_value__gt=0).filter(sell_out=0))
+        if zero_sellout:
+            total = sum([obj.stock_value * obj.cost_price for obj in zero_sellout])
+            context['ldc'] = float(total.amount)
+        else:
+            context['ldc'] = 0
+
+        total_products = context['products'].count()
+        context['availability_ratio'] = 100 * (1 - context['no_stock'].count() / total_products) if total_products else 0
+        context['av_color'] = self.color(context['availability_ratio'])
+
+        stocked_products = total_products - context['no_stock'].count()
+        context['movement_ratio'] = 100 * (1 - context['no_sellout'].count() / stocked_products) if stocked_products > 0 else 0
+        context['mv_color'] = self.color(context['movement_ratio'])
+        return context
+
+    def watch_context(self):
+        """Stock & Sellout Watch table: daily and monthly no/low stock & sellout."""
+        context = {}
+        dataset = ProductExtension.objects.all()
+        context['record_exist'] = dataset.exists()
+        if not context['record_exist']:
+            return context
+
+        latest_record = dataset.latest('date')
+        qs = dataset.filter(date__year=latest_record.date.year)
+        qs_month = qs.filter(date__month=latest_record.date.month)
+
+        qs_day = dataset.filter(date=latest_record.date)
+        qs_day = qs_day.annotate(value=F('cost_price') * F('stock_value'))
+
+        products_1 = Product.objects.filter(active=True).values_list('pk', flat=True)
+        products_2 = qs_day.values_list('product', flat=True).distinct()
+        products = products_1.difference(products_2)
+        products = products.union(qs_day.filter(stock_value__lte=0).values_list('product', flat=True))
+        context['no_stock'] = Product.objects.filter(pk__in=products)
+
+        low_stock_filter = self.low_stock_filter()
+        context['low_stock'] = qs_day.filter(stock_value__gt=0).filter(low_stock_filter)
+        context['no_sellout'] = qs_day.filter(stock_value__gt=0).filter(sell_out=0)
+        context['low_sellout'] = qs_day.filter(stock_value__gt=0).filter(sell_out__lt=10).exclude(sell_out=0)
+
+        # Sorted by days since last sale, descending (longest-idle products first; "Never" sold first of all)
+        context['no_sellout_sorted'] = sorted(
+            context['no_sellout'],
+            key=lambda record: record.product.days_since_last_sale() if record.product.days_since_last_sale() is not None else float('inf'),
+            reverse=True,
+        )
+
+        context['no_stock_month'] = self.month_process(qs_month, qs_month.filter(stock_value__lte=0))
+        context['low_stock_month'] = self.month_process(qs_month, qs_month.filter(stock_value__gt=0).filter(low_stock_filter))
+        zero_sellout = self.month_process(qs_month, qs_month.filter(stock_value__gt=0).filter(sell_out=0))
+        context['low_sellout_month'] = self.month_process(qs_month, qs_month.filter(stock_value__gt=0).filter(sell_out__lt=10).exclude(sell_out=0))
+        context['no_sellout_month'] = zero_sellout
+        return context
+
+    def top_context(self):
+        """Top performers: most sold, most profitable, margins, highest gross sales."""
+        context = {}
+        context['record_exist'] = ProductExtension.objects.exists()
+        if not context['record_exist']:
+            return context
+
+        latest_date = ProductExtension.objects.latest('date').date
+        context['current_date'] = latest_date
+        product_extension = ProductExtension.objects.filter(sell_out__gt=0).exclude(product__name__icontains='Empty')
+        # Most sold out product of the day
+        qs_data = product_extension.filter(date=latest_date)
+        # get a tuple of the product and the sellout
+        data = qs_data.values_list('product', 'sell_out')
+        context['highest_sellout_day'] = self.extreme_product(data)
+
+        # Most soldout product of the month
+        qs_data = product_extension.filter(date__year=latest_date.year).filter(date__month=latest_date.month).filter(sell_out__gt=0)
+        products = qs_data.values_list('product', flat=True).distinct()  # product pk only
+        # create a list of tuple of products and its aggregate sellout
+        most_sellout_list = [
+            (product, qs_data.filter(product=product).aggregate(Sum('sell_out'))['sell_out__sum'])
             for product in products
         ]
+        context['highest_sellout_month'] = self.extreme_product(most_sellout_list)
 
-        value, product_data = field_type(), tuple()
+        """Most soldout product of the year"""
+        qs_data = product_extension.filter(date__year=latest_date.year)
+        products = qs_data.values_list('product', flat=True).distinct()  # product pk only
+        # create a list of tuple of products and its aggregate sellout
+        most_sellout_list = [
+            (product, qs_data.filter(product=product).aggregate(Sum('sell_out'))['sell_out__sum'])
+            for product in products
+        ]
+        context['highest_sellout_year'] = self.extreme_product(most_sellout_list)
 
-        # Go through the list to remove the None type
-        for sellout in sell_out_list:
-            if not isinstance(sellout[1], field_type):
-                continue
-        
-            if sellout[1] > value:
-                value = sellout[1]
+        """This section is for the most profitable"""
+        # For the latest date
+        qs_data = product_extension.filter(date=latest_date)
+        qs_data = qs_data.annotate(profit=F('sell_out') * (F('selling_price') - F('cost_price')))
 
-            product_data = sellout
-        
-        return product_data #max(sell_out_list, key=lambda X:X[1])
-                
-    def test_func(self):
-        """if user is a member of the group Sales then grant access to this view"""
-        if self.request.user.groups.filter(name=permitted_group_name).exists():
-            return True
-        return False
+        # get a tuple of the product and the sellout
+        data = qs_data.values_list('product', 'profit')
+        context['most_profitable_day'] = self.extreme_product(data)
+
+        # for the latest date's month
+        qs_data = product_extension.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
+        qs_data = qs_data.annotate(profit=F('sell_out') * (F('selling_price') - F('cost_price')))
+
+        products = qs_data.values_list('product', flat=True).distinct()  # product pk only
+        # create a list of tuple of products and its aggregate sellout
+        most_profit_list = [
+            (product, qs_data.filter(product=product).aggregate(Sum('profit'))['profit__sum'])
+            for product in products
+        ]
+        context['most_profitable_month'] = self.extreme_product(most_profit_list)
+
+        # for the latest date's year
+        qs_data = product_extension.filter(date__year=latest_date.year)
+        qs_data = qs_data.annotate(profit=F('sell_out') * (F('selling_price') - F('cost_price')))
+
+        products = qs_data.values_list('product', flat=True).distinct()  # product pk only
+        # create a list of tuple of products and its aggregate sellout
+        most_profit_list = [
+            (product, qs_data.filter(product=product).aggregate(Sum('profit'))['profit__sum'])
+            for product in products
+        ]
+        context['most_profitable_year'] = self.extreme_product(most_profit_list)
+
+        # Margins
+        # 1. the product with the best margin
+        qs_data = product_extension.filter(date=latest_date).filter(sell_out__gt=0)
+        qs_data = qs_data.annotate(margin=F('selling_price') - F('cost_price'))
+
+        # get a tuple of the product and its margin (selling_price - cost_price)
+        data = qs_data.values_list('product', 'margin')
+
+        context['best_margin_day'] = self.extreme_product(data, func=max)
+
+        # 2. the product with the worst margin
+        context['worst_margin_day'] = self.extreme_product(data, func=min)
+
+        # 3 Average margin
+        qs_data = qs_data.annotate(profit=F('sell_out') * F('margin'))
+        total_profit = qs_data.aggregate(Sum('profit'))['profit__sum']
+        total_sales = qs_data.aggregate(Sum('sales_amount'))['sales_amount__sum']
+        context['average_margin'] = float(total_profit / total_sales) * 100 if total_sales else 0
+
+        """The gross sales"""
+        # 1. Product with the highest gross sales value
+        qs_data = product_extension.filter(date=latest_date)
+
+        # get a tuple of the product and the sales
+        data = qs_data.values_list('product', 'sales_amount')
+        context['most_sales_day'] = self.extreme_product(data, value_cast=float)
+
+        # 2. Product with the highest GSV in the month
+        qs_data = product_extension.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
+
+        products = qs_data.values_list('product', flat=True).distinct()  # product pk only
+        # create a list of tuple of products and its aggregate sales
+        most_sales_list = [
+            (product, qs_data.filter(product=product).aggregate(Sum('sales_amount'))['sales_amount__sum'])
+            for product in products
+        ]
+        context['most_sales_month'] = self.extreme_product(most_sales_list, value_cast=float)
+
+        # 3. Product with the highest GSV for the year
+        qs_data = product_extension.filter(date__year=latest_date.year)
+
+        products = qs_data.values_list('product', flat=True).distinct()  # product pk only
+        # create a list of tuple of products and its aggregate sales
+        most_sales_list = [
+            (product, qs_data.filter(product=product).aggregate(Sum('sales_amount'))['sales_amount__sum'])
+            for product in products
+        ]
+        context['most_sales_year'] = self.extreme_product(most_sales_list, value_cast=float)
+        return context
+
+
+class PerformanceKpiFragment(PerformanceDataMixin, TemplateView):
+    template_name = 'stock/performance/fragments/kpis.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        #Most Sellout - YTD
-        dataset = ProductExtension.objects.all()
-        context['record_exist'] = True if dataset.exists() else False
-  
-        if dataset.exists():
-            latest_record = dataset.latest('date')
-            qs = dataset.filter(date__year=latest_record.date.year)
-            qs_month = qs.filter(date__month=latest_record.date.month)
-            
-            qs_day = dataset.filter(date=latest_record.date) #qs.filter(date__day=latest_record.date.day)
-            qs_day = qs_day.annotate(value=F('cost_price')*F('stock_value'))
-            qs_day = qs_day.annotate(profit=F('sell_out')*(F('selling_price')-F('cost_price')))
-            
-            context['sales'] = qs_day.filter(sell_out__gt=0)
-            context['products'] = Product.objects.filter(active=True)
-            context['inactive_products'] = Product.objects.filter(active=False)
-            context['sales_amount_total'] = qs_day.aggregate(Sum('sales_amount'))['sales_amount__sum']
-            context['sellout_total'] = qs_day.aggregate(Sum('sell_out'))['sell_out__sum']
-            context['stock_value_total'] = qs_day.aggregate(Sum('value'))['value__sum']
-            context['profit_total'] = qs_day.aggregate(Sum('profit'))['profit__sum']
-
-            """In the ProductExtension model, products without stock and sellout are not created even though
-            the product may be active. For this reason, we exploit the models to extract the/those product(s)
-            as follows
-            """
-            products_1 = Product.objects.filter(active=True).values_list('pk', flat=True)
-            products_2 = qs_day.values_list('product', flat=True).distinct()
-            products = products_1.difference(products_2)
-            products = products.union(qs_day.filter(stock_value__lte=0).values_list('product', flat=True))
-
-            context['no_stock'] = Product.objects.filter(pk__in=products)
-            
-            # A product is "low stock" once its reported balance falls to/below its
-            # configured reorder point (or min stock level if no reorder point is set).
-            # Products with neither configured fall back to the old fixed threshold.
-            low_stock_filter = (
-                Q(product__reorder_point__gt=0, stock_value__lte=F('product__reorder_point')) |
-                Q(product__reorder_point=0, product__min_stock_level__gt=0, stock_value__lte=F('product__min_stock_level')) |
-                Q(product__reorder_point=0, product__min_stock_level=0, stock_value__lt=10)
-            )
-
-            context['low_stock'] = qs_day.filter(stock_value__gt=0).filter(low_stock_filter)
-            context['no_sellout'] = qs_day.filter(stock_value__gt=0).filter(sell_out=0)
-            context['low_sellout'] = qs_day.filter(stock_value__gt=0).filter(sell_out__lt=10).exclude(sell_out=0)
-
-            # Sorted by days since last sale, descending (longest-idle products first; "Never" sold first of all)
-            context['no_sellout_sorted'] = sorted(
-                context['no_sellout'],
-                key=lambda record: record.product.days_since_last_sale() if record.product.days_since_last_sale() is not None else float('inf'),
-                reverse=True,
-            )
-
-            context['no_stock_month'] = self.month_process(qs_month, qs_month.filter(stock_value__lte=0))
-            context['low_stock_month'] = self.month_process(qs_month, qs_month.filter(stock_value__gt=0).filter(low_stock_filter))
-            zero_sellout = self.month_process(qs_month, qs_month.filter(stock_value__gt=0).filter(sell_out=0))
-            context['low_sellout_month'] = self.month_process(qs_month, qs_month.filter(stock_value__gt=0).filter(sell_out__lt=10).exclude(sell_out=0))
-
-            context['no_sellout_month'] = zero_sellout
-            if zero_sellout:
-                """Locked down capital is the value in stock that have not sold even ones in the month"""
-                total = sum([obj.stock_value * obj.cost_price for obj in zero_sellout])
-                context['ldc'] = float(total.amount)
-            else:
-                context['ldc'] = 0
-
-            total_products = context['products'].count()
-            context['availability_ratio'] = 100 * (1 - context['no_stock'].count()/total_products) if total_products else 0
-            context['av_color'] = self.color(context['availability_ratio'])
-
-            stocked_products = total_products - context['no_stock'].count()
-            context['movement_ratio'] = 100 * (1 - context['no_sellout'].count()/stocked_products) if stocked_products > 0 else 0
-            context['mv_color'] = self.color(context['movement_ratio'])
-            
-        if ProductExtension.objects.exists():
-            latest_date = ProductExtension.objects.latest('date').date
-            context['current_date'] = latest_date
-            product_extension = ProductExtension.objects.filter(sell_out__gt=0).exclude(product__name__icontains='Empty')
-            # Most sold out product of the day
-            qs_data = product_extension.filter(date=latest_date)
-            # get a tuple of the product and the sellout
-            data = qs_data.values_list('product', 'sell_out')
-            context['highest_sellout_day'] = self.extreme_product(data)
-
-            # Most soldout product of the month
-            qs_data = product_extension.filter(date__year=latest_date.year).filter(date__month=latest_date.month).filter(sell_out__gt=0)
-            products = qs_data.values_list('product', flat=True).distinct() # product pk only
-            # create a list of tuple of products and its aggregate sellout
-            most_sellout_list = [
-                (product, qs_data.filter(product=product).aggregate(Sum('sell_out'))['sell_out__sum'])
-                for product in products
-            ]
-            context['highest_sellout_month'] = self.extreme_product(most_sellout_list)
-
-            """Most soldout product of the year"""
-            qs_data = product_extension.filter(date__year=latest_date.year)
-            products = qs_data.values_list('product', flat=True).distinct() # product pk only
-            # create a list of tuple of products and its aggregate sellout
-            most_sellout_list = [
-                (product, qs_data.filter(product=product).aggregate(Sum('sell_out'))['sell_out__sum'])
-                for product in products
-            ]
-            context['highest_sellout_year'] = self.extreme_product(most_sellout_list)
-            
-            """This section is for the most profitable"""
-            # For the latest date
-            qs_data = product_extension.filter(date=latest_date)
-            qs_data = qs_data.annotate(profit = F('sell_out')*(F('selling_price') - F('cost_price')))
-            
-            # get a tuple of the product and the sellout
-            data = qs_data.values_list('product', 'profit')
-            context['most_profitable_day'] = self.extreme_product(data)
-
-            # for the latest date's month
-            qs_data = product_extension.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
-            qs_data = qs_data.annotate(profit = F('sell_out')*(F('selling_price') - F('cost_price')))
-
-            products = qs_data.values_list('product', flat=True).distinct() # product pk only
-            # create a list of tuple of products and its aggregate sellout
-            most_profit_list = [
-                (product, qs_data.filter(product=product).aggregate(Sum('profit'))['profit__sum'])
-                for product in products
-            ]
-            context['most_profitable_month'] = self.extreme_product(most_profit_list)
-
-            # for the latest date's year
-            qs_data = product_extension.filter(date__year=latest_date.year)
-            qs_data = qs_data.annotate(profit = F('sell_out')*(F('selling_price') - F('cost_price')))
-
-            products = qs_data.values_list('product', flat=True).distinct() # product pk only
-            # create a list of tuple of products and its aggregate sellout
-            most_profit_list = [
-                (product, qs_data.filter(product=product).aggregate(Sum('profit'))['profit__sum'])
-                for product in products
-            ]
-            context['most_profitable_year'] = self.extreme_product(most_profit_list)
-            
-            # Margins
-            # 1. the product with the best margin
-            qs_data = product_extension.filter(date=latest_date).filter(sell_out__gt=0)
-            qs_data = qs_data.annotate(margin=F('selling_price') - F('cost_price'))
-            
-            # get a tuple of the product and its margin (selling_price - cost_price)
-            data = qs_data.values_list('product', 'margin')
-
-            context['best_margin_day'] = self.extreme_product(data, func=max)
-
-            #2. the product with the worst margin
-            context['worst_margin_day'] = self.extreme_product(data, func=min)
-
-            #3 Average margin
-            qs_data = qs_data.annotate(profit=F('sell_out') * F('margin'))
-            total_profit = qs_data.aggregate(Sum('profit'))['profit__sum']
-            total_sales = qs_data.aggregate(Sum('sales_amount'))['sales_amount__sum']
-            context['average_margin'] = float(total_profit/total_sales) * 100 if total_sales else 0
-            
-            """The gross sales"""
-            #1. Product with the highest gross sales value
-            qs_data = product_extension.filter(date=latest_date)
-            
-                # get a tuple of the product and the sales
-            data = qs_data.values_list('product', 'sales_amount')
-            context['most_sales_day'] = self.extreme_product(data, value_cast=float)
-
-            #2. Product with the highest GSV in the month
-            qs_data = product_extension.filter(date__year=latest_date.year).filter(date__month=latest_date.month)
-
-            products = qs_data.values_list('product', flat=True).distinct() # product pk only
-            # create a list of tuple of products and its aggregate sales
-            most_sales_list = [
-                (product, qs_data.filter(product=product).aggregate(Sum('sales_amount'))['sales_amount__sum'])
-                for product in products
-            ]
-            context['most_sales_month'] = self.extreme_product(most_sales_list, value_cast=float)
-
-            #3. Product with the highest GSV for the year
-            qs_data = product_extension.filter(date__year=latest_date.year)
-
-            products = qs_data.values_list('product', flat=True).distinct() # product pk only
-            # create a list of tuple of products and its aggregate sales
-            most_sales_list = [
-                (product, qs_data.filter(product=product).aggregate(Sum('sales_amount'))['sales_amount__sum'])
-                for product in products
-            ]
-            context['most_sales_year'] = self.extreme_product(most_sales_list, value_cast=float)
+        context.update(self.kpi_context())
         return context
 
+
+class PerformanceTopFragment(PerformanceDataMixin, TemplateView):
+    template_name = 'stock/performance/fragments/top.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(self.top_context())
+        return context
+
+
+class PerformanceWatchFragment(PerformanceDataMixin, TemplateView):
+    template_name = 'stock/performance/fragments/watch.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(self.watch_context())
+        return context
+
+
 class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    
+    """Shell: renders the fast velocity-value summary immediately. The heavy
+    per-product run-rate / non-moving / no-sellout tables stream in as an
+    HTMX fragment."""
+
     template_name = 'stock/product_analysis.html'
 
     def test_func(self):
         """if user is a member of the group Sales then grant access to this view"""
-        if self.request.user.groups.filter(name=permitted_group_name).exists():
-            return True
-        return False
-
-    def sort_dict(obj):
-        if obj['sellout'] is not None:
-            return obj['sellout']
+        return self.request.user.groups.filter(name=permitted_group_name).exists()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        """Run rate with 3 weeks stock, Top 10 most selling products and its profit
-            We will consider least selling  
-        """
 
-        all_products_qs = list() # a list that will contain dictionary   
-
-        if Product.objects.exclude(name__icontains='Empty').exists():
-            active_products_list = Product.objects.filter(active=True)
-            active_products = active_products_list.values_list('pk', flat=True).distinct().order_by('source')
-
-            """Sellout Velocity process starts here. Velocity type ranges from -1 to 5.
-            -1 - Not designated, 0 - No sellout, 1 - very low sellout, 2 - low sellout
-            3 - moderate, 4 - high sellout and 5 - very high sellout.
-            output: [(v1, qs1), (v2, qs2), (v3, qs3)]
-            """
-            
-            product_list_for_velocity = [(i, active_products_list.filter(velocity=i).values_list('pk', flat=True)) 
-                                         for i in range(-1, 6)]
-        else:
+        if not Product.objects.exclude(name__icontains='Empty').exists():
             return context
 
-        if ProductExtension.objects.exists():
-            date2 = ProductExtension.objects.latest('date').date
-            qs_list = list((i, ProductExtension.objects.filter(date=date2).filter(product__velocity=i)) for i in range(-1, 6))
-            stack = list()
-            for item in qs_list:
-                if item[1].exists():
-                    qs = item[1].annotate(sv=F('cost_price')*F('stock_value'))
-                    value = (qs.aggregate(Sum('sv'))['sv__sum'], qs)
-                else:
-                    value = (Decimal('0'), qs.none())
-                stack.append((item[0], Money(value[0], 'NGN'), value[1]))
-            stack.sort(key=lambda x:x[0])  
-            
-            percent_stack = list()
-            total = sum(i[1] for i in stack)
-            for item in stack:
-                percent_stack.append(100*item[1]/total)
-            
-            haystack = list()
-            for item in stack:
-                if item[0] == -1:
-                    haystack.append(item[1])
-                    sums = Money(0, "NGN")
-                elif item[0] == 0 or item[0] == 1 or item[0] == 2:
-                    sums += item[1]
-                elif item[0] == 3:
-                    haystack.append(sums)
-                    haystack.append(item[1])
-                    sums = Money(0, "NGN")
-                else:
-                    sums += item[1]
-            haystack.append(sums)
-            
-            context['total_stock_value'] = sum(i[1] for i in stack)
-            context['stack'] = stack
-            context['percent_stack'] = percent_stack
-            context['haystack'] = haystack
-            
-        else:
+        if not ProductExtension.objects.exists():
             return context
 
-        moving_products_qs = list() # products that are selling - run rate & days of cover tells a story here
-        no_sellout = list()
-        date3 = date2 - datetime.timedelta(days=7)
+        date2 = ProductExtension.objects.latest('date').date
+        qs_list = list((i, ProductExtension.objects.filter(date=date2).filter(product__velocity=i)) for i in range(-1, 6))
+        stack = list()
+        for item in qs_list:
+            if item[1].exists():
+                qs = item[1].annotate(sv=F('cost_price') * F('stock_value'))
+                value = (qs.aggregate(Sum('sv'))['sv__sum'], qs)
+            else:
+                value = (Decimal('0'), qs.none())
+            stack.append((item[0], Money(value[0], 'NGN'), value[1]))
+        stack.sort(key=lambda x: x[0])
+
+        percent_stack = list()
+        total = sum(i[1] for i in stack)
+        for item in stack:
+            percent_stack.append(100 * item[1] / total)
+
+        haystack = list()
+        for item in stack:
+            if item[0] == -1:
+                haystack.append(item[1])
+                sums = Money(0, "NGN")
+            elif item[0] == 0 or item[0] == 1 or item[0] == 2:
+                sums += item[1]
+            elif item[0] == 3:
+                haystack.append(sums)
+                haystack.append(item[1])
+                sums = Money(0, "NGN")
+            else:
+                sums += item[1]
+        haystack.append(sums)
+
+        context['total_stock_value'] = sum(i[1] for i in stack)
+        context['stack'] = stack
+        context['percent_stack'] = percent_stack
+        context['haystack'] = haystack
+        context['current_date'] = date2
+        return context
+
+
+class ProductAnalysisDetailFragment(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    """Heavy fragment: per-product run rate, days of cover, non-moving stock and
+    products not sold in the last 7 days."""
+
+    template_name = 'stock/fragments/analysis_details.html'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        return self.request.user.groups.filter(name=permitted_group_name).exists()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if not Product.objects.exclude(name__icontains='Empty').exists():
+            return context
+
+        if not ProductExtension.objects.exists():
+            return context
+
+        active_products_list = Product.objects.filter(active=True)
+        active_products = active_products_list.values_list('pk', flat=True).distinct().order_by('source')
+        date2 = ProductExtension.objects.latest('date').date
+
+        moving_products_qs = list()  # products that are selling - run rate & days of cover tells a story here
+        all_products_qs = list()     # in stock but not moving
 
         for product in active_products:
             product_data = ProductExtension.objects.filter(product=product)
@@ -1522,22 +1609,6 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
                         'stock_value': product_data.last().value_of_stock(),
                         })
 
-                # products that have not sold out in the last 7 days even though they are available
-                product_data_7days_ago = product_data.filter(date__range=[date3, date2]).filter(stock_value__gt=0).filter(sell_out=0)
-
-                if product_data_7days_ago.exists():
-                    sold = product_data.filter(sell_out__gt=0)
-                    last_sale = sold.last()
-
-                    no_sellout.append(
-                        {
-                            'product': product_data_7days_ago.first().product,
-                            'closing_stock': product_data_7days_ago.last().stock_value,
-                            'sold': last_sale.sell_out if last_sale else 0,
-                            'date': last_sale.date if last_sale else datetime.date(datetime.date.today().year, 1, 1)
-                        }
-                    )
-
         # most urgent (lowest days of cover) first
         moving_products_qs.sort(key=lambda x: x['days_of_cover'])
 
@@ -1545,18 +1616,26 @@ class ProductAnalysisView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
         context['moving_products_qs'] = moving_products_qs
         context['all_products_qs'] = all_products_qs
         context['non_moving_value'] = sum((item['stock_value'] for item in all_products_qs), Money(0, 'NGN'))
-        context['no_sellout'] = no_sellout
-
         return context
 
+
 class StockBalancingView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    """Shell: paints instantly. The understock / overstock / unset tables (which
+    iterate every active product) stream in as an HTMX fragment."""
+
     template_name = 'stock/balancing/home.html'
 
     def test_func(self):
         """if user is a member of the group Sales then grant access to this view"""
-        if self.request.user.groups.filter(name=permitted_group_name).exists():
-            return True
-        return False
+        return self.request.user.groups.filter(name=permitted_group_name).exists()
+
+
+class StockBalancingTablesFragment(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = 'stock/balancing/fragments/tables.html'
+
+    def test_func(self):
+        """if user is a member of the group Sales then grant access to this view"""
+        return self.request.user.groups.filter(name=permitted_group_name).exists()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

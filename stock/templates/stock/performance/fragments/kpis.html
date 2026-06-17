@@ -1,0 +1,107 @@
+{% load custom_tags %}
+{% if record_exist %}
+<!-- ── KPI row ──────────────────────────────────────── -->
+<div class="row">
+  <div class="col-6 col-sm-4 col-md-2 mb-3">
+    <div class="ds-stat">
+      <div class="ds-stat__label">Active Products</div>
+      <div class="ds-stat__value">{{ products.count }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-2 mb-3">
+    <div class="ds-stat">
+      <div class="ds-stat__label">Availability</div>
+      <div class="ds-stat__value">{{ availability_ratio|floatformat:2 }}% ({{ av_color|last }})</div>
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-2 mb-3">
+    <div class="ds-stat">
+      <div class="ds-stat__label">
+        Sales Activity
+        <span class="text-muted" data-toggle="tooltip" title="Of the products currently in stock, what percentage sold at least one unit today?">?</span>
+      </div>
+      <div class="ds-stat__value">{{ movement_ratio|floatformat:2 }}% ({{ mv_color|last }})</div>
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-2 mb-3">
+    <div class="ds-stat ds-stat--accent">
+      <div class="ds-stat__label">Products Sold</div>
+      <div class="ds-stat__value">
+        {% if sales.count %}<a href="#" data-toggle="modal" data-target="#marginModal" class="modal-link">{{ sales.count }}</a>{% else %}0{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-2 mb-3">
+    <div class="ds-stat ds-stat--warning">
+      <div class="ds-stat__label">Profit From Sales</div>
+      <div class="ds-stat__value ds-stat__value--lg">N{{ profit_total|floatformat:2 }}</div>
+    </div>
+  </div>
+  <div class="col-6 col-sm-4 col-md-2 mb-3">
+    <div class="ds-stat">
+      <div class="ds-stat__label">
+        LDC
+        <span class="text-muted" data-toggle="tooltip" title="Locked Down Capital is fund tied-down in stock not sold for a month">?</span>
+      </div>
+      <div class="ds-stat__value ds-stat__value--lg">N{{ ldc|myriad }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Product Yield Modal -->
+<div class="modal fade" id="marginModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Products Sold - Yield</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true" data-search="true">
+            <thead class="thead-light">
+              <tr class="text-center">
+                <th>Product</th>
+                <th>Sellout Qty</th>
+                <th>Selling Price</th>
+                <th>Sales Amount</th>
+                <th>Stock Value</th>
+                <th>Profit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for record in sales %}
+              <tr>
+                <td>{{ record.product.nickname }}</td>
+                <td class="text-right">{{ record.sell_out }}</td>
+                <td class="text-right">{{ record.selling_price.amount|floatformat:2 }}</td>
+                <td class="text-right">{{ record.sales_amount.amount|floatformat:2 }}</td>
+                <td class="text-right">{{ record.value|floatformat:2 }}</td>
+                {% if record.profit >= 0 %}
+                <td class="text-right">{{ record.profit|floatformat:2 }}</td>
+                {% else %}
+                <td class="text-right text-danger">{{ record.profit|abs|floatformat:2 }}</td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr class="text-success font-weight-bold thead-light">
+                <td>Totals</td>
+                <td class="text-right">{{ sellout_total }}</td>
+                <td></td>
+                <td class="text-right">{{ sales_amount_total|floatformat:2 }}</td>
+                <td class="text-right">{{ stock_value_total|floatformat:2 }}</td>
+                <td class="text-right">{{ profit_total|floatformat:2 }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

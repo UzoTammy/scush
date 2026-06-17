@@ -29,6 +29,7 @@
   {% endif %}
   <link rel="icon" href="{% static 'customer/logo.ico' %}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -305,6 +306,18 @@
 
   /* Enable Bootstrap tooltips */
   $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+
+  /* Initialise widgets inside HTMX-swapped fragments (lazy-loaded report sections).
+     bootstrap-table and tooltips only auto-init on first page load, so re-run them
+     for any content swapped in after the fact. Idempotent: skips already-enhanced tables. */
+  document.body.addEventListener('htmx:afterSwap', function () {
+    $('table[data-toggle="table"]').each(function () {
+      if (!$(this).closest('.bootstrap-table').length) {
+        $(this).bootstrapTable();
+      }
+    });
     $('[data-toggle="tooltip"]').tooltip();
   });
 </script>
