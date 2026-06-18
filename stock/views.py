@@ -95,7 +95,7 @@ class ProductHomeView(LoginRequiredMixin, View):
             above_min = qs_with_min.filter(stock_value__gt=F('product__min_stock_level')).count()
             availability = round(100 * above_min / total_with_min, 1) if total_with_min > 0 else 0
 
-            date3 = latest_extension.date - datetime.timedelta(days=7)
+            date3 = latest_extension.date - datetime.timedelta(days=15)
             sold_ids = ProductExtension.objects.filter(
                 date__range=[date3, latest_extension.date], sell_out__gt=0
             ).values_list('product_id', flat=True).distinct()
@@ -135,7 +135,7 @@ class ProductHomeView(LoginRequiredMixin, View):
 
 
 class NoSelloutFragment(LoginRequiredMixin, TemplateView):
-    """Fragment: products that had stock but zero sales in the last 7 days."""
+    """Fragment: products that had stock but zero sales in the last 15 days."""
     template_name = 'stock/fragments/no_sellout.html'
 
     def get_context_data(self, **kwargs):
@@ -145,23 +145,23 @@ class NoSelloutFragment(LoginRequiredMixin, TemplateView):
 
         active_products = Product.objects.filter(active=True).values_list('pk', flat=True).distinct()
         date2 = ProductExtension.objects.latest('date').date
-        date3 = date2 - datetime.timedelta(days=7)
+        date3 = date2 - datetime.timedelta(days=15)
         no_sellout = []
 
         for product in active_products:
             product_data = ProductExtension.objects.filter(product=product)
             if product_data.exists():
-                last_7_data = product_data.filter(date__range=[date3, date2])
-                had_stock = last_7_data.filter(stock_value__gt=0).exists()
-                had_sales = last_7_data.filter(sell_out__gt=0).exists()
+                last_15_data = product_data.filter(date__range=[date3, date2])
+                had_stock = last_15_data.filter(stock_value__gt=0).exists()
+                had_sales = last_15_data.filter(sell_out__gt=0).exists()
                 if had_stock and not had_sales:
                     sold = product_data.filter(sell_out__gt=0)
                     last_sale = sold.last()
                     last_date = last_sale.date if last_sale else datetime.date(datetime.date.today().year, 1, 1)
-                    last_entry = last_7_data.last()
+                    last_entry = last_15_data.last()
                     item_value = last_entry.cost_price * last_entry.stock_value
                     no_sellout.append({
-                        'product': last_7_data.first().product,
+                        'product': last_15_data.first().product,
                         'closing_stock': last_entry.stock_value,
                         'value': item_value,
                         'sold': last_sale.sell_out if last_sale else 0,
