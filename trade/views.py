@@ -1082,6 +1082,11 @@ class TradeWeekly(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 class AuditorView(LoginRequiredMixin, TemplateView):
     template_name = 'core/audit.html'
 
+    # Flag as sales variance if gap between P&L sales and stock sales exceeds this percentage
+    SALES_VARIANCE_THRESHOLD_PCT = Decimal('2.0')
+    # Flag as P&L error if gross_profit deviates from formula by more than this (rounding tolerance)
+    PL_TOLERANCE = Decimal('0.05')
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = "Audit Report"
@@ -1103,65 +1108,64 @@ class AuditorView(LoginRequiredMixin, TemplateView):
 
         trade_qs = TradeDaily.objects.filter(date__range=[start_date, end_date]).order_by('-date')
 
-        zero = Money(0, 'NGN')
         rows = []
-        total_cogs = total_sales = total_expenses = total_computed_net = total_recorded_net = total_diff = 0
-        balanced_count = variance_count = missing_count = 0
+        balanced_count = sales_variance_count = pl_error_count = missing_count = 0
+        total_pl_sales = total_stock_sales = total_sales_gap = Decimal(0)
 
         for trade in trade_qs:
-            product_qs = ProductExtension.objects.filter(date=trade.date).annotate(
-                cogs=F('cost_price') * F('sell_out')
-            )
-            if not product_qs.exists():
+            stock_qs = ProductExtension.objects.filter(date=trade.date)
+            if not stock_qs.exists():
                 missing_count += 1
                 rows.append({'date': trade.date, 'status': 'missing'})
                 continue
 
-            cogs_val      = product_qs.aggregate(total=Sum('cogs'))['total'] or 0
-            sales_val     = trade.sales.amount
-            expenses_val  = trade.direct_expenses.amount + trade.indirect_expenses.amount
-            computed_net  = sales_val - cogs_val - expenses_val
-            recorded_net  = (trade.gross_profit - trade.indirect_expenses).amount
-            difference    = computed_net - recorded_net
-            balanced      = abs(difference) < Decimal('0.01')
+            # Check 1: Sales reconciliation — do stock sell-out amounts match P&L sales?
+            stock_sales = stock_qs.aggregate(total=Sum('sales_amount'))['total'] or Decimal(0)
+            sales_gap = trade.sales.amount - stock_sales
+            sales_gap_pct = (sales_gap / trade.sales.amount * 100) if trade.sales.amount else Decimal(0)
+            sales_ok = abs(sales_gap_pct) <= self.SALES_VARIANCE_THRESHOLD_PCT
 
-            if balanced:
+            # Check 2: P&L integrity — does gross_profit equal sales minus traditional CoGS minus direct expenses?
+            trad_cogs = trade.opening_value.amount + trade.purchase.amount - trade.closing_value.amount
+            pl_diff = trade.sales.amount - trad_cogs - trade.direct_expenses.amount - trade.gross_profit.amount
+            pl_ok = abs(pl_diff) <= self.PL_TOLERANCE
+
+            if pl_ok and sales_ok:
+                status = 'balanced'
                 balanced_count += 1
+            elif not pl_ok:
+                status = 'pl_error'
+                pl_error_count += 1
             else:
-                variance_count += 1
+                status = 'sales_variance'
+                sales_variance_count += 1
 
-            total_cogs         += cogs_val
-            total_sales        += sales_val
-            total_expenses     += expenses_val
-            total_computed_net += computed_net
-            total_recorded_net += recorded_net
-            total_diff         += difference
+            total_pl_sales    += trade.sales.amount
+            total_stock_sales += stock_sales
+            total_sales_gap   += sales_gap
 
             rows.append({
-                'date':         trade.date,
-                'status':       'balanced' if balanced else 'variance',
-                'cogs':         Money(cogs_val, 'NGN'),
-                'sales':        trade.sales,
-                'expenses':     trade.direct_expenses + trade.indirect_expenses,
-                'computed_net': Money(computed_net, 'NGN'),
-                'recorded_net': trade.gross_profit - trade.indirect_expenses,
-                'difference':   Money(difference, 'NGN'),
+                'date':          trade.date,
+                'status':        status,
+                'pl_sales':      trade.sales,
+                'stock_sales':   Money(stock_sales, 'NGN'),
+                'sales_gap':     Money(sales_gap, 'NGN'),
+                'sales_gap_pct': round(sales_gap_pct, 1),
+                'pl_diff':       Money(pl_diff, 'NGN'),
             })
 
-        context['rows']          = rows
-        context['start_date']    = start_date.strftime('%Y-%m-%d')
-        context['end_date']      = end_date.strftime('%Y-%m-%d')
-        context['total_days']    = len(rows)
-        context['balanced_count']= balanced_count
-        context['variance_count']= variance_count
-        context['missing_count'] = missing_count
+        context['rows']                = rows
+        context['start_date']          = start_date.strftime('%Y-%m-%d')
+        context['end_date']            = end_date.strftime('%Y-%m-%d')
+        context['total_days']          = len(rows)
+        context['balanced_count']      = balanced_count
+        context['sales_variance_count']= sales_variance_count
+        context['pl_error_count']      = pl_error_count
+        context['missing_count']       = missing_count
         context['totals'] = {
-            'cogs':         Money(total_cogs, 'NGN'),
-            'sales':        Money(total_sales, 'NGN'),
-            'expenses':     Money(total_expenses, 'NGN'),
-            'computed_net': Money(total_computed_net, 'NGN'),
-            'recorded_net': Money(total_recorded_net, 'NGN'),
-            'difference':   Money(total_diff, 'NGN'),
+            'pl_sales':    Money(total_pl_sales, 'NGN'),
+            'stock_sales': Money(total_stock_sales, 'NGN'),
+            'sales_gap':   Money(total_sales_gap, 'NGN'),
         }
         return context
 

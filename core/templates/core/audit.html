@@ -4,12 +4,13 @@
 
 {% block head %}
 <style>
-  .badge-balanced { background: var(--color-success); color: #fff; }
-  .badge-variance { background: var(--color-danger);  color: #fff; }
-  .badge-missing  { background: var(--color-warning); color: #fff; }
-  .diff-positive  { color: var(--color-success); font-weight: 600; }
-  .diff-negative  { color: var(--color-danger);  font-weight: 600; }
-  .totals-row td  { font-weight: 700; border-top: 2px solid #dee2e6; }
+  .badge-balanced      { background: var(--color-success); color: #fff; }
+  .badge-sales_variance{ background: var(--color-warning); color: #fff; }
+  .badge-pl_error      { background: var(--color-danger);  color: #fff; }
+  .badge-missing       { background: #6c757d;              color: #fff; }
+  .gap-positive { color: var(--color-success); font-weight: 600; }
+  .gap-negative { color: var(--color-danger);  font-weight: 600; }
+  .totals-row td { font-weight: 700; border-top: 2px solid #dee2e6; }
 </style>
 {% endblock %}
 
@@ -54,29 +55,46 @@
 
   <!-- ── Summary tiles ────────────────────────────── -->
   <div class="row mb-4">
-    <div class="col-sm-3 mb-3">
+    <div class="col-sm col-6 mb-3">
       <div class="ds-stat">
         <div class="ds-stat__label"><i class="fa fa-calendar mr-1"></i> Days in Range</div>
         <div class="ds-stat__value">{{ total_days }}</div>
       </div>
     </div>
-    <div class="col-sm-3 mb-3">
+    <div class="col-sm col-6 mb-3">
       <div class="ds-stat ds-stat--success">
         <div class="ds-stat__label"><i class="fa fa-check-circle mr-1"></i> Balanced</div>
         <div class="ds-stat__value">{{ balanced_count }}</div>
       </div>
     </div>
-    <div class="col-sm-3 mb-3">
-      <div class="ds-stat ds-stat--danger">
-        <div class="ds-stat__label"><i class="fa fa-exclamation-circle mr-1"></i> Variance</div>
-        <div class="ds-stat__value">{{ variance_count }}</div>
+    <div class="col-sm col-6 mb-3">
+      <div class="ds-stat ds-stat--accent">
+        <div class="ds-stat__label"><i class="fa fa-exclamation-triangle mr-1"></i> Sales Gap</div>
+        <div class="ds-stat__value">{{ sales_variance_count }}</div>
       </div>
     </div>
-    <div class="col-sm-3 mb-3">
-      <div class="ds-stat ds-stat--accent">
+    <div class="col-sm col-6 mb-3">
+      <div class="ds-stat ds-stat--danger">
+        <div class="ds-stat__label"><i class="fa fa-times-circle mr-1"></i> P&amp;L Error</div>
+        <div class="ds-stat__value">{{ pl_error_count }}</div>
+      </div>
+    </div>
+    <div class="col-sm col-6 mb-3">
+      <div class="ds-stat">
         <div class="ds-stat__label"><i class="fa fa-question-circle mr-1"></i> No Stock Data</div>
         <div class="ds-stat__value">{{ missing_count }}</div>
       </div>
+    </div>
+  </div>
+
+  <!-- ── Legend ────────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__body small text-muted">
+      <strong>How to read this report:</strong>
+      <span class="ml-3"><span class="badge badge-balanced">Balanced</span> Both checks pass.</span>
+      <span class="ml-3"><span class="badge badge-sales_variance">Sales Gap</span> Stock sell-out value differs from P&amp;L sales by more than 2% — check sell-out quantities or selling prices in stock.</span>
+      <span class="ml-3"><span class="badge badge-pl_error">P&amp;L Error</span> Gross profit doesn't match sales − CoGS − direct expenses — check the TradeDaily entry.</span>
+      <span class="ml-3"><span class="badge badge-missing">Missing</span> No stock records for this date.</span>
     </div>
   </div>
 
@@ -92,12 +110,11 @@
           <thead class="thead-accent">
             <tr>
               <th>Date</th>
-              <th class="text-right">CoGS (Stock)</th>
-              <th class="text-right">Sales (P&L)</th>
-              <th class="text-right">Expenses</th>
-              <th class="text-right">Computed Net</th>
-              <th class="text-right">Recorded Net</th>
-              <th class="text-right">Difference</th>
+              <th class="text-right">P&amp;L Sales</th>
+              <th class="text-right">Stock Sales</th>
+              <th class="text-right">Sales Gap</th>
+              <th class="text-right">Gap %</th>
+              <th class="text-right">P&amp;L Diff</th>
               <th class="text-center">Status</th>
             </tr>
           </thead>
@@ -106,49 +123,49 @@
             {% if row.status == 'missing' %}
             <tr class="table-warning">
               <td>{{ row.date }}</td>
-              <td colspan="6" class="text-muted small text-center">No stock data for this date</td>
-              <td class="text-center">
-                <span class="badge badge-missing">Missing</span>
-              </td>
+              <td colspan="5" class="text-muted small text-center">No stock data for this date</td>
+              <td class="text-center"><span class="badge badge-missing">Missing</span></td>
             </tr>
             {% else %}
             <tr>
               <td class="small">{{ row.date }}</td>
-              <td class="text-right small">{{ row.cogs }}</td>
-              <td class="text-right small">{{ row.sales }}</td>
-              <td class="text-right small">{{ row.expenses }}</td>
-              <td class="text-right small">{{ row.computed_net }}</td>
-              <td class="text-right small">{{ row.recorded_net }}</td>
-              <td class="text-right small {% if row.difference.amount == 0 %}diff-positive{% else %}diff-negative{% endif %}">
-                {{ row.difference }}
+              <td class="text-right small">{{ row.pl_sales }}</td>
+              <td class="text-right small">{{ row.stock_sales }}</td>
+              <td class="text-right small {% if row.sales_gap.amount >= 0 %}gap-positive{% else %}gap-negative{% endif %}">
+                {{ row.sales_gap }}
+              </td>
+              <td class="text-right small {% if row.sales_gap.amount >= 0 %}gap-positive{% else %}gap-negative{% endif %}">
+                {{ row.sales_gap_pct }}%
+              </td>
+              <td class="text-right small {% if row.pl_diff.amount == 0 %}gap-positive{% else %}gap-negative{% endif %}">
+                {{ row.pl_diff }}
               </td>
               <td class="text-center">
                 {% if row.status == 'balanced' %}
-                <span class="badge badge-balanced">Balanced</span>
+                  <span class="badge badge-balanced">Balanced</span>
+                {% elif row.status == 'sales_variance' %}
+                  <span class="badge badge-sales_variance">Sales Gap</span>
                 {% else %}
-                <span class="badge badge-variance">Variance</span>
+                  <span class="badge badge-pl_error">P&amp;L Error</span>
                 {% endif %}
               </td>
             </tr>
             {% endif %}
             {% empty %}
             <tr>
-              <td colspan="8" class="text-center text-muted py-4">No trade records in this date range.</td>
+              <td colspan="7" class="text-center text-muted py-4">No trade records in this date range.</td>
             </tr>
             {% endfor %}
 
             {% if rows %}
             <tr class="totals-row">
               <td>Totals</td>
-              <td class="text-right">{{ totals.cogs }}</td>
-              <td class="text-right">{{ totals.sales }}</td>
-              <td class="text-right">{{ totals.expenses }}</td>
-              <td class="text-right">{{ totals.computed_net }}</td>
-              <td class="text-right">{{ totals.recorded_net }}</td>
-              <td class="text-right {% if totals.difference.amount == 0 %}diff-positive{% else %}diff-negative{% endif %}">
-                {{ totals.difference }}
+              <td class="text-right">{{ totals.pl_sales }}</td>
+              <td class="text-right">{{ totals.stock_sales }}</td>
+              <td class="text-right {% if totals.sales_gap.amount >= 0 %}gap-positive{% else %}gap-negative{% endif %}">
+                {{ totals.sales_gap }}
               </td>
-              <td></td>
+              <td colspan="3"></td>
             </tr>
             {% endif %}
           </tbody>
