@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+{% load custom_tags %}
+
+{% block page_title %}Budget Years{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-calendar mr-2"></i>Budget Years</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'budget-year-create' %}">
+          <i class="fa fa-plus"></i> New
+        </a>
+        <a class="staff-nav-link" href="{% url 'target-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-card">
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm mb-0" data-toggle="table" data-pagination="true">
+          <thead class="thead-light">
+            <tr class="text-center">
+              <th>Year</th>
+              <th>Annual Budget</th>
+              <th>Targets Set</th>
+              <th>Total Achieved</th>
+              <th>Budget Achievement</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for by in object_list %}
+            <tr class="text-center">
+              <td>{{ by.year }}</td>
+              <td>{{ by.sales_budget|money_compact }}</td>
+              <td>{{ by.total_target|money_compact }}</td>
+              <td>{{ by.total_achieved|money_compact }}</td>
+              <td>{{ by.budget_achievement }}%</td>
+              <td>
+                <a href="{% url 'budget-year-detail' by.pk %}" title="View {{ by.year }} detail">
+                  <i class="fa fa-eye"></i>
+                </a>
+                <a href="{% url 'budget-year-update' by.pk %}" title="Edit {{ by.year }} budget" class="ml-2">
+                  <i class="fa fa-edit"></i>
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="text-center text-muted py-4">No budget years created yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

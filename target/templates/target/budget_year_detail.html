@@ -1,0 +1,189 @@
+{% extends 'core/base.html' %}
+{% load custom_tags %}
+
+{% block page_title %}{{ object }} — Sales Revenue{% endblock %}
+
+{% block head %}
+<style>
+  .budget-stat { text-align: center; }
+  .budget-stat__value { font-size: 1.5rem; font-weight: 700; color: #283593; }
+  .budget-stat__label { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: #757575; }
+  .variance-pos { color: #2e7d32; }
+  .variance-neg { color: #c62828; }
+  .kpi-subheader { font-size: .75rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- Nav -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-crosshairs mr-2"></i>{{ object }} — Sales Revenue</span>
+      <div class="d-flex staff-nav-bar">
+        {% if months_remaining %}
+        <a class="staff-nav-link" href="{% url 'sales-target-create' object.pk %}">
+          <i class="fa fa-plus"></i> Add Month
+        </a>
+        {% endif %}
+        <a class="staff-nav-link" href="{% url 'budget-year-update' object.pk %}">
+          <i class="fa fa-edit"></i> Edit Budget
+        </a>
+        <a class="staff-nav-link" href="{% url 'budget-year-list' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary stats -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__body">
+      <div class="row">
+        <div class="col-6 col-md-3 budget-stat mb-3">
+          <div class="budget-stat__value">{{ object.sales_budget|money_compact }}</div>
+          <div class="budget-stat__label">Annual Budget</div>
+        </div>
+        <div class="col-6 col-md-3 budget-stat mb-3">
+          <div class="budget-stat__value">{{ object.total_target|money_compact }}</div>
+          <div class="budget-stat__label">Targets Set ({{ object.budget_coverage }}%)</div>
+        </div>
+        <div class="col-6 col-md-3 budget-stat mb-3">
+          <div class="budget-stat__value">{{ object.total_achieved|money_compact }}</div>
+          <div class="budget-stat__label">Total Achieved</div>
+        </div>
+        <div class="col-6 col-md-3 budget-stat mb-3">
+          <div class="budget-stat__value">{{ object.budget_achievement }}%</div>
+          <div class="budget-stat__label">Budget Achievement</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly table -->
+  <div class="ds-card">
+    <div class="ds-card__header"><i class="fa fa-table mr-2"></i>Monthly Breakdown</div>
+    <div class="ds-card__body p-0">
+      {% if monthly_rows %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm mb-0">
+          <thead class="thead-light">
+            <tr class="text-center">
+              <th>Month</th>
+              <th>Target</th>
+              <th>Actual Sales</th>
+              <th>Variance</th>
+              <th>Performance</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in monthly_rows %}
+            <tr class="text-center">
+              <td>{{ row.st.get_month_display }}</td>
+              <td>{{ row.st.target|money_compact }}</td>
+              <td>{{ row.actual|money_compact }}</td>
+              <td class="{% if row.variance.amount >= 0 %}variance-pos{% else %}variance-neg{% endif %}">{{ row.variance|money_compact }}</td>
+              <td>{{ row.performance }}%</td>
+              <td>
+                <a href="{% url 'sales-target-update' row.st.pk %}" title="Edit {{ row.st.get_month_display }} target">
+                  <i class="fa fa-edit"></i>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center text-muted py-4">
+        <i class="fa fa-inbox fa-2x d-block mb-2"></i>
+        No monthly targets yet.
+        <a href="{% url 'sales-target-create' object.pk %}" class="d-block mt-1">Add first month &rarr;</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- KPI Annual Budgets -->
+  <div class="ds-card mt-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-tachometer mr-2"></i>KPI Annual Budgets</span>
+      <a class="staff-nav-link" href="{% url 'kpi-budget-create' object.pk %}">
+        <i class="fa fa-plus"></i> Add
+      </a>
+    </div>
+    <div class="ds-card__body p-0">
+      {% if kpi_budgets %}
+      <table class="table table-bordered table-sm mb-0">
+        <thead class="thead-light">
+          <tr class="text-center"><th>KPI</th><th>Annual Budget / Target</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for kb in kpi_budgets %}
+          <tr class="text-center">
+            <td>{{ kb.get_metric_display }}</td>
+            <td>{% if kb.is_money %}{{ kb.annual_value|money_compact }}{% else %}{{ kb.annual_value }}%{% endif %}</td>
+            <td><a href="{% url 'kpi-budget-update' kb.pk %}" title="Edit {{ kb.get_metric_display }}"><i class="fa fa-edit"></i></a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="text-center text-muted py-3">
+        No KPI budgets set. <a href="{% url 'kpi-budget-create' object.pk %}">Add one &rarr;</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- KPI Monthly Tracking -->
+  <div class="ds-card mt-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-line-chart mr-2"></i>KPI Monthly Tracking</span>
+      <a class="staff-nav-link" href="{% url 'kpi-monthly-create' object.pk %}">
+        <i class="fa fa-plus"></i> Add Monthly Target
+      </a>
+    </div>
+    <div class="ds-card__body p-0">
+      {% if kpi_rows %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm mb-0">
+          <thead class="thead-light">
+            <tr class="text-center">
+              <th>Month</th>
+              {% for col in kpi_columns %}<th colspan="4">{{ col.label }}</th>{% endfor %}
+            </tr>
+            <tr class="text-center text-muted kpi-subheader">
+              <th>Month</th>
+              {% for col in kpi_columns %}<th>Target</th><th>Actual</th><th>Variance</th><th>Edit</th>{% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in kpi_rows %}
+            <tr class="text-center">
+              <td>{{ row.month_name }}</td>
+              {% for cell in row.cells %}
+              <td>{% if cell.target is not None %}{% if cell.is_money %}{{ cell.target|money_compact }}{% else %}{{ cell.target }}%{% endif %}{% else %}&mdash;{% endif %}</td>
+              <td>{% if cell.actual is not None %}{% if cell.is_money %}{{ cell.actual|money_compact }}{% else %}{{ cell.actual }}%{% endif %}{% else %}&mdash;{% endif %}</td>
+              <td class="{% if cell.on_target %}variance-pos{% elif cell.on_target == False %}variance-neg{% endif %}">
+                {% if cell.variance is not None %}{% if cell.is_money %}{{ cell.variance|money_compact }}{% else %}{{ cell.variance }}%{% endif %}{% else %}&mdash;{% endif %}
+              </td>
+              <td>{% if cell.target_pk %}<a href="{% url 'kpi-monthly-update' cell.target_pk %}" title="Edit"><i class="fa fa-edit"></i></a>{% else %}&mdash;{% endif %}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center text-muted py-3">
+        No KPI monthly targets. <a href="{% url 'kpi-monthly-create' object.pk %}">Add one &rarr;</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

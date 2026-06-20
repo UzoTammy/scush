@@ -63,7 +63,10 @@ def _growth_pct(current, previous):
 
 def _build_kpi_comparison(year, month_num, actual_margin, actual_lc, actual_ac, actual_growth=None):
     """Return a structured target-vs-actual KPI list for the given period, or None if no target exists."""
-    from target.models import PositionKPIMonthly
+    try:
+        from target.models import PositionKPIMonthly
+    except ImportError:
+        return None
     qs = PositionKPIMonthly.objects.filter(year=year, month=month_num)
     if not qs.exists():
         return None

@@ -1,17 +1,32 @@
 {% extends 'core/base.html' %}
+{% load custom_tags %}
 
 {% block page_title %}Targets &amp; Achievements{% endblock %}
+
+{% block head %}
+<style>
+  .budget-stat { text-align: center; }
+  .budget-stat__value { font-size: 1.6rem; font-weight: 700; color: #283593; }
+  .budget-stat__label { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: #757575; }
+  .variance-pos { color: #2e7d32; }
+  .variance-neg { color: #c62828; }
+  .kpi-subheader { font-size: .75rem; }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
 
-  <!-- ── Nav strip ──────────────────────────────────── -->
+  <!-- Nav -->
   <div class="ds-card mb-4">
-    <div class="ds-card__header d-flex justify-content-between align-items-center">
-      <span><i class="fa fa-crosshairs mr-2"></i>Targets &amp; Achievements</span>
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-crosshairs mr-2"></i>Targets &amp; Achievements &mdash; {{ current_year_plain }}</span>
       <div class="d-flex staff-nav-bar">
-        <a class="staff-nav-link" href="{% url 'kpi-list' %}">
-          <i class="fa fa-list-alt"></i> KPI Targets
+        <a class="staff-nav-link" href="{% url 'budget-year-list' %}">
+          <i class="fa fa-calendar"></i> All Budget Years
+        </a>
+        <a class="staff-nav-link" href="{% url 'budget-year-create' %}">
+          <i class="fa fa-plus"></i> New Budget Year
         </a>
         <a class="staff-nav-link" href="{% url 'home' %}">
           <i class="fa fa-times-circle"></i> Return
@@ -20,77 +35,279 @@
     </div>
   </div>
 
-  <!-- ── Margin chart ───────────────────────────────── -->
-  {% if margin_days %}
+  {% if budget_year %}
+
+  <!-- Annual budget summary -->
   <div class="ds-card mb-4">
-    <div class="ds-card__header">
-      <span><i class="fa fa-line-chart mr-2"></i>Margin Ratio — {{ margin_month }} {{ request.year }}</span>
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-pie-chart mr-2"></i>{{ budget_year }} — Sales Revenue</span>
+      <a class="staff-nav-link" href="{% url 'budget-year-update' budget_year.pk %}">
+        <i class="fa fa-edit"></i> Edit Budget
+      </a>
     </div>
     <div class="ds-card__body">
-      <div class="chart-wrap">
-        <canvas id="marginChart"></canvas>
+      <div class="row">
+        <div class="col-6 col-md-3 budget-stat mb-3">
+          <div class="budget-stat__value">{{ budget_year.sales_budget|money_compact }}</div>
+          <div class="budget-stat__label">Annual Budget</div>
+        </div>
+        <div class="col-6 col-md-3 budget-stat mb-3">
+          <div class="budget-stat__value">{{ budget_year.total_target|money_compact }}</div>
+          <div class="budget-stat__label">Targets Set</div>
+        </div>
+        <div class="col-6 col-md-3 budget-stat mb-3">
+          <div class="budget-stat__value">{{ budget_year.total_achieved|money_compact }}</div>
+          <div class="budget-stat__label">Total Achieved</div>
+        </div>
+        <div class="col-6 col-md-3 budget-stat mb-3">
+          <div class="budget-stat__value">{{ budget_year.budget_achievement }}%</div>
+          <div class="budget-stat__label">Budget Achievement</div>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Monthly breakdown -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-table mr-2"></i>Monthly Breakdown</span>
+      {% if months_remaining %}
+      <a class="staff-nav-link" href="{% url 'sales-target-create' budget_year.pk %}">
+        <i class="fa fa-plus"></i> Add Month
+      </a>
+      {% endif %}
+    </div>
+    <div class="ds-card__body p-0">
+      {% if monthly_rows %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm mb-0">
+          <thead class="thead-light">
+            <tr class="text-center">
+              <th>Month</th>
+              <th>Target</th>
+              <th>Achieved</th>
+              <th>Variance</th>
+              <th>Performance</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in monthly_rows %}
+            <tr class="text-center">
+              <td>{{ row.st.get_month_display }}</td>
+              <td>{{ row.st.target|money_compact }}</td>
+              <td>{{ row.actual|money_compact }}</td>
+              <td class="{% if row.variance.amount >= 0 %}variance-pos{% else %}variance-neg{% endif %}">
+                {{ row.variance|money_compact }}
+              </td>
+              <td>{{ row.performance }}%</td>
+              <td>
+                <a href="{% url 'sales-target-update' row.st.pk %}" title="Edit target">
+                  <i class="fa fa-edit"></i>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center text-muted py-4">
+        <i class="fa fa-inbox fa-2x d-block mb-2"></i>
+        No monthly targets set yet.
+        <a href="{% url 'sales-target-create' budget_year.pk %}" class="d-block mt-1">Add first month &rarr;</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- KPI Annual Budgets -->
+  {% if kpi_budgets %}
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-tachometer mr-2"></i>KPI Annual Budgets</span>
+      <a class="staff-nav-link" href="{% url 'kpi-budget-create' budget_year.pk %}">
+        <i class="fa fa-plus"></i> Add KPI Budget
+      </a>
+    </div>
+    <div class="ds-card__body p-0">
+      <table class="table table-bordered table-sm mb-0">
+        <thead class="thead-light">
+          <tr class="text-center"><th>KPI</th><th>Annual Budget / Target</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for kb in kpi_budgets %}
+          <tr class="text-center">
+            <td>{{ kb.get_metric_display }}</td>
+            <td>{% if kb.is_money %}{{ kb.annual_value|money_compact }}{% else %}{{ kb.annual_value }}%{% endif %}</td>
+            <td><a href="{% url 'kpi-budget-update' kb.pk %}" title="Edit"><i class="fa fa-edit"></i></a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
   {% else %}
-  <div class="ds-card">
-    <div class="ds-card__body text-center py-5">
-      <i class="fa fa-bar-chart fa-3x text-muted mb-3"></i>
-      <h5 class="text-muted">No margin data available for October.</h5>
+  <div class="ds-card mb-4">
+    <div class="ds-card__body text-center text-muted py-3">
+      <i class="fa fa-tachometer mr-1"></i> No KPI annual budgets set.
+      <a href="{% url 'kpi-budget-create' budget_year.pk %}" class="ml-2">Add one &rarr;</a>
     </div>
   </div>
   {% endif %}
 
+  <!-- KPI Monthly Tracking -->
+  {% if kpi_rows %}
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-line-chart mr-2"></i>KPI Monthly Tracking</span>
+      <a class="staff-nav-link" href="{% url 'kpi-monthly-create' budget_year.pk %}">
+        <i class="fa fa-plus"></i> Add Monthly Target
+      </a>
+    </div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm mb-0">
+          <thead class="thead-light">
+            <tr class="text-center">
+              <th>Month</th>
+              {% for col in kpi_columns %}
+              <th colspan="4">{{ col.label }}</th>
+              {% endfor %}
+            </tr>
+            <tr class="text-center text-muted kpi-subheader">
+              <th>Month</th>
+              {% for col in kpi_columns %}
+              <th>Target</th><th>Actual</th><th>Variance</th><th>Edit</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in kpi_rows %}
+            <tr class="text-center">
+              <td>{{ row.month_name }}</td>
+              {% for cell in row.cells %}
+              <td>{% if cell.target is not None %}{% if cell.is_money %}{{ cell.target|money_compact }}{% else %}{{ cell.target }}%{% endif %}{% else %}&mdash;{% endif %}</td>
+              <td>{% if cell.actual is not None %}{% if cell.is_money %}{{ cell.actual|money_compact }}{% else %}{{ cell.actual }}%{% endif %}{% else %}&mdash;{% endif %}</td>
+              <td class="{% if cell.on_target %}variance-pos{% elif cell.on_target == False %}variance-neg{% endif %}">
+                {% if cell.variance is not None %}{% if cell.is_money %}{{ cell.variance|money_compact }}{% else %}{{ cell.variance }}%{% endif %}{% else %}&mdash;{% endif %}
+              </td>
+              <td>{% if cell.target_pk %}<a href="{% url 'kpi-monthly-update' cell.target_pk %}" title="Edit"><i class="fa fa-edit"></i></a>{% else %}&mdash;{% endif %}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="ds-card mb-4">
+    <div class="ds-card__body text-center text-muted py-3">
+      <i class="fa fa-line-chart mr-1"></i> No KPI monthly targets set.
+      <a href="{% url 'kpi-monthly-create' budget_year.pk %}" class="ml-2">Add one &rarr;</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Chart -->
+  {% if chart_labels %}
+  <div class="ds-card mb-4">
+    <div class="ds-card__header">
+      <i class="fa fa-bar-chart mr-2"></i>Target vs Achieved — {{ current_year_plain }}
+    </div>
+    <div class="ds-card__body">
+      <div class="chart-wrap">
+        <canvas id="salesChart"></canvas>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  {% else %}
+  <!-- No budget year for current year -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__body text-center py-5">
+      <i class="fa fa-calendar-times-o fa-3x text-muted mb-3 d-block"></i>
+      <h5 class="text-muted">No budget set for {{ current_year_plain }}.</h5>
+      <a href="{% url 'budget-year-create' %}" class="btn btn-primary mt-2">
+        <i class="fa fa-plus mr-1"></i>Create {{ current_year_plain }} Budget
+      </a>
+    </div>
+  </div>
+
+  {% if all_budget_years %}
+  <div class="ds-card">
+    <div class="ds-card__header"><i class="fa fa-history mr-2"></i>Previous Budget Years</div>
+    <div class="ds-card__body p-0">
+      <table class="table table-bordered table-sm mb-0">
+        <thead class="thead-light">
+          <tr class="text-center"><th>Year</th><th>Annual Budget</th><th>Achieved</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for by in all_budget_years %}
+          <tr class="text-center">
+            <td>{{ by.year }}</td>
+            <td>{{ by.sales_budget|money_compact }}</td>
+            <td>{{ by.total_achieved|money_compact }}</td>
+            <td><a href="{% url 'budget-year-detail' by.pk %}" title="View {{ by.year }} budget"><i class="fa fa-eye"></i></a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+  {% endif %}
+
 </div>
 
-{% if margin_days %}
+{% if chart_labels %}
 <script>
 (function () {
-  var ctx = document.getElementById('marginChart');
+  var ctx = document.getElementById('salesChart');
   if (!ctx) return;
   new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
-      labels: {{ margin_days|safe }},
-      datasets: [{
-        label: 'Margin Ratio (%)',
-        data: {{ margin_values|safe }},
-        borderColor: '#283593',
-        backgroundColor: 'rgba(40,53,147,0.08)',
-        pointBackgroundColor: '#f4511e',
-        pointBorderColor: '#fff',
-        pointRadius: 5,
-        pointHoverRadius: 7,
-        borderWidth: 2.5,
-        tension: 0.4,
-        fill: true
-      }]
+      labels: {{ chart_labels|safe }},
+      datasets: [
+        {
+          label: 'Target',
+          data: {{ chart_targets|safe }},
+          backgroundColor: 'rgba(40,53,147,0.6)',
+          borderColor: '#283593',
+          borderWidth: 1
+        },
+        {
+          label: 'Achieved',
+          data: {{ chart_achieved|safe }},
+          backgroundColor: 'rgba(46,125,50,0.6)',
+          borderColor: '#2e7d32',
+          borderWidth: 1
+        }
+      ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#283593',
-          titleColor: '#fff',
-          bodyColor: 'rgba(255,255,255,0.85)',
-          padding: 10,
-          callbacks: {
-            label: function(ctx) { return ' ' + ctx.parsed.y.toFixed(2) + '%'; }
-          }
-        }
+        legend: { position: 'top' },
+        tooltip: { padding: 10 }
       },
       scales: {
-        x: {
-          title: { display: true, text: 'Day of month', color: '#757575' },
-          grid: { color: 'rgba(0,0,0,0.05)' },
-          ticks: { color: '#757575' }
-        },
+        x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#757575' } },
         y: {
-          title: { display: true, text: 'Margin %', color: '#757575' },
           grid: { color: 'rgba(0,0,0,0.05)' },
-          ticks: { color: '#757575' }
+          ticks: {
+            color: '#757575',
+            callback: function(v) {
+              if (v >= 1e9) return (v/1e9).toFixed(1) + 'B';
+              if (v >= 1e6) return (v/1e6).toFixed(1) + 'M';
+              if (v >= 1e3) return (v/1e3).toFixed(0) + 'K';
+              return v;
+            }
+          }
         }
       }
     }

@@ -124,3 +124,23 @@ def array_index(value, index):
 def make_list(value, separator):
     return value.split(separator)
 
+
+@register.filter
+def money_compact(value):
+    """Format a Money or Decimal/float as ₦XM / ₦XB (negative-safe)."""
+    try:
+        amount = float(value.amount) if hasattr(value, 'amount') else float(value)
+    except (TypeError, ValueError, AttributeError):
+        return value
+    negative = amount < 0
+    amount = abs(amount)
+    if amount >= 1e9:
+        formatted = f'₦{amount / 1e9:.2f}B'
+    elif amount >= 1e6:
+        formatted = f'₦{amount / 1e6:.2f}M'
+    elif amount >= 1e3:
+        formatted = f'₦{amount / 1e3:.2f}K'
+    else:
+        formatted = f'₦{amount:,.2f}'
+    return f'-{formatted}' if negative else formatted
+
