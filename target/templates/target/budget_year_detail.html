@@ -84,7 +84,7 @@
               <td>{{ row.st.get_month_display }}</td>
               <td>{{ row.st.target|money_compact }}</td>
               <td>{{ row.actual|money_compact }}</td>
-              <td class="{% if row.variance.amount >= 0 %}variance-pos{% else %}variance-neg{% endif %}">{{ row.variance|money_compact }}</td>
+              <td class="{% if row.variance.amount >= 0 %}variance-pos{% else %}variance-neg{% endif %}">{{ row.variance|abs|money_compact }}</td>
               <td>{{ row.performance }}%</td>
               <td>
                 <a href="{% url 'sales-target-update' row.st.pk %}" title="Edit {{ row.st.get_month_display }} target">
@@ -185,5 +185,72 @@
     </div>
   </div>
 
+  {% if chart_labels %}
+  <div class="ds-card mt-4">
+    <div class="ds-card__header">
+      <i class="fa fa-bar-chart mr-2"></i>Target vs Achieved — {{ object.year }}
+    </div>
+    <div class="ds-card__body">
+      <div class="chart-wrap">
+        <canvas id="salesChart"></canvas>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
 </div>
+
+{% if chart_labels %}
+<script>
+(function () {
+  var ctx = document.getElementById('salesChart');
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ chart_labels|safe }},
+      datasets: [
+        {
+          label: 'Target',
+          data: {{ chart_targets|safe }},
+          backgroundColor: 'rgba(40,53,147,0.6)',
+          borderColor: '#283593',
+          borderWidth: 1
+        },
+        {
+          label: 'Achieved',
+          data: {{ chart_achieved|safe }},
+          backgroundColor: 'rgba(46,125,50,0.6)',
+          borderColor: '#2e7d32',
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: { padding: 10 }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#757575' } },
+        y: {
+          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: {
+            color: '#757575',
+            callback: function(v) {
+              if (v >= 1e9) return (v/1e9).toFixed(1) + 'B';
+              if (v >= 1e6) return (v/1e6).toFixed(1) + 'M';
+              if (v >= 1e3) return (v/1e3).toFixed(0) + 'K';
+              return v;
+            }
+          }
+        }
+      }
+    }
+  });
+})();
+</script>
+{% endif %}
 {% endblock %}

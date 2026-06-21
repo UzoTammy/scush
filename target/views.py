@@ -145,8 +145,12 @@ def _build_kpi_data(budget_year):
             actual     = _get_metric_actual(metric, budget_year.year, month_num, trade_m, daily_qs)
             variance   = on_target = None
             if actual is not None and target is not None:
-                variance  = round(float(actual) - float(target), 2)
-                on_target = (variance <= 0) if metric in EXPENSE_METRICS else (variance >= 0)
+                if metric in EXPENSE_METRICS:
+                    signed = round(float(target) - float(actual), 2)
+                else:
+                    signed = round(float(actual) - float(target), 2)
+                on_target = signed >= 0
+                variance  = abs(signed)
             cells.append({
                 'target':    target,
                 'target_pk': target_pk,
@@ -214,13 +218,17 @@ class BudgetYearDetailView(LoginRequiredMixin, DetailView):
         budget_year = self.object
         monthly_qs  = budget_year.monthly_targets.order_by('month')
         months_set  = {st.month for st in monthly_qs}
+        rows        = _enrich_monthly(budget_year, monthly_qs)
         kpi_cols, kpi_rows = _build_kpi_data(budget_year)
         context.update({
-            'monthly_rows':     _enrich_monthly(budget_year, monthly_qs),
+            'monthly_rows':     rows,
             'months_remaining': [m for m in range(1, 13) if m not in months_set],
             'kpi_budgets':      budget_year.kpi_budgets.all(),
             'kpi_columns':      kpi_cols,
             'kpi_rows':         kpi_rows,
+            'chart_labels':     json.dumps([r['st'].get_month_display()[:3] for r in rows]),
+            'chart_targets':    json.dumps([float(r['st'].target.amount) for r in rows]),
+            'chart_achieved':   json.dumps([float(r['actual'].amount) for r in rows]),
         })
         return context
 
