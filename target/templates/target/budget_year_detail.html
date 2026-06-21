@@ -11,6 +11,9 @@
   .variance-pos { color: #2e7d32; }
   .variance-neg { color: #c62828; }
   .kpi-subheader { font-size: .75rem; }
+  .collapse-toggle { cursor: pointer; }
+  .collapse-toggle .fa-chevron-up { transition: transform .2s ease; }
+  .collapse-toggle.collapsed .fa-chevron-up { transform: rotate(180deg); }
 </style>
 {% endblock %}
 
@@ -39,6 +42,11 @@
 
   <!-- Summary stats -->
   <div class="ds-card mb-4">
+    <div class="ds-card__header collapse-toggle" data-toggle="collapse" data-target="#summaryStatsBody">
+      <span><i class="fa fa-pie-chart mr-2"></i>Annual Budget Summary</span>
+      <i class="fa fa-chevron-up float-right mt-1"></i>
+    </div>
+    <div id="summaryStatsBody" class="collapse show">
     <div class="ds-card__body">
       <div class="row">
         <div class="col-6 col-md-3 budget-stat mb-3">
@@ -59,6 +67,45 @@
         </div>
       </div>
     </div>
+    </div><!-- /#summaryStatsBody -->
+  </div>
+
+  <!-- KPI Annual Budgets -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center collapse-toggle collapsed"
+         data-toggle="collapse" data-target="#kpiBudgetBodyDetail">
+      <span><i class="fa fa-tachometer mr-2"></i>KPI Annual Budgets</span>
+      <div class="d-flex align-items-center staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'kpi-budget-create' object.pk %}" onclick="event.stopPropagation()">
+          <i class="fa fa-plus"></i> Add
+        </a>
+        <i class="fa fa-chevron-up ml-3"></i>
+      </div>
+    </div>
+    <div id="kpiBudgetBodyDetail" class="collapse">
+    <div class="ds-card__body p-0">
+      {% if kpi_budgets %}
+      <table class="table table-bordered table-sm mb-0">
+        <thead class="thead-light">
+          <tr class="text-center"><th>KPI</th><th>Annual Budget / Target</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          {% for kb in kpi_budgets %}
+          <tr class="text-center">
+            <td>{{ kb.get_metric_display }}</td>
+            <td>{% if kb.is_money %}{{ kb.annual_value|money_compact }}{% else %}{{ kb.annual_value }}%{% endif %}</td>
+            <td><a href="{% url 'kpi-budget-update' kb.pk %}" title="Edit {{ kb.get_metric_display }}"><i class="fa fa-edit"></i></a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="text-center text-muted py-3">
+        No KPI budgets set. <a href="{% url 'kpi-budget-create' object.pk %}">Add one &rarr;</a>
+      </div>
+      {% endif %}
+    </div>
+    </div><!-- /#kpiBudgetBodyDetail -->
   </div>
 
   <!-- Monthly table -->
@@ -101,38 +148,6 @@
         <i class="fa fa-inbox fa-2x d-block mb-2"></i>
         No monthly targets yet.
         <a href="{% url 'sales-target-create' object.pk %}" class="d-block mt-1">Add first month &rarr;</a>
-      </div>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- KPI Annual Budgets -->
-  <div class="ds-card mt-4">
-    <div class="ds-card__header d-flex justify-content-between align-items-center">
-      <span><i class="fa fa-tachometer mr-2"></i>KPI Annual Budgets</span>
-      <a class="staff-nav-link" href="{% url 'kpi-budget-create' object.pk %}">
-        <i class="fa fa-plus"></i> Add
-      </a>
-    </div>
-    <div class="ds-card__body p-0">
-      {% if kpi_budgets %}
-      <table class="table table-bordered table-sm mb-0">
-        <thead class="thead-light">
-          <tr class="text-center"><th>KPI</th><th>Annual Budget / Target</th><th>Actions</th></tr>
-        </thead>
-        <tbody>
-          {% for kb in kpi_budgets %}
-          <tr class="text-center">
-            <td>{{ kb.get_metric_display }}</td>
-            <td>{% if kb.is_money %}{{ kb.annual_value|money_compact }}{% else %}{{ kb.annual_value }}%{% endif %}</td>
-            <td><a href="{% url 'kpi-budget-update' kb.pk %}" title="Edit {{ kb.get_metric_display }}"><i class="fa fa-edit"></i></a></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      {% else %}
-      <div class="text-center text-muted py-3">
-        No KPI budgets set. <a href="{% url 'kpi-budget-create' object.pk %}">Add one &rarr;</a>
       </div>
       {% endif %}
     </div>
