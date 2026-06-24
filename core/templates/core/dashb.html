@@ -10,9 +10,14 @@
   <div class="ds-card mb-4">
     <div class="ds-card__header d-flex justify-content-between align-items-center">
       <span><i class="fa fa-tachometer mr-2"></i>Dashboard</span>
-      <a class="staff-nav-link" href="{% url 'home' %}">
-        <i class="fa fa-times-circle"></i> Return
-      </a>
+      <div class="d-flex gap-2">
+        <a class="staff-nav-link" href="{% url 'business-summary' %}">
+          <i class="fa fa-bar-chart"></i> Business Summary
+        </a>
+        <a class="staff-nav-link ml-3" href="{% url 'home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
   </div>
 

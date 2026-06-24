@@ -941,8 +941,34 @@ class BusinessSummaryView(LoginRequiredMixin, TemplateView):
                     business_summary[key] = value*dollar_rate
 
         context['business_summary'] = business_summary
+
+        rent_paid, rent_due = business_summary['Rent']
+        levy_paid, levy_due = business_summary['Levy']
+
+        context['bs'] = {
+            'sales':         business_summary['Sales'],
+            'profit':        business_summary['Profit'],
+            'admin_exp':     business_summary['Admin Expenses'],
+            'rent_paid':     rent_paid,
+            'rent_due':      rent_due,
+            'rent_pct':      min(float(rent_paid / rent_due * 100), 100) if rent_due else 0,
+            'levy_paid':     levy_paid,
+            'levy_due':      levy_due,
+            'levy_pct':      min(float(levy_paid / levy_due * 100), 100) if levy_due else 0,
+            'payout':        business_summary['Payout'],
+            'self_rent':     business_summary['Self Rent'],
+            'welfare':       business_summary['Welfare'],
+            'current_asset': business_summary['Current Asset'],
+            'capital':       business_summary['Capital'],
+            'debtors':       business_summary['Debtors'],
+            'liability':     business_summary['Liability'],
+            'bank_biz':      business_summary['Bank Balance'],
+            'bank_admin':    business_summary['Admin Balance'],
+            'cash':          business_summary['Cash'],
+            'stock':         business_summary['Stock'],
+        }
         return context
-    
+
 class ScushProfileView(TemplateView):
     template_name = 'core/project.html'
 
