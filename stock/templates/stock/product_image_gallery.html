@@ -1,0 +1,189 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Product Images{% endblock %}
+
+{% block head %}
+<style>
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 1rem;
+  }
+  .gallery-item {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .gallery-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    text-decoration: none;
+    color: inherit;
+  }
+  .gallery-item--inactive {
+    border: 2px solid var(--color-danger);
+  }
+  .gallery-item--inactive .gallery-item__name {
+    color: var(--color-muted);
+  }
+  .gallery-item__thumb {
+    position: relative;
+  }
+  .gallery-item__thumb img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    display: block;
+  }
+  .gallery-item--inactive .gallery-item__thumb img {
+    filter: grayscale(100%);
+  }
+  .gallery-item__inactive-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(229, 57, 53, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .gallery-item__inactive-badge {
+    background: var(--color-danger);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+  .gallery-item__body {
+    padding: 0.45rem 0.5rem 0.55rem;
+  }
+  .gallery-item__name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.3rem;
+  }
+  .gallery-item__stock {
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
+  .stock--ok      { color: var(--color-success); }
+  .stock--low     { color: var(--color-danger);  }
+  .stock--over    { color: var(--color-warning); }
+  .stock--unset   { color: var(--color-muted);   }
+  .stock--none    { color: var(--color-muted);   }
+
+  .az-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .az-nav__btn {
+    display: inline-block;
+    min-width: 2rem;
+    text-align: center;
+    padding: 0.2rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    background: #fff;
+    text-decoration: none;
+    line-height: 1.4;
+    transition: background 0.12s, color 0.12s;
+  }
+  .az-nav__btn:hover {
+    background: var(--color-primary);
+    color: #fff;
+    text-decoration: none;
+  }
+  .az-nav__btn--active {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+  }
+  .az-nav__btn--all {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+  .az-nav__btn--all.az-nav__btn--active,
+  .az-nav__btn--all:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-image mr-2"></i>Product Images ({{ object_list|length }})</span>
+      <a class="staff-nav-link" href="{% url 'stock-report-source' 'All' %}">
+        <i class="fa fa-times-circle"></i> Return
+      </a>
+    </div>
+    <div class="az-nav">
+      <a href="?letter=ALL" class="az-nav__btn az-nav__btn--all {% if active_letter == 'ALL' %}az-nav__btn--active{% endif %}">All</a>
+      {% for letter in letters %}
+      <a href="?letter={{ letter }}" class="az-nav__btn {% if letter == active_letter %}az-nav__btn--active{% endif %}">{{ letter }}</a>
+      {% endfor %}
+    </div>
+    <div class="ds-card__body">
+      <div class="gallery-grid">
+        {% for product in object_list %}
+        {% with stock=product.current_stock status=product.stock_status %}
+        <a class="gallery-item{% if not product.active %} gallery-item--inactive{% endif %}"
+           href="{% url 'product-detail' product.pk %}"
+           title="{{ product }}">
+          <div class="gallery-item__thumb">
+            <img src="{{ product.image.url }}" alt="{{ product }}">
+            {% if not product.active %}
+            <div class="gallery-item__inactive-overlay">
+              <span class="gallery-item__inactive-badge"><i class="fa fa-ban mr-1"></i>Inactive</span>
+            </div>
+            {% endif %}
+          </div>
+          <div class="gallery-item__body">
+            <div class="gallery-item__name">{{ product }}</div>
+            <div class="gallery-item__stock
+              {% if stock is None %}stock--none
+              {% elif status == 'LOW' %}stock--low
+              {% elif status == 'OVER' %}stock--over
+              {% elif status == 'OK' %}stock--ok
+              {% else %}stock--unset{% endif %}">
+              {% if stock is None %}
+                <i class="fa fa-minus-circle mr-1"></i>No data
+              {% else %}
+                <i class="fa fa-cubes mr-1"></i>{{ stock }}
+              {% endif %}
+            </div>
+          </div>
+        </a>
+        {% endwith %}
+        {% empty %}
+        <p class="text-muted">No products found.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

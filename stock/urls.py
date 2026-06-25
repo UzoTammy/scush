@@ -20,6 +20,7 @@ urlpatterns = [
     path('<int:pk>/stock-card/add/', StockMovementCreateView.as_view(), name='stock-movement-add'),
     path('home/footnote/', PriceUpdateFootNote.as_view(), name='price-update-footnote'),
     
+    path('images/', ProductImageGalleryView.as_view(), name='product-image-gallery'),
     path('stock/report/', ReportHomeView.as_view(), name='stock-report'),
     path('stock/<str:source>/', ReportStockCategory.as_view(), name='stock-report-source'),
     path('stock/<int:pk>/update/', ProductExtensionUpdateView.as_view(), name='product-ext-update'),

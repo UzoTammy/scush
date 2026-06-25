@@ -262,6 +262,30 @@ class ReportStockCategory(LoginRequiredMixin, ListView):
             qs = qs.filter(active=True)
         return qs
 
+class ProductImageGalleryView(LoginRequiredMixin, ListView):
+    model = Product
+    template_name = 'stock/product_image_gallery.html'
+    ordering = 'name'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        letter = self.request.GET.get('letter', 'A').strip().upper()
+        if letter != 'ALL':
+            qs = qs.filter(name__istartswith=letter)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        all_letters = sorted(set(
+            n[0].upper()
+            for n in Product.objects.values_list('name', flat=True)
+            if n
+        ))
+        context['letters'] = all_letters
+        context['active_letter'] = self.request.GET.get('letter', 'A').strip().upper()
+        return context
+
+
 class ProductDetailedView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Product
 
