@@ -199,9 +199,6 @@ class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         return False
 
-class RequestHome(LoginRequiredMixin, TemplateView):
-    template_name = 'customer/requests/request.html'
-
 class CustomerHelpView(TemplateView):
     template_name = 'customer/customer_help.html'
 

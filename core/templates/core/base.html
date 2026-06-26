@@ -70,9 +70,7 @@
     <a class="ds-sidebar__link" href="{% url 'apply-home' %}">
       <i class="fa fa-pencil-square"></i> Applicants
     </a>
-    <a class="ds-sidebar__link" href="{% url 'request-home' %}">
-      <i class="fa fa-list-alt"></i> Requests
-    </a>
+
     {% if user.is_superuser %}
     <a class="ds-sidebar__link" href="{% url 'apply-index' %}">
       <i class="fa fa-user-plus"></i> Employ
