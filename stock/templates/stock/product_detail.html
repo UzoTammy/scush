@@ -6,7 +6,7 @@
 {% block page_title %}Product Detail{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container">
 
   <!-- ── Header / nav ───────────────────────────────── -->
   <div class="ds-card mb-4">
@@ -62,72 +62,53 @@
         </a>
       </div>
     </div>
-    <div class="ds-card__body">
-      <div class="row align-items-center">
-        <div class="col-auto">
-          <img src="{{ object.image.url }}" width="100" height="100" class="rounded" alt="">
-        </div>
-        <div class="col">
-          <h4 class="mb-1">{{ object }}</h4>
-          <p class="mb-1 text-muted">Product Code: {{ object.id|zeropadding:4 }}</p>
-          {% if object.active %}
-          <span class="badge badge-success">Active</span>
-          {% else %}
-          <span class="badge badge-danger">Disabled</span>
-          {% endif %}
-        </div>
-      </div>
-    </div>
   </div>
 
-  <!-- ── Product details ─────────────────────────────── -->
-  <div class="row">
-    <div class="col-md-6">
-      <div class="ds-card mb-4">
-        <div class="ds-card__header"><span><i class="fa fa-info-circle mr-2"></i>Product Details</span></div>
-        <div class="ds-card__body p-0">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item d-flex justify-content-between"><span>Name</span><span>{{ object.name }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Date &amp; Time Last Modified</span><span>{{ object.date_modified }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Source</span><span>{{ object.source }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Category</span><span>{{ object.category }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Unit Selling Price</span><span>{{ object.unit_price }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Cost Price</span><span>{{ object.cost_price }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Pack Type</span><span>{{ object.pack_type }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Quantity Per Pack</span><span>{{ object.quantity_per_pack }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Unit Type</span><span>{{ object.unit_type }}</span></li>
-          </ul>
-        </div>
+  <!-- ── Product image + details ────────────────────── -->
+  <div class="row mb-4">
+    <div class="col-sm-2 bg-secondary text-center py-4">
+      <img src="{{ object.image.url }}" width="100" height="80" class="rounded shadow" style="object-fit: contain; background: rgba(255,255,255,0.1);" alt="{{ object }}">
+      <div class="mt-3">
+        {% if object.active %}
+        <span class="badge badge-success">Active</span>
+        {% else %}
+        <span class="badge badge-danger">Disabled</span>
+        {% endif %}
       </div>
+      <small class="text-light d-block mt-1">{{ object.id|zeropadding:4 }}</small>
     </div>
-    <div class="col-md-6">
-      <div class="ds-card mb-4">
-        <div class="ds-card__header"><span><i class="fa fa-list-alt mr-2"></i>Attributes</span></div>
-        <div class="ds-card__body p-0">
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item d-flex justify-content-between">
-              <span>Product Velocity</span>
-              <span>
-                {% if object.velocity == -1 %}Not Assigned
-                {% elif object.velocity == 0 %}No Sellout
-                {% elif object.velocity == 1 %}Very Low
-                {% elif object.velocity == 2 %}Low
-                {% elif object.velocity == 3 %}Moderate
-                {% elif object.velocity == 4 %}High
-                {% elif object.velocity == 5 %}Very High
-                {% endif %}
-              </span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between"><span>Size Value</span><span>{{ object.size_value }}{{ object.size_value_unit }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Alcoholic Content</span><span>{{ object.alcohol_content }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>VAT (%)</span><span>{{ object.vat }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Parameter</span><span>{{ object.parameter }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Product State</span><span>{{ object.product_state }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Discount</span><span>{{ object.discount }}</span></li>
-            <li class="list-group-item d-flex justify-content-between"><span>Discount Type</span><span>{{ object.discount_type }}</span></li>
-          </ul>
-        </div>
-      </div>
+    <div class="col-sm-10">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item active"><strong>{{ object.name }}</strong></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Date Last Modified</span><span>{{ object.date_modified }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Source</span><span>{{ object.source }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Category</span><span>{{ object.category }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Unit Selling Price</span><span>{{ object.unit_price }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Cost Price</span><span>{{ object.cost_price }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Pack Type</span><span>{{ object.pack_type }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Quantity Per Pack</span><span>{{ object.quantity_per_pack }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Unit Type</span><span>{{ object.unit_type }}</span></li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Product Velocity</span>
+          <span>
+            {% if object.velocity == -1 %}Not Assigned
+            {% elif object.velocity == 0 %}No Sellout
+            {% elif object.velocity == 1 %}Very Low
+            {% elif object.velocity == 2 %}Low
+            {% elif object.velocity == 3 %}Moderate
+            {% elif object.velocity == 4 %}High
+            {% elif object.velocity == 5 %}Very High
+            {% endif %}
+          </span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Size Value</span><span>{{ object.size_value }}{{ object.size_value_unit }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Alcoholic Content</span><span>{{ object.alcohol_content }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">VAT (%)</span><span>{{ object.vat }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Parameter</span><span>{{ object.parameter }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Product State</span><span>{{ object.product_state }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Discount</span><span>{{ object.discount }}</span></li>
+        <li class="list-group-item d-flex justify-content-between"><span class="text-muted">Discount Type</span><span>{{ object.discount_type }}</span></li>
+      </ul>
     </div>
   </div>
 

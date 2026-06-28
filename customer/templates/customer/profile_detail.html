@@ -1,76 +1,152 @@
 {% extends 'core/base.html' %}
-{% load static %}
 {% load custom_tags %}
 
+{% block page_title %}{{ object }} — Customer{% endblock %}
 
-
-
-{% block page_title %}Profile Detail{% endblock %}
+{% block head %}
+<style>
+  .list-group-item.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="container">
-    <div class="row p-3">
-        <h2 class="text-secondary">Customer Details</h2>
+
+  <!-- ── Nav strip ─────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
+      <span><i class="fa fa-user mr-2"></i>{{ object }}</span>
+      <div class="d-flex staff-nav-bar flex-wrap">
+        <a class="staff-nav-link" href="{% url 'customer-update' object.id %}">
+          <i class="fa fa-edit"></i> Update
+        </a>
+        <a class="staff-nav-link" href="#" data-toggle="modal" data-target="#statusModal">
+          {% if object.active %}
+          <i class="fa fa-ban"></i> Deactivate
+          {% else %}
+          <i class="fa fa-check-circle"></i> Activate
+          {% endif %}
+        </a>
+        <a class="staff-nav-link" href="{% url 'customer-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
     </div>
-    <div class="row">
-        <div class="col-sm-2 bg-secondary">
-            <div class="container text-center">
-                <img src="{% static 'customer/logo.png' %}" class="ozone-logo shadow" width="70" height="54" alt="Ozone Logo">
-            </div>
-        </div>
-        <div class="col-sm-6">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item active">{{object.business_name}}</li>
-                <li class="list-group-item">
-                    {% if not has_credit %}
-                    <span class="float-right">
-                        <a href="{% url 'customer-credit-create' object.pk %}">
-                            <i class="fa fa-plus"></i>
-                            Create Credit Record
-                        </a>
-                    </span>
-                    {% else %}
-                    <span class="">
-                        Credit Status: <span class="float-right text-danger">{{credit_value|first}} of
-                            {{credit_value|last}}</span>
-                    </span>
-                    {% endif %}
-                </li>
-                <li class="list-group-item">Owner: <span class="float-right">{{object.business_owner}}</span></li>
-                <li class="list-group-item">Mobile: <span class="float-right">{{object.mobile}}</span></li>
-                <li class="list-group-item">Alternate Mobile: <span
-                        class="float-right">{{object.second_mobile|default_if_none:'-'}}</span></li>
-                <li class="list-group-item">Email: <span class="float-right">{{object.email|default_if_none:'-'}}</span>
-                </li>
-                <li class="list-group-item">Address: <span class="float-right">{{object.address}}</span></li>
-                <li class="list-group-item">Region: <span class="float-right">{{object.region}}</span></li>
-                <li class="list-group-item">Cluster: <span class="float-right">{{object.cluster}}</span></li>
-                <li class="list-group-item">Classification: <span class="float-right">{{object.classification}}</span>
-                </li>
-                <li class="list-group-item">Contact Person: <span
-                        class="float-right">{{object.contact_person|default_if_none:'-'}}</span></li>
-                <li class="list-group-item">Active?: <span class="float-right">{{object.active|yesno|upper}}</span></li>
-            </ul>
+  </div>
 
-            <div class="row mt-3 text-center">
-                <div class="col">
-                    <a href="{% url 'customer-update' object.id %}" class="btn btn-secondary">Update</a>
-                </div>
-
-                {% if user.is_superuser %}
-                <div class="col">
-                    <a href="{% url 'customer-delete' object.id %}" class="btn btn-danger btn-sm">Delete</a>
-                </div>
-                {% endif %}
-                <div class="col">
-                    <a href="{% url 'customer-home'  %}" class="btn btn-secondary">
-                        <i class="fa fa-times-circle"></i> Return</a>
-                </div>
-            </div>
-
-        </div>
-
+  <!-- ── Profile details ───────────────────────────── -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item active d-flex justify-content-between align-items-center">
+          <strong>{{ object.business_name }}</strong>
+          {% if object.active %}
+          <span class="badge badge-success">Active</span>
+          {% else %}
+          <span class="badge badge-danger">Inactive</span>
+          {% endif %}
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Owner</span>
+          <span>{{ object.business_owner|default:'-' }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Mobile</span>
+          <span>{{ object.mobile }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Alternate Mobile</span>
+          <span>{{ object.second_mobile|default_if_none:'-' }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Email</span>
+          <span>{{ object.email|default_if_none:'-' }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Address</span>
+          <span>{{ object.address }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Region</span>
+          <span>{{ object.get_region_display }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Cluster</span>
+          <span>{{ object.get_cluster_display }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Classification</span>
+          <span>{{ object.get_classification_display }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Contact Person</span>
+          <span>{{ object.contact_person|default_if_none:'-' }}</span>
+        </li>
+      </ul>
     </div>
+  </div>
+
+  <!-- ── Credit ────────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header">
+      <span><i class="fa fa-credit-card mr-2"></i>Credit</span>
+    </div>
+    {% if has_credit %}
+    <div class="ds-card__body">
+      <div class="row">
+        <div class="col-sm-4 mb-3">
+          <div class="ds-stat ds-stat--danger">
+            <div class="ds-stat__label">Credit Used</div>
+            <div class="ds-stat__value">{{ credit_value|first }}</div>
+          </div>
+        </div>
+        <div class="col-sm-4 mb-3">
+          <div class="ds-stat">
+            <div class="ds-stat__label">Credit Limit</div>
+            <div class="ds-stat__value">{{ credit_value|last }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="ds-card__body">
+      <p class="text-muted mb-3">No credit record exists for this customer.</p>
+      <a href="{% url 'customer-credit-create' object.pk %}" class="btn btn-primary btn-sm">
+        <i class="fa fa-plus mr-1"></i> Create Credit Record
+      </a>
+    </div>
+    {% endif %}
+  </div>
 
 </div>
+
+<!-- ── Status modal ──────────────────────────────────── -->
+<div class="modal fade" id="statusModal" tabindex="-1" data-backdrop="static" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ object }}</h5>
+        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+      </div>
+      <div class="modal-body">
+        {% if object.active %}
+        <p><i class="fa fa-ban text-danger mr-1"></i> Are you sure you want to <strong>deactivate</strong> {{ object }}?</p>
+        {% else %}
+        <p><i class="fa fa-check-circle text-success mr-1"></i> Are you sure you want to <strong>activate</strong> {{ object }}?</p>
+        {% endif %}
+      </div>
+      <form action="{% url 'customer-status' object.pk %}" method="post">
+        {% csrf_token %}
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn {% if object.active %}btn-danger{% else %}btn-primary{% endif %}">Yes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

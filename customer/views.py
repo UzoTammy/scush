@@ -12,6 +12,8 @@ from .forms import CustomerProfileForm, CustomerCreditForm, ChangeCreditValueFor
 from trade.models import BalanceSheet
 from users.models import Profile as UserProfile
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views import View
+from django.shortcuts import redirect
 from django.views.generic import (CreateView,
                                   ListView,
                                   DetailView,
@@ -198,6 +200,16 @@ class CustomerDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if self.request.user.is_superuser:
             return True
         return False
+
+class CustomerStatusView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_staff
+
+    def post(self, request, pk):
+        customer = get_object_or_404(CustomerProfile, pk=pk)
+        customer.active = not customer.active
+        customer.save()
+        return redirect('customer-detail', pk=pk)
 
 class CustomerHelpView(TemplateView):
     template_name = 'customer/customer_help.html'

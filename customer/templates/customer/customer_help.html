@@ -2,46 +2,90 @@
 
 {% block page_title %}Customer Help{% endblock %}
 
-{% block content %} 
+{% block content %}
 <div class="container">
-    <div class="row">
-        <div class="col">
-            <h1>Help for Customer Profile</h1>
-            <p>Customer Profile is maintained in a database. Like every database table, CRUD (
-                Create, Read or View, Update and Delete) is neccessary. In this table, We decided to 
-                avoid DELETE but rather to make a profile active or inactive.
-            </p>
-            <h5>Create</h5>
-            <p>
-                <i class="fa fa-plus bg-light">Add</i> is used to create a profile. Alternatively,
-                profiles can be created from csv file by importing the file, viewing and saving or updating
-                (if record already exist) to the database table.
-            </p>
-            <h5>View or Read multiple Profiles</h5>
-            <p>
-                It is important to view, see or display the profiles and that can be done through the categories.
-                Click on any of the circled number to view the profiles accordingly.
-            </p>
-            <h5>View or Read single Profile</h5>
-            <p>
-                The detailed view is to read a single profile, which can be updated through the 
-                <span class="btn btn-secondary btn-sm">Update</span> button at the buttom of the page
-            </p>
-            <h5>Update</h5>
-            <p>
-                Since update will require you to pick a profile, going through the view will be required
-                before you can update a profile. The blue coloured Business name column is a link to the
-                single View
-                of the profile 
-            </p>
-        </div>
+
+  <!-- ── Nav strip ─────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-question-circle mr-2"></i>Customer Help</span>
+      <a class="staff-nav-link" href="{% url 'customer-home' %}">
+        <i class="fa fa-times-circle"></i> Return
+      </a>
     </div>
-    <div class="row">
-        <div class="col">
-            <a href="{% url 'customer-home' %}" class="float-right">
-                <i class="fa fa-times-circle"></i>
-            </a>
-        </div>
+  </div>
+
+  <!-- ── Adding a customer ─────────────────────────── -->
+  <div class="ds-card mb-3">
+    <div class="ds-card__header">
+      <span><i class="fa fa-plus mr-2"></i>Adding a Customer</span>
     </div>
+    <div class="ds-card__body">
+      <p class="mb-1">Go to <strong>Customer Home</strong> and click <strong>Add Customer</strong>. Fill in the form and click <strong>Create</strong>.</p>
+      <p class="mb-0 text-muted small">Required fields: Business Name, Address, Mobile, Cluster, Region, and Classification. Contact Person and Email are optional.</p>
+    </div>
+  </div>
+
+  <!-- ── Finding a customer ────────────────────────── -->
+  <div class="ds-card mb-3">
+    <div class="ds-card__header">
+      <span><i class="fa fa-search mr-2"></i>Finding a Customer</span>
+    </div>
+    <div class="ds-card__body">
+      <p class="mb-2">Click <strong>All Customers</strong> from the home page to open the customer list. From there you can:</p>
+      <ul class="mb-0">
+        <li>Use the <strong>search bar</strong> to find by name, mobile, or any visible column.</li>
+        <li>Use the <strong>filter dropdown</strong> (top-left of the table) to narrow by status or region — Active, Inactive, Lagos, Diaspora, or Outside Lagos.</li>
+        <li>Click a <strong>cluster tile</strong> on the home page to see all customers in that delivery cluster.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── Viewing a customer ────────────────────────── -->
+  <div class="ds-card mb-3">
+    <div class="ds-card__header">
+      <span><i class="fa fa-eye mr-2"></i>Viewing a Customer Profile</span>
+    </div>
+    <div class="ds-card__body">
+      <p class="mb-0">In the customer list, click the <strong>business name</strong> (shown as a link) to open the full profile. The profile shows contact details, classification, credit status, and activity state.</p>
+    </div>
+  </div>
+
+  <!-- ── Updating a customer ───────────────────────── -->
+  <div class="ds-card mb-3">
+    <div class="ds-card__header">
+      <span><i class="fa fa-edit mr-2"></i>Updating a Customer</span>
+    </div>
+    <div class="ds-card__body">
+      <p class="mb-0">Open the customer's profile, then click <strong>Update</strong> in the top navigation. Edit the relevant fields and click <strong>Update</strong> to save.</p>
+    </div>
+  </div>
+
+  <!-- ── Activating / disabling ────────────────────── -->
+  <div class="ds-card mb-3">
+    <div class="ds-card__header">
+      <span><i class="fa fa-toggle-on mr-2"></i>Activating or Disabling a Customer</span>
+    </div>
+    <div class="ds-card__body">
+      <p class="mb-1">Customer profiles are never deleted — they are either <span class="badge badge-success">Active</span> or <span class="badge badge-secondary">Inactive</span>.</p>
+      <p class="mb-0">To change a customer's status, open their profile and use the <strong>Update</strong> button to toggle the <em>Active</em> checkbox. Inactive customers are excluded from active-only list filters.</p>
+    </div>
+  </div>
+
+  <!-- ── Credit records ────────────────────────────── -->
+  <div class="ds-card mb-3">
+    <div class="ds-card__header">
+      <span><i class="fa fa-credit-card mr-2"></i>Credit Records</span>
+    </div>
+    <div class="ds-card__body">
+      <p class="mb-2">Credit records are managed separately from profiles. From the home page, click <strong>Credit Records</strong>.</p>
+      <ul class="mb-0">
+        <li>To create a credit record for a customer, open their profile — a <strong>Create Credit Record</strong> link appears if none exists yet.</li>
+        <li>To update a credit limit or mark a customer as blacklisted, open the credit list and use the actions from there.</li>
+        <li>A customer's current credit balance and limit are shown on their profile page.</li>
+      </ul>
+    </div>
+  </div>
+
 </div>
-{%  endblock%}
+{% endblock %}
