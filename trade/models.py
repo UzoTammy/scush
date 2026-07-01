@@ -132,9 +132,13 @@ class BalanceSheet(models.Model):
         return left - right
 
     def growth_ratio(self):
+        if self.capital == Money(0, 'NGN'):
+            return 0
         return round(100*self.profit/self.capital, 2)
 
     def debt_to_equity_ratio(self):
+        if self.capital == Money(0, 'NGN'):
+            return 0
         return round(100*self.liability/self.capital, 2)
 
     def current_ratio(self):

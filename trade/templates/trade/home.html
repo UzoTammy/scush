@@ -216,10 +216,10 @@
           <div class="pl-row"><span class="pl-row__label">Indirect Income</span><span class="pl-row__value">{{ daily.indirect_income }}</span></div>
           <div class="pl-row"><span class="pl-row__label">Closing Stock</span><span class="pl-row__value">{{ daily.closing_value }}</span></div>
           <div class="pl-row"><span class="pl-row__label">Gross Profit</span><span class="pl-row__value">{{ daily.gross_profit }}</span></div>
-          <div class="pl-row"><span class="pl-row__label">Net Profit</span><span class="pl-row__value">{{ daily.net_profit }}</span></div>
-          <div class="pl-row"><span class="pl-row__label">Margin Ratio</span><span class="pl-row__value">{{ 100|multiply:daily.net_profit|div:daily.sales.amount|floatformat:2 }}%</span></div>
-          <div class="pl-row"><span class="pl-row__label">Delivery Expenses Ratio</span><span class="pl-row__value">{{ 100|multiply:daily.direct_expenses.amount|div:daily.purchase.amount|floatformat:2 }}%</span></div>
-          <div class="pl-row"><span class="pl-row__label">Admin Expenses Ratio</span><span class="pl-row__value">{{ 100|multiply:daily.indirect_expenses.amount|div:daily.sales.amount|floatformat:2 }}%</span></div>
+          <div class="pl-row"><span class="pl-row__label">Net Profit</span><span class="pl-row__value">{{ daily.net_profit|as_money }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Margin Ratio</span><span class="pl-row__value">{{ 100|multiply:daily.net_profit|div:daily.sales.amount|default_if_none:0|floatformat:2 }}%</span></div>
+          <div class="pl-row"><span class="pl-row__label">Delivery Expenses Ratio</span><span class="pl-row__value">{{ 100|multiply:daily.direct_expenses.amount|div:daily.purchase.amount|default_if_none:0|floatformat:2 }}%</span></div>
+          <div class="pl-row"><span class="pl-row__label">Admin Expenses Ratio</span><span class="pl-row__value">{{ 100|multiply:daily.indirect_expenses.amount|div:daily.sales.amount|default_if_none:0|floatformat:2 }}%</span></div>
         </div>
       </div>
     </div>
@@ -232,18 +232,18 @@
         </div>
         <div class="ds-card__body">
           <div class="pl-row"><span class="pl-row__label">Opening Stock</span><span class="pl-row__value">{{ daily_monthly.opening_stock }}</span></div>
-          <div class="pl-row"><span class="pl-row__label">Purchase</span><span class="pl-row__value">{{ daily_monthly.purchase|floatformat:2 }}</span></div>
-          <div class="pl-row"><span class="pl-row__label">Direct Expenses</span><span class="pl-row__value">{{ daily_monthly.direct_expenses|floatformat:2 }}</span></div>
-          <div class="pl-row"><span class="pl-row__label">Direct Income</span><span class="pl-row__value">{{ daily_monthly.direct_income|floatformat:2 }}</span></div>
-          <div class="pl-row"><span class="pl-row__label">Sales</span><span class="pl-row__value">{{ daily_monthly.sales|floatformat:2 }}</span></div>
-          <div class="pl-row"><span class="pl-row__label">Indirect Expenses</span><span class="pl-row__value">{{ daily_monthly.indirect_expenses|floatformat:2 }}</span></div>
-          <div class="pl-row"><span class="pl-row__label">Indirect Income</span><span class="pl-row__value">{{ daily_monthly.indirect_income|floatformat:2 }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Purchase</span><span class="pl-row__value">{{ daily_monthly.purchase|as_money }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Direct Expenses</span><span class="pl-row__value">{{ daily_monthly.direct_expenses|as_money }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Direct Income</span><span class="pl-row__value">{{ daily_monthly.direct_income|as_money }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Sales</span><span class="pl-row__value">{{ daily_monthly.sales|as_money }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Indirect Expenses</span><span class="pl-row__value">{{ daily_monthly.indirect_expenses|as_money }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Indirect Income</span><span class="pl-row__value">{{ daily_monthly.indirect_income|as_money }}</span></div>
           <div class="pl-row"><span class="pl-row__label">Closing Stock</span><span class="pl-row__value">{{ daily.closing_value }}</span></div>
-          <div class="pl-row"><span class="pl-row__label">Gross Profit</span><span class="pl-row__value">{{ daily_monthly.gross_profit|floatformat:2 }}</span></div>
-          <div class="pl-row"><span class="pl-row__label">Net Profit</span><span class="pl-row__value">{{ daily_monthly.net_profit }}</span></div>
-          <div class="pl-row"><span class="pl-row__label">Margin Ratio</span><span class="pl-row__value">{{ 100|multiply:daily_monthly.net_profit|div:daily_monthly.sales|floatformat:2 }}%</span></div>
-          <div class="pl-row"><span class="pl-row__label">Delivery Expenses Ratio</span><span class="pl-row__value">{{ 100|multiply:daily_monthly.direct_expenses|div:daily_monthly.purchase|floatformat:2 }}%</span></div>
-          <div class="pl-row"><span class="pl-row__label">Admin Expenses Ratio</span><span class="pl-row__value">{{ 100|multiply:daily_monthly.indirect_expenses|div:daily_monthly.sales|floatformat:2 }}%</span></div>
+          <div class="pl-row"><span class="pl-row__label">Gross Profit</span><span class="pl-row__value">{{ daily_monthly.gross_profit|as_money }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Net Profit</span><span class="pl-row__value">{{ daily_monthly.net_profit|as_money }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Margin Ratio</span><span class="pl-row__value">{{ 100|multiply:daily_monthly.net_profit|div:daily_monthly.sales|default_if_none:0|floatformat:2 }}%</span></div>
+          <div class="pl-row"><span class="pl-row__label">Delivery Expenses Ratio</span><span class="pl-row__value">{{ 100|multiply:daily_monthly.direct_expenses|div:daily_monthly.purchase|default_if_none:0|floatformat:2 }}%</span></div>
+          <div class="pl-row"><span class="pl-row__label">Admin Expenses Ratio</span><span class="pl-row__value">{{ 100|multiply:daily_monthly.indirect_expenses|div:daily_monthly.sales|default_if_none:0|floatformat:2 }}%</span></div>
         </div>
       </div>
     </div>
@@ -265,10 +265,10 @@
             </div>
             {% with object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense as total %}
             <div class="col-6">
-              <div class="pl-row"><span class="pl-row__label">Fixed Asset</span><span class="pl-row__value">{{ object.fixed_asset }} <small class="text-muted">({{ 100|multiply:object.fixed_asset|div:total|floatformat:0 }}%)</small></span></div>
-              <div class="pl-row"><span class="pl-row__label">Current Asset</span><span class="pl-row__value">{{ object.current_asset }} <small class="text-muted">({{ 100|multiply:object.current_asset|div:total|floatformat:0 }}%)</small></span></div>
-              <div class="pl-row"><span class="pl-row__label">Investment</span><span class="pl-row__value">{{ object.investment }} <small class="text-muted">({{ 100|multiply:object.investment|div:total|floatformat:0 }}%)</small></span></div>
-              <div class="pl-row"><span class="pl-row__label">Suspense</span><span class="pl-row__value">{{ object.suspense }} <small class="text-muted">({{ 100|multiply:object.suspense|div:total|floatformat:0 }}%)</small></span></div>
+              <div class="pl-row"><span class="pl-row__label">Fixed Asset</span><span class="pl-row__value">{{ object.fixed_asset }} <small class="text-muted">({{ 100|multiply:object.fixed_asset|div:total|default_if_none:0|floatformat:0 }}%)</small></span></div>
+              <div class="pl-row"><span class="pl-row__label">Current Asset</span><span class="pl-row__value">{{ object.current_asset }} <small class="text-muted">({{ 100|multiply:object.current_asset|div:total|default_if_none:0|floatformat:0 }}%)</small></span></div>
+              <div class="pl-row"><span class="pl-row__label">Investment</span><span class="pl-row__value">{{ object.investment }} <small class="text-muted">({{ 100|multiply:object.investment|div:total|default_if_none:0|floatformat:0 }}%)</small></span></div>
+              <div class="pl-row"><span class="pl-row__label">Suspense</span><span class="pl-row__value">{{ object.suspense }} <small class="text-muted">({{ 100|multiply:object.suspense|div:total|default_if_none:0|floatformat:0 }}%)</small></span></div>
               <div class="pl-row text-danger"><span class="pl-row__label font-weight-700">Total</span><span class="pl-row__value text-danger">{{ object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense }}</span></div>
             </div>
             {% endwith %}

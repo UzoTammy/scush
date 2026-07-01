@@ -2,6 +2,7 @@ from django import template
 from django.template.defaultfilters import stringfilter
 from ozone.mytools import Month
 from datetime import date
+from djmoney.money import Money
 import decimal
 
 register = template.Library()
@@ -124,6 +125,16 @@ def array_index(value, index):
 def make_list(value, separator):
     return value.split(separator)
 
+
+@register.filter
+def as_money(value, currency='NGN'):
+    """Wrap a plain Decimal/float (e.g. from an annotate/aggregate) as Money, so it
+    renders with a currency prefix the same way a real MoneyField value does."""
+    try:
+        amount = value.amount if hasattr(value, 'amount') else value
+        return Money(amount, currency)
+    except Exception:
+        return value
 
 @register.filter
 def money_compact(value):
