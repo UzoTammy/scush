@@ -12,6 +12,7 @@
           <tr class="text-center">
             <th>Product</th>
             <th>Current Stock</th>
+            <th>Value</th>
             <th>Sold Last On</th>
             <th>Qty Last Sold</th>
             <th>Days Since Last Sale</th>
@@ -22,6 +23,7 @@
           <tr>
             <td>{{ item.product }}</td>
             <td class="text-right">{{ item.closing_stock }}</td>
+            <td class="text-right">N{{ item.value.amount|floatformat:2|intcomma }}</td>
             <td class="text-center">{{ item.date }}</td>
             <td class="text-right">{{ item.sold }}</td>
             <td class="text-right">{{ item.days_since }}</td>
