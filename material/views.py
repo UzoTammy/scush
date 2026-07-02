@@ -203,7 +203,7 @@ class IssueArticleCreateView(LoginRequiredMixin, CreateView):
 class ArticleRequestDisapprove(LoginRequiredMixin, View):
 
     def get(self, request, **kwargs):
-        request_obj=get_object_or_404(RequestArticle, pk=int(kwargs['pk']))
+        request_obj=get_object_or_404(RequestArticle.objects, pk=int(kwargs['pk']))
 
         messages.info(request, f"Request #{str(kwargs['pk']).zfill(3)} not Approved")
 
