@@ -112,18 +112,18 @@
     </a>
     {% endif %}
 
-    <!-- CAREERS -->
+    <!-- CAREERS (disabled: not in use for now) -->
     <span class="ds-sidebar__group-label">Careers</span>
-    <a class="ds-sidebar__link" href="{% url 'job-list' %}">
+    <span class="ds-sidebar__link ds-sidebar__link--disabled" aria-disabled="true">
       <i class="fa fa-briefcase"></i> Job Openings
-    </a>
+    </span>
     {% if user.is_authenticated %}
-    <a class="ds-sidebar__link" href="{% url 'job-manage' %}">
+    <span class="ds-sidebar__link ds-sidebar__link--disabled" aria-disabled="true">
       <i class="fa fa-cog"></i> Manage Postings
-    </a>
-    <a class="ds-sidebar__link" href="{% url 'app-list' %}">
+    </span>
+    <span class="ds-sidebar__link ds-sidebar__link--disabled" aria-disabled="true">
       <i class="fa fa-users"></i> Applications
-    </a>
+    </span>
     {% endif %}
 
     <!-- COMMUNICATIONS -->
@@ -170,10 +170,6 @@
     </button>
     <div class="collapse show" id="adminSub">
       <ul class="ds-sidebar__sub">
-        <li><a class="ds-sidebar__sub-link" href="{% url 'payroll-process' %}">
-          <i class="fa fa-money"></i> Create Payroll</a></li>
-        <li><a class="ds-sidebar__sub-link" href="{% url 'json-new' %}">
-          <i class="fa fa-plus-circle"></i> Add to Settings</a></li>
         <li><a class="ds-sidebar__sub-link" href="{% url 'register' %}">
           <i class="fa fa-user-circle"></i> Register User</a></li>
         <li><a class="ds-sidebar__sub-link"
