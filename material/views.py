@@ -68,7 +68,7 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
             cc=[mail_list[0]],
         ) 
         email.content_subtype = "html"
-        email.send(fail_silently=False)       
+        email.send(fail_silently=True)
         return super().form_valid(form)
 
 
@@ -101,8 +101,8 @@ class ArticleUpdateView(LoginRequiredMixin, UpdateView):
             cc=[mail_list[0]],
         ) 
         email.content_subtype = "html"
-        email.send(fail_silently=False)       
-        
+        email.send(fail_silently=True)
+
         return super().form_valid(form)
 
 
