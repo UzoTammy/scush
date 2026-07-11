@@ -173,9 +173,9 @@
         <li><a class="ds-sidebar__sub-link" href="{% url 'register' %}">
           <i class="fa fa-user-circle"></i> Register User</a></li>
         <li><a class="ds-sidebar__sub-link"
-               href="http://doc.scush.com.ng.s3-website-us-west-2.amazonaws.com"
+               href="{% static 'docs/index.html' %}"
                target="_blank" rel="noopener">
-          <i class="fa fa-external-link"></i> Documentation</a></li>
+          <i class="fa fa-book"></i> Documentation</a></li>
       </ul>
     </div>
     {% endif %}

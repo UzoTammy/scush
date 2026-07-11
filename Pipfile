@@ -4,6 +4,8 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+mkdocs = "*"
+mkdocs-material = "*"
 
 [packages]
 django = "*"
@@ -13,7 +15,6 @@ boto3 = "*"
 django-storages = "*"
 django-crispy-forms = "*"
 django-money = "*"
-docutils = "*"
 django-session-timeout = "*"
 django-on-heroku = "*"
 gunicorn = "*"
@@ -26,8 +27,6 @@ coverage = "*"
 pytest-cov = "*"
 crispy-bootstrap4 = "*"
 celery = "*"
-sphinx = "*"
-furo = "*"
 plotly = "*"
 pandas = "*"
 
