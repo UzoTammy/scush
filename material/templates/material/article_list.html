@@ -78,12 +78,11 @@
   </div>
 
   <!-- ── Pending Requests ───────────────────────────── -->
+  {% if requests %}
   <div class="ds-card mb-4">
     <div class="ds-card__header">
       <span><i class="fa fa-clock-o mr-2"></i>Pending Requests</span>
-      {% if requests %}
       <span class="badge badge-primary ml-2">{{ requests|length }}</span>
-      {% endif %}
     </div>
     <div class="ds-card__body p-0">
       <div class="table-responsive">
@@ -117,6 +116,7 @@
       </div>
     </div>
   </div>
+  {% endif %}
 
   <!-- ── Approval & Issue Log ───────────────────────── -->
   <div class="ds-card mb-4">
@@ -125,8 +125,7 @@
     </div>
     <div class="ds-card__body p-0">
       <div class="table-responsive">
-        <table class="table table-striped table-hover mb-0"
-               data-pagination="true" data-toggle="table">
+        <table class="table table-striped table-hover mb-0">
           <thead class="thead-success">
             <tr>
               <th>Issue #</th>

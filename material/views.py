@@ -41,7 +41,7 @@ class ArticleListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['gross_value'] = self.get_queryset().aggregate(Sum('gross_value'))['gross_value__sum']
         context['requests'] = RequestArticle.objects.filter(status=None).order_by('-pk')
-        context['issues'] = IssueArticle.objects.all().order_by('-pk')
+        context['issues'] = IssueArticle.objects.all().order_by('-pk')[:10]
         return context
 
 
