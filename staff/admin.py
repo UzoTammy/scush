@@ -8,9 +8,11 @@ from .models import (Employee,
                      Reassign,
                      Suspend,
                      Permit,
-                     SalaryChange, 
+                     SalaryChange,
                      EmployeeBalance,
-                     RequestPermission, Welfare
+                     RequestPermission, Welfare,
+                     EquityParticipant, EquityShareAllocation, EquityClockEvent,
+                     ThresholdProfit, EquityStatement
                      )
 
 # Register your models here.
@@ -32,5 +34,10 @@ admin.site.register(SalaryChange)
 admin.site.register(EmployeeBalance)
 admin.site.register(RequestPermission)
 admin.site.register(Welfare)
+admin.site.register(EquityParticipant)
+admin.site.register(EquityShareAllocation)
+admin.site.register(EquityClockEvent)
+admin.site.register(ThresholdProfit)
+admin.site.register(EquityStatement)
 
 

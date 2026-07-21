@@ -49,9 +49,15 @@
             <i class="fa fa-cog mr-1"></i> HR Actions
           </button>
           <div class="dropdown-menu">
-            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#staffBalance">
-              <i class="fa fa-book"></i> Add Gratuity
+            {% if is_equity_participant %}
+            <a class="dropdown-item" href="{% url 'equity-participant-detail' object.pk %}">
+              <i class="fa fa-line-chart"></i> Equity Pool
             </a>
+            {% elif object.status %}
+            <a class="dropdown-item" href="{% url 'equity-participant-add' %}">
+              <i class="fa fa-line-chart"></i> Add to Equity Pool
+            </a>
+            {% endif %}
             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#staffMgmt">
               <i class="fa fa-briefcase"></i> Make Management
             </a>
@@ -143,8 +149,10 @@
             </div>
             <div class="col-sm-3 mb-2">
               <div class="ds-stat ds-stat--success">
-                <div class="ds-stat__label">Gratuity</div>
-                <div class="ds-stat__value stat-val-sm">{{ naira }}{{ total_balance|floatformat:'2g' }}</div>
+                <div class="ds-stat__label">Equity Pool</div>
+                <div class="ds-stat__value stat-val-sm">
+                  {% if is_equity_participant %}{{ naira }}{{ equity_vested_balance|floatformat:'2g' }}{% else %}—{% endif %}
+                </div>
               </div>
             </div>
             <div class="col-sm-3 mb-2">
@@ -498,64 +506,6 @@
   </div></div>
 </div>
 
-<!-- Add Gratuity -->
-<div class="modal fade" tabindex="-1" data-backdrop="static" id="staffBalance" aria-hidden="true">
-  <div class="modal-dialog"><div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title">Add Gratuity — {{ object }}</h5>
-      <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-    </div>
-    <form action="{% url 'employee-balance' object.pk %}" method="post">{% csrf_token %}
-      <div class="modal-body">
-        <p id="dateField" class="text-muted small"></p>
-        <div class="row">
-          <div class="col-5">
-            <div class="form-group">
-              <label for="period">Period</label>
-              <input class="form-control" name="period" id="period" type="text"
-                     pattern="[0-9]{4}-[0-9]{2}" value="{% now 'Y-m' %}" required>
-            </div>
-          </div>
-          <div class="col-7">
-            <div class="form-group">
-              <label for="title">Title <sup class="text-danger">*</sup></label>
-              <input class="form-control" name="title" id="title" maxlength="30"
-                     value="{{ gratuity_title }}" type="text" required>
-              <small class="text-muted">Max 30 characters</small>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-9">
-            <div class="form-group">
-              <label for="tBal">Value</label>
-              <input id="tBal" class="form-control" name="balance" value="0.00" type="number" required>
-            </div>
-          </div>
-          <div class="col-3">
-            <div class="form-group">
-              <label for="balType">Type</label>
-              <select class="form-control" name="CrDr" id="balType">
-                <option value="Cr">Cr</option>
-                <option value="Dr">Dr</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="balComment">Description</label>
-          <input id="balComment" class="form-control" name="comment" maxlength="50" type="text" required>
-          <small class="text-muted">Max 50 characters</small>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary">Apply</button>
-      </div>
-    </form>
-  </div></div>
-</div>
-
 <!-- Reassign -->
 <div class="modal fade" tabindex="-1" data-backdrop="static" id="staffReassign" aria-hidden="true">
   <div class="modal-dialog"><div class="modal-content">
@@ -827,7 +777,6 @@
 </div>
 
 <script>
-  document.getElementById('dateField').textContent = 'Entry Date: ' + new Date().toDateString();
   function lostFocus() {
     var t = document.getElementById('reassign').value;
     document.getElementById('divDuration').hidden = (t !== 'A');

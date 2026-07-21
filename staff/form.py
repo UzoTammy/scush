@@ -2,7 +2,8 @@ import datetime
 from django import forms
 from django.forms.widgets import DateTimeInput
 from django.shortcuts import get_object_or_404
-from .models import CreditNote, DebitNote, Employee, RequestPermission, Reassign
+from .models import (CreditNote, DebitNote, Employee, RequestPermission, Reassign,
+                     EquityParticipant, ThresholdProfit)
 from core.models import Setting
 
 
@@ -118,7 +119,41 @@ class RequestPermissionForm(forms.ModelForm):
     resume_date = forms.DateTimeField(widget=DateTimeInput(attrs={
         'class':'form-control col-6', 'type': 'datetime-local'
     }))
-    
+
     class Meta:
         model = RequestPermission
         fields = ('staff', 'reason', 'start_date', 'resume_date')
+
+
+class EquityParticipantForm(forms.ModelForm):
+    """Add-participant form (Sec.7.1a): grant_date has no default — admin must pick it."""
+    grant_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
+
+    class Meta:
+        model = EquityParticipant
+        fields = ('staff', 'role_code', 'initial_capital_allocation', 'grant_date')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        already_participating = EquityParticipant.objects.values_list('staff_id', flat=True)
+        # Eligibility is active employment only — management status is irrelevant, and this
+        # form never writes back to Employee (nothing here alters staff status).
+        self.fields['staff'].queryset = Employee.active.exclude(pk__in=already_participating)
+        for name, field in self.fields.items():
+            if name != 'grant_date':
+                field.widget.attrs.setdefault('class', 'form-control')
+
+
+class ThresholdProfitForm(forms.ModelForm):
+    approved_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
+    disclosed_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
+
+    class Meta:
+        model = ThresholdProfit
+        fields = ('fiscal_year', 'threshold_amount', 'methodology_note', 'approved_date', 'disclosed_date')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for name, field in self.fields.items():
+            if name not in ('approved_date', 'disclosed_date'):
+                field.widget.attrs.setdefault('class', 'form-control')

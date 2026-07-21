@@ -4,14 +4,17 @@ import os
 import base64
 import random
 from io import BytesIO
+from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from pdf.utils import render_to_pdf
 from customer.models import Profile as CustomerProfile
 from apply.models import Applicant
 from django.contrib.auth.models import User
 from django.views.generic import (View, ListView, DetailView, TemplateView)
-from staff.models import Employee, Payroll, EmployeeBalance
+from staff.models import Employee, Payroll, EmployeeBalance, EquityParticipant, EquityStatement
+from staff.views import HRDRequiredMixin
 from trade.models import TradeMonthly, BankBalance
 from stock.models import Product
 from comms.models import Post
@@ -441,5 +444,58 @@ class BankAccountPdf(LoginRequiredMixin, TemplateView):
             response['Content-Disposition'] = f'filename="bank_balance-{today}.pdf"'
             return response
         return HttpResponse('Error')
+
+
+def _build_equity_statement_pdf(participant, fiscal_year, generated_by):
+    """Renders one participant's Annual Allocation Statement (Policy Sec.6.7) and stores it
+    as an EquityStatement row so it can be re-downloaded later without regenerating."""
+    context = {
+        'title': 'Annual Allocation Statement',
+        'logo_image': Ozone.logo(),
+        'participant': participant,
+        'fiscal_year': fiscal_year,
+        'generated_at': timezone.now(),
+    }
+    pdf = render_to_pdf('pdf/pdf_equity_statement.html', context)
+    if not pdf:
+        return None
+    statement = EquityStatement(participant=participant, fiscal_year=fiscal_year, generated_by=generated_by)
+    statement.file.save(
+        f'equity_statement_{participant.staff_id}_{fiscal_year}.pdf',
+        ContentFile(pdf.content),
+        save=True,
+    )
+    return statement
+
+
+class EquityStatementPDFView(HRDRequiredMixin, View):
+    """Single Annual Allocation Statement, from the participant detail page (Sec.7.4a)."""
+
+    def get(self, request, *args, **kwargs):
+        participant = get_object_or_404(EquityParticipant, staff_id=kwargs['pk'])
+        fiscal_year = request.GET.get('fiscal_year', str(datetime.date.today().year))
+        statement = _build_equity_statement_pdf(participant, fiscal_year, request.user)
+        if not statement:
+            return HttpResponse('Error generating statement')
+        response = HttpResponse(statement.file.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="equity_statement_{participant.staff_id}_{fiscal_year}.pdf"'
+        return response
+
+
+class EquityStatementBulkPDFView(HRDRequiredMixin, View):
+    """One PDF per active participant for a chosen fiscal year, from the list page (Sec.7.4a)."""
+
+    def get(self, request, *args, **kwargs):
+        fiscal_year = kwargs['fiscal_year']
+        participants = EquityParticipant.objects.filter(status=EquityParticipant.STATUS_ACTIVE)
+        generated = []
+        for participant in participants:
+            statement = _build_equity_statement_pdf(participant, fiscal_year, request.user)
+            if statement:
+                generated.append(statement)
+        return HttpResponse(
+            f'Generated {len(generated)} Annual Allocation Statement(s) for FY{fiscal_year}. '
+            f'<a href="{reverse("equity-list")}">Back to Equity Pool</a>'
+        )
 
     

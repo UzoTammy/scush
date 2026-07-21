@@ -1,0 +1,67 @@
+{% extends "pdf/base.html" %}
+{% load custom_tags %}
+
+{% block content %}
+
+<div style="border-top: 3px solid #c9a227; margin: -14px 0 14px;"></div>
+
+<h3>Annual Allocation Statement — FY{{ fiscal_year }}</h3>
+<hr>
+
+<table class="ps-info-table ps-section">
+  <tr>
+    <td class="ps-info-label">Participant</td>
+    <td class="ps-info-value font-bold">{{ participant.staff.fullname }}</td>
+    <td class="ps-info-label">Staff ID</td>
+    <td class="ps-info-value">{{ participant.staff_id|zeropadding:3 }}</td>
+  </tr>
+  <tr>
+    <td class="ps-info-label">Role Code</td>
+    <td class="ps-info-value">{{ participant.role_code }}</td>
+    <td class="ps-info-label">Grant Date</td>
+    <td class="ps-info-value">{{ participant.grant_date }}</td>
+  </tr>
+  <tr>
+    <td class="ps-info-label">Initial Capital Allocation</td>
+    <td class="ps-info-value font-bold">N{{ participant.initial_capital_allocation.amount|floatformat:'2g' }}</td>
+    <td class="ps-info-label">Vesting Clock Status</td>
+    <td class="ps-info-value">
+      {% if participant.fully_matured %}Fully Matured (100%){% else %}{{ participant.vesting_pct }}% vested{% endif %}
+    </td>
+  </tr>
+  <tr>
+    <td class="ps-info-label">Statement Date</td>
+    <td class="ps-info-value" colspan="3">{{ generated_at|date:'d M Y, H:i' }} WAT</td>
+  </tr>
+</table>
+
+<table class="ps-earn-table ps-side-table">
+  <thead><tr><th colspan="2">Vested Balance (Protected)</th></tr></thead>
+  <tbody>
+    <tr><td class="font-bold">Vested</td><td class="text-right font-bold">N{{ participant.vested_balance.amount|floatformat:'2g' }}</td></tr>
+  </tbody>
+</table>
+
+<table class="ps-deduct-table ps-side-right">
+  <thead><tr><th colspan="2">Unvested Balance (At Risk)</th></tr></thead>
+  <tbody>
+    <tr><td class="font-bold">Unvested</td><td class="text-right font-bold">N{{ participant.unvested_balance.amount|floatformat:'2g' }}</td></tr>
+  </tbody>
+</table>
+
+<div class="ps-clearfix"></div>
+
+<table class="ps-net-table">
+  <tr>
+    <td class="ps-net-label">Current Allocation Balance</td>
+    <td class="ps-net-value">N{{ participant.current_balance.amount|floatformat:'2g' }}</td>
+  </tr>
+</table>
+
+<p class="text-sm text-muted mt-section">
+  This statement is issued for informational purposes as at the date shown above. It does not
+  itself constitute a payment, guarantee, or entitlement to any amount shown, and remains subject
+  in all respects to the terms of the Employee Profit-Sharing (Equity Pool) Policy.
+</p>
+
+{% endblock %}

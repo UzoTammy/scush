@@ -1,0 +1,157 @@
+{% extends 'core/base.html' %}
+{% load custom_tags %}
+
+{% block page_title %}Equity Pool — {{ participant.staff.fullname }}{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="ds-page-header">
+    <h2 class="ds-page-header__title">{{ participant.staff.fullname }} — Equity Pool</h2>
+    <div>
+      <a href="{% url 'pdf-equity-statement' participant.staff_id %}" class="btn btn-outline-primary btn-sm">
+        <i class="fa fa-file-pdf-o mr-1"></i> Generate Statement (PDF)
+      </a>
+      <a href="{% url 'equity-list' %}" class="btn btn-secondary btn-sm"><i class="fa fa-times-circle"></i></a>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-sm-3 mb-3">
+      <div class="ds-stat ds-stat--accent">
+        <div class="ds-stat__label">Current Balance</div>
+        <div class="ds-stat__value stat-val-sm">₦{{ participant.current_balance.amount|floatformat:'2g' }}</div>
+      </div>
+    </div>
+    <div class="col-sm-3 mb-3">
+      <div class="ds-stat ds-stat--success">
+        <div class="ds-stat__label">Vested</div>
+        <div class="ds-stat__value stat-val-sm">₦{{ participant.vested_balance.amount|floatformat:'2g' }}</div>
+      </div>
+    </div>
+    <div class="col-sm-3 mb-3">
+      <div class="ds-stat ds-stat--warning">
+        <div class="ds-stat__label">Unvested</div>
+        <div class="ds-stat__value stat-val-sm">₦{{ participant.unvested_balance.amount|floatformat:'2g' }}</div>
+      </div>
+    </div>
+    <div class="col-sm-3 mb-3">
+      <div class="ds-stat">
+        <div class="ds-stat__label">Vesting</div>
+        <div class="ds-stat__value stat-val-sm">
+          {{ participant.vesting_pct }}%
+          {% if participant.fully_matured %}<span class="badge badge-success">Fully Matured</span>{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-id-card mr-2"></i>Participant Info</span></div>
+    <div class="ds-card__body p-0">
+      <div class="list-group list-group-flush">
+        <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Role Code</span><span>{{ participant.role_code }}</span></div>
+        <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Grant Date</span><span>{{ participant.grant_date }}</span></div>
+        <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Initial Capital Allocation</span><span>₦{{ participant.initial_capital_allocation.amount|floatformat:'2g' }}</span></div>
+        <div class="list-group-item d-flex justify-content-between"><span class="text-muted">Status</span><span>{{ participant.get_status_display }}</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-pie-chart mr-2"></i>Share Allocations by Fiscal Year</span></div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead><tr><th>Fiscal Year</th><th>Share %</th><th>Locked</th></tr></thead>
+          <tbody>
+            {% for allocation in allocations %}
+            <tr><td>{{ allocation.fiscal_year }}</td><td>{{ allocation.pool_share_pct }}%</td>
+                <td>{% if allocation.locked %}<span class="badge badge-success">Locked</span>{% else %}<span class="badge badge-secondary">Pending</span>{% endif %}</td></tr>
+            {% empty %}
+            <tr><td colspan="3" class="text-center text-muted">No allocations yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header"><span><i class="fa fa-book mr-2"></i>Ledger (append-only)</span></div>
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped mb-0" data-toggle="table" data-pagination="true">
+          <thead><tr><th>Date</th><th>Event</th><th>FY</th><th class="text-right">Amount</th><th>Note</th></tr></thead>
+          <tbody>
+            {% for event in events %}
+            <tr>
+              <td>{{ event.effective_date }}</td>
+              <td>{{ event.get_event_type_display }}</td>
+              <td>{{ event.fiscal_year }}</td>
+              <td class="text-right {% if event.amount.amount < 0 %}text-danger{% else %}text-success{% endif %}">₦{{ event.amount.amount|floatformat:'2g' }}</td>
+              <td>{{ event.note|default:'—' }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted">No ledger entries yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  {% if participant.status == 'active' %}
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <div class="ds-card h-100">
+        <div class="ds-card__header"><span>Post Clawback</span></div>
+        <div class="ds-card__body">
+          <form method="post" action="{% url 'equity-clawback' participant.staff_id %}">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="clawbackAmount">Amount (NGN)</label>
+              <input id="clawbackAmount" type="number" step="0.01" name="amount" class="form-control" placeholder="0.00" required>
+            </div>
+            <div class="form-group">
+              <label for="clawbackNote">Note (required — approver &amp; reason)</label>
+              <textarea id="clawbackNote" name="note" class="form-control" placeholder="Approved by MD, net-loss FY..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Post this clawback? Cannot exceed the unvested balance.');">Post Clawback</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="ds-card h-100">
+        <div class="ds-card__header"><span>Forfeiture (For Cause)</span></div>
+        <div class="ds-card__body">
+          <form method="post" action="{% url 'equity-forfeit-cause' participant.staff_id %}">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="forfeitNote">Investigation reference / note (required)</label>
+              <textarea id="forfeitNote" name="note" class="form-control" placeholder="Investigation ref #, approved by..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('This zeroes the ENTIRE balance — vested and unvested. Continue?');">Post Forfeiture</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="ds-card h-100">
+        <div class="ds-card__header"><span>Separation Payout</span></div>
+        <div class="ds-card__body">
+          <form method="post" action="{% url 'equity-separate' participant.staff_id %}">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="separationNote">Note (optional)</label>
+              <textarea id="separationNote" name="note" class="form-control" placeholder="Resignation, layoff, etc."></textarea>
+            </div>
+            <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Pay out vested balance and forfeit unvested (unless fully matured)?');">Post Separation</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

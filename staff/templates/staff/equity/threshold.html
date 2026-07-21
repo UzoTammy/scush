@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Threshold Profit{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="ds-page-header">
+    <h2 class="ds-page-header__title">Threshold Profit</h2>
+    <div>
+      <a href="{% url 'equity-threshold-add' %}" class="btn btn-primary btn-sm"><i class="fa fa-plus mr-1"></i> New Fiscal Year</a>
+      <a href="{% url 'equity-list' %}" class="btn btn-secondary btn-sm"><i class="fa fa-times-circle"></i></a>
+    </div>
+  </div>
+
+  {% for t in thresholds %}
+  {% if t.disclosure_overdue %}
+  <div class="alert alert-danger">
+    <i class="fa fa-exclamation-triangle mr-1"></i>
+    FY{{ t.fiscal_year }}: Threshold Profit was approved on {{ t.approved_date }} but has not been
+    disclosed to staff — this is a live breach of the 30-day disclosure obligation (Policy §5.4).
+  </div>
+  {% endif %}
+  {% endfor %}
+
+  <div class="ds-card">
+    <div class="ds-card__body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead><tr><th>Fiscal Year</th><th>Threshold Amount</th><th>Approved</th><th>Disclosed</th><th>Methodology</th></tr></thead>
+          <tbody>
+            {% for t in thresholds %}
+            <tr>
+              <td>{{ t.fiscal_year }}</td>
+              <td>₦{{ t.threshold_amount.amount|floatformat:'2g' }}</td>
+              <td>{{ t.approved_date }}</td>
+              <td>{% if t.disclosed_date %}{{ t.disclosed_date }}{% else %}<span class="badge badge-warning">Not yet</span>{% endif %}</td>
+              <td>{{ t.methodology_note }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center text-muted">No Threshold Profit set yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

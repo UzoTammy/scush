@@ -4,15 +4,17 @@ from .views import (StaffMainPageView, StaffListView, StaffPoliciesView, StaffLi
                     request_guarantor_reupload, approve_guarantor_reupload, upload_guarantor_reupload,
                     StaffTerminate, StaffSuspend, StaffReassign, StaffPermit, RequestPermissionView,
                     StaffSalaryChange, StaffChangeManagement, TerminatedStaffListView, PKResetView,
-                    PKResetPayroll, AddGratuity, GratuityListView, GratuityDetailView, GratuityUpdateView,
-                    GratuityListViewOneStaff, UserHandleCreateView, CreditNoteListView, CreditDetailView,
+                    PKResetPayroll, GratuityListViewOneStaff, UserHandleCreateView, CreditNoteListView, CreditDetailView,
                     CreditNoteCreateView, CreditUpdateView, DebitNoteListView, DebitNoteDetailView, DebitUpdateView,
                     DebitNoteCreateView, PayrollHome, PayrollViews, GeneratePayroll, RegeneratedPayroll,
                     RegeneratePayroll, SalaryPayment, Payslip, PayslipStatement, PayrollSummaryView,
                     ModifyGeneratedPayroll, MakeOutstandingValueZero, UpdateTax, TaxList, RequestPermissionUpdateView,
                     RequestPermissionListView, PermissionFromRequest, RequestPermissionDisapprove, staffWelfare,
                     WelfareSupportList,WelfareSupportListViewOneStaff, PayrollView, ProcessEmployeeUpdateView,
-                    BackView, NextView)
+                    BackView, NextView,
+                    EquityListView, EquityPostCreditView, EquityParticipantCreateView, EquityParticipantDetailView,
+                    EquityClawbackView, EquityForfeitureCauseView, EquitySeparationView, EquityReallocationView,
+                    ThresholdProfitListView, ThresholdProfitCreateView, MyEquityPoolView, EquityHelpView)
 
 
 urlpatterns = [
@@ -39,13 +41,25 @@ urlpatterns = [
     path('pk-reset/', PKResetView.as_view(), name='pk-reset'),
     path('pk-reset/payroll/', PKResetPayroll.as_view(), name='pk-reset-payroll'),
     
-    path('employee/<int:pk>/balance/', AddGratuity.as_view(), name='employee-balance'),
-    path('employee/balance/list/', GratuityListView.as_view(), name='employee-balance-list'),
-    path('employee/balance/<int:pk>/detail/', GratuityDetailView.as_view(), name='employee-balance-detail'),
-    path('employee/balance/<int:pk>/update/', GratuityUpdateView.as_view(), name='employee-balance-update'),
-    path('employee/<int:pk>/gratity/', GratuityListViewOneStaff.as_view(), name='employee-gratuity-list'),
     path('user/<int:pk>/create/', UserHandleCreateView.as_view(), name='create-user')
     ]
+
+urlpatterns += [
+    # Equity Pool (Employee Profit-Sharing) — admin
+    path('equity/list/', EquityListView.as_view(), name='equity-list'),
+    path('equity/post-credit/', EquityPostCreditView.as_view(), name='equity-post-credit'),
+    path('equity/add/', EquityParticipantCreateView.as_view(), name='equity-participant-add'),
+    path('employee/<int:pk>/equity/', EquityParticipantDetailView.as_view(), name='equity-participant-detail'),
+    path('employee/<int:pk>/equity/clawback/', EquityClawbackView.as_view(), name='equity-clawback'),
+    path('employee/<int:pk>/equity/forfeit-cause/', EquityForfeitureCauseView.as_view(), name='equity-forfeit-cause'),
+    path('employee/<int:pk>/equity/separate/', EquitySeparationView.as_view(), name='equity-separate'),
+    path('equity/reallocate/<str:fiscal_year>/', EquityReallocationView.as_view(), name='equity-reallocate'),
+    path('equity/threshold/', ThresholdProfitListView.as_view(), name='equity-threshold-list'),
+    path('equity/threshold/add/', ThresholdProfitCreateView.as_view(), name='equity-threshold-add'),
+    # Equity Pool — staff self-service
+    path('my-equity/', MyEquityPoolView.as_view(), name='my-equity-pool'),
+    path('equity/help/', EquityHelpView.as_view(), name='equity-help'),
+]
     
 urlpatterns += [
     path('payroll/credit/', CreditNoteListView.as_view(), name='credit-list'),

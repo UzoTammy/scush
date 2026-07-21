@@ -25,15 +25,27 @@ from django.views.generic import (View,TemplateView,ListView,DetailView,CreateVi
 from djmoney.money import Money
 
 from ozone import mytools
-from .form import (DebitForm, CreditForm, EmployeeForm, EmployeeEditForm)
+from .form import (DebitForm, CreditForm, EmployeeForm, EmployeeEditForm,
+                   EquityParticipantForm, ThresholdProfitForm)
 from .models import (Employee, EmployeeBalance, CreditNote, DebitNote, Payroll,
                      Reassign, Terminate, Suspend, Permit,SalaryChange,
-                     RequestPermission, Welfare)
+                     RequestPermission, Welfare,
+                     EquityParticipant, EquityShareAllocation, EquityClockEvent,
+                     ThresholdProfit, EquityStatement)
+from . import equity
 from users.models import Profile
 from apply.models import Applicant
 from apply.forms import GuarantorDocumentForm
 from core.models import Setting
 from core.tools import QuerySum as Qsum
+
+
+class HRDRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Shared gate for Equity Pool admin views — same HRD-group rule used across
+    Payroll/Gratuity admin views (AddGratuity, StaffSalaryChange, CreditNoteCreateView, etc)."""
+
+    def test_func(self):
+        return self.request.user.groups.filter(name='HRD').exists()
 
 
 def duration(start_date, resume_date):
@@ -268,16 +280,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         else:
             consumed = (0, 0)
 
-        balance = EmployeeBalance.objects.filter(staff_id=person)
-        
-        if balance.exists():
-            credit = balance.filter(value_type='Cr')
-            debit = balance.filter(value_type='Dr')
-            credit_value = credit.aggregate(total=Sum('value'))['total'] if credit else Decimal('0')
-            debit_value = debit.aggregate(total=Sum('value'))['total'] if debit else Decimal('0')
-            total_balance = credit_value - debit_value
-        else:
-            total_balance = Decimal('0.00')
+        equity_participant = EquityParticipant.objects.filter(staff_id=person).first()
 
         welfare = Welfare.objects.filter(staff_id=person)
 
@@ -302,11 +305,13 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['permissions'] = Permit.objects.filter(staff_id=person)
         context['suspensions'] = Suspend.objects.filter(staff_id=person)
         context['salary_changed'] = SalaryChange.objects.filter(staff_id=person)
-        context['total_balance'] = total_balance
         context['total_welfare'] = total_welfare
         context['payout'] = Payroll.objects.filter(staff_id=self.kwargs['pk']).aggregate(total=Sum('net_pay'))['total']
 
-        context['gratuity_title'] = Setting.get_value('gratuity_title', '')
+        context['is_equity_participant'] = equity_participant is not None
+        if equity_participant is not None:
+            equity_participant.check_and_latch_maturity()
+            context['equity_vested_balance'] = equity_participant.vested_balance.amount
 
         context['welfare_last_record'] = Welfare.objects.latest('date')
         qs = Welfare.objects.filter(date=context['welfare_last_record'].date)
@@ -546,28 +551,6 @@ class PDFProfileView(View):
                 'title': ''
             }
         return render(request, 'mails/mailing_form.html', context)
-
-class AddGratuity(LoginRequiredMixin, UserPassesTestMixin, View):
-
-    def test_func(self):
-        """if user is a member of of the group HRD then grant access to this view"""
-        if self.request.user.groups.filter(name='HRD').exists():
-            return True
-        return False
-
-    def post(self, request, *args, **kwargs):
-        staff = get_object_or_404(Employee.active, pk=kwargs['pk'])
-        """Create a record of this balance"""
-        value = float(request.POST.get('balance')) if request.POST.get('balance') != '' else Money(0, 'NGN')
-        balance = EmployeeBalance.objects.create(staff=staff,
-                                                 value=value,
-                                                 value_type=request.POST.get('CrDr'),
-                                                 description=request.POST.get('comment'),
-                                                 title=request.POST.get('title')
-                                                 )
-        balance.save()
-        messages.success(request, 'Profile Balance changed successfully !!!')
-        return redirect(staff)
 
 class StaffSalaryChange(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Employee
@@ -1705,69 +1688,203 @@ class StaffPoliciesView(TemplateView):
     template_name = 'staff/policies.html'
 
 
-class GratuityListView(ListView):
-    model = EmployeeBalance
-    ordering = ['-date']
-    
+class EquityListView(HRDRequiredMixin, ListView):
+    """Admin ledger of all Equity Pool participants — mirrors the old Gratuity list shape
+    (header stat + table), per Sec.7.1."""
+    model = EquityParticipant
+    template_name = 'staff/equity/list.html'
+    context_object_name = 'participants'
+
+    def get_queryset(self):
+        qs = super().get_queryset().select_related('staff', 'staff__staff')
+        if self.request.GET.get('show_zero') != '1':
+            ids_with_balance = [p.pk for p in qs if p.current_balance.amount != 0]
+            qs = qs.filter(pk__in=ids_with_balance)
+        return qs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        cr = self.get_queryset().filter(value_type='Cr').aggregate(total=Sum('value'))['total']
-        dr = self.get_queryset().filter(value_type='Dr').aggregate(total=Sum('value'))['total']
-        cr = cr if cr is not None  else Decimal('0')
-        dr = dr if dr is not None else Decimal('0')
-        context['total_value'] = cr - dr
-
-        
-        # list of active staff that has earned gratuity
-        active_staff = self.get_queryset().filter(staff__status=True).values_list('staff', flat=True).distinct().order_by()
-
-        # the active staff queryset
-        qs_active = list((staff, self.get_queryset().filter(staff=staff)) for staff in active_staff)
-
-        active_staff_data = list()
-        for qss in qs_active:
-            
-            active_dic = {
-                'id': qss[0],
-                'staff': Employee.objects.filter(pk=qss[0]).first().fullname,
-                'credit': qss[1].filter(value_type='Cr').aggregate(Sum('value'))['value__sum'],
-                'debit': qss[1].filter(value_type='Dr').aggregate(Sum('value'))['value__sum'],
-                }
-            active_staff_data.append(active_dic)
-        
-        context['active_staff'] = active_staff_data
-
-        # list of terminated staff
-        term_staff = self.get_queryset().filter(staff__status=False).values_list('staff', flat=True).distinct().order_by()
-
-        # the terminated staff queryset in gratuity
-        qs_term = list((staff, self.get_queryset().filter(staff=staff)) for staff in term_staff)
-
-        term_staff_data = list()
-        for qss in qs_term:
-            term_dic = {
-                'id': qss[0],
-                'staff': Employee.objects.get(pk=qss[0]).fullname,
-                'credit': qss[1].filter(value_type='Cr').aggregate(Sum('value'))['value__sum'],
-                'debit': qss[1].filter(value_type='Dr').aggregate(Sum('value'))['value__sum'],
-                }
-            term_staff_data.append(term_dic)
-            
-        context['term_staff'] = term_staff_data
+        today = datetime.date.today()
+        current_fy = str(today.year)
+        rows = []
+        total_pool_value = Decimal('0')
+        for participant in self.get_queryset():
+            share = participant.locked_share_for(current_fy)
+            balance = participant.current_balance
+            total_pool_value += balance.amount
+            rows.append({
+                'participant': participant,
+                'share_pct': share,
+                'current_balance': balance,
+                'vested_balance': participant.vested_balance,
+                'unvested_balance': participant.unvested_balance,
+                'vesting_pct': participant.vesting_pct,
+            })
+        context['rows'] = rows
+        context['total_pool_value'] = total_pool_value
+        context['show_zero'] = self.request.GET.get('show_zero') == '1'
+        context['current_fy'] = current_fy
+        context['naira'] = chr(8358)
         return context
 
 
+class EquityPostCreditView(HRDRequiredMixin, View):
+    """Bulk 'Post Profit Pool Credit' action from the list page (Sec.7.1)."""
 
-class GratuityDetailView(DetailView):
-    model = EmployeeBalance
+    def post(self, request, *args, **kwargs):
+        fiscal_year = request.POST.get('fiscal_year', '').strip()
+        total_amount = request.POST.get('total_amount', '').strip()
+        try:
+            amount = Decimal(total_amount)
+            created = equity.post_profit_pool_credit_for_year(fiscal_year, amount, created_by=request.user)
+            messages.success(request, f'Profit Pool Credit for FY{fiscal_year} posted to {len(created)} participant(s).')
+        except (ValidationError, ArithmeticError, ValueError) as e:
+            messages.error(request, f'Could not post credit: {e}')
+        return redirect('equity-list')
 
 
-class GratuityUpdateView(UpdateView):
-    model = EmployeeBalance
-    fields = '__all__'
-    
+class EquityParticipantCreateView(HRDRequiredMixin, CreateView):
+    """Add-participant form (Sec.7.1a) — grant_date is required with no default."""
+    model = EquityParticipant
+    form_class = EquityParticipantForm
+    template_name = 'staff/equity/add_participant.html'
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        equity.post_grant(self.object, created_by=self.request.user)
+        messages.success(self.request, f'{self.object} added as an Equity Pool participant.')
+        return response
+
     def get_success_url(self):
-        return reverse_lazy('employee-balance-detail', kwargs={'pk': self.kwargs['pk']})
+        return reverse_lazy('equity-participant-detail', kwargs={'pk': self.object.staff_id})
+
+
+class EquityParticipantDetailView(HRDRequiredMixin, DetailView):
+    """Per-employee ledger + vesting timeline + admin actions (Sec.7.2). pk is the Employee id."""
+    template_name = 'staff/equity/detail.html'
+    context_object_name = 'participant'
+
+    def get_object(self, queryset=None):
+        participant = get_object_or_404(EquityParticipant, staff_id=self.kwargs['pk'])
+        participant.check_and_latch_maturity()
+        return participant
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['events'] = self.object.clock_events.order_by('-effective_date', '-created_at')
+        context['allocations'] = self.object.share_allocations.order_by('-fiscal_year')
+        context['statements'] = self.object.statements.order_by('-generated_at')
+        return context
+
+
+class EquityClawbackView(HRDRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        participant = get_object_or_404(EquityParticipant, staff_id=kwargs['pk'])
+        try:
+            amount = Decimal(request.POST.get('amount', '0'))
+            equity.post_clawback(participant, amount, note=request.POST.get('note', ''), created_by=request.user)
+            messages.success(request, 'Clawback posted successfully.')
+        except ValidationError as e:
+            messages.error(request, str(e))
+        return redirect('equity-participant-detail', pk=kwargs['pk'])
+
+
+class EquityForfeitureCauseView(HRDRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        participant = get_object_or_404(EquityParticipant, staff_id=kwargs['pk'])
+        try:
+            equity.post_forfeiture_cause(participant, note=request.POST.get('note', ''), created_by=request.user)
+            messages.success(request, 'Forfeiture (for cause) posted — balance zeroed.')
+        except ValidationError as e:
+            messages.error(request, str(e))
+        return redirect('equity-participant-detail', pk=kwargs['pk'])
+
+
+class EquitySeparationView(HRDRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        participant = get_object_or_404(EquityParticipant, staff_id=kwargs['pk'])
+        equity.post_separation(participant, note=request.POST.get('note', ''), created_by=request.user)
+        messages.success(request, 'Separation payout posted.')
+        return redirect('equity-participant-detail', pk=kwargs['pk'])
+
+
+class EquityReallocationView(HRDRequiredMixin, View):
+    """Sec.7.1b: pre-populate FY{N+1} from FY{N}'s locked shares; block locking until
+    active participants' shares sum to exactly 100%."""
+    template_name = 'staff/equity/reallocate.html'
+
+    def get(self, request, *args, **kwargs):
+        fiscal_year = kwargs['fiscal_year']
+        equity.prepare_next_year_allocation(fiscal_year, created_by=request.user)
+        allocations = EquityShareAllocation.objects.filter(
+            fiscal_year=fiscal_year, participant__status=EquityParticipant.STATUS_ACTIVE
+        ).select_related('participant', 'participant__staff')
+        total = sum((a.pool_share_pct for a in allocations), Decimal('0'))
+        return render(request, self.template_name, {
+            'fiscal_year': fiscal_year,
+            'allocations': allocations,
+            'total_pct': total,
+        })
+
+    def post(self, request, *args, **kwargs):
+        fiscal_year = kwargs['fiscal_year']
+        for allocation in EquityShareAllocation.objects.filter(fiscal_year=fiscal_year, locked=False):
+            field = f'share_{allocation.pk}'
+            if field in request.POST:
+                allocation.pool_share_pct = Decimal(request.POST[field] or '0')
+                allocation.save(update_fields=['pool_share_pct'])
+
+        if request.POST.get('action') == 'lock':
+            try:
+                equity.lock_fiscal_year_allocation(fiscal_year)
+                messages.success(request, f'FY{fiscal_year} allocation locked.')
+            except ValidationError as e:
+                messages.error(request, str(e))
+        else:
+            messages.success(request, f'FY{fiscal_year} allocation saved (not yet locked).')
+        return redirect('equity-reallocate', fiscal_year=fiscal_year)
+
+
+class ThresholdProfitListView(HRDRequiredMixin, ListView):
+    """Sec.7.3: set/update Threshold Profit per fiscal year; warns on a live disclosure breach."""
+    model = ThresholdProfit
+    template_name = 'staff/equity/threshold.html'
+    ordering = ['-fiscal_year']
+    context_object_name = 'thresholds'
+
+
+class ThresholdProfitCreateView(HRDRequiredMixin, CreateView):
+    model = ThresholdProfit
+    form_class = ThresholdProfitForm
+    template_name = 'staff/equity/threshold_form.html'
+    success_url = reverse_lazy('equity-threshold-list')
+
+
+class MyEquityPoolView(LoginRequiredMixin, TemplateView):
+    """Staff-facing self-service view (Sec.7.4). Server-side filtered to request.user's
+    own linked staff record only — never trusts a client-supplied staff id."""
+    template_name = 'staff/equity/my_equity.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        staff = self.request.user.profile.staff
+        participant = EquityParticipant.objects.filter(staff=staff).first() if staff else None
+        context['participant'] = participant
+        if participant:
+            participant.check_and_latch_maturity()
+            context['events'] = participant.clock_events.order_by('-effective_date')
+        return context
+
+
+class EquityHelpView(LoginRequiredMixin, TemplateView):
+    """Plain-language walkthrough of the Equity Pool section — components, navigation,
+    and expected results for both HRD admins and staff participants."""
+    template_name = 'staff/equity/help.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_hrd'] = self.request.user.groups.filter(name='HRD').exists()
+        return context
 
 
 class RequestPermissionListView(LoginRequiredMixin, ListView):

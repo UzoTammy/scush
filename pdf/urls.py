@@ -33,3 +33,8 @@ urlpatterns += [
 urlpatterns += [
     path('bank-balance-daily/', BankAccountPdf.as_view(), name='pdf-daily-bank-balance')
 ]
+
+urlpatterns += [
+    path('equity/statement/<int:pk>/', EquityStatementPDFView.as_view(), name='pdf-equity-statement'),
+    path('equity/statement/bulk/<str:fiscal_year>/', EquityStatementBulkPDFView.as_view(), name='pdf-equity-statement-bulk'),
+]

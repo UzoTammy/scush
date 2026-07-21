@@ -8,9 +8,16 @@
 <div class="container">
   <div class="ds-page-header">
     <h2 class="ds-page-header__title">Your Info</h2>
-    <a href="{% url 'password_reset' %}" class="btn btn-secondary btn-sm">
-      <i class="fa fa-key mr-1"></i> Change Password
-    </a>
+    <div>
+      {% if user.profile.staff.equity_participant %}
+      <a href="{% url 'my-equity-pool' %}" class="btn btn-outline-primary btn-sm">
+        <i class="fa fa-line-chart mr-1"></i> My Equity Pool
+      </a>
+      {% endif %}
+      <a href="{% url 'password_reset' %}" class="btn btn-secondary btn-sm">
+        <i class="fa fa-key mr-1"></i> Change Password
+      </a>
+    </div>
   </div>
 
   <!-- Profile card -->

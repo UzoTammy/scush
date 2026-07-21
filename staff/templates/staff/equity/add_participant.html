@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}Add Equity Pool Participant{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="ds-page-header">
+    <h2 class="ds-page-header__title">Add Equity Pool Participant</h2>
+  </div>
+  <div class="ds-card">
+    <div class="ds-card__body">
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <small class="text-muted d-block mb-3">
+          Grant date has no default — it starts this participant's single maturity clock
+          and must be confirmed explicitly (Policy §6.1).
+        </small>
+        <button type="submit" class="btn btn-primary">Add Participant</button>
+        <a href="{% url 'equity-list' %}" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

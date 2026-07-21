@@ -1,6 +1,9 @@
 import calendar
 import datetime
+from decimal import Decimal
+from dateutil.relativedelta import relativedelta
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from django.urls import reverse
 from djmoney.money import Money
@@ -302,9 +305,171 @@ class ReEngage(models.Model):
     staff = models.ForeignKey(Employee, on_delete=models.CASCADE)
     date = models.DateField(default=datetime.date.today)
     approved_salary = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN')
-    
+
     # send to employee model
-    terminated_date = models.DateField() #take date from terminated model 
+    terminated_date = models.DateField() #take date from terminated model
     last_salary_paid = MoneyField(max_digits=8, decimal_places=2, default_currency='NGN')
     #taking from employee model
-    
+
+
+# Equity Pool (Employee Profit-Sharing) — independent of EmployeeBalance/Gratuity.
+class EquityParticipant(models.Model):
+    STATUS_ACTIVE = 'active'
+    STATUS_SEPARATED = 'separated'
+    STATUS_FORFEITED_CAUSE = 'forfeited_cause'
+    STATUS_CHOICES = [
+        (STATUS_ACTIVE, 'Active'),
+        (STATUS_SEPARATED, 'Separated'),
+        (STATUS_FORFEITED_CAUSE, 'Forfeited (Cause)'),
+    ]
+
+    staff = models.OneToOneField(Employee, on_delete=models.CASCADE, related_name='equity_participant')
+    role_code = models.CharField(max_length=20)
+    initial_capital_allocation = MoneyField(max_digits=12, decimal_places=2, default_currency='NGN')
+    grant_date = models.DateField(help_text='Starts this participant\'s single maturity clock. Admin-set, never defaulted.')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_ACTIVE)
+    fully_matured = models.BooleanField(default=False)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.staff.fullname()} ({self.role_code})'
+
+    def get_absolute_url(self):
+        return reverse('equity-participant-detail', kwargs={'pk': self.staff_id})
+
+    def months_elapsed(self):
+        today = datetime.date.today()
+        delta = relativedelta(today, self.grant_date)
+        return delta.years * 12 + delta.months
+
+    def check_and_latch_maturity(self):
+        """Permanently set fully_matured once the 3-year mark passes (Policy Sec.6.3)."""
+        if not self.fully_matured and self.months_elapsed() >= 36:
+            self.fully_matured = True
+            self.save(update_fields=['fully_matured'])
+        return self.fully_matured
+
+    @property
+    def vesting_pct(self):
+        if self.fully_matured:
+            return Decimal('100')
+        months = self.months_elapsed()
+        if months < 12:
+            return Decimal('0')
+        elif months < 24:
+            return Decimal('33')
+        elif months < 36:
+            return Decimal('66')
+        return Decimal('100')
+
+    @property
+    def current_balance(self):
+        # djmoney's Sum() on a MoneyField returns a plain Decimal (not Money) in this
+        # version — wrap it back into Money ourselves, same as EmployeeBalance callers do.
+        total = self.clock_events.aggregate(total=models.Sum('amount'))['total']
+        return Money(total, 'NGN') if total is not None else Money(0, 'NGN')
+
+    @property
+    def vested_balance(self):
+        pct = self.vesting_pct
+        current = self.current_balance
+        if pct == Decimal('100'):
+            return current
+        return Money((current.amount * pct / Decimal('100')).quantize(Decimal('0.01')), current.currency)
+
+    @property
+    def unvested_balance(self):
+        return self.current_balance - self.vested_balance
+
+    def locked_share_for(self, fiscal_year):
+        allocation = self.share_allocations.filter(fiscal_year=fiscal_year, locked=True).first()
+        return allocation.pool_share_pct if allocation else Decimal('0')
+
+
+class EquityShareAllocation(models.Model):
+    participant = models.ForeignKey(EquityParticipant, on_delete=models.CASCADE, related_name='share_allocations')
+    fiscal_year = models.CharField(max_length=4)
+    pool_share_pct = models.DecimalField(max_digits=5, decimal_places=2)
+    effective_from = models.DateField()
+    locked = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['participant', 'fiscal_year'],
+                name='unique_equity_share_participant_fy'
+            )
+        ]
+
+    def __str__(self):
+        return f'{self.participant}-{self.fiscal_year}-{self.pool_share_pct}%'
+
+
+class EquityClockEvent(models.Model):
+    GRANT = 'grant'
+    PROFIT_POOL_CREDIT = 'profit_pool_credit'
+    VEST_33 = 'vest_33'
+    VEST_66 = 'vest_66'
+    VEST_100 = 'vest_100'
+    CLAWBACK = 'clawback'
+    FORFEITURE_CAUSE = 'forfeiture_cause'
+    FORFEITURE_SEPARATION = 'forfeiture_separation'
+    PAYOUT = 'payout'
+    EVENT_CHOICES = [
+        (GRANT, 'Grant'),
+        (PROFIT_POOL_CREDIT, 'Profit Pool Credit'),
+        (VEST_33, 'Vested 33%'),
+        (VEST_66, 'Vested 66%'),
+        (VEST_100, 'Vested 100%'),
+        (CLAWBACK, 'Clawback'),
+        (FORFEITURE_CAUSE, 'Forfeiture (Cause)'),
+        (FORFEITURE_SEPARATION, 'Forfeiture (Separation)'),
+        (PAYOUT, 'Payout'),
+    ]
+    NOTE_REQUIRED_EVENTS = (CLAWBACK, FORFEITURE_CAUSE, FORFEITURE_SEPARATION)
+
+    participant = models.ForeignKey(EquityParticipant, on_delete=models.CASCADE, related_name='clock_events')
+    event_type = models.CharField(max_length=25, choices=EVENT_CHOICES)
+    amount = MoneyField(max_digits=12, decimal_places=2, default_currency='NGN')
+    effective_date = models.DateField(default=timezone.now)
+    fiscal_year = models.CharField(max_length=4)
+    note = models.TextField(blank=True, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.participant}-{self.event_type}-{self.fiscal_year}'
+
+    def clean(self):
+        if self.event_type in self.NOTE_REQUIRED_EVENTS and not self.note:
+            raise ValidationError('A note (approver and reason) is required for clawback/forfeiture events.')
+
+
+class ThresholdProfit(models.Model):
+    fiscal_year = models.CharField(max_length=4, unique=True)
+    threshold_amount = MoneyField(max_digits=14, decimal_places=2, default_currency='NGN')
+    methodology_note = models.TextField()
+    approved_date = models.DateField()
+    disclosed_date = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return f'Threshold Profit {self.fiscal_year}'
+
+    def disclosure_overdue(self):
+        if self.disclosed_date:
+            return False
+        return (datetime.date.today() - self.approved_date).days > 30
+
+
+class EquityStatement(models.Model):
+    participant = models.ForeignKey(EquityParticipant, on_delete=models.CASCADE, related_name='statements')
+    fiscal_year = models.CharField(max_length=4)
+    file = models.FileField(upload_to='equity_statements/')
+    generated_at = models.DateTimeField(auto_now_add=True)
+    generated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.participant}-{self.fiscal_year}-statement'
+
