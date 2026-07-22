@@ -66,6 +66,22 @@ def make_hrd_user():
     return user
 
 
+def make_owner_user():
+    """Create a user whose linked staff record holds the 'Owner' position —
+    the gate Equity Pool admin views check via HRDRequiredMixin."""
+    user = User.objects.create_user(
+        username='owner_tester',
+        password='testpass123',
+    )
+    applicant = make_applicant('Owner', 'Tester')
+    employee = make_employee(applicant)
+    employee.position = 'Owner'
+    employee.save(update_fields=['position'])
+    user.profile.staff = employee
+    user.profile.save(update_fields=['staff'])
+    return user
+
+
 # ── Test cases ────────────────────────────────────────────────────────────────
 
 @override_settings(
@@ -354,13 +370,18 @@ class EquityProfitPoolCreditTests(TestCase):
     STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage'
 )
 class EquityPoolEndToEndTests(TestCase):
-    """Walks the admin flow (list/detail/reallocate/threshold/PDF) as an HRD user, and
+    """Walks the admin flow (list/detail/reallocate/threshold/PDF) as the Owner, and
     confirms a linked staff account only ever sees its own Equity Pool data."""
 
     def setUp(self):
         self.client = Client()
-        make_hrd_user()
-        self.client.login(username='hrd_tester', password='testpass123')
+        owner = make_owner_user()
+        # employee-detail (StaffDetailView) is gated on HRD-group membership, separately
+        # from the Equity Pool admin views under test here — mirrors prod, where the
+        # Owner account is also an HRD member.
+        hrd_group, _ = Group.objects.get_or_create(name='HRD')
+        owner.groups.add(hrd_group)
+        self.client.login(username='owner_tester', password='testpass123')
         self.participant = make_participant(6, n=3)
         # StaffDetailView.get_context_data() does Welfare.objects.latest('date') unconditionally
         # (pre-existing, unrelated to Equity Pool) — seed one row so employee-detail doesn't 500

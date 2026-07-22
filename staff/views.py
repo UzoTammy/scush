@@ -40,12 +40,17 @@ from core.models import Setting
 from core.tools import QuerySum as Qsum
 
 
+def is_equity_admin(user):
+    staff = getattr(user.profile, 'staff', None)
+    return staff is not None and staff.position == 'Owner'
+
+
 class HRDRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    """Shared gate for Equity Pool admin views — same HRD-group rule used across
-    Payroll/Gratuity admin views (AddGratuity, StaffSalaryChange, CreditNoteCreateView, etc)."""
+    """Gate for Equity Pool admin views — restricted to the staff member holding the
+    'Owner' position, not the HRD group used by Payroll/Gratuity admin views."""
 
     def test_func(self):
-        return self.request.user.groups.filter(name='HRD').exists()
+        return is_equity_admin(self.request.user)
 
 
 def duration(start_date, resume_date):
@@ -1883,7 +1888,7 @@ class EquityHelpView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['is_hrd'] = self.request.user.groups.filter(name='HRD').exists()
+        context['is_hrd'] = is_equity_admin(self.request.user)
         return context
 
 
