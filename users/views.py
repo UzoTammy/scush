@@ -1,7 +1,8 @@
 import json
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -16,8 +17,9 @@ def allow_admin(user):
 
 
 @login_required()
-@user_passes_test(allow_admin)
 def register(request, **kwargs):
+    if not allow_admin(request.user):
+        raise PermissionDenied
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():

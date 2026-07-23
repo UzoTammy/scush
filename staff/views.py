@@ -10,7 +10,8 @@ from decimal import Decimal
 from django.db.models.query import QuerySet
 from django.db.models import (F, Sum, Avg, Max, Min, ProtectedError)
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.mail import send_mail, EmailMessage
@@ -499,9 +500,10 @@ def request_guarantor_reupload(request, pk):
 
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
 def approve_guarantor_reupload(request, pk):
     """Superuser approves a pending request to re-upload the guarantor document."""
+    if not request.user.is_superuser:
+        raise PermissionDenied
     employee = get_object_or_404(Employee, pk=pk)
     doc = getattr(employee.staff, 'guarantor_doc', None)
     if request.method == 'POST' and doc and doc.reupload_requested:
