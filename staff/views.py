@@ -8,7 +8,7 @@ from typing import Any
 from decimal import Decimal
 
 from django.db.models.query import QuerySet
-from django.db.models import (F, Sum, Avg, Max, Min)
+from django.db.models import (F, Sum, Avg, Max, Min, ProtectedError)
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
@@ -29,7 +29,7 @@ from .form import (DebitForm, CreditForm, EmployeeForm, EmployeeEditForm,
                    EquityParticipantForm, ThresholdProfitForm)
 from .models import (Employee, EmployeeBalance, CreditNote, DebitNote, Payroll,
                      Reassign, Terminate, Suspend, Permit,SalaryChange,
-                     RequestPermission, Welfare,
+                     RequestPermission, Welfare, Position,
                      EquityParticipant, EquityShareAllocation, EquityClockEvent,
                      ThresholdProfit, EquityStatement)
 from . import equity
@@ -42,7 +42,7 @@ from core.tools import QuerySum as Qsum
 
 def is_equity_admin(user):
     staff = getattr(user.profile, 'staff', None)
-    return staff is not None and staff.position == 'Owner'
+    return staff is not None and staff.position is not None and staff.position.name == 'Owner'
 
 
 class HRDRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -51,6 +51,43 @@ class HRDRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 
     def test_func(self):
         return is_equity_admin(self.request.user)
+
+
+# ── Position registry (manage from Settings page) ──────────────────────────────
+
+class PositionAddView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name='HRD').exists()
+
+    def post(self, request):
+        name = request.POST.get('name', '').strip()
+        if name:
+            Position.objects.get_or_create(name=name)
+        return redirect('settings')
+
+
+class PositionToggleView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name='HRD').exists()
+
+    def post(self, request, pk):
+        position = get_object_or_404(Position, pk=pk)
+        position.active = not position.active
+        position.save()
+        return redirect('settings')
+
+
+class PositionRemoveView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.groups.filter(name='HRD').exists()
+
+    def post(self, request, pk):
+        position = get_object_or_404(Position, pk=pk)
+        try:
+            position.delete()
+        except ProtectedError:
+            messages.error(request, f"Cannot remove position '{position}' — one or more staff are currently assigned to it. Disable it instead to hide it from new assignments.")
+        return redirect('settings')
 
 
 def duration(start_date, resume_date):
@@ -303,7 +340,7 @@ class StaffDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context['permit_count'] = 'None' if consumed == (0, 0) else permit.count()
         # context['balance_days'] = int(leave) - days_consumed
         
-        context['positions'] = Setting.get_list('positions')
+        context['positions'] = Position.objects.filter(active=True)
         context['branches']  = Setting.get_list('branches')
         
         context['reassigned'] = Reassign.objects.filter(staff_id=person)
@@ -719,7 +756,7 @@ class StaffReassign(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         for key, value in pos.items():
             if position in value:
                 department = key
-        qs.position = position
+        qs.position = Position.objects.filter(name=position).first() if position else None
         qs.branch = branch
         qs.department = department
         """data modified time needs to change and mail needs"""

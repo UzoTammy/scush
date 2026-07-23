@@ -3,7 +3,7 @@ from django import forms
 from django.forms.widgets import DateTimeInput
 from django.shortcuts import get_object_or_404
 from .models import (CreditNote, DebitNote, Employee, RequestPermission, Reassign,
-                     EquityParticipant, ThresholdProfit)
+                     EquityParticipant, ThresholdProfit, Position)
 from core.models import Setting
 
 
@@ -41,7 +41,7 @@ class EmployeeForm(forms.ModelForm):
     date_employed = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     banker     = forms.ChoiceField(choices=[])
     branch     = forms.ChoiceField(choices=[], required=False)
-    position   = forms.ChoiceField(choices=[], required=False)
+    position   = forms.ModelChoiceField(queryset=Position.objects.filter(active=True), required=False)
     department = forms.ChoiceField(choices=[], required=False)
     salary     = forms.CharField(max_length=12,
                                  help_text='<small class=text-danger>Note: Currency in Naira</small>')
@@ -56,7 +56,6 @@ class EmployeeForm(forms.ModelForm):
         self.fields['salary'].widget.attrs['placeholder'] = 'Enter Salary as Approved'
         self.fields['banker'].choices     = _get_json_choices('banks',       [('UBA', 'UBA')])
         self.fields['branch'].choices     = [(None, '--------')] + _get_json_choices('branches',    [('FG', 'FG')])
-        self.fields['position'].choices   = [(None, '--------')] + _get_json_choices('positions',   [('GSM', 'GSM')])
         self.fields['department'].choices = [(None, '--------')] + _get_json_choices('departments', [('Sales', 'Sales')])
         for field in self.fields.values():
             field.widget.attrs.setdefault('class', 'form-control')

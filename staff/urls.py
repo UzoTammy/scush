@@ -14,7 +14,8 @@ from .views import (StaffMainPageView, StaffListView, StaffPoliciesView, StaffLi
                     BackView, NextView,
                     EquityListView, EquityPostCreditView, EquityParticipantCreateView, EquityParticipantDetailView,
                     EquityClawbackView, EquityForfeitureCauseView, EquitySeparationView, EquityReallocationView,
-                    ThresholdProfitListView, ThresholdProfitCreateView, MyEquityPoolView, EquityHelpView)
+                    ThresholdProfitListView, ThresholdProfitCreateView, MyEquityPoolView, EquityHelpView,
+                    PositionAddView, PositionToggleView, PositionRemoveView)
 
 
 urlpatterns = [
@@ -41,7 +42,12 @@ urlpatterns = [
     path('pk-reset/', PKResetView.as_view(), name='pk-reset'),
     path('pk-reset/payroll/', PKResetPayroll.as_view(), name='pk-reset-payroll'),
     
-    path('user/<int:pk>/create/', UserHandleCreateView.as_view(), name='create-user')
+    path('user/<int:pk>/create/', UserHandleCreateView.as_view(), name='create-user'),
+
+    # Position registry (manage from Settings page)
+    path('positions/add/', PositionAddView.as_view(), name='position-add'),
+    path('positions/<int:pk>/toggle/', PositionToggleView.as_view(), name='position-toggle'),
+    path('positions/<int:pk>/remove/', PositionRemoveView.as_view(), name='position-remove'),
     ]
 
 urlpatterns += [

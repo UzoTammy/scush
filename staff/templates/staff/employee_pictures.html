@@ -78,7 +78,7 @@
         <div class="photo-card__id">{{ object.id|zeropadding:3 }}</div>
         <div class="photo-card__name">{{ object.fullname }}</div>
         <div class="photo-card__role">
-          {% if object.position == 'SCM' and object.branch %}
+          {% if object.position.name == 'SCM' and object.branch %}
             {{ object.position }} &mdash; {{ object.branch }}
           {% else %}
             {{ object.position|default:"—" }}

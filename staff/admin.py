@@ -12,13 +12,20 @@ from .models import (Employee,
                      EmployeeBalance,
                      RequestPermission, Welfare,
                      EquityParticipant, EquityShareAllocation, EquityClockEvent,
-                     ThresholdProfit, EquityStatement
+                     ThresholdProfit, EquityStatement, Position
                      )
 
 # Register your models here.
 
 class PayrollAdmin(admin.ModelAdmin):
     list_display = ['id', 'staff', 'period', 'balance', 'salary']
+
+
+@admin.register(Position)
+class PositionAdmin(admin.ModelAdmin):
+    list_display = ['name', 'active']
+    list_editable = ['active']
+    search_fields = ['name']
 
 
 admin.site.register(Employee)

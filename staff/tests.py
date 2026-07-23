@@ -16,7 +16,7 @@ from djmoney.money import Money
 from django.core.exceptions import ValidationError
 
 from apply.models import Applicant
-from staff.models import Employee, Payroll, EquityParticipant, EquityShareAllocation, Welfare
+from staff.models import Employee, Payroll, EquityParticipant, EquityShareAllocation, Welfare, Position
 from staff import equity
 
 
@@ -39,10 +39,11 @@ def make_applicant(first='Test', last='Staff', n=1):
 
 def make_employee(applicant, n=1):
     """Create an active Employee linked to the given Applicant."""
+    position, _ = Position.objects.get_or_create(name='Sales')
     return Employee.objects.create(
         staff=applicant,
         date_employed=datetime.date(2022, 1, 1),
-        position='Sales',
+        position=position,
         department='Sales',
         branch='HQ',
         banker='GTB',
@@ -75,7 +76,7 @@ def make_owner_user():
     )
     applicant = make_applicant('Owner', 'Tester')
     employee = make_employee(applicant)
-    employee.position = 'Owner'
+    employee.position, _ = Position.objects.get_or_create(name='Owner')
     employee.save(update_fields=['position'])
     user.profile.staff = employee
     user.profile.save(update_fields=['staff'])

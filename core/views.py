@@ -44,7 +44,7 @@ from django.views.generic import (View, TemplateView, ListView, CreateView, Deta
 from django.db.models import F, Sum, Q, Avg, Min
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth import authenticate, login
-from staff.models import Employee, Permit, Payroll, Welfare, EmployeeBalance
+from staff.models import Employee, Permit, Payroll, Welfare, EmployeeBalance, Position
 from stock.models import Product, ProductExtension
 from customer.models import CustomerCredit, Profile as CustomerProfile
 from apply.models import Applicant
@@ -122,13 +122,13 @@ class AboutView(TemplateView):
 class CompanyPageView(View):
 
     def get(self, request):
-        md = Employee.active.filter(position='MD')
-        gsm = Employee.active.filter(position='GSM')
-        scm = Employee.active.filter(position='SCM')
-        hrm = Employee.active.filter(position='HRM')
-        acct = Employee.active.filter(position='Accountant')
-        mrk = Employee.active.filter(position='Marketing Manager')
-        lyst = Employee.active.filter(position='Analyst')
+        md = Employee.active.filter(position__name='MD')
+        gsm = Employee.active.filter(position__name='GSM')
+        scm = Employee.active.filter(position__name='SCM')
+        hrm = Employee.active.filter(position__name='HRM')
+        acct = Employee.active.filter(position__name='Accountant')
+        mrk = Employee.active.filter(position__name='Marketing Manager')
+        lyst = Employee.active.filter(position__name='Analyst')
 
 
         context = {
@@ -669,6 +669,7 @@ class SettingsView(LoginRequiredMixin, TemplateView):
         context['categories'] = Paginator(Category.objects.all(), self.PAGE_SIZE).get_page(cat_page)
         context['sources'] = Paginator(Source.objects.all(), self.PAGE_SIZE).get_page(src_page)
         context['active_tab'] = 'Products' if (cat_page or src_page) else None
+        context['positions'] = Position.objects.all()
         return context
 
 

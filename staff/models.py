@@ -20,6 +20,17 @@ class ActiveEmployeeManager(models.Manager):
         return super().get_queryset().filter(status=True)
 
 
+class Position(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
 class Employee(models.Model):
 
     staff = models.ForeignKey(Applicant, on_delete=models.CASCADE)
@@ -31,7 +42,7 @@ class Employee(models.Model):
     official_mobile = models.CharField(max_length=11, blank=True, null=True)
     is_management = models.BooleanField(default=False)
     is_confirmed = models.BooleanField(default=False)
-    position = models.CharField(max_length=30, null=True, blank=True)
+    position = models.ForeignKey(Position, on_delete=models.PROTECT, null=True, blank=True, related_name='employees')
     department = models.CharField(max_length=30, null=True, blank=True)
     branch = models.CharField(max_length=30, null=True, blank=True)
     banker = models.CharField(max_length=20)
