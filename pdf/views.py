@@ -14,6 +14,7 @@ from apply.models import Applicant
 from django.contrib.auth.models import User
 from django.views.generic import (View, ListView, DetailView, TemplateView)
 from staff.models import Employee, Payroll, EmployeeBalance, EquityParticipant, EquityStatement
+from core.models import CompanyProfile
 from staff.views import HRDRequiredMixin
 from trade.models import TradeMonthly, BankBalance
 from stock.models import Product
@@ -140,6 +141,11 @@ class EmployeeSummaryView(LoginRequiredMixin, ListView):
         dr = EmployeeBalance.objects.filter(value_type='Dr').aggregate(total=Sum('value'))['total']
         
         context = {
+            'title': 'Company Profile',
+            'subtitle': f'As at {datetime.datetime.now().strftime("%d %B %Y")}',
+            'logo_image': Ozone.logo(),
+            'N': 'N',
+            'profile': CompanyProfile.load(),
             'now': datetime.datetime.now(),
             'workforce': self.get_queryset(),
             'num_female': self.get_queryset().filter(staff__gender='FEMALE'),

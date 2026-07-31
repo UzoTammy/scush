@@ -1,87 +1,150 @@
-<!DOCTYPE html>
+{% extends 'pdf/base.html' %}
 {% load custom_tags %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Scush-Staff</title>
-    <style type="text/css">
-            body {
-                font-weight: 100;
-                font-size: 14px;
-            }
-            .header {
-                font-size: 20px;
-                font-weight: 100;
-                text-align: center;
-                color: #007cae;
-            }
-            .title {
-                font-size: 22px;
-                font-weight: 100;
-               /* text-align: right;*/
-               padding: 10px 20px 0px 20px;
-            }
-            .title span {
-                color: #007cae;
-            }
-            .details {
-                padding: 10px 20px 0px 20px;
-                text-align: left !important;
-                /*margin-left: 40%;*/
-            }
-            .hrItem {
-                border: none;
-                height: 1px;
-                /* Set the hr color */
-                color: #333; /* old IE */
-                background-color: #fff; /* Modern Browsers */
-            }
-            small {
-                color: #e7aaad;
-            }
-            table, th, td {
-                border: 1px solid #d6d7ce;
-                padding: 3px;
-            }
-            table {
-                width: 100%;
-            }
-            img {
+{% block content %}
 
-            }
-        </style>
-</head>
-<body>
-<small>Source: Scush Web App as at {% now "d-m-Y H:i" %} WAT</small>
-<div class='wrapper'>
-    <div class='header'>
-        <p class='title'>Ozone: Company Profile</p>
-    </div>
-</div>
-<div style="margin: 8">
-    <h5>The Staff</h5>
-    <p>Workforce: #{{workforce.count}}</p>
-    <p>Male: #{{num_female.count}} | Female: #{{num_male.count}}</p>
-    <p>Single: #{{num_single.count}} | Married: #{{num_married.count}}</p>
-    <p>Management: #{{num_management.count}} | Non-Management: #{{num_non_management.count}}</p>
-    <p>Probation: #{{num_probation.count}} | Terminated: #{{num_all_time|minus:workforce.count}}</p>
-    <p>Graduates: #{{num_graduates.count}}</p>
-    <p>Salary: NGN{{total_salary|floatformat:'2g'}} per annum
-       <span style="color: #007cae;">(NGN{{total_salary|dividedby:12|floatformat:'2g'}} per month)</span> 
-    </p>
-    <p>Gratuity: NGN{{balance|floatformat:'2g'}}</p>
-    <p>Monthly Average Salary: NGN{{average_salary.tsa|floatformat:'2g'}}</p>
-    <p>Total Pay Out: NGN{{total_net_pay.total|floatformat:'2g'}} <span style="color:grey;">(since june 2021)</span></p>
-    <p>Minimum Wage: NGN{{minimum_wage.value|floatformat:'2g'}}</p>
-    <p>Youngest Staff: {{youngest|timesince:now}} old | Oldest Staff: {{oldest|timesince:now}} old</p>
-    <hr style="margin-top: 1em;">
-    <h3>The Business</h3>
-    <p>Previous Year Revenue: NGN{{sales_last_year|default_if_none:0|floatformat:'2g'}} and Gross Margin: 
-        {{gross_margin_last_year|default_if_none:0|floatformat:'3'}}%</p>
-    <p>Current Year Revenue: NGN{{sales_year|default_if_none:0|floatformat:'2g'}} and Gross Margin: 
-        {{gross_margin_year|default_if_none:0|floatformat:'3'}}%</p>
-    
-</div>
-</body>
-</html>
+<h2>Company Information</h2>
+
+<table class="ps-info-table ps-side-table">
+  <thead><tr><th colspan="2">Legal &amp; Registration</th></tr></thead>
+  <tbody>
+    <tr><td class="ps-info-label">Legal Name</td><td class="ps-info-value">{{ profile.legal_name|default:"—" }}</td></tr>
+    <tr><td class="ps-info-label">RC Number</td><td class="ps-info-value">{{ profile.rc_number|default:"—" }}</td></tr>
+    <tr><td class="ps-info-label">TIN</td><td class="ps-info-value">{{ profile.tin|default:"—" }}</td></tr>
+    <tr><td class="ps-info-label">Date Incorporated</td><td class="ps-info-value">{{ profile.date_incorporated|default:"—" }}</td></tr>
+    <tr><td class="ps-info-label">Registered Address</td><td class="ps-info-value">{{ profile.registered_address|default:"—" }}</td></tr>
+  </tbody>
+</table>
+
+<table class="ps-info-table ps-side-right text-md mt-lg">
+  <thead><tr><th colspan="2">Business Details</th></tr></thead>
+  <tbody>
+    <tr><td class="ps-info-label">Tagline</td><td class="ps-info-value">{{ profile.tagline|default:"—" }}</td></tr>
+    <tr><td class="ps-info-label">Phone</td><td class="ps-info-value">{{ profile.phone|default:"—" }}</td></tr>
+    <tr><td class="ps-info-label">Email</td><td class="ps-info-value">{{ profile.email|default:"—" }}</td></tr>
+    <tr><td class="ps-info-label">Website</td><td class="ps-info-value">{{ profile.website|default:"—" }}</td></tr>
+    <tr><td class="ps-info-label">Head Office</td><td class="ps-info-value">{{ profile.head_office_address|default:"—" }}</td></tr>
+  </tbody>
+</table>
+
+<div class="ps-clearfix"></div>
+
+{% if profile.mission %}
+<h3 class="mt-section">Mission</h3>
+<p>{{ profile.mission }}</p>
+{% endif %}
+
+{% if profile.vision %}
+<h3 class="mt-section">Vision</h3>
+<p>{{ profile.vision }}</p>
+{% endif %}
+
+{% if profile.facebook or profile.twitter or profile.instagram or profile.linkedin %}
+<p class="text-sm text-muted">
+  Social:
+  {% if profile.facebook %}Facebook: {{ profile.facebook }}{% endif %}
+  {% if profile.twitter %} &nbsp;|&nbsp; X (Twitter): {{ profile.twitter }}{% endif %}
+  {% if profile.instagram %} &nbsp;|&nbsp; Instagram: {{ profile.instagram }}{% endif %}
+  {% if profile.linkedin %} &nbsp;|&nbsp; LinkedIn: {{ profile.linkedin }}{% endif %}
+</p>
+{% endif %}
+
+<div class="page-break"></div>
+
+<h2>Workforce Overview</h2>
+<table class="summary-table mt-sm">
+  <tr>
+    <th>Active</th>
+    <td>{{ workforce.count }}</td>
+    <th>All Time</th>
+    <td>{{ num_all_time }}</td>
+    <th>Terminated</th>
+    <td>{{ num_all_time|minus:workforce.count }}</td>
+  </tr>
+  <tr>
+    <th>Male</th>
+    <td>{{ num_male.count }}</td>
+    <th>Female</th>
+    <td>{{ num_female.count }}</td>
+    <th>Probation</th>
+    <td>{{ num_probation.count }}</td>
+  </tr>
+  <tr>
+    <th>Single</th>
+    <td>{{ num_single.count }}</td>
+    <th>Married</th>
+    <td>{{ num_married.count }}</td>
+    <th>Graduates</th>
+    <td>{{ num_graduates.count }}</td>
+  </tr>
+  <tr>
+    <th>Management</th>
+    <td>{{ num_management.count }}</td>
+    <th>Non-Management</th>
+    <td>{{ num_non_management.count }}</td>
+    <td colspan="2"></td>
+  </tr>
+</table>
+
+<h3 class="mt-section">Age Profile</h3>
+<table class="detail-table">
+  <thead>
+    <tr>
+      <th>Youngest Staff</th>
+      <th>Oldest Staff</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ youngest|timesince:now }} old</td>
+      <td>{{ oldest|timesince:now }} old</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 class="mt-section">Payroll &amp; Gratuity</h2>
+<table class="summary-table mt-sm">
+  <tr>
+    <th>Annual Salary Commitment</th>
+    <td>{{ N }}{{ total_salary|floatformat:'2g' }}</td>
+    <th>Monthly Equivalent</th>
+    <td>{{ N }}{{ total_salary|dividedby:12|floatformat:'2g' }}</td>
+  </tr>
+  <tr>
+    <th>Average Monthly Salary</th>
+    <td>{{ N }}{{ average_salary.tsa|floatformat:'2g' }}</td>
+    <th>Minimum Wage</th>
+    <td>{{ N }}{{ minimum_wage.value|floatformat:'2g' }}</td>
+  </tr>
+  <tr>
+    <th>Total Net Pay (All Time)</th>
+    <td>{{ N }}{{ total_net_pay.total|floatformat:'2g' }}</td>
+    <th>Gratuity Balance</th>
+    <td>{{ N }}{{ balance|floatformat:'2g' }}</td>
+  </tr>
+</table>
+
+<h2 class="mt-section">Business Performance</h2>
+<table class="detail-table">
+  <thead>
+    <tr>
+      <th>Period</th>
+      <th class="text-right">Revenue</th>
+      <th class="text-right">Gross Margin</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Previous Year</td>
+      <td class="text-right">{{ N }}{{ sales_last_year|default_if_none:0|floatformat:'2g' }}</td>
+      <td class="text-right">{{ gross_margin_last_year|default_if_none:0|floatformat:'1' }}%</td>
+    </tr>
+    <tr>
+      <td>Current Year</td>
+      <td class="text-right">{{ N }}{{ sales_year|default_if_none:0|floatformat:'2g' }}</td>
+      <td class="text-right">{{ gross_margin_year|default_if_none:0|floatformat:'1' }}%</td>
+    </tr>
+  </tbody>
+</table>
+
+{% endblock %}
