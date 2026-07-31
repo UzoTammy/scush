@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Edit Company Profile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-refresh mr-2"></i>Edit Business Details</span>
+      <a class="staff-nav-link" href="{% url 'company-profile' %}">
+        <i class="fa fa-times-circle"></i> Cancel
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-md-8 col-lg-6 mb-4">
+      <div class="ds-card">
+        <div class="ds-card__body">
+
+          <form method="post">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="form-row mb-3">
+              <div class="col-12">
+                <label class="font-weight-600">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                  <small class="text-danger">{{ field.errors|join:", " }}</small>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+
+            <div class="d-flex justify-content-between mt-4">
+              <a href="{% url 'company-profile' %}" class="btn btn-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary">
+                <i class="fa fa-save mr-1"></i> Save Changes
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

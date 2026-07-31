@@ -51,8 +51,8 @@ from apply.models import Applicant
 from trade.models import TradeDaily, BalanceSheet, TradeMonthly, Creditor
 from cashflow.models import BankAccount, CashCenter
 from warehouse.models import Renewal, StoreLevy, Stores
-from .forms import JsonDatasetForm
-from .models import JsonDataset, Setting
+from .forms import JsonDatasetForm, CompanyProfileStaticForm, CompanyProfileDynamicForm
+from .models import JsonDataset, Setting, CompanyProfile
 from stock.models import Category, Source
 from mail import mailbox
 from core import utils as plotter
@@ -986,6 +986,45 @@ class ScushProfileView(TemplateView):
 
         }
         return context
+
+class CompanyProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/company_profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile'] = CompanyProfile.load()
+        context['can_edit_static'] = self.request.user.is_superuser
+        context['can_edit_dynamic'] = self.request.user.groups.filter(name='HRD').exists()
+        return context
+
+
+class CompanyProfileStaticUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    form_class = CompanyProfileStaticForm
+    template_name = 'core/company_profile_static_form.html'
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_object(self, queryset=None):
+        return CompanyProfile.load()
+
+    def get_success_url(self):
+        return reverse('company-profile')
+
+
+class CompanyProfileDynamicUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    form_class = CompanyProfileDynamicForm
+    template_name = 'core/company_profile_dynamic_form.html'
+
+    def test_func(self):
+        return self.request.user.groups.filter(name='HRD').exists()
+
+    def get_object(self, queryset=None):
+        return CompanyProfile.load()
+
+    def get_success_url(self):
+        return reverse('company-profile')
+
 
 class CompanySummaryView(LoginRequiredMixin, TemplateView):
     template_name = 'core/company_summary.html'

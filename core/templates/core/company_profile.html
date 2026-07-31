@@ -1,0 +1,105 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Company Profile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- ── Header ─────────────────────────────────────── -->
+  <div class="ds-card mb-4">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-building mr-2"></i>Company Profile</span>
+      <a class="staff-nav-link" href="{% url 'home' %}">
+        <i class="fa fa-times-circle"></i> Return
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- ── Static (legal / registration) ─────────────── -->
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="ds-card h-100">
+        <div class="ds-card__header d-flex justify-content-between align-items-center">
+          <span><i class="fa fa-lock mr-2"></i>Legal &amp; Registration</span>
+          {% if can_edit_static %}
+          <a class="staff-nav-link" href="{% url 'company-profile-static-edit' %}">
+            <i class="fa fa-edit"></i> Edit
+          </a>
+          {% endif %}
+        </div>
+        <div class="ds-card__body">
+          {% if profile.logo %}
+          <div class="mb-3">
+            <img src="{{ profile.logo.url }}" alt="Company logo" style="max-height: 96px;">
+          </div>
+          {% endif %}
+          <dl class="row mb-0">
+            <dt class="col-sm-5">Legal Name</dt>
+            <dd class="col-sm-7">{{ profile.legal_name|default:"—" }}</dd>
+
+            <dt class="col-sm-5">RC Number</dt>
+            <dd class="col-sm-7">{{ profile.rc_number|default:"—" }}</dd>
+
+            <dt class="col-sm-5">TIN</dt>
+            <dd class="col-sm-7">{{ profile.tin|default:"—" }}</dd>
+
+            <dt class="col-sm-5">Date Incorporated</dt>
+            <dd class="col-sm-7">{{ profile.date_incorporated|default:"—" }}</dd>
+
+            <dt class="col-sm-5">Registered Address</dt>
+            <dd class="col-sm-7">{{ profile.registered_address|default:"—"|linebreaksbr }}</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Dynamic (operational) ──────────────────────── -->
+    <div class="col-12 col-lg-6 mb-4">
+      <div class="ds-card h-100">
+        <div class="ds-card__header d-flex justify-content-between align-items-center">
+          <span><i class="fa fa-refresh mr-2"></i>Business Details</span>
+          {% if user.groups.all|length and profile %}
+          <a class="staff-nav-link" href="{% url 'company-profile-dynamic-edit' %}">
+            <i class="fa fa-edit"></i> Edit
+          </a>
+          {% endif %}
+        </div>
+        <div class="ds-card__body">
+          <dl class="row mb-0">
+            <dt class="col-sm-5">Tagline</dt>
+            <dd class="col-sm-7">{{ profile.tagline|default:"—" }}</dd>
+
+            <dt class="col-sm-5">Mission</dt>
+            <dd class="col-sm-7">{{ profile.mission|default:"—"|linebreaksbr }}</dd>
+
+            <dt class="col-sm-5">Vision</dt>
+            <dd class="col-sm-7">{{ profile.vision|default:"—"|linebreaksbr }}</dd>
+
+            <dt class="col-sm-5">Phone</dt>
+            <dd class="col-sm-7">{{ profile.phone|default:"—" }}</dd>
+
+            <dt class="col-sm-5">Email</dt>
+            <dd class="col-sm-7">{{ profile.email|default:"—" }}</dd>
+
+            <dt class="col-sm-5">Website</dt>
+            <dd class="col-sm-7">{{ profile.website|default:"—" }}</dd>
+
+            <dt class="col-sm-5">Head Office Address</dt>
+            <dd class="col-sm-7">{{ profile.head_office_address|default:"—"|linebreaksbr }}</dd>
+
+            <dt class="col-sm-5">Social Media</dt>
+            <dd class="col-sm-7">
+              {% if profile.facebook %}<a href="{{ profile.facebook }}" target="_blank" rel="noopener noreferrer" title="Facebook"><i class="fa fa-facebook-square mr-2"></i></a>{% endif %}
+              {% if profile.twitter %}<a href="{{ profile.twitter }}" target="_blank" rel="noopener noreferrer" title="X (Twitter)"><i class="fa fa-twitter-square mr-2"></i></a>{% endif %}
+              {% if profile.instagram %}<a href="{{ profile.instagram }}" target="_blank" rel="noopener noreferrer" title="Instagram"><i class="fa fa-instagram mr-2"></i></a>{% endif %}
+              {% if profile.linkedin %}<a href="{{ profile.linkedin }}" target="_blank" rel="noopener noreferrer" title="LinkedIn"><i class="fa fa-linkedin-square mr-2"></i></a>{% endif %}
+              {% if not profile.facebook and not profile.twitter and not profile.instagram and not profile.linkedin %}—{% endif %}
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 
 class JsonDataset(models.Model):
     name = models.CharField(max_length=50)
@@ -51,5 +52,49 @@ class Setting(models.Model):
         except cls.DoesNotExist:
             return default
 
+
+class CompanyProfile(models.Model):
+    """A single record holding company-level information.
+
+    Fields are grouped into two categories:
+      - Static: legal/registration details that rarely change.
+      - Dynamic: operational details that are kept current day-to-day.
+    """
+
+    # ── Static (legal / registration) ──────────────────────────────
+    legal_name = models.CharField(max_length=150)
+    rc_number = models.CharField('RC Number', max_length=30, blank=True)
+    tin = models.CharField('TIN', max_length=30, blank=True)
+    date_incorporated = models.DateField(null=True, blank=True)
+    registered_address = models.TextField(blank=True)
+    logo = models.ImageField(upload_to='company', blank=True, null=True)
+
+    # ── Dynamic (operational, kept current) ────────────────────────
+    tagline = models.CharField(max_length=150, blank=True)
+    mission = models.TextField(blank=True)
+    vision = models.TextField(blank=True)
+    phone = models.CharField(max_length=20, blank=True)
+    email = models.EmailField(blank=True)
+    website = models.URLField(blank=True)
+    head_office_address = models.TextField(blank=True)
+    facebook = models.URLField(blank=True)
+    twitter = models.URLField('X (Twitter)', blank=True)
+    instagram = models.URLField(blank=True)
+    linkedin = models.URLField(blank=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.legal_name
+
+    def clean(self):
+        if not self.pk and CompanyProfile.objects.exists():
+            raise ValidationError('A Company Profile already exists; only one is allowed.')
+
+    @classmethod
+    def load(cls):
+        """Return the single CompanyProfile instance, creating it if absent."""
+        obj, _ = cls.objects.get_or_create(pk=1, defaults={'legal_name': ''})
+        return obj
 
 

@@ -58,8 +58,8 @@ class ApplicantForm(forms.ModelForm):
             #                                                       datetime.date.today().year - 16))
             #                                      ),
             'birth_date': DateInput(attrs={
-                'class': 'form-control', 
-                'min': f'{datetime.date.today().year-50}-01-01',
+                'class': 'form-control',
+                'min': f'{datetime.date.today().year-70}-01-01',
                 'max': f'{datetime.date.today().year-18}-01-01',
                 }),
             'course': forms.TextInput(attrs={'class': 'form-control mb-2',

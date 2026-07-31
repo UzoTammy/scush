@@ -152,6 +152,9 @@
     <a class="ds-sidebar__link" href="{% url 'company-summary' %}">
       <i class="fa fa-building"></i> Company Summary
     </a>
+    <a class="ds-sidebar__link" href="{% url 'company-profile' %}">
+      <i class="fa fa-id-card-o"></i> Company Profile
+    </a>
 
     <!-- ADMIN (superuser only) -->
     {% if user.is_superuser %}
