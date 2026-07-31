@@ -995,42 +995,7 @@ class CompanyProfileView(LoginRequiredMixin, TemplateView):
         context['profile'] = CompanyProfile.load()
         context['can_edit_static'] = self.request.user.is_superuser
         context['can_edit_dynamic'] = self.request.user.groups.filter(name='HRD').exists()
-        return context
 
-
-class CompanyProfileStaticUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    form_class = CompanyProfileStaticForm
-    template_name = 'core/company_profile_static_form.html'
-
-    def test_func(self):
-        return self.request.user.is_superuser
-
-    def get_object(self, queryset=None):
-        return CompanyProfile.load()
-
-    def get_success_url(self):
-        return reverse('company-profile')
-
-
-class CompanyProfileDynamicUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    form_class = CompanyProfileDynamicForm
-    template_name = 'core/company_profile_dynamic_form.html'
-
-    def test_func(self):
-        return self.request.user.groups.filter(name='HRD').exists()
-
-    def get_object(self, queryset=None):
-        return CompanyProfile.load()
-
-    def get_success_url(self):
-        return reverse('company-profile')
-
-
-class CompanySummaryView(LoginRequiredMixin, TemplateView):
-    template_name = 'core/company_summary.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
         today = datetime.date.today()
         qs = Employee.active.all()
 
@@ -1077,3 +1042,33 @@ class CompanySummaryView(LoginRequiredMixin, TemplateView):
             'this_year': this_year,
         })
         return context
+
+
+class CompanyProfileStaticUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    form_class = CompanyProfileStaticForm
+    template_name = 'core/company_profile_static_form.html'
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_object(self, queryset=None):
+        return CompanyProfile.load()
+
+    def get_success_url(self):
+        return reverse('company-profile')
+
+
+class CompanyProfileDynamicUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    form_class = CompanyProfileDynamicForm
+    template_name = 'core/company_profile_dynamic_form.html'
+
+    def test_func(self):
+        return self.request.user.groups.filter(name='HRD').exists()
+
+    def get_object(self, queryset=None):
+        return CompanyProfile.load()
+
+    def get_success_url(self):
+        return reverse('company-profile')
+
+

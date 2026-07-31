@@ -5,7 +5,7 @@ from .views import (HomeView, CompanyPageView, AboutView,
                     JsonListView, JsonDetailView, JsonCreateView, JsonUpdateView,
                     JsonCategoryKeyView, JsonCategoryKeyValueUpdateView, JsonCategoryKeyValueCreateView,
                     KPIMailSend, ImportCSVView, SaveCSVFile, BusinessSummaryView, ScushProfileView,
-                    CompanySummaryView, CompanyProfileView, CompanyProfileStaticUpdateView,
+                    CompanyProfileView, CompanyProfileStaticUpdateView,
                     CompanyProfileDynamicUpdateView,
                     SettingsView, SettingListItemAddView, SettingListItemRemoveView, SettingValueUpdateView)
 from . import views
@@ -44,7 +44,6 @@ urlpatterns = [
     path('import/csv/save/', SaveCSVFile.as_view(), name='save-csv'),
 
     path('business/summary/', BusinessSummaryView.as_view(), name='business-summary'),
-    path('company/summary/', CompanySummaryView.as_view(), name='company-summary'),
 
     path('company/profile/', CompanyProfileView.as_view(), name='company-profile'),
     path('company/profile/static/edit/', CompanyProfileStaticUpdateView.as_view(), name='company-profile-static-edit'),
