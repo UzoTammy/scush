@@ -235,4 +235,4 @@ del STATICFILES_STORAGE
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 if not DEBUG:
-    CELERY_BROKER_URL = 'amqps://zympqvbd:hfnhfkm_WcWArXDPJjBLtPzCw7geWTeo@chimpanzee.rmq.cloudamqp.com/zympqvbd' 
+    CELERY_BROKER_URL = config('CLOUDAMQP_URL')

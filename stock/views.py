@@ -169,6 +169,7 @@ class NoSelloutFragment(LoginRequiredMixin, TemplateView):
                         'days_since': (date2 - last_date).days,
                     })
 
+        no_sellout.sort(key=lambda item: item['days_since'], reverse=True)
         context['no_sellout'] = no_sellout
         context['no_sellout_total_value'] = sum((item['value'] for item in no_sellout), Money(0, 'NGN'))
         context['no_sellout_total_stock'] = sum(item['closing_stock'] for item in no_sellout)
