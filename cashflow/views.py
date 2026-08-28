@@ -256,20 +256,24 @@ class ApproveWithdrawalView(LoginRequiredMixin, FormView):
     
     def form_valid(self, form: Any) -> HttpResponse:
         withdraw_object = Withdrawal.objects.get(pk=self.kwargs['pk'])
-        if self.request.POST['decision'] == 'Approved':
+        decision = self.request.POST['decision']
+        if decision == 'Approved':
             withdraw_object.stage = 1
-        if self.request.POST['decision'] == 'Disapproved':
+        if decision == 'Disapproved':
             withdraw_object.stage = -1
         withdraw_object.save()
-        
+
+        origin = self.request.META.get('HTTP_ORIGIN', '')
         send_mail(
             subject="Withdrawal Request",
             message='',
             from_email='noreply@scush.com.ng',
             recipient_list=['uzo.nwokoro@ozonefl.com', 'abasiama.ibanga@ozonefl.com', withdraw_object.requested_by.email],
             fail_silently=True,
-            html_message=format_html(f'''<p>Request to withdraw {withdraw_object.amount} to {withdraw_object.party} is <bold>APPROVED</bold></p>
-                                     <a href="{self.request.META['HTTP_ORIGIN']}/cashflow">Visit Site</a>''')
+            html_message=format_html(
+                '<p>Request to withdraw {} to {} is <bold>{}</bold></p><a href="{}/cashflow">Visit Site</a>',
+                withdraw_object.amount, withdraw_object.party, decision.upper(), origin,
+            )
         )
         return super().form_valid(form)
     

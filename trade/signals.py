@@ -39,7 +39,9 @@ def trade_daily_create(sender, instance, created, **kwargs):
             'indirect_income': instance.indirect_income,
             'net_profit': net_profit,
 
-            'margin_ratio': round(100*net_profit/instance.sales, 2),
+            'margin_ratio':
+            round(100*net_profit/instance.sales, 2)
+            if instance.sales > Money(0, 'NGN') else "Nil",
             'delivery_expenses_ratio': 
             round(100*instance.direct_expenses/instance.purchase, 2) 
             if instance.purchase > Money(0, 'NGN') else "Nil",
@@ -62,7 +64,9 @@ def trade_daily_create(sender, instance, created, **kwargs):
     
     total_ratio = {
         'net_profit': total_net_profit,
-        'margin_ratio': round(100*total_net_profit/dataset['total_sales'], 2),
+        'margin_ratio':
+        round(100*total_net_profit/dataset['total_sales'], 2)
+        if dataset['total_sales'] > Money(0, 'NGN') else "Nil",
         'delivery_expenses_ratio': 
         round(100*dataset['total_indirect_expenses']/dataset['total_purchase'], 2) 
         if dataset['total_purchase'] > Money(0, 'NGN') else "Nil",

@@ -95,11 +95,13 @@ class CashCenter(models.Model):
         self.save()
 
         CashTransaction.objects.create(
-            cash_center=self, transaction_type='DR', amount=amount, 
+            cash_center=self, transaction_type='DR', amount=amount,
             description=description, timestamp=timestamp,
             initiated_by=user
         )
-    
+
+        self.reset_current_balance()
+
     def reset_current_balance(self):
         balance = self.opening_balance
         

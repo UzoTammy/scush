@@ -32,6 +32,7 @@ from .forms import ProductExtensionUpdateForm, StockMovementForm, StockLocationF
 from .utils import average_sellout, days_of_cover
 from core.models import Setting
 from django.db.models import Sum, F, Q, Avg, ProtectedError
+from django.db import transaction
 
 
 permitted_group_name = 'Sales'
@@ -447,6 +448,7 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
         product = get_object_or_404(Product, pk=kwargs['pk'])
         
         if 'redirect' not in request.POST:
+            msg = None
             # selling price gotten from modal form for selling price update only
             if "selling" in request.POST:
                 product.unit_price = request.POST['selling']
@@ -456,6 +458,9 @@ class PriceUpdate(LoginRequiredMixin, UpdateView):
                 # Cost price gotten from modal form for cost price update only
                 product.cost_price = request.POST['cost']
                 msg = f'{product} cost price is updated !!!'
+            if msg is None:
+                messages.error(request, 'Provide either a selling or cost price to update.')
+                return redirect(product)
             product._changed_by = request.user
             product.save()
         else:        
@@ -635,14 +640,15 @@ class StockTransferView(LoginRequiredMixin, UserPassesTestMixin, View):
             messages.error(request, 'Transfer quantity must be greater than zero')
         else:
             reference = f'Transfer {from_location} -> {to_location}'
-            StockMovement.objects.create(
-                product=product, movement_type='TRANSFER', quantity=-quantity,
-                date=date, location=from_location, reference=reference, note=note, created_by=request.user,
-            )
-            StockMovement.objects.create(
-                product=product, movement_type='TRANSFER', quantity=quantity,
-                date=date, location=to_location, reference=reference, note=note, created_by=request.user,
-            )
+            with transaction.atomic():
+                StockMovement.objects.create(
+                    product=product, movement_type='TRANSFER', quantity=-quantity,
+                    date=date, location=from_location, reference=reference, note=note, created_by=request.user,
+                )
+                StockMovement.objects.create(
+                    product=product, movement_type='TRANSFER', quantity=quantity,
+                    date=date, location=to_location, reference=reference, note=note, created_by=request.user,
+                )
             messages.success(request, f'Transferred {quantity} x {product} from {from_location} to {to_location}')
 
         return redirect('stock-transfer')

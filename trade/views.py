@@ -16,6 +16,7 @@ from django.db.models.functions import TruncMonth
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls.base import reverse_lazy
+from django.utils import timezone
 from django.db.models import (Sum, F, Avg, ExpressionWrapper, DecimalField, Value)
 from django.views.generic import (TemplateView, CreateView, ListView, DetailView, UpdateView, FormView, View)                            
 
@@ -1450,7 +1451,7 @@ class TradePeriodLockView(LoginRequiredMixin, UserPassesTestMixin, View):
         obj.locked = not obj.locked
         if obj.locked:
             obj.locked_by = request.user
-            obj.locked_at = datetime.datetime.now()
+            obj.locked_at = timezone.now()
             action_label = 'locked'
         else:
             obj.locked_by = None
@@ -1633,7 +1634,7 @@ class TradeAdjustmentReviewView(LoginRequiredMixin, UserPassesTestMixin, View):
         review_note = request.POST.get('review_note', '')
 
         adj.reviewer = request.user
-        adj.reviewed_at = datetime.datetime.now()
+        adj.reviewed_at = timezone.now()
         adj.review_note = review_note
 
         if action == 'approve':
