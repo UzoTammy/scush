@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  {% load static %}
+  <title>SCusH | Page Not Found</title>
+  <link rel="icon" href="{% static 'customer/logo.ico' %}">
+  <!-- Bootstrap 4 (base .btn box model — design-system.css only overlays colors on top of it) -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+        crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
+  <style>
+    html, body {
+      height: 100%;
+      background: linear-gradient(180deg, var(--color-bg) 0%, #ececf5 100%);
+    }
+    .denied-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .denied-card {
+      background: var(--color-card);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 24px rgba(40, 53, 147, 0.12);
+      max-width: 480px;
+      width: 100%;
+      padding: 48px 40px;
+      text-align: center;
+    }
+    .denied-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+    .denied-brand span {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--color-primary);
+    }
+    .denied-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(97, 97, 97, 0.1);
+      color: var(--color-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin: 0 auto 20px;
+    }
+    .denied-code {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--color-muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .denied-title {
+      font-size: 1.4rem;
+      color: var(--color-text);
+      margin-bottom: 10px;
+    }
+    .denied-message {
+      color: var(--color-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 4px;
+    }
+    .denied-detail {
+      color: var(--color-muted);
+      font-size: 0.8rem;
+      font-style: italic;
+      margin-top: 8px;
+      margin-bottom: 0;
+    }
+    .denied-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+    .denied-actions .btn { min-width: 140px; }
+  </style>
+</head>
+<body>
+  <div class="denied-wrap">
+    <div class="denied-card">
+      <a class="denied-brand" href="{% url 'index' %}">
+        <img class="ozone-logo" src="{% static 'customer/logo.png' %}" width="50" height="39" alt="SCusH">
+        <span>SCusH</span>
+      </a>
+
+      <div class="denied-icon"><i class="fa fa-search"></i></div>
+      <div class="denied-code">404 &middot; Not Found</div>
+      <h1 class="denied-title">This page doesn't exist</h1>
+      <p class="denied-message">
+        The link you followed may be broken, have expired, or the page may
+        have been removed. Contact Admin
+      </p>
+      {% if exception %}
+      <p class="denied-detail">{{ exception }}</p>
+      {% endif %}
+
+      <div class="denied-actions">
+        <a href="javascript:history.back()" class="btn btn-outline-primary">
+          <i class="fa fa-arrow-left mr-1"></i> Go Back
+        </a>
+        <a href="{% url 'index' %}" class="btn btn-primary">
+          <i class="fa fa-home mr-1"></i> Home
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="{% static 'css/design-system.css' %}">
 
   {% block head %}{% endblock %}
+  {% block extra_css %}{% endblock %}
 
   {% if title %}
     <title>SCusH | {{ title }}</title>
@@ -172,6 +173,8 @@
       <ul class="ds-sidebar__sub">
         <li><a class="ds-sidebar__sub-link" href="{% url 'register' %}">
           <i class="fa fa-user-circle"></i> Register User</a></li>
+        <li><a class="ds-sidebar__sub-link" href="{% url 'user-invite-create' %}">
+          <i class="fa fa-envelope"></i> Invite User</a></li>
         <li><a class="ds-sidebar__sub-link"
                href="{% static 'docs/index.html' %}"
                target="_blank" rel="noopener">
@@ -312,6 +315,8 @@
     $('[data-toggle="tooltip"]').tooltip();
   });
 </script>
+
+{% block extra_js %}{% endblock %}
 
 </body>
 </html>

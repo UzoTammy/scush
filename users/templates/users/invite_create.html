@@ -1,0 +1,192 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}Invite User{% endblock %}
+
+{% block extra_css %}
+<style>
+  .link-box { background: #f8f9fa; border: 1px dashed #ced4da; border-radius: 4px; padding: 0.6rem 0.8rem; word-break: break-all; font-family: monospace; font-size: 0.8125rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="ds-card ds-card--narrow mb-4">
+    <div class="ds-card__header"><span>Invite a New User</span></div>
+    <div class="ds-card__body">
+      <p class="text-muted small">
+        Generates a one-time link, valid for 7 days, that lets the recipient set up
+        their own account without needing to log in first.
+      </p>
+      <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+          {{ form|crispy }}
+        </fieldset>
+        <button class="btn btn-primary" type="submit">
+          <i class="fa fa-envelope mr-1"></i> Create Invite Link
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="ds-card">
+    <div class="ds-card__header"><span>Invites</span></div>
+    <div class="ds-card__body">
+      {% if invites %}
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for invite, invite_url in invites %}
+            <tr>
+              <td>{{ invite.email }}</td>
+              <td>
+                {% if invite.used %}
+                  <span class="badge badge-success">Used{% if invite.used_by %} — {{ invite.used_by.username }}{% endif %}</span>
+                {% elif invite.is_valid %}
+                  <span class="badge badge-warning">Pending — expires {{ invite.expires_at|date:"d M Y" }}</span>
+                {% else %}
+                  <span class="badge badge-secondary">Expired</span>
+                {% endif %}
+              </td>
+              <td>{{ invite.created_at|date:"d M Y, H:i" }}{% if invite.created_by %} by {{ invite.created_by.username }}{% endif %}</td>
+              <td style="min-width: 260px;">
+                {% if invite.is_valid %}
+                <div class="link-box mb-1" id="invite-link-{{ invite.pk }}">{{ invite_url }}</div>
+                {% else %}
+                <span class="text-muted small d-block mb-1">—</span>
+                {% endif %}
+                <div class="d-flex" style="gap: 0.4rem;">
+                  {% if invite.is_valid %}
+                  <button type="button" class="btn btn-sm btn-outline-secondary" onclick="copyLink('invite-link-{{ invite.pk }}', this)" title="Copy Link" aria-label="Copy Link">
+                    <i class="fa fa-copy"></i>
+                  </button>
+                  {% endif %}
+                  <button type="button" class="btn btn-sm btn-outline-danger" title="Delete Invite" aria-label="Delete Invite"
+                          data-delete-url="{% url 'user-invite-delete' invite.pk %}"
+                          data-email="{{ invite.email }}"
+                          data-valid="{{ invite.is_valid|yesno:'true,false' }}"
+                          onclick="confirmDeleteInvite(this)">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-muted mb-0">No invites yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteInviteModal" tabindex="-1" role="dialog" aria-labelledby="deleteInviteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteInviteModalLabel">Delete Invite?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+      <div class="modal-body">
+        <p id="deleteInviteMessage"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <form method="POST" id="deleteInviteForm" class="d-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">
+            <i class="fa fa-trash mr-1"></i> Yes, Delete It
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDeleteInvite(btn) {
+  var url = btn.getAttribute('data-delete-url');
+  var email = btn.getAttribute('data-email');
+  var isValid = btn.getAttribute('data-valid') === 'true';
+
+  document.getElementById('deleteInviteForm').setAttribute('action', url);
+
+  var message = isValid
+    ? 'This invite for ' + email + ' is still active. If this link was already sent out, deleting it will break it immediately for whoever has it. Are you sure you want to delete it?'
+    : 'Delete the invite record for ' + email + '? This cannot be undone.';
+  document.getElementById('deleteInviteMessage').textContent = message;
+
+  $('#deleteInviteModal').modal('show');
+}
+
+function legacyCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.top = '-1000px';
+  ta.style.left = '-1000px';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  var ok = false;
+  try {
+    ok = document.execCommand('copy');
+  } catch (e) {
+    ok = false;
+  }
+  document.body.removeChild(ta);
+  return ok;
+}
+
+function copyLink(id, btn) {
+  var text = document.getElementById(id).innerText.trim();
+  var orig = btn.innerHTML;
+
+  function onSuccess() {
+    btn.innerHTML = '<i class="fa fa-check"></i>';
+    btn.classList.add('btn-success');
+    btn.classList.remove('btn-outline-secondary');
+    setTimeout(function() {
+      btn.innerHTML = orig;
+      btn.classList.remove('btn-success');
+      btn.classList.add('btn-outline-secondary');
+    }, 1500);
+  }
+
+  function onFailure() {
+    btn.innerHTML = '<i class="fa fa-times"></i>';
+    btn.classList.add('btn-danger');
+    btn.classList.remove('btn-outline-secondary');
+    setTimeout(function() {
+      btn.innerHTML = orig;
+      btn.classList.remove('btn-danger');
+      btn.classList.add('btn-outline-secondary');
+    }, 1500);
+  }
+
+  // navigator.clipboard is only available in secure contexts (HTTPS or
+  // localhost) — over plain HTTP on any other host it's undefined, so
+  // calling it directly throws and the button silently does nothing.
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(onSuccess, function() {
+      legacyCopy(text) ? onSuccess() : onFailure();
+    });
+  } else {
+    legacyCopy(text) ? onSuccess() : onFailure();
+  }
+}
+</script>
+{% endblock %}

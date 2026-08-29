@@ -1,16 +1,21 @@
 import json
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django.contrib import messages
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.conf import settings
-from .forms import UserRegisterForm
+from .forms import UserRegisterForm, UserInviteForm
 from .forms import UserUpdateForm, ProfileUpdateForm
+from .models import UserInvite
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 def allow_admin(user):
+    if user.is_superuser:
+        return True
     if user.groups.filter(name='Administrator').exists():
         return True
     return False
@@ -34,6 +39,70 @@ def register(request, **kwargs):
         'form': form,
     }
     return render(request, 'users/register.html', context)
+
+
+@login_required
+def invite_create(request):
+    if not allow_admin(request.user):
+        raise PermissionDenied
+    if request.method == 'POST':
+        form = UserInviteForm(request.POST)
+        if form.is_valid():
+            invite = UserInvite.objects.create(
+                email=form.cleaned_data['email'],
+                created_by=request.user,
+            )
+            messages.success(request, f'Invite link created for {invite.email}.')
+            return redirect('user-invite-create')
+    else:
+        form = UserInviteForm()
+    invites = [
+        (invite, request.build_absolute_uri(reverse('register-invite', kwargs={'token': invite.token})))
+        for invite in UserInvite.objects.select_related('created_by', 'used_by')
+    ]
+    context = {
+        'title': 'invite user',
+        'form': form,
+        'invites': invites,
+    }
+    return render(request, 'users/invite_create.html', context)
+
+
+@login_required
+def invite_delete(request, pk):
+    if not allow_admin(request.user):
+        raise PermissionDenied
+    invite = get_object_or_404(UserInvite, pk=pk)
+    if request.method == 'POST':
+        email = invite.email
+        invite.delete()
+        messages.success(request, f'Invite for {email} has been deleted.')
+    return redirect('user-invite-create')
+
+
+def register_via_invite(request, token):
+    invite = get_object_or_404(UserInvite, token=token)
+    if not invite.is_valid():
+        return render(request, 'users/invite_expired.html')
+
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            invite.used = True
+            invite.used_by = user
+            invite.save(update_fields=['used', 'used_by'])
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            messages.success(request, f'Welcome, {user.username}! Your account is ready.')
+            return redirect('home')
+    else:
+        form = UserRegisterForm(initial={'email': invite.email})
+    context = {
+        'title': 'set up your account',
+        'form': form,
+        'invite': invite,
+    }
+    return render(request, 'users/register_invite.html', context)
 
 
 @login_required
