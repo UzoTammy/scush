@@ -24,3 +24,12 @@ theme:
 
 nav:
   - Home: index.md
+  - Getting Started:
+      - Setup: getting-started/setup.md
+      - Testing: getting-started/testing.md
+  - Architecture:
+      - Project Structure: architecture/overview.md
+      - Apps: architecture/apps.md
+  - Operations:
+      - Deployment: operations/deployment.md
+      - Background Jobs (Celery): operations/celery.md
