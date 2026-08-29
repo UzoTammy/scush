@@ -8,7 +8,10 @@
   <div class="ds-card ds-card--narrow">
     <div class="ds-card__header"><span>Set Up Your Account</span></div>
     <div class="ds-card__body">
-      <p class="text-muted small">You've been invited to join. Choose a username and password to finish setting up your account.</p>
+      <p class="text-muted small">You've been invited to join, {{ invite.employee.staff.first_name }}. Choose a password to finish setting up your account.</p>
+      <p class="mb-3">
+        Your username will be <strong>{{ invite.username }}</strong>.
+      </p>
       <form method="POST">
         {% csrf_token %}
         <fieldset class="form-group">

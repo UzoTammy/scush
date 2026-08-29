@@ -4,6 +4,12 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from .models import Profile
 from apply.models import Applicant
+from staff.models import Employee
+
+
+def _registerable_employees():
+    """Active staff who don't already have a linked account."""
+    return Employee.active.filter(profile__isnull=True)
 
 
 class MyForm(forms.ModelForm):
@@ -59,16 +65,25 @@ class MyForm(forms.ModelForm):
                                       )
         }
 
-class UserRegisterForm(UserCreationForm):
-    email = forms.EmailField()
+class EmployeeAccountForm(UserCreationForm):
+    """Sets up a password only — username/email/name are always derived
+    server-side from the linked staff.Employee record, never typed."""
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
-        # fields = UserCreationForm.Meta.fields
+        fields = ['password1', 'password2']
+
 
 class UserInviteForm(forms.Form):
-    email = forms.EmailField()
+    employee = forms.ModelChoiceField(
+        queryset=Employee.objects.none(),
+        label='Staff Member',
+        help_text="Username, name and email are generated from this staff member's record.",
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['employee'].queryset = _registerable_employees()
 
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField()

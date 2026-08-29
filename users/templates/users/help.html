@@ -1,0 +1,182 @@
+{% extends 'core/base.html' %}
+
+{% block page_title %}Adding a New User{% endblock %}
+
+{% block extra_css %}
+<style>
+  .flow-wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0.5rem 1rem 3rem;
+  }
+  .flow-back {
+    display: inline-block;
+    color: var(--color-muted);
+    font-size: 0.8125rem;
+    text-decoration: none;
+    margin-bottom: 1.25rem;
+  }
+  .flow-back:hover { color: var(--color-primary); }
+  .flow-intro {
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    margin-bottom: 2.5rem;
+  }
+  .flow-intro strong { color: var(--color-text); }
+
+  .flow { list-style: none; margin: 0; padding: 0; }
+  .flow-step {
+    position: relative;
+    padding-left: 3rem;
+    padding-bottom: 2.25rem;
+  }
+  .flow-step:last-of-type { padding-bottom: 0; }
+  .flow-step::before {
+    /* connecting line */
+    content: '';
+    position: absolute;
+    left: 1.0625rem;
+    top: 2.375rem;
+    bottom: 0;
+    width: 2px;
+    background: var(--color-border);
+  }
+  .flow-step:last-of-type::before { display: none; }
+  .flow-num {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2.125rem;
+    height: 2.125rem;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flow-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0.2rem 0 0.35rem;
+  }
+  .flow-text {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .flow-text code {
+    background: var(--color-bg);
+    border-radius: 4px;
+    padding: 0.05rem 0.35rem;
+    font-size: 0.8125rem;
+  }
+  .flow-text a { color: var(--color-primary); }
+
+  .flow-notes {
+    margin-top: 2.75rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--color-border);
+  }
+  .flow-notes h2 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin: 0 0 0.9rem;
+  }
+  .flow-notes dl { margin: 0; }
+  .flow-notes dt {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-top: 0.85rem;
+  }
+  .flow-notes dt:first-child { margin-top: 0; }
+  .flow-notes dd {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    line-height: 1.5;
+    margin: 0.15rem 0 0;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="flow-wrap">
+  <a class="flow-back" href="{% url 'home' %}">&larr; Back</a>
+
+  <p class="flow-intro">
+    <strong>Invite User</strong> is the only way to create an account — no separate
+    registration form. Here's the whole process, start to finish.
+  </p>
+
+  <ol class="flow">
+    <li class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-title">Open Invite User</div>
+      <p class="flow-text">
+        Sidebar &rarr; Admin Tools &rarr; <a href="{% url 'user-invite-create' %}">Invite User</a>.
+        Only Administrators and superusers can get in here.
+      </p>
+    </li>
+    <li class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-title">Pick the staff member</div>
+      <p class="flow-text">
+        Choose them from the list. Only active staff who don't already have an
+        account show up — nothing to double-check.
+      </p>
+    </li>
+    <li class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-title">Copy the link</div>
+      <p class="flow-text">
+        A one-time link appears next to their name. Click the copy icon next to it.
+      </p>
+    </li>
+    <li class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-title">Send it to them</div>
+      <p class="flow-text">
+        However you'd normally reach them — email, chat, WhatsApp. It's good for 7 days.
+      </p>
+    </li>
+    <li class="flow-step">
+      <div class="flow-num">5</div>
+      <div class="flow-title">They open it — no login needed</div>
+      <p class="flow-text">
+        Their username is already decided for them, following <code>firstname-staffid</code>
+        (e.g. <code>john-07</code>) — the same convention used everywhere in the app.
+      </p>
+    </li>
+    <li class="flow-step">
+      <div class="flow-num">6</div>
+      <div class="flow-title">They set a password — done</div>
+      <p class="flow-text">
+        They're signed in immediately, ready to use the app. Nothing left for you to do.
+      </p>
+    </li>
+  </ol>
+
+  <div class="flow-notes">
+    <h2>Good to know</h2>
+    <dl>
+      <dt>Link statuses</dt>
+      <dd>Pending (still active), Expired (7 days passed, unused), or Used (already turned into an account — can't be reused).</dd>
+
+      <dt>Changed your mind?</dt>
+      <dd>Delete the invite any time. Deleting one that's still active asks you to confirm first, since the link may already be out there. Deleting a used invite never touches the account it created.</dd>
+
+      <dt>Managing your own account</dt>
+      <dd>Anyone can update their info or password from <a href="{% url 'profile' %}">Your Profile</a>.</dd>
+    </dl>
+  </div>
+</div>
+{% endblock %}

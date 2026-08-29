@@ -21,7 +21,7 @@ def _invite_expiry():
 class UserInvite(models.Model):
     """A one-time link an Administrator generates so a brand-new person can
     set up their own account without needing to log in first."""
-    email = models.EmailField()
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='user_invites')
     token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='sent_invites')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -33,8 +33,16 @@ class UserInvite(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f'Invite → {self.email}'
+        return f'Invite → {self.username}'
 
     def is_valid(self):
         return not self.used and timezone.now() <= self.expires_at
+
+    @property
+    def username(self):
+        return f'{self.employee.staff.first_name}-{str(self.employee.pk).zfill(2)}'
+
+    @property
+    def email(self):
+        return self.employee.official_email or self.employee.staff.email
 

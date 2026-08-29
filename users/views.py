@@ -8,7 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.views.generic import ListView
 from django.contrib.auth.models import User
 from django.conf import settings
-from .forms import UserRegisterForm, UserInviteForm
+from .forms import EmployeeAccountForm, UserInviteForm
 from .forms import UserUpdateForm, ProfileUpdateForm
 from .models import UserInvite
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -21,24 +21,18 @@ def allow_admin(user):
     return False
 
 
-@login_required()
-def register(request, **kwargs):
-    if not allow_admin(request.user):
-        raise PermissionDenied
-    if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Your registration as {username} is successful!!')
-            return redirect('home')
-    else:
-        form = UserRegisterForm()
-    context = {
-        'title': 'register',
-        'form': form,
-    }
-    return render(request, 'users/register.html', context)
+def _finish_employee_account(user, employee):
+    """Derive username/email/name from the linked staff record (the
+    <first-name>-<staff-id> convention used across the app), then link the
+    account's Profile back to that Employee."""
+    user.username = f'{employee.staff.first_name}-{str(employee.pk).zfill(2)}'
+    user.email = employee.official_email or employee.staff.email
+    user.first_name = employee.staff.first_name
+    user.last_name = employee.staff.last_name
+    user.save()
+    user.profile.staff = employee
+    user.profile.save(update_fields=['staff'])
+    return user
 
 
 @login_required
@@ -49,10 +43,10 @@ def invite_create(request):
         form = UserInviteForm(request.POST)
         if form.is_valid():
             invite = UserInvite.objects.create(
-                email=form.cleaned_data['email'],
+                employee=form.cleaned_data['employee'],
                 created_by=request.user,
             )
-            messages.success(request, f'Invite link created for {invite.email}.')
+            messages.success(request, f'Invite link created for {invite.employee}.')
             return redirect('user-invite-create')
     else:
         form = UserInviteForm()
@@ -74,9 +68,9 @@ def invite_delete(request, pk):
         raise PermissionDenied
     invite = get_object_or_404(UserInvite, pk=pk)
     if request.method == 'POST':
-        email = invite.email
+        employee = invite.employee
         invite.delete()
-        messages.success(request, f'Invite for {email} has been deleted.')
+        messages.success(request, f'Invite for {employee} has been deleted.')
     return redirect('user-invite-create')
 
 
@@ -86,9 +80,10 @@ def register_via_invite(request, token):
         return render(request, 'users/invite_expired.html')
 
     if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
+        form = EmployeeAccountForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            _finish_employee_account(user, invite.employee)
             invite.used = True
             invite.used_by = user
             invite.save(update_fields=['used', 'used_by'])
@@ -96,7 +91,7 @@ def register_via_invite(request, token):
             messages.success(request, f'Welcome, {user.username}! Your account is ready.')
             return redirect('home')
     else:
-        form = UserRegisterForm(initial={'email': invite.email})
+        form = EmployeeAccountForm()
     context = {
         'title': 'set up your account',
         'form': form,
