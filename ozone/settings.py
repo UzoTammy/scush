@@ -35,7 +35,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 # DEBUG = True
 
-ALLOWED_HOSTS = ['https://scush.com.ng', 'scush.herokuapp.com', '127.0.0.1', '.localhost']
+ALLOWED_HOSTS = ['scush.com.ng', 'www.scush.com.ng', 'scush.herokuapp.com', '127.0.0.1', '.localhost']
 
 # Application definition
 INSTALLED_APPS = [
@@ -225,7 +225,10 @@ CURRENCIES = ('NGN',)
 DEFAULT_CURRENCY = 'NGN'
 
 if not DEBUG:
-    django_on_heroku.settings(locals())
+    # allowed_hosts=False: keep the explicit ALLOWED_HOSTS above instead of
+    # django_on_heroku's default of overwriting it with ['*'], which would
+    # disable Host header validation in production.
+    django_on_heroku.settings(locals(), allowed_hosts=False)
 
 del STATICFILES_STORAGE
 
