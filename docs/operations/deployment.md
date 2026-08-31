@@ -10,8 +10,11 @@ Scush runs on Heroku.
   (`CompressedManifestStaticFilesStorage`) — no separate static host needed.
 - **Media uploads** go to S3 via `django-storages`/`boto3`
   (`AWS_STORAGE_BUCKET_NAME`, etc.).
-- **Outgoing email** switches from file-based (dev) to real SMTP (Gmail,
-  `EMAIL_HOST_USER`/`EMAIL_HOST_PASSWORD`) once `DEBUG=False`.
+- **Outgoing email** switches from file-based (dev) to Amazon SES
+  (`django-ses`, reusing the S3 `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`
+  credentials) once `DEBUG=False`. That IAM identity needs `ses:SendEmail`/
+  `ses:SendRawEmail` permission, and `DEFAULT_FROM_EMAIL` must be a verified SES
+  identity in `AWS_SES_REGION_NAME`.
 
 ## Releasing a change
 

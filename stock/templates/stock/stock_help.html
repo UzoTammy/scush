@@ -2,182 +2,102 @@
 
 {% block page_title %}Stock & Inventory Help{% endblock %}
 
+{% block extra_css %}
+{% include 'core/includes/flow_help_style.html' %}
+{% endblock %}
+
 {% block content %}
-<div class="container-fluid">
+<div class="flow-wrap flow-wrap--wide">
+  <a class="flow-back" href="{% url 'product-home' %}">&larr; Back</a>
 
-  <!-- ── Header ─────────────────────────────────────── -->
-  <div class="ds-card mb-4">
-    <div class="ds-card__header d-flex justify-content-between align-items-center flex-wrap">
-      <span><i class="fa fa-question-circle mr-2"></i>Stock & Inventory Management — Help</span>
-      <a class="staff-nav-link" href="{% url 'product-home' %}">
-        <i class="fa fa-times-circle"></i> Return
-      </a>
-    </div>
-    <div class="ds-card__body">
-      <p class="mb-0">
-        This page is a quick guide to the Stock &amp; Inventory Management section: where things live,
-        what each tool does, what the dashboard numbers mean, and how stock figures stay accurate.
-        Use the links below to jump to a topic.
-      </p>
-    </div>
-  </div>
+  <p class="flow-intro">
+    <strong>Stock &amp; Inventory Management</strong> is where things live, what each tool does,
+    what the dashboard numbers mean, and how stock figures stay accurate. Here's the whole section,
+    top to bottom.
+  </p>
 
-  <!-- ── Table of contents ─────────────────────────── -->
-  <div class="ds-card mb-4">
-    <div class="ds-card__header"><span><i class="fa fa-list mr-2"></i>Topics</span></div>
-    <div class="ds-card__body">
-      <div class="row">
-        <div class="col-md-6">
-          <ul class="mb-md-0">
-            <li><a href="#getting-around">Getting Around the Stock Management Page</a></li>
-            <li><a href="#home-dashboard">The Stock Management Dashboard</a></li>
-            <li><a href="#performance">Performance Dashboard</a></li>
-            <li><a href="#run-rate">Run Rate &amp; Product Analysis</a></li>
-            <li><a href="#stock-card">Stock Card &amp; the Movement Ledger</a></li>
-            <li><a href="#sellout-balance">Sellout &amp; Balance (Daily Reporting)</a></li>
-            <li><a href="#receipt">Goods Received</a></li>
-          </ul>
-        </div>
-        <div class="col-md-6">
-          <ul class="mb-0">
-            <li><a href="#stock-count">Stock Count (Physical Count)</a></li>
-            <li><a href="#reorder">Reorder Suggestions &amp; Low Stock</a></li>
-            <li><a href="#transfer">Stock Transfer Between Locations</a></li>
-            <li><a href="#prices">Prices &amp; Price History</a></li>
-            <li><a href="#watchlist">Watchlist</a></li>
-            <li><a href="#settings">Settings: Categories, Sources &amp; Locations</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── Getting around ─────────────────────────────── -->
-  <div class="ds-card mb-4" id="getting-around">
-    <div class="ds-card__header"><span><i class="fa fa-compass mr-2"></i>Getting Around the Stock Management Page</span></div>
-    <div class="ds-card__body">
-      <p>
-        <a href="{% url 'product-home' %}">Stock Management</a> is the home base for this section. Its
-        top bar groups every tool into three menus, plus two direct links:
+  <ol class="flow">
+    <li class="flow-step" id="getting-around">
+      <div class="flow-num">1</div>
+      <div class="flow-title">Getting Around the Stock Management Page</div>
+      <p class="flow-text">
+        <a href="{% url 'product-home' %}">Stock Management</a> is the home base for this section.
+        Its top bar groups every tool into three menus, plus one direct link:
       </p>
       <ul>
-        <li>
-          <strong><i class="fa fa-bar-chart mr-1"></i>Stock Reports</strong> — Stock Report (all products,
-          grouped by source), <a href="{% url 'performance-home' %}">Performance</a> (the daily
-          performance dashboard), Run Rate (sellout velocity and days of cover), and
-          <a href="{% url 'stock-balancing' %}">Stock Balancing</a> (reorder suggestions).
-        </li>
-        <li>
-          <strong><i class="fa fa-cubes mr-1"></i>Products</strong> — All Products (browse/search every
-          product), <a href="{% url 'watchlist-home' %}">Watchlist</a>, and New Product (create a product).
-        </li>
-        <li>
-          <strong><i class="fa fa-cogs mr-1"></i>Inventory Operations</strong> — day-to-day stock work:
-          Sellout &amp; Balance reporting, <a href="{% url 'stock-count-list' %}">Stock Count</a>,
-          <a href="{% url 'stock-transfer' %}">Stock Transfer</a>, and
-          <a href="{% url 'stock-receipt' %}">Goods Received</a>.
-        </li>
-        <li>
-          <strong><i class="fa fa-tag mr-1"></i>Price Update</strong> — quickly increase or decrease a
-          single product's selling price.
-        </li>
+        <li><strong>Stock Reports</strong> — Stock Report (all products, grouped by source), <a href="{% url 'performance-home' %}">Performance</a> (the daily performance dashboard), Run Rate (sellout velocity and days of cover), and <a href="{% url 'stock-balancing' %}">Stock Balancing</a> (reorder suggestions).</li>
+        <li><strong>Products</strong> — All Products (browse/search every product), <a href="{% url 'watchlist-home' %}">Watchlist</a>, and New Product (create a product).</li>
+        <li><strong>Inventory Operations</strong> — day-to-day stock work: Sellout &amp; Balance reporting, <a href="{% url 'stock-count-list' %}">Stock Count</a>, <a href="{% url 'stock-transfer' %}">Stock Transfer</a>, and <a href="{% url 'stock-receipt' %}">Goods Received</a>.</li>
+        <li><strong>Price Update</strong> — quickly increase or decrease a single product's selling price.</li>
       </ul>
-      <p class="mb-0">
+      <p class="flow-text">
         Every individual product also has a <strong>Stock Card</strong> link on its detail page —
         this is where you see and adjust that product's running stock balance.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Stock Management dashboard ─────────────────── -->
-  <div class="ds-card mb-4" id="home-dashboard">
-    <div class="ds-card__header"><span><i class="fa fa-tachometer mr-2"></i>The Stock Management Dashboard</span></div>
-    <div class="ds-card__body">
-      <p>The cards at the top of <a href="{% url 'product-home' %}">Stock Management</a> summarise current stock:</p>
+    <li class="flow-step" id="home-dashboard">
+      <div class="flow-num">2</div>
+      <div class="flow-title">The Stock Management Dashboard</div>
+      <p class="flow-text">The cards at the top of <a href="{% url 'product-home' %}">Stock Management</a> summarise current stock:</p>
       <ul>
         <li><strong>Current Stock Value</strong> — the total value of stock on hand, valued at cost price.</li>
         <li><strong>Total Quantity</strong> — total units currently in stock across all active products.</li>
         <li><strong>Quantity Received</strong> — total units received through Goods Received.</li>
         <li><strong>Quantity Transferred</strong> — total units moved between stock locations via Stock Transfer.</li>
       </ul>
-      <p>
+      <p class="flow-text">
         <strong>Top Ten Sellout Stocks</strong> — the ten products with the biggest movement over the
         last 3 days (4 if the period spans a weekend), ranked by the size of their profit or loss —
         so both your best earners and your biggest loss-makers show up here. Losses are shown in red
         with a leading minus sign (e.g. <span class="text-danger">-N53,650.27</span>).
       </p>
-      <p class="mb-0">
-        <strong>Price Changes</strong> — every price increase or decrease made this month, who made it,
-        and the old vs. new price. Use this to audit recent price activity.
+      <p class="flow-text">
+        <strong>Price Changes</strong> — every price increase or decrease made this month, who made
+        it, and the old vs. new price. Use this to audit recent price activity.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Performance ─────────────────────────────────── -->
-  <div class="ds-card mb-4" id="performance">
-    <div class="ds-card__header"><span><i class="fa fa-line-chart mr-2"></i>Performance Dashboard</span></div>
-    <div class="ds-card__body">
-      <p>
-        <a href="{% url 'performance-home' %}">Performance</a> gives a daily snapshot of how stock is
-        moving, as at the most recent date with recorded figures. The KPI row at the top shows:
+    <li class="flow-step" id="performance">
+      <div class="flow-num">3</div>
+      <div class="flow-title">Performance Dashboard</div>
+      <p class="flow-text">
+        <a href="{% url 'performance-home' %}">Performance</a> gives a daily snapshot of how stock
+        is moving, as at the most recent date with recorded figures. The KPI row at the top shows:
       </p>
       <ul>
         <li><strong>Active Products</strong> — how many products are currently active and tracked.</li>
-        <li>
-          <strong>Availability</strong> — the percentage of active products that currently have stock
-          on hand (i.e. are not at zero/negative balance). A low percentage means many products are
-          out of stock.
-        </li>
-        <li>
-          <strong>Sales Activity</strong> — of the products currently in stock, what percentage sold at
-          least one unit today. A low percentage means stock is sitting still even though it's available.
-        </li>
-        <li>
-          <strong>Products Sold</strong> — how many products recorded a sale today. Click the number to
-          open the <em>Products Sold - Yield</em> breakdown (sellout quantity, selling price, sales
-          amount, stock value and profit per product, with totals).
-        </li>
+        <li><strong>Availability</strong> — the percentage of active products that currently have stock on hand (i.e. are not at zero/negative balance). A low percentage means many products are out of stock.</li>
+        <li><strong>Sales Activity</strong> — of the products currently in stock, what percentage sold at least one unit today. A low percentage means stock is sitting still even though it's available.</li>
+        <li><strong>Products Sold</strong> — how many products recorded a sale today. Click the number to open the <em>Products Sold - Yield</em> breakdown (sellout quantity, selling price, sales amount, stock value and profit per product, with totals).</li>
         <li><strong>Profit From Sales</strong> — total profit earned from today's sales across all products.</li>
-        <li>
-          <strong>LDC (Locked Down Capital)</strong> — the value of stock that has not sold a single
-          unit in the last month. This is cash tied up in slow-moving stock.
-        </li>
+        <li><strong>LDC (Locked Down Capital)</strong> — the value of stock that has not sold a single unit in the last month. This is cash tied up in slow-moving stock.</li>
       </ul>
-      <p>Below the KPIs, four cards highlight top performers for Today / This Month / Year-to-Date:</p>
+      <p class="flow-text">Below the KPIs, four cards highlight top performers for Today / This Month / Year-to-Date:</p>
       <ul>
         <li><strong>Most Sold - Quantity</strong> — the product with the highest sellout quantity.</li>
         <li><strong>Most Profitable</strong> — the product that generated the most profit.</li>
-        <li>
-          <strong>Today's Margin</strong> — the product with the best and worst margin today, plus the
-          average margin across all sales. A worst margin shown in red with <sup>**</sup> means that
-          product was sold below cost price (a loss).
-        </li>
+        <li><strong>Today's Margin</strong> — the product with the best and worst margin today, plus the average margin across all sales. A worst margin shown in red with <sup>**</sup> means that product was sold below cost price (a loss).</li>
         <li><strong>Highest Gross Sales</strong> — the product with the highest total sales amount (before deducting cost).</li>
       </ul>
-      <p class="mb-0">
-        The <strong>Stock &amp; Sellout Watch</strong> table flags products needing attention, both for
-        today and for the current month — click any number to see the product list:
+      <p class="flow-text">
+        The <strong>Stock &amp; Sellout Watch</strong> table flags products needing attention, both
+        for today and for the current month — click any number to see the product list:
       </p>
-      <ul class="mb-0">
+      <ul>
         <li><strong>No Stock</strong> — products with a zero or negative balance.</li>
         <li><strong>Low Stock</strong> — products at or below their reorder point (see <a href="#reorder">Reorder Suggestions</a>).</li>
         <li><strong>No Sellout</strong> — products in stock that recorded no sales. The daily view is sorted by days since last sale (longest first).</li>
         <li><strong>Low Sellout</strong> — products in stock with sellout below their expected level.</li>
       </ul>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Run Rate ─────────────────────────────────────── -->
-  <div class="ds-card mb-4" id="run-rate">
-    <div class="ds-card__header"><span><i class="fa fa-cloud mr-2"></i>Run Rate &amp; Product Analysis</span></div>
-    <div class="ds-card__body">
-      <p>The Run Rate page (Product Analysis) helps you understand how fast stock is selling and how long it will last:</p>
+    <li class="flow-step" id="run-rate">
+      <div class="flow-num">4</div>
+      <div class="flow-title">Run Rate &amp; Product Analysis</div>
+      <p class="flow-text">The Run Rate page (Product Analysis) helps you understand how fast stock is selling and how long it will last:</p>
       <ul>
-        <li>
-          <strong>Product Velocity - Sellout</strong> — every active product is bucketed by sellout
-          speed (Not Designated, Not Selling, Very Low, Low, Moderate, High, Very High), showing the
-          stock value and quantity in each bucket. Click a quantity to see which products are in that bucket.
-        </li>
+        <li><strong>Product Velocity - Sellout</strong> — every active product is bucketed by sellout speed (Not Designated, Not Selling, Very Low, Low, Moderate, High, Very High), showing the stock value and quantity in each bucket. Click a quantity to see which products are in that bucket.</li>
         <li>
           <strong>Run Rate &amp; Days of Cover</strong> — for each product, the average daily sellout
           over the last 7 and 30 days, the current balance, the resulting <em>days of cover</em>
@@ -191,14 +111,12 @@
         </li>
         <li><strong>Products Not Sold</strong> — products in stock that haven't sold in 7 days or more, with their current stock and when/how much they last sold.</li>
       </ul>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Stock Card ─────────────────────────────────── -->
-  <div class="ds-card mb-4" id="stock-card">
-    <div class="ds-card__header"><span><i class="fa fa-exchange mr-2"></i>Stock Card &amp; the Movement Ledger</span></div>
-    <div class="ds-card__body">
-      <p>
+    <li class="flow-step" id="stock-card">
+      <div class="flow-num">5</div>
+      <div class="flow-title">Stock Card &amp; the Movement Ledger</div>
+      <p class="flow-text">
         Every stock change for a product — receipts, sales, returns, transfers, adjustments and
         write-offs — is recorded as a <strong>Stock Movement</strong>. The Stock Card (open it from
         a product's detail page) shows:
@@ -209,170 +127,139 @@
         <li>A breakdown of the balance at each <a href="#transfer">stock location</a>, if you use more than one.</li>
         <li>A form to record a new movement, and a history table of everything recorded so far.</li>
       </ul>
-      <p class="mb-0">
-        <strong>Recording a movement manually:</strong> choose a movement type (Opening Balance, Receipt,
-        Sale, Return, Transfer, Adjustment or Write-off), enter the quantity — use a <strong>negative</strong>
-        number to reduce stock (e.g. a sale or write-off) and a positive number to increase it (e.g. a
-        receipt) — pick a date, optionally a location, a reference (PO number, delivery note, etc.) and a
-        note, then save.
+      <p class="flow-text">
+        <strong>Recording a movement manually:</strong> choose a movement type (Opening Balance,
+        Receipt, Sale, Return, Transfer, Adjustment or Write-off), enter the quantity — use a
+        <strong>negative</strong> number to reduce stock (e.g. a sale or write-off) and a positive
+        number to increase it (e.g. a receipt) — pick a date, optionally a location, a reference
+        (PO number, delivery note, etc.) and a note, then save.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Sellout & Balance ──────────────────────────── -->
-  <div class="ds-card mb-4" id="sellout-balance">
-    <div class="ds-card__header"><span><i class="fa fa-pencil-square-o mr-2"></i>Sellout &amp; Balance (Daily Reporting)</span></div>
-    <div class="ds-card__body">
-      <p>
-        <a href="{% url 'stock-report-home' user %}">Sellout &amp; Balance</a> is where you enter each
-        product's figures for the day (or current reporting period), grouped by source so you can work
-        through one supplier/category at a time. For every product you enter:
+    <li class="flow-step" id="sellout-balance">
+      <div class="flow-num">6</div>
+      <div class="flow-title">Sellout &amp; Balance (Daily Reporting)</div>
+      <p class="flow-text">
+        <a href="{% url 'stock-report-home' user %}">Sellout &amp; Balance</a> is where you enter
+        each product's figures for the day (or current reporting period), grouped by source so you
+        can work through one supplier/category at a time. For every product you enter:
       </p>
-      <ul class="mb-0">
+      <ul>
         <li><strong>Sellout</strong> — how many units were sold.</li>
         <li><strong>Stock Value</strong> — the value of what's left on the shelf at the end of the day. This becomes the <strong>Reported Stock</strong> figure shown on the product's <a href="#stock-card">Stock Card</a>.</li>
         <li><strong>Sales Amount</strong> — the money taken in from sales.</li>
       </ul>
-      <p class="mb-0 mt-2">
-        Products you've already entered for the day are marked so you can see at a glance what's left to
-        do. Click a product to add its figures, or to open and adjust an entry you've already saved.
+      <p class="flow-text">
+        Products you've already entered for the day are marked so you can see at a glance what's
+        left to do. Click a product to add its figures, or to open and adjust an entry you've
+        already saved.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Stock Count ────────────────────────────────── -->
-  <div class="ds-card mb-4" id="stock-count">
-    <div class="ds-card__header"><span><i class="fa fa-tasks mr-2"></i>Stock Count (Physical Count)</span></div>
-    <div class="ds-card__body">
-      <p>
-        Use <a href="{% url 'stock-count-new' %}">Stock Count</a> when you physically count what's on
-        the shelves/in the warehouse and want to reconcile it with the system's ledger balance.
+    <li class="flow-step" id="stock-count">
+      <div class="flow-num">7</div>
+      <div class="flow-title">Stock Count (Physical Count)</div>
+      <p class="flow-text">
+        Use <a href="{% url 'stock-count-new' %}">Stock Count</a> when you physically count what's
+        on the shelves/in the warehouse and want to reconcile it with the system's ledger balance.
       </p>
       <ol>
         <li>Set the count date and an optional note.</li>
-        <li>Products are grouped into tabs by source — switch tabs and enter the counted quantity for
-            each product you checked. Leave a product blank to skip it.</li>
+        <li>Products are grouped into tabs by source — switch tabs and enter the counted quantity for each product you checked. Leave a product blank to skip it.</li>
         <li>Submit. The system compares your counted quantity to the ledger balance for each product.</li>
-        <li>Any difference (variance) is automatically recorded as an <strong>Adjustment</strong> stock
-            movement, so the ledger balance matches what you counted — giving you a clean audit trail of
-            shrinkage or overages.</li>
+        <li>Any difference (variance) is automatically recorded as an <strong>Adjustment</strong> stock movement, so the ledger balance matches what you counted — giving you a clean audit trail of shrinkage or overages.</li>
       </ol>
-      <p class="mb-0">
+      <p class="flow-text">
         Past counts — including the variance for every line — can be reviewed from
         <a href="{% url 'stock-count-list' %}">Stock Count History</a>.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Reorder ────────────────────────────────────── -->
-  <div class="ds-card mb-4" id="reorder">
-    <div class="ds-card__header"><span><i class="fa fa-balance-scale mr-2"></i>Reorder Suggestions &amp; Low Stock</span></div>
-    <div class="ds-card__body">
-      <p>
+    <li class="flow-step" id="reorder">
+      <div class="flow-num">8</div>
+      <div class="flow-title">Reorder Suggestions &amp; Low Stock</div>
+      <p class="flow-text">
         Each product can have a <strong>Reorder Point</strong>, <strong>Reorder Quantity</strong>,
-        <strong>Minimum Stock Level</strong> and <strong>Maximum Stock Level</strong> set on its edit page.
-        These drive two things:
+        <strong>Minimum Stock Level</strong> and <strong>Maximum Stock Level</strong> set on its edit
+        page. These drive two things:
       </p>
       <ul>
-        <li>
-          The <a href="{% url 'stock-balancing' %}">Stock Balancing</a> page lists products that need
-          reordering (at or below their reorder point, with a suggested order quantity and the
-          supplier's lead time), products that are overstocked (at or above their maximum level), and
-          products that have no levels configured yet.
-        </li>
-        <li>
-          The <a href="{% url 'performance-home' %}">Performance</a> dashboard's "Low Stock" row in
-          the Stock &amp; Sellout Watch table flags products whose reported balance has fallen to or
-          below their reorder point (or minimum stock level if no reorder point is set).
-        </li>
+        <li>The <a href="{% url 'stock-balancing' %}">Stock Balancing</a> page lists products that need reordering (at or below their reorder point, with a suggested order quantity and the supplier's lead time), products that are overstocked (at or above their maximum level), and products that have no levels configured yet.</li>
+        <li>The <a href="{% url 'performance-home' %}">Performance</a> dashboard's "Low Stock" row in the Stock &amp; Sellout Watch table flags products whose reported balance has fallen to or below their reorder point (or minimum stock level if no reorder point is set).</li>
       </ul>
-      <p class="mb-0">
+      <p class="flow-text">
         If a product shows under "Needs Configuration", open it from
         <a href="{% url 'product-home' %}">Stock Management</a> and set its stock levels via
         <em>Update Product</em> so it can be tracked properly.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Transfer ───────────────────────────────────── -->
-  <div class="ds-card mb-4" id="transfer">
-    <div class="ds-card__header"><span><i class="fa fa-map-marker mr-2"></i>Stock Transfer Between Locations</span></div>
-    <div class="ds-card__body">
-      <p>
-        If stock is held in more than one place (e.g. a main warehouse and a depot), set up each place
-        as a <strong>Material Center</strong> on the <a href="{% url 'material-center-list' %}">Material Centers</a> page.
+    <li class="flow-step" id="transfer">
+      <div class="flow-num">9</div>
+      <div class="flow-title">Stock Transfer Between Locations</div>
+      <p class="flow-text">
+        If stock is held in more than one place (e.g. a main warehouse and a depot), set up each
+        place as a <strong>Material Center</strong> on the
+        <a href="{% url 'material-center-list' %}">Material Centers</a> page.
       </p>
-      <p class="mb-0">
-        Use <a href="{% url 'stock-transfer' %}">Stock Transfer</a> to move stock from one location to
-        another: pick the product, quantity, source and destination locations, and a date. This creates
-        two linked movements (a deduction at the source location and an addition at the destination), so
-        the total company-wide balance is unchanged — only the per-location split moves. The Stock Card
-        for each product shows its balance broken down by location.
+      <p class="flow-text">
+        Use <a href="{% url 'stock-transfer' %}">Stock Transfer</a> to move stock from one location
+        to another: pick the product, quantity, source and destination locations, and a date. This
+        creates two linked movements (a deduction at the source location and an addition at the
+        destination), so the total company-wide balance is unchanged — only the per-location split
+        moves. The Stock Card for each product shows its balance broken down by location.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Goods Received ─────────────────────────────── -->
-  <div class="ds-card mb-4" id="receipt">
-    <div class="ds-card__header"><span><i class="fa fa-truck mr-2"></i>Goods Received</span></div>
-    <div class="ds-card__body">
-      <p class="mb-0">
-        Use <a href="{% url 'stock-receipt' %}">Goods Received</a> to record a supplier delivery covering
-        several products at once. Pick a date, optional receiving location and reference (e.g. an invoice
-        or PO number), then enter the quantity received for each product — leave a product blank to skip it.
-        Each entry is saved as a stock receipt, increasing that product's balance, and shows up in the
-        Recent Receipts list and the product's Stock Card.
+    <li class="flow-step" id="receipt">
+      <div class="flow-num">10</div>
+      <div class="flow-title">Goods Received</div>
+      <p class="flow-text">
+        Use <a href="{% url 'stock-receipt' %}">Goods Received</a> to record a supplier delivery
+        covering several products at once. Pick a date, optional receiving location and reference
+        (e.g. an invoice or PO number), then enter the quantity received for each product — leave a
+        product blank to skip it. Each entry is saved as a stock receipt, increasing that product's
+        balance, and shows up in the Recent Receipts list and the product's Stock Card.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Prices ─────────────────────────────────────── -->
-  <div class="ds-card mb-4" id="prices">
-    <div class="ds-card__header"><span><i class="fa fa-money mr-2"></i>Prices &amp; Price History</span></div>
-    <div class="ds-card__body">
+    <li class="flow-step" id="prices">
+      <div class="flow-num">11</div>
+      <div class="flow-title">Prices &amp; Price History</div>
       <ul>
         <li><strong>Price Update</strong> — select a product, see its current selling price, then increase or decrease it by an amount. The preview shows the new price before you save.</li>
         <li><strong>Price List</strong> — browse the cost and selling price of every product.</li>
         <li><strong>Price History</strong> — open from a product's detail page to see every past price change for that product, who made it and when.</li>
       </ul>
-      <p class="mb-0">
-        Every price change recorded here also appears in the <strong>Price Changes</strong> card on the
-        <a href="{% url 'product-home' %}">Stock Management</a> dashboard for the current month.
+      <p class="flow-text">
+        Every price change recorded here also appears in the <strong>Price Changes</strong> card on
+        the <a href="{% url 'product-home' %}">Stock Management</a> dashboard for the current month.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Watchlist ──────────────────────────────────── -->
-  <div class="ds-card mb-4" id="watchlist">
-    <div class="ds-card__header"><span><i class="fa fa-eye mr-2"></i>Watchlist</span></div>
-    <div class="ds-card__body mb-0">
-      <p class="mb-0">
-        The <a href="{% url 'watchlist-home' %}">Watchlist</a> is a shortlist of products you want to
-        keep a closer eye on (e.g. new arrivals, problem stock, fast movers). Add or remove products
-        from the Watchlist page itself.
+    <li class="flow-step" id="watchlist">
+      <div class="flow-num">12</div>
+      <div class="flow-title">Watchlist</div>
+      <p class="flow-text">
+        The <a href="{% url 'watchlist-home' %}">Watchlist</a> is a shortlist of products you want
+        to keep a closer eye on (e.g. new arrivals, problem stock, fast movers). Add or remove
+        products from the Watchlist page itself.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Settings ───────────────────────────────────── -->
-  <div class="ds-card mb-4" id="settings">
-    <div class="ds-card__header"><span><i class="fa fa-cog mr-2"></i>Settings: Categories, Sources &amp; Locations</span></div>
-    <div class="ds-card__body">
-      <p>
+    <li class="flow-step" id="settings">
+      <div class="flow-num">13</div>
+      <div class="flow-title">Settings: Categories, Sources &amp; Locations</div>
+      <p class="flow-text">
         The Products tab of <a href="{% url 'settings' %}">App Settings</a> is where the building
         blocks of the stock system are managed:
       </p>
-      <ul class="mb-0">
+      <ul>
         <li><strong>Product Categories</strong> — group products (Malt, Lager, Stout, etc.) for reporting.</li>
-        <li>
-          <strong>Product Sources</strong> — also act as suppliers. Click the
-          <i class="fa fa-address-card"></i> icon next to a source to record its contact person, phone,
-          email and typical lead time (used on the Reorder Suggestions page).
-        </li>
+        <li><strong>Product Sources</strong> — also act as suppliers. Click the <i class="fa fa-address-card"></i> icon next to a source to record its contact person, phone, email and typical lead time (used on the Reorder Suggestions page).</li>
         <li><strong>Material Centers</strong> — the physical places stock is held within a branch, used for Stock Transfers and per-location balances on the Stock Card.</li>
       </ul>
-    </div>
-  </div>
-
+    </li>
+  </ol>
 </div>
 {% endblock %}

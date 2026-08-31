@@ -25,14 +25,15 @@ Settings are read via `python-decouple` from a `.env` file at the repo root
 | `DEBUG` | `True`/`False`, defaults to `False` |
 | `DATABASE_URL` | Postgres connection string (`sqlite:///db.sqlite3` if unset) |
 | `ALLOWED_HOSTS` | Comma-separated allowed hosts |
-| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_STORAGE_BUCKET_NAME` | S3 bucket used for media file storage (`django-storages`) |
-| `EMAIL_USER` / `EMAIL_PASS` | SMTP credentials (Gmail) used for outgoing mail in production |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_STORAGE_BUCKET_NAME` | S3 bucket used for media file storage (`django-storages`); also doubles as the SES credentials (see below) |
+| `AWS_SES_REGION_NAME` | AWS region SES sends from, defaults to `us-east-1` — must match the region where `DEFAULT_FROM_EMAIL`'s identity is verified in SES |
+| `DEFAULT_FROM_EMAIL` | Verified SES sender address/domain, defaults to `scush@ozonefl.com` |
 | `CLOUDAMQP_URL` | Celery broker URL, only read when `DEBUG=False` |
 
 In `DEBUG` mode, outgoing email is written to files under `mail/sample/` instead of
-being sent (`EMAIL_BACKEND` is file-based), so you don't need real SMTP credentials
-to develop locally — the AWS and email keys still need *some* value for settings to
-load without raising, even if a placeholder.
+being sent (`EMAIL_BACKEND` is file-based), so you don't need real AWS/SES
+credentials to develop locally — the AWS keys still need *some* value for settings
+to load without raising, even if a placeholder.
 
 ## Database
 

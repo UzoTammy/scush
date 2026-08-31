@@ -29,6 +29,7 @@ crispy-bootstrap4 = "*"
 celery = "*"
 plotly = "*"
 pandas = "*"
+django-ses = "*"
 
 [requires]
 python_version = "3.14"

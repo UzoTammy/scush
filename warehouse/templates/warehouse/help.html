@@ -1,91 +1,75 @@
 {% extends 'core/base.html' %}
-{% block head %}
-<style>
 
-    .container { 
-        font-size: medium;
-    }
-    p {
-        color: rgb(117, 19, 117);
-    }
-</style>
+{% block page_title %}Stores & Facilities Help{% endblock %}
+
+{% block extra_css %}
+{% include 'core/includes/flow_help_style.html' %}
 {% endblock %}
-{% block page_title %}Help{% endblock %}
 
 {% block content %}
-<div class="container mt-3">
-    <h3 class="text-center">Navigating the Facilities Home Page</h3>
-    <div class="row">
-        <div class="col-sm">
-            <h5>There sections of the facilities management page are</h5>
-            <ul class="list-group list-group-horizontal mb-2">
-                <li class="list-group-item">Facilities</li>
-                <li class="list-group-item">Rent</li>
-                <li class="list-group-item">Levy</li>
-            </ul>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-4">
-            <p>Add Record to Facility</p>
-            <ul>
-                <li>Click the Facility</li>
-                <li>Below the table (if there are records) is an <a href=""><i
-                            class="fa fa-plus text-warning"></i>Add</a> button
-                    click to add new facility</li>
-                <li>Click Submit to Save</li>
-            </ul>
-            <p>Update Facility</p>
-            <ul>
-                <li>Click the Facilities link</li>
-                <li>Click a facility on the name column to display it's page</li>
-                <li>Click on Update, an update form will display</li>
-                <li>Adjust record and click Submit to Save</li>
-            </ul>
-        </div>
-        <div class="col-sm-4">
-            <p>Pay Rent</p>
-            <ul>
-                <li>Click on "Rent is Due" on the Rented Facilities and Due dates table</li>
-                <li>A pop-up meeasge will apear for you to confirm, click Yes</li>
-                <li>A Pay Rent form will appear, fill accordingly</li>
-                <li>Click Submit to Save</li>
-            </ul>
-            <p>Update or Adjust Rent Paid</p>
-            <ul>
-                <li>Click on the rent link, the list of paid rent will appear</li>
-                <li>Click on the Paid rent of interest, the form will display</li>
-                <li>Adjust as desired and Click Submit to Save</li>
-            </ul>
-        </div>
-        <div class="col-sm-4">
-            <p>Pay Levy from "Rent is Due"</p>
-            <ul>
-                <li>Click on "Rent is Due" on the Rented Facilities and Due dates table</li>
-                <li>A pop-up meeasge will apear for you to confirm, click Yes</li>
-                <li>A Pay Rent form will appear, fill accordingly</li>
-                <li>Click Submit to Save</li>
-            </ul>
-            <p>Pay Levy</p>
-            <ul>
-                <li>Click the Levy Link on the Facility Management Home page</li>
-                <li>Below the list of paid levy displayed, Click on <a href=""><i class="fa fa-paypal"></i> Pay Levy</a></li>
-                <li>Pay Levy form will display, fill up accordingly</li>
-                <li>Click Submit to Save</li>
-            </ul>
-            <p>Update Paid Levy</p>
-            <ul>
-                <li>Click on the rent link, the list of paid rent will appear</li>
-                <li>Click on the Paid rent of interest, the form will display</li>
-                <li>Adjust as desired and Click Submit to Save</li>
-            </ul>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <a class="btn btn-secondary float-right" href="{{view.request.headers.Referer}}">
-                <i class="fa fa-times-circle"></i> Return</a>
-        </div>
-    </div>
+<div class="flow-wrap">
+  <a class="flow-back" href="{% url 'warehouse-home' %}">&larr; Back</a>
+
+  <p class="flow-intro">
+    <strong>Stores &amp; Facilities</strong> tracks every rented facility, its rent renewal, and
+    its yearly levy. Here's what each part does.
+  </p>
+
+  <ol class="flow">
+    <li class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-title">Add a Facility</div>
+      <p class="flow-text">
+        Open <a href="{% url 'warehouse-list-all' %}">Facilities</a>, click <strong>Add</strong>,
+        fill in the form, and submit.
+      </p>
+    </li>
+    <li class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-title">Update a Facility</div>
+      <p class="flow-text">
+        Open <a href="{% url 'warehouse-list-all' %}">Facilities</a>, click the facility's name to
+        open its detail page, click <strong>Update</strong>, adjust the record, and submit.
+      </p>
+    </li>
+    <li class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-title">Pay Rent</div>
+      <p class="flow-text">
+        A facility whose rent has expired shows a <strong>Rent Due</strong> link in the
+        "Rented Facilities &amp; Due Dates" table on this section's home page — click it, confirm
+        <strong>Pay Now</strong> in the pop-up, then fill in the Pay Rent form and submit.
+      </p>
+      <p class="flow-text">
+        To pay rent for a facility that isn't yet overdue, open
+        <a href="{% url 'store-rent-list' %}">Rent</a> and click <strong>Pay Rent</strong> to pick
+        any facility directly.
+      </p>
+    </li>
+    <li class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-title">Update or Adjust Rent Paid</div>
+      <p class="flow-text">
+        Open <a href="{% url 'store-rent-list' %}">Rent</a> to see every rent payment made this
+        year. Click a record's ID to open it, adjust as needed, and submit.
+      </p>
+    </li>
+    <li class="flow-step">
+      <div class="flow-num">5</div>
+      <div class="flow-title">Pay Levy</div>
+      <p class="flow-text">
+        Open <a href="{% url 'store-levy-list' %}">Levy</a> and click <strong>Pay Levy</strong>,
+        fill in the form, and submit.
+      </p>
+    </li>
+    <li class="flow-step">
+      <div class="flow-num">6</div>
+      <div class="flow-title">Update a Paid Levy</div>
+      <p class="flow-text">
+        Open <a href="{% url 'store-levy-list' %}">Levy</a>, click the facility name on the levy
+        record of interest, adjust as needed, and submit.
+      </p>
+    </li>
+  </ol>
 </div>
-{% endblock content%}
+{% endblock %}

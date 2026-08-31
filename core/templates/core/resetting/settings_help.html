@@ -1,21 +1,57 @@
 {% extends 'core/base.html' %}
 
-{% block page_title %}Settings Help{% endblock %}
+{% block page_title %}Choices — Help{% endblock %}
+
+{% block extra_css %}
+{% include 'core/includes/flow_help_style.html' %}
+{% endblock %}
 
 {% block content %}
-<div class="container">
-    <article>
-        <h3>Choices</h3>
-        <p>
-            This is the list of items to be displayed on select fields at various forms in this web.
-            It will be helpful to be able to add, edit or delete an item from the list in order to keep
-            it updated and fresh. Therefore from the Choices option we can:
-            <ul>
-                <li>Add</li>
-                <li>Edit</li>
-                <li>Delete</li>
-            </ul>  
-        </p>
-    </article>
+<div class="flow-wrap">
+  <a class="flow-back" href="{% url 'json-list' %}">&larr; Back</a>
+
+  <p class="flow-intro">
+    <strong>Choices</strong> are the option lists behind dropdown/select fields used across the
+    app — each one is a named category (e.g. a dataset) holding a set of keys, and each key holds
+    a list of values. Here's how to manage them.
+  </p>
+
+  <ol class="flow">
+    <li class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-title">Open a category</div>
+      <p class="flow-text">
+        From <a href="{% url 'json-list' %}">Application Settings</a>, click a key (e.g.
+        <code>status</code>, <code>type</code>) to see every value currently in that list.
+      </p>
+    </li>
+    <li class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-title">Add a value</div>
+      <p class="flow-text">
+        Click <strong>Add</strong>, type the new value, and submit. It's appended to the list and
+        immediately available anywhere that field is used.
+      </p>
+    </li>
+    <li class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-title">Edit a value</div>
+      <p class="flow-text">
+        Click the value itself to open it, change the text, and submit — it's replaced in place,
+        so anything already using the old value keeps pointing at the same list position.
+      </p>
+    </li>
+  </ol>
+
+  <div class="flow-notes">
+    <h2>Good to know</h2>
+    <dl>
+      <dt>No delete here</dt>
+      <dd>
+        This legacy Choices system only supports adding and editing values, not removing them.
+        If you need to remove an option entirely, rename it to something clearly unused instead.
+      </dd>
+    </dl>
+  </div>
 </div>
 {% endblock %}

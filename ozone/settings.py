@@ -202,15 +202,18 @@ LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'index'
 
 # Email Server
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend' if DEBUG else 'django.core.mail.backends.smtp.EmailBackend'
+# Production sends through Amazon SES. django-ses reuses the AWS_ACCESS_KEY_ID/
+# AWS_SECRET_ACCESS_KEY credentials configured above for S3 (falls back to them
+# when AWS_SES_ACCESS_KEY_ID isn't set) — that IAM user/role also needs
+# ses:SendEmail + ses:SendRawEmail permission, and DEFAULT_FROM_EMAIL must be a
+# verified identity in that SES account/region.
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend' if DEBUG else 'django_ses.SESBackend'
 EMAIL_FILE_PATH = 'mail/sample'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
 EMAIL_SUBJECT_PREFIX = 'Ozone: '
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='scush@ozonefl.com')
 
-EMAIL_HOST_USER = config('EMAIL_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_PASS')
+AWS_SES_REGION_NAME = config('AWS_SES_REGION_NAME', default='us-east-1')
+AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
 
 ADMINS = (('SCuSH', 'scush@ozonefl.com'),)
 

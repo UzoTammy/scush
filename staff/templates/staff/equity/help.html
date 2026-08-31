@@ -2,325 +2,239 @@
 
 {% block page_title %}Equity Pool — Help{% endblock %}
 
+{% block extra_css %}
+{% include 'core/includes/flow_help_style.html' %}
+{% endblock %}
+
 {% block content %}
-<div class="container">
-  <div class="ds-page-header">
-    <h2 class="ds-page-header__title"><i class="fa fa-question-circle mr-2"></i>Equity Pool — Help</h2>
-    <div>
-      {% if is_hrd %}
-      <a href="{% url 'equity-list' %}" class="btn btn-secondary btn-sm"><i class="fa fa-times-circle"></i></a>
-      {% else %}
-      <a href="{% url 'my-equity-pool' %}" class="btn btn-secondary btn-sm"><i class="fa fa-times-circle"></i></a>
-      {% endif %}
-    </div>
-  </div>
+<div class="flow-wrap flow-wrap--wide">
+  {% if is_hrd %}
+  <a class="flow-back" href="{% url 'equity-list' %}">&larr; Back</a>
+  {% else %}
+  <a class="flow-back" href="{% url 'my-equity-pool' %}">&larr; Back</a>
+  {% endif %}
 
-  <div class="ds-card mb-4">
-    <div class="ds-card__body">
-      <p class="mb-2">
-        Equity Pool tracks the Employee Profit-Sharing scheme: each participant's one-time
-        Initial Capital Allocation, their share of every year's Employee Profit Pool, and how much
-        of their running balance has <strong>vested</strong> (permanently theirs) versus is still
-        <strong>unvested</strong> (at risk until the 3-year clock completes).
-      </p>
-      <p class="mb-0 text-muted small">
-        This page explains every screen in the section, how to get to it, and what result to
-        expect. {% if is_hrd %}You're viewing this as an <strong>HRD</strong> user, so the admin
-        sections below apply to you.{% else %}You're viewing this as a staff member — the
-        "My Equity Pool" section below is the one that applies to you; the Admin sections are
-        included for reference.{% endif %}
-      </p>
-    </div>
-  </div>
+  <p class="flow-intro">
+    <strong>Equity Pool</strong> tracks the Employee Profit-Sharing scheme: each participant's
+    one-time Initial Capital Allocation, their share of every year's Employee Profit Pool, and how
+    much of their running balance has <strong>vested</strong> (permanently theirs) versus is still
+    <strong>unvested</strong> (at risk until the 3-year clock completes).
+    {% if is_hrd %}
+    You're viewing this as an <strong>HRD</strong> user, so the admin sections below apply to you.
+    {% else %}
+    You're viewing this as a staff member — the "My Equity Pool" section below is the one that
+    applies to you; the Admin sections are included for reference.
+    {% endif %}
+  </p>
 
-  <!-- ── Table of contents ─────────────────────────── -->
-  <div class="ds-card mb-4">
-    <div class="ds-card__header"><span><i class="fa fa-list mr-2"></i>On this page</span></div>
-    <div class="ds-card__body">
-      <ul class="mb-0">
-        <li><a href="#navigation">Where to find Equity Pool</a></li>
-        <li><a href="#my-equity">My Equity Pool (staff view)</a></li>
-        <li><a href="#admin-list">Equity Pool List (admin)</a></li>
-        <li><a href="#post-credit">Posting a Profit Pool Credit</a></li>
-        <li><a href="#add-participant">Adding a Participant</a></li>
-        <li><a href="#participant-detail">Participant Detail &amp; Ledger</a></li>
-        <li><a href="#actions">Clawback, Forfeiture &amp; Separation</a></li>
-        <li><a href="#reallocate">Reallocating Shares</a></li>
-        <li><a href="#threshold">Threshold Profit</a></li>
-        <li><a href="#statements">Annual Allocation Statement (PDF)</a></li>
-        <li><a href="#glossary">Glossary</a></li>
-        <li><a href="#workflows">Common tasks, step by step</a></li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- ── Navigation ─────────────────────────────────── -->
-  <div class="ds-card mb-4" id="navigation">
-    <div class="ds-card__header"><span><i class="fa fa-compass mr-2"></i>Where to find Equity Pool</span></div>
-    <div class="ds-card__body">
-      <ul class="mb-0">
-        <li><strong>Staff &amp; HR hub</strong> (<code>/staff/home/</code>) — the quick-nav bar at the
-          top has an <strong>Equity Pool</strong> link (admin list). Only visible/useful to HRD users.</li>
-        <li><strong>Your Info</strong> (<code>/profile/</code>) — if you're an enrolled participant,
-          a <strong>My Equity Pool</strong> button appears next to "Change Password". Not shown at
-          all if you're not enrolled.</li>
-        <li><strong>An employee's detail page</strong> — the <strong>HR Actions</strong> dropdown shows
-          <em>Equity Pool</em> (if already a participant) or <em>Add to Equity Pool</em> (if eligible
-          but not yet added). The stat-card row also shows an <strong>Equity Pool</strong> tile with
-          that person's current vested balance.</li>
-        <li><strong>From the list page</strong> — every participant's Staff ID / name links straight
-          into their Participant Detail page.</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- ── My Equity Pool ─────────────────────────────── -->
-  <div class="ds-card mb-4" id="my-equity">
-    <div class="ds-card__header"><span><i class="fa fa-user mr-2"></i>My Equity Pool (staff view)</span></div>
-    <div class="ds-card__body">
-      <p><strong>URL:</strong> <code>/staff/my-equity/</code> — read-only, shows only your own data.</p>
-      <p class="mb-2">What you'll see:</p>
+  <ol class="flow">
+    <li class="flow-step" id="navigation">
+      <div class="flow-num">1</div>
+      <div class="flow-title">Where to find Equity Pool</div>
       <ul>
-        <li><strong>Current Balance</strong> — everything credited to you so far (initial allocation
-          + every profit-pool credit), before subtracting anything forfeited or paid out.</li>
-        <li><strong>Vested (protected)</strong> — the portion that's permanently yours regardless of
-          what happens next.</li>
-        <li><strong>Unvested (at risk)</strong> — the portion still subject to the vesting clock; this
-          is what could be forfeited if you leave before it matures.</li>
-        <li><strong>Vesting Status</strong> — either "Fully matured — safe" (once your 3-year clock
-          completes) or a progress bar showing 0% → 33% → 66% → 100%.</li>
+        <li><strong>Staff &amp; HR hub</strong> (<code>/staff/home/</code>) — the quick-nav bar at the top has an <strong>Equity Pool</strong> link (admin list). Only visible/useful to HRD users.</li>
+        <li><strong>Your Info</strong> (<code>/profile/</code>) — if you're an enrolled participant, a <strong>My Equity Pool</strong> button appears next to "Change Password". Not shown at all if you're not enrolled.</li>
+        <li><strong>An employee's detail page</strong> — the <strong>HR Actions</strong> dropdown shows <em>Equity Pool</em> (if already a participant) or <em>Add to Equity Pool</em> (if eligible but not yet added). The stat-card row also shows an <strong>Equity Pool</strong> tile with that person's current vested balance.</li>
+        <li><strong>From the list page</strong> — every participant's Staff ID / name links straight into their Participant Detail page.</li>
+      </ul>
+    </li>
+
+    <li class="flow-step" id="my-equity">
+      <div class="flow-num">2</div>
+      <div class="flow-title">My Equity Pool (staff view)</div>
+      <p class="flow-text"><strong>URL:</strong> <code>/staff/my-equity/</code> — read-only, shows only your own data. What you'll see:</p>
+      <ul>
+        <li><strong>Current Balance</strong> — everything credited to you so far (initial allocation + every profit-pool credit), before subtracting anything forfeited or paid out.</li>
+        <li><strong>Vested (protected)</strong> — the portion that's permanently yours regardless of what happens next.</li>
+        <li><strong>Unvested (at risk)</strong> — the portion still subject to the vesting clock; this is what could be forfeited if you leave before it matures.</li>
+        <li><strong>Vesting Status</strong> — either "Fully matured — safe" (once your 3-year clock completes) or a progress bar showing 0% → 33% → 66% → 100%.</li>
         <li><strong>My Ledger</strong> — every entry ever posted to your balance and when, in date order.</li>
       </ul>
-      <p class="mb-0 text-muted small">
+      <p class="flow-text">
         If this page says you're "not currently enrolled," you're not a named participant in the
         scheme — nothing is wrong, there's just no Equity Pool data tied to your account.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Admin: List ────────────────────────────────── -->
-  <div class="ds-card mb-4" id="admin-list">
-    <div class="ds-card__header"><span><i class="fa fa-list mr-2"></i>Equity Pool List (admin)</span></div>
-    <div class="ds-card__body">
-      <p><strong>URL:</strong> <code>/staff/equity/list/</code> — HRD group only.</p>
+    <li class="flow-step" id="admin-list">
+      <div class="flow-num">3</div>
+      <div class="flow-title">Equity Pool List (admin)</div>
+      <p class="flow-text"><strong>URL:</strong> <code>/staff/equity/list/</code> — HRD group only.</p>
       <ul>
         <li><strong>Total Pool Value</strong> stat — sum of every visible participant's current balance.</li>
-        <li><strong>Zero-Balance Participants</strong> toggle — participants with a zero balance
-          (e.g. fully paid-out, or added but not yet granted) are hidden by default. Click the tile
-          to show/hide them. This only changes what's <em>displayed</em> — nothing is ever deleted;
-          every ledger entry stays queryable from that person's detail page regardless.</li>
-        <li>The <strong>participants table</strong> shows Staff ID, Name, Role Code, this fiscal
-          year's locked share %, Current/Vested/Unvested balance, Vesting %, and Status. Click any
-          row to open that participant's detail page.</li>
+        <li><strong>Zero-Balance Participants</strong> toggle — participants with a zero balance (e.g. fully paid-out, or added but not yet granted) are hidden by default. Click the tile to show/hide them. This only changes what's <em>displayed</em> — nothing is ever deleted; every ledger entry stays queryable from that person's detail page regardless.</li>
+        <li>The <strong>participants table</strong> shows Staff ID, Name, Role Code, this fiscal year's locked share %, Current/Vested/Unvested balance, Vesting %, and Status. Click any row to open that participant's detail page.</li>
       </ul>
-      <p class="mb-0 text-muted small">Header buttons: <strong>Add Participant</strong>,
-        <strong>Threshold Profit</strong>, <strong>Reallocate Shares</strong>, and
-        <strong>Generate All Statements</strong> — each explained in its own section below.</p>
-    </div>
-  </div>
+      <p class="flow-text">
+        Header buttons: <strong>Add Participant</strong>, <strong>Threshold Profit</strong>,
+        <strong>Reallocate Shares</strong>, and <strong>Generate All Statements</strong> — each
+        explained in its own section below.
+      </p>
+    </li>
 
-  <!-- ── Post Credit ────────────────────────────────── -->
-  <div class="ds-card mb-4" id="post-credit">
-    <div class="ds-card__header"><span><i class="fa fa-bank mr-2"></i>Posting a Profit Pool Credit</span></div>
-    <div class="ds-card__body">
-      <p>On the list page, use the <strong>Post Profit Pool Credit</strong> form:</p>
+    <li class="flow-step" id="post-credit">
+      <div class="flow-num">4</div>
+      <div class="flow-title">Posting a Profit Pool Credit</div>
+      <p class="flow-text">On the list page, use the <strong>Post Profit Pool Credit</strong> form:</p>
       <ol>
         <li>Enter the <strong>Fiscal Year</strong> the credit belongs to (e.g. <code>2026</code>).</li>
-        <li>Enter the <strong>Total Pool Amount</strong> — the full Employee Profit Pool for that
-          year (20% of NPAT above Threshold Profit), as one number.</li>
+        <li>Enter the <strong>Total Pool Amount</strong> — the full Employee Profit Pool for that year (20% of NPAT above Threshold Profit), as one number.</li>
         <li>Click <strong>Split &amp; Post to All Active Participants</strong>.</li>
       </ol>
-      <p class="mb-0">
+      <p class="flow-text">
         <strong>Expected result:</strong> the system splits that total using each active
         participant's <em>locked</em> share allocation for the fiscal year you entered — not
-        whatever their share happens to be today — and posts one ledger entry per participant.
-        If a participant has no locked share for that year, they simply receive nothing from this
+        whatever their share happens to be today — and posts one ledger entry per participant. If a
+        participant has no locked share for that year, they simply receive nothing from this
         posting (nothing errors).
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Add Participant ────────────────────────────── -->
-  <div class="ds-card mb-4" id="add-participant">
-    <div class="ds-card__header"><span><i class="fa fa-user-plus mr-2"></i>Adding a Participant</span></div>
-    <div class="ds-card__body">
-      <p><strong>URL:</strong> <code>/staff/equity/add/</code></p>
+    <li class="flow-step" id="add-participant">
+      <div class="flow-num">5</div>
+      <div class="flow-title">Adding a Participant</div>
+      <p class="flow-text"><strong>URL:</strong> <code>/staff/equity/add/</code></p>
       <ol>
-        <li>Pick the staff member — the dropdown only lists <strong>actively employed</strong> staff
-          who aren't already a participant. Management status doesn't matter; this section never
-          reads or changes that flag.</li>
-        <li>Enter their <strong>Role Code</strong> (e.g. GSM, SCM1) — this can differ from their job
-          title/position, it's whatever code the MD supplied for the scheme.</li>
+        <li>Pick the staff member — the dropdown only lists <strong>actively employed</strong> staff who aren't already a participant. Management status doesn't matter; this section never reads or changes that flag.</li>
+        <li>Enter their <strong>Role Code</strong> (e.g. GSM, SCM1) — this can differ from their job title/position, it's whatever code the MD supplied for the scheme.</li>
         <li>Enter their <strong>Initial Capital Allocation</strong> (NGN).</li>
-        <li>Pick a <strong>Grant Date</strong> — there is deliberately no default here. This date
-          starts their single vesting clock, so confirm it before saving.</li>
+        <li>Pick a <strong>Grant Date</strong> — there is deliberately no default here. This date starts their single vesting clock, so confirm it before saving.</li>
       </ol>
-      <p class="mb-0">
+      <p class="flow-text">
         <strong>Expected result:</strong> saving creates the participant and immediately posts a
         <code>grant</code> ledger entry for the initial allocation. It does <em>not</em> give them a
         share of the current fiscal year's pool automatically — that only happens the next time you
         run Reallocate Shares, so adding someone mid-year doesn't disturb an already-locked year.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Participant Detail ─────────────────────────── -->
-  <div class="ds-card mb-4" id="participant-detail">
-    <div class="ds-card__header"><span><i class="fa fa-id-card mr-2"></i>Participant Detail &amp; Ledger</span></div>
-    <div class="ds-card__body">
-      <p><strong>URL:</strong> <code>/staff/employee/&lt;id&gt;/equity/</code></p>
+    <li class="flow-step" id="participant-detail">
+      <div class="flow-num">6</div>
+      <div class="flow-title">Participant Detail &amp; Ledger</div>
+      <p class="flow-text"><strong>URL:</strong> <code>/staff/employee/&lt;id&gt;/equity/</code></p>
       <ul>
-        <li>Four stat cards: Current Balance, Vested, Unvested, and Vesting % (with a
-          "Fully Matured" badge once the 3-year clock completes).</li>
+        <li>Four stat cards: Current Balance, Vested, Unvested, and Vesting % (with a "Fully Matured" badge once the 3-year clock completes).</li>
         <li><strong>Participant Info</strong> — role code, grant date, initial allocation, status.</li>
-        <li><strong>Share Allocations by Fiscal Year</strong> — every year's share %, and whether
-          it's Locked (permanent) or Pending (still editable via Reallocate Shares).</li>
-        <li><strong>Ledger</strong> — the full append-only history: grants, profit-pool credits,
-          clawbacks, forfeitures, payouts, each with date, fiscal year, amount, and note. Nothing
-          here is ever edited or deleted — corrections are posted as new reversing entries.</li>
+        <li><strong>Share Allocations by Fiscal Year</strong> — every year's share %, and whether it's Locked (permanent) or Pending (still editable via Reallocate Shares).</li>
+        <li><strong>Ledger</strong> — the full append-only history: grants, profit-pool credits, clawbacks, forfeitures, payouts, each with date, fiscal year, amount, and note. Nothing here is ever edited or deleted — corrections are posted as new reversing entries.</li>
       </ul>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Actions ────────────────────────────────────── -->
-  <div class="ds-card mb-4" id="actions">
-    <div class="ds-card__header"><span><i class="fa fa-exclamation-triangle mr-2"></i>Clawback, Forfeiture &amp; Separation</span></div>
-    <div class="ds-card__body">
-      <p class="mb-2">These three action panels only appear on an <strong>active</strong> participant's detail page:</p>
+    <li class="flow-step" id="actions">
+      <div class="flow-num">7</div>
+      <div class="flow-title">Clawback, Forfeiture &amp; Separation</div>
+      <p class="flow-text">These three action panels only appear on an <strong>active</strong> participant's detail page:</p>
       <ul>
-        <li><strong>Post Clawback</strong> — for a net-loss fiscal year. Enter the amount and a
-          required note (who approved it, and why). <strong>Expected result:</strong> the system
-          refuses to save if the amount exceeds that participant's current unvested balance —
-          vested amounts can never be clawed back, no matter what you enter.</li>
-        <li><strong>Forfeiture (For Cause)</strong> — for termination due to fraud/misconduct.
-          Requires an investigation reference/note. <strong>Expected result:</strong> zeroes the
-          participant's <em>entire</em> balance — vested and unvested both — and marks them
-          "Forfeited (Cause)".</li>
-        <li><strong>Separation Payout</strong> — for resignation/layoff (not for cause).
-          <strong>Expected result:</strong> if they're already fully matured, their whole balance is
-          paid out. If not, only the vested portion is paid out and the unvested portion is posted
-          as a forfeiture back to company reserves. Either way the participant is marked "Separated".</li>
+        <li><strong>Post Clawback</strong> — for a net-loss fiscal year. Enter the amount and a required note (who approved it, and why). <strong>Expected result:</strong> the system refuses to save if the amount exceeds that participant's current unvested balance — vested amounts can never be clawed back, no matter what you enter.</li>
+        <li><strong>Forfeiture (For Cause)</strong> — for termination due to fraud/misconduct. Requires an investigation reference/note. <strong>Expected result:</strong> zeroes the participant's <em>entire</em> balance — vested and unvested both — and marks them "Forfeited (Cause)".</li>
+        <li><strong>Separation Payout</strong> — for resignation/layoff (not for cause). <strong>Expected result:</strong> if they're already fully matured, their whole balance is paid out. If not, only the vested portion is paid out and the unvested portion is posted as a forfeiture back to company reserves. Either way the participant is marked "Separated".</li>
       </ul>
-      <p class="mb-0 text-muted small">All three ask for confirmation before submitting — they're
-        one-way, ledger-writing actions, not something to undo by editing.</p>
-    </div>
-  </div>
+      <p class="flow-text">
+        All three ask for confirmation before submitting — they're one-way, ledger-writing actions,
+        not something to undo by editing.
+      </p>
+    </li>
 
-  <!-- ── Reallocate ─────────────────────────────────── -->
-  <div class="ds-card mb-4" id="reallocate">
-    <div class="ds-card__header"><span><i class="fa fa-refresh mr-2"></i>Reallocating Shares</span></div>
-    <div class="ds-card__body">
-      <p><strong>URL:</strong> <code>/staff/equity/reallocate/&lt;fiscal_year&gt;/</code> — e.g. open
-        FY2027 to set up next year's shares.</p>
+    <li class="flow-step" id="reallocate">
+      <div class="flow-num">8</div>
+      <div class="flow-title">Reallocating Shares</div>
+      <p class="flow-text">
+        <strong>URL:</strong> <code>/staff/equity/reallocate/&lt;fiscal_year&gt;/</code> — e.g. open
+        FY2027 to set up next year's shares.
+      </p>
       <ol>
-        <li>Opening the page for a new year pre-fills each active participant's row from last
-          year's <em>locked</em> share, as a starting point.</li>
+        <li>Opening the page for a new year pre-fills each active participant's row from last year's <em>locked</em> share, as a starting point.</li>
         <li>Edit the % for anyone whose share is changing this year.</li>
-        <li><strong>Save (don't lock)</strong> — stores your edits without finalizing them; you can
-          come back and keep adjusting.</li>
-        <li><strong>Lock FY&lt;year&gt;</strong> — finalizes the year. <strong>Expected result:</strong>
-          this is blocked with an error message unless the active participants' shares add up to
-          <em>exactly</em> 100%. Once locked, that year's rows are frozen — a later reallocation for
-          the next year never touches them.</li>
+        <li><strong>Save (don't lock)</strong> — stores your edits without finalizing them; you can come back and keep adjusting.</li>
+        <li><strong>Lock FY&lt;year&gt;</strong> — finalizes the year. <strong>Expected result:</strong> this is blocked with an error message unless the active participants' shares add up to <em>exactly</em> 100%. Once locked, that year's rows are frozen — a later reallocation for the next year never touches them.</li>
       </ol>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Threshold Profit ───────────────────────────── -->
-  <div class="ds-card mb-4" id="threshold">
-    <div class="ds-card__header"><span><i class="fa fa-flag mr-2"></i>Threshold Profit</span></div>
-    <div class="ds-card__body">
-      <p><strong>URL:</strong> <code>/staff/equity/threshold/</code> (list) and
-        <code>/staff/equity/threshold/add/</code> (new fiscal year).</p>
-      <p class="mb-2">Each fiscal year needs a Threshold Profit record: the NPAT threshold above
-        which the 20% Employee Profit Pool is calculated, the methodology behind that number, when
-        it was approved, and when it was actually disclosed to staff.</p>
-      <p class="mb-0">
+    <li class="flow-step" id="threshold">
+      <div class="flow-num">9</div>
+      <div class="flow-title">Threshold Profit</div>
+      <p class="flow-text">
+        <strong>URL:</strong> <code>/staff/equity/threshold/</code> (list) and
+        <code>/staff/equity/threshold/add/</code> (new fiscal year).
+      </p>
+      <p class="flow-text">
+        Each fiscal year needs a Threshold Profit record: the NPAT threshold above which the 20%
+        Employee Profit Pool is calculated, the methodology behind that number, when it was
+        approved, and when it was actually disclosed to staff.
+      </p>
+      <p class="flow-text">
         <strong>Expected result:</strong> if a year's Threshold Profit has been approved for more
         than 30 days and <code>Disclosed Date</code> is still blank, the list page shows a red
         warning banner — that's a live compliance breach, not a cosmetic reminder.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Statements ─────────────────────────────────── -->
-  <div class="ds-card mb-4" id="statements">
-    <div class="ds-card__header"><span><i class="fa fa-file-pdf-o mr-2"></i>Annual Allocation Statement (PDF)</span></div>
-    <div class="ds-card__body">
+    <li class="flow-step" id="statements">
+      <div class="flow-num">10</div>
+      <div class="flow-title">Annual Allocation Statement (PDF)</div>
       <ul>
-        <li><strong>Single</strong> — "Generate Statement (PDF)" on a participant's detail page.
-          Uses the current fiscal year unless you pass a different one in the URL.</li>
-        <li><strong>Bulk</strong> — "Generate All Statements (FY&lt;year&gt;)" on the list page
-          produces one PDF per <em>active</em> participant for that year in one go.</li>
+        <li><strong>Single</strong> — "Generate Statement (PDF)" on a participant's detail page. Uses the current fiscal year unless you pass a different one in the URL.</li>
+        <li><strong>Bulk</strong> — "Generate All Statements (FY&lt;year&gt;)" on the list page produces one PDF per <em>active</em> participant for that year in one go.</li>
       </ul>
-      <p class="mb-0">
+      <p class="flow-text">
         <strong>Expected result:</strong> each generated PDF is saved and listed on that
         participant's detail page, so you can re-download a past statement later without
         regenerating it. The PDF always carries the required non-entitlement disclaimer at the
         foot — it's informational, not a payment or a guarantee.
       </p>
-    </div>
-  </div>
+    </li>
 
-  <!-- ── Glossary ───────────────────────────────────── -->
-  <div class="ds-card mb-4" id="glossary">
-    <div class="ds-card__header"><span><i class="fa fa-book mr-2"></i>Glossary</span></div>
-    <div class="ds-card__body p-0">
-      <div class="list-group list-group-flush">
-        <div class="list-group-item"><strong>Grant Date</strong> — the date that starts a
-          participant's single vesting clock. Admin-set, never defaulted or auto-filled.</div>
-        <div class="list-group-item"><strong>Vesting %</strong> — 0% before 12 months, 33% from
-          12–24 months, 66% from 24–36 months, 100% from 36 months onward.</div>
-        <div class="list-group-item"><strong>Fully Matured</strong> — a permanent flag set once a
-          participant crosses the 3-year mark. From then on, every new credit posts as vested
-          immediately — the clock stops applying to them at all.</div>
-        <div class="list-group-item"><strong>Fiscal Year</strong> — the year a share allocation or
-          ledger entry belongs to (e.g. "2026"). Credits always use the share that was <em>locked</em>
-          for their own fiscal year, even if a later reallocation changes that participant's share.</div>
-        <div class="list-group-item"><strong>Locked Share</strong> — a fiscal year's share % becomes
-          permanent once you lock it; only future years can be reallocated.</div>
-        <div class="list-group-item"><strong>Vested vs Unvested Balance</strong> — Vested is
-          permanently the participant's; Unvested is still subject to the clock and can be forfeited
-          on early separation, or clawed back in a net-loss year (never below zero, never touching
-          vested amounts).</div>
-      </div>
-    </div>
-  </div>
+    <li class="flow-step" id="glossary">
+      <div class="flow-num">11</div>
+      <div class="flow-title">Glossary</div>
+      <dl class="flow-text">
+        <dt>Grant Date</dt>
+        <dd>The date that starts a participant's single vesting clock. Admin-set, never defaulted or auto-filled.</dd>
+        <dt>Vesting %</dt>
+        <dd>0% before 12 months, 33% from 12–24 months, 66% from 24–36 months, 100% from 36 months onward.</dd>
+        <dt>Fully Matured</dt>
+        <dd>A permanent flag set once a participant crosses the 3-year mark. From then on, every new credit posts as vested immediately — the clock stops applying to them at all.</dd>
+        <dt>Fiscal Year</dt>
+        <dd>The year a share allocation or ledger entry belongs to (e.g. "2026"). Credits always use the share that was <em>locked</em> for their own fiscal year, even if a later reallocation changes that participant's share.</dd>
+        <dt>Locked Share</dt>
+        <dd>A fiscal year's share % becomes permanent once you lock it; only future years can be reallocated.</dd>
+        <dt>Vested vs Unvested Balance</dt>
+        <dd>Vested is permanently the participant's; Unvested is still subject to the clock and can be forfeited on early separation, or clawed back in a net-loss year (never below zero, never touching vested amounts).</dd>
+      </dl>
+    </li>
 
-  <!-- ── Workflows ──────────────────────────────────── -->
-  <div class="ds-card mb-4" id="workflows">
-    <div class="ds-card__header"><span><i class="fa fa-check-square-o mr-2"></i>Common tasks, step by step</span></div>
-    <div class="ds-card__body">
-      <h5>A new manager just joined the scheme</h5>
+    <li class="flow-step" id="workflows">
+      <div class="flow-num">12</div>
+      <div class="flow-title">Common tasks, step by step</div>
+
+      <h4>A new manager just joined the scheme</h4>
       <ol>
         <li>Equity Pool List → <strong>Add Participant</strong>.</li>
         <li>Fill in role code, initial allocation, and grant date → Save.</li>
-        <li>They'll get a share once you next run <strong>Reallocate Shares</strong> for an
-          upcoming fiscal year — not automatically for the current one.</li>
+        <li>They'll get a share once you next run <strong>Reallocate Shares</strong> for an upcoming fiscal year — not automatically for the current one.</li>
       </ol>
-      <h5>This year's profit pool needs to be paid out</h5>
+
+      <h4>This year's profit pool needs to be paid out</h4>
       <ol>
         <li>Confirm <strong>Threshold Profit</strong> is set (and disclosed) for the year.</li>
-        <li>Equity Pool List → <strong>Post Profit Pool Credit</strong> → enter fiscal year + total
-          amount → Post.</li>
-        <li>Spot-check a participant's detail page ledger for the new
-          <em>Profit Pool Credit</em> entry.</li>
+        <li>Equity Pool List → <strong>Post Profit Pool Credit</strong> → enter fiscal year + total amount → Post.</li>
+        <li>Spot-check a participant's detail page ledger for the new <em>Profit Pool Credit</em> entry.</li>
       </ol>
-      <h5>Someone is resigning</h5>
+
+      <h4>Someone is resigning</h4>
       <ol>
         <li>Open their Participant Detail page.</li>
         <li><strong>Separation Payout</strong> → add a note if useful → confirm.</li>
-        <li>Check their status changed to "Separated" and the ledger shows the payout
-          (and forfeiture, if they weren't fully matured yet).</li>
+        <li>Check their status changed to "Separated" and the ledger shows the payout (and forfeiture, if they weren't fully matured yet).</li>
       </ol>
-      <h5>Next year's shares need to change</h5>
+
+      <h4>Next year's shares need to change</h4>
       <ol>
         <li>Equity Pool List → <strong>Reallocate Shares</strong> for the new fiscal year.</li>
         <li>Adjust the % values → <strong>Save (don't lock)</strong> while you're still finalizing.</li>
         <li>Once everything sums to 100%, click <strong>Lock</strong>.</li>
       </ol>
-    </div>
-  </div>
-
+    </li>
+  </ol>
 </div>
 {% endblock %}
