@@ -1,70 +1,95 @@
 {% extends 'core/base.html' %}
 {% load custom_tags %}
 
-{% block page_title %}Tradedaily List{% endblock %}
+{% block page_title %}Daily P&amp;L{% endblock %}
+
+{% block head %}
+<style>
+  .table th, .table td { padding: 1rem 1.1rem; }
+  .table th { white-space: nowrap; }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col">
-            <table data-toggle="table"
-                    data-pagination="true"
-                    data-search="true"
-                    class="table table-bordered table-sm bg-light">
-                <caption>Daily Trading, Profit & Loss Account - {{object_list.last.date|date:'Y'}}</caption>
-            <thead class="bg-primary text-white">
-                <tr class="text-center">
-                    <th>ID</th>
-                    <th>Date</th>
-                    <th>Opening Stock</th>
-                    <th>Sales</th>
-                    <th>Purchase</th>
-                    <th>D. Expenses</th>
-                    <th>I. Expenses</th>
-                    <th>Closing Stock</th>
-                    <th>Gross Profit</th>
-                    <th>Net Profit</th>
-                    <th>P&amp;L Check</th>
-                    <th>Stock</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for object in object_list %}
-                <tr class="text-right{% if object.pk in gap_pks %} table-danger{% endif %}">
-                    <td><a href="{% url 'trade-daily-detail' object.pk %}">{{object.id|zeropadding:3}}</a></td>
-                    <td style="white-space: nowrap;">{{object.date|date:'d-m-Y'}}</td>
-                    <td>
-                        {{object.opening_value}}
-                        {% if object.pk in gap_pks %}
-                        <span class="text-danger" title="Opening stock does not match prior closing stock">&#9888;</span>
-                        {% endif %}
-                    </td>
-                    <td>{{object.sales}}</td>
-                    <td>{{object.purchase}}</td>
-                    <td>{{object.direct_expenses}}</td>
-                    <td>{{object.indirect_expenses}}</td>
-                    <td>{{object.closing_value}}</td>
-                    <td>{{object.gross_profit}}</td>
-                    <td>{{object.gross_profit|minus:object.indirect_expenses}}</td>
-                    <td>{{object.opening_value|minus:object.sales|add:object.purchase|add:object.gross_profit|add:object.direct_expenses|minus:object.closing_value}}</td>
-                    <td class="text-center">
-                        {% if object.pk in gap_pks %}
-                        <span class="badge badge-danger" title="Opening stock gap">Gap</span>
-                        {% else %}
-                        <span class="badge badge-success">OK</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
+<div class="container-fluid py-2">
+
+  <div class="ds-card mb-5">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-calendar-o mr-2"></i>Daily Trading, Profit &amp; Loss Account — {{ object_list.last.date|date:'Y' }}</span>
+      <div class="d-flex staff-nav-bar">
+        <a class="staff-nav-link" href="{% url 'trade-daily-create' %}">
+          <i class="fa fa-plus"></i> New
+        </a>
+        <a class="staff-nav-link" href="{% url 'trade-home' %}">
+          <i class="fa fa-times-circle"></i> Return
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-card">
+    <div class="ds-card__body p-0">
+      {% if object_list %}
+      <div class="table-responsive">
+        <table data-toggle="table" data-pagination="true" data-search="true" class="table table-striped table-hover mb-0">
+          <thead>
+            <tr class="text-center">
+              <th>ID</th>
+              <th>Date</th>
+              <th>Opening Stock</th>
+              <th>Sales</th>
+              <th>Purchase</th>
+              <th>D. Expenses</th>
+              <th>I. Expenses</th>
+              <th>Closing Stock</th>
+              <th>Gross Profit</th>
+              <th>Net Profit</th>
+              <th>P&amp;L Check</th>
+              <th>Stock</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for object in object_list %}
+            <tr class="text-right{% if object.pk in gap_pks %} table-danger{% endif %}">
+              <td><a href="{% url 'trade-daily-detail' object.pk %}">{{ object.id|zeropadding:3 }}</a></td>
+              <td style="white-space: nowrap;">{{ object.date|date:'d-m-Y' }}</td>
+              <td>
+                {{ object.opening_value }}
+                {% if object.pk in gap_pks %}
+                <span class="text-danger" title="Opening stock does not match prior closing stock">&#9888;</span>
+                {% endif %}
+              </td>
+              <td>{{ object.sales }}</td>
+              <td>{{ object.purchase }}</td>
+              <td>{{ object.direct_expenses }}</td>
+              <td>{{ object.indirect_expenses }}</td>
+              <td>{{ object.closing_value }}</td>
+              <td>{{ object.gross_profit }}</td>
+              <td>{{ object.gross_profit|minus:object.indirect_expenses }}</td>
+              <td>{{ object.opening_value|minus:object.sales|add:object.purchase|add:object.gross_profit|add:object.direct_expenses|minus:object.closing_value }}</td>
+              <td class="text-center">
+                {% if object.pk in gap_pks %}
+                <span class="badge badge-danger" title="Opening stock gap">Gap</span>
+                {% else %}
+                <span class="badge badge-success">OK</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
-        </div>
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <i class="fa fa-calendar-o fa-3x text-muted mb-3"></i>
+        <h5 class="text-muted">No daily records yet.</h5>
+        <a href="{% url 'trade-daily-create' %}" class="btn btn-primary mt-2">
+          <i class="fa fa-plus mr-1"></i> Add First Entry
+        </a>
+      </div>
+      {% endif %}
     </div>
-    
-    <div class="row mt-3">
-        <div class="col text-right">
-            <a class="btn btn-secondary" href="{% url 'trade-home' %}" title="Trade Home"><i class="fa fa-times-circle"></i></a>
-        </div>
-    </div>
+  </div>
+
 </div>
-{% endblock content%}
+{% endblock content %}

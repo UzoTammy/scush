@@ -1,73 +1,113 @@
-{% extends 'core/base.html'%}
+{% extends 'core/base.html' %}
 {% load custom_tags %}
+
+{% block page_title %}Weekly Report{% endblock %}
+
+{% block head %}
+<style>
+  .ds-card__body   { padding: 1.75rem 2rem; }
+  .ds-card__header { padding: 0.875rem 1.5rem; }
+
+  .pl-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.9375rem;
+  }
+  .pl-row:last-child { border-bottom: none; }
+  .pl-row__label { color: var(--color-text); }
+  .pl-row__value { font-weight: 600; color: var(--color-primary); }
+
+  .report-actions { margin-top: 1.5rem; padding-top: 1.5rem; gap: 1.5rem; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-3">
-    <h3 class="text-center" style="color: #001effc1;">Sales, Margin and Expenses</h3>
-    {% if qs.sales != 0 %}
-    <div class="row">
-        <div class="col-sm-6">
-            <ul class="list-group list-group-flush shadow">
-                <h5 class="mt-3 ml-3" style="color: crimson;">Weekly 
-                    <small class="float-right text-muted mr-2"> From {{dates|last|date:'d-m-y'}} to {{dates|first|date:'d-m-y'}}</small>
-                </h5>
-                <li class="list-group-item">Number of Sales <span class="float-right">{{qs.count}} of 6 (<small>as at {{qs.date|date:'d-m-y'}}</small>)</span></li>
-                <li class="list-group-item">Sales <span class="float-right">{{qs.sales|floatformat:2}}</span></li>
-                <li class="list-group-item">Net Profit <span class="float-right">{{qs.net_profit|floatformat:2}}</span></li>
-                <li class="list-group-item">Expenses <span class="float-right">{{qs.direct_expenses|add:qs.indirect_expenses|floatformat:2}}</span></span></li>
-                <li class="list-group-item">Margin Ratio <span class="float-right">{{100|multiply:qs.net_profit|div:qs.sales|floatformat:2}}%</span></li>
-                
-                {% if qs.purchase != 0 %}
-                <li class="list-group-item">Delivery Expense Ratio <span class="float-right">{{100|multiply:qs.direct_expenses|div:qs.purchase|floatformat:2}}%</span></li>
-                {% endif %}
-                <li class="list-group-item">Admin Expense Ratio <span class="float-right">{{100|multiply:qs.indirect_expenses|div:qs.sales|floatformat:2}}%</span></li>
-                <li class="list-group-item">Growth Ratio<span class="float-right">{{qs.growth_ratio}}%</span> </li>
-                <li class="list-group-item">Debt to Equity Ratio<span class="float-right">{{qs.debt_to_equity_ratio}}%</span> </li>
-                <li class="list-group-item">Current Ratio<span class="float-right">{{qs.current_ratio}}</span> </li>
-                <li class="list-group-item">Quick Ratio<span class="float-right">{{qs.quick_ratio}}</span> </li>
-                <li class="list-group-item">
-                    <a href="#"><i class="fa fa-file-pdf-o fa-2x"></i></a>
-                    <a href="#" class="float-right"><i class="fa fa-envelope-o fa-2x"></i></a>
-                </li>
-            </ul>
-        </div>
-        <div class="col-sm-6">
-            <ul class="list-group list-group-flush shadow">
-                <h5 class="mt-3 ml-3" style="color: crimson;">Monthly 
-                    <small class="float-right text-muted mr-2">As at {{qsm.date|date:'d-m-y'}}</small>
-                </h5>
-                <li class="list-group-item">Number of Sales <span class="float-right">{{qsm.count}}</span></li>
-                <li class="list-group-item">Sales <span class="float-right">{{qsm.sales|floatformat:2}}</span></li>
-                <li class="list-group-item">Net Profit <span class="float-right">{{qsm.net_profit|floatformat:2}}</span></li>
-                <li class="list-group-item">Expenses <span class="float-right">{{qsm.direct_expenses|add:qsm.indirect_expenses|floatformat:2}}</span></span></li>
-                <li class="list-group-item">Margin Ratio 
-                    <span class="float-right">{{100|multiply:qsm.net_profit|div:qsm.sales|floatformat:2}}%</span></li>
-                
-                {% if qsm.purchase != 0 %}
-                <li class="list-group-item">Delivery Expense Ratio <span class="float-right">{{100|multiply:qsm.direct_expenses|div:qsm.purchase|floatformat:2}}%</span></li>
-                {% endif %}
-                <li class="list-group-item">Admin Expense Ratio <span class="float-right">{{100|multiply:qsm.indirect_expenses|div:qsm.sales|floatformat:2}}%</span></li>
-                <li class="list-group-item">Growth Ratio<span class="float-right">{{qsm.growth_ratio}}%</span> </li>
-                <li class="list-group-item">Debt to Equity Ratio<span class="float-right">{{qsm.debt_to_equity_ratio}}%</span> </li>
-                <li class="list-group-item">Current Ratio<span class="float-right">{{qsm.current_ratio}}</span> </li>
-                <li class="list-group-item">Quick Ratio<span class="float-right">{{qsm.quick_ratio}}</span> </li>
-                <li class="list-group-item">
-                    <a href="#"><i class="fa fa-file-pdf-o fa-2x"></i></a>
-                    <a href="#" class="float-right"><i class="fa fa-envelope-o fa-2x"></i></a>
-                </li>
-            </ul>
-        </div>
+<div class="container-fluid py-2">
+
+  <div class="ds-card mb-5">
+    <div class="ds-card__header d-flex justify-content-between align-items-center">
+      <span><i class="fa fa-book mr-2"></i>Sales, Margin &amp; Expenses</span>
+      <a class="staff-nav-link" href="{% url 'trade-home' %}">
+        <i class="fa fa-times-circle"></i> Return
+      </a>
     </div>
-    {% else %}
-    <div class="row">
-        <div class="col">
-            <p>No sales yet</p>
+  </div>
+
+  {% if qs.sales != 0 %}
+  <div class="row">
+
+    <!-- Weekly -->
+    <div class="col-lg-6 mb-5">
+      <div class="ds-card h-100">
+        <div class="ds-card__header d-flex justify-content-between align-items-center">
+          <span><i class="fa fa-calendar mr-2"></i>Weekly</span>
+          <small>{{ dates|last|date:'d-m-y' }} to {{ dates|first|date:'d-m-y' }}</small>
         </div>
-    </div>
-    {% endif %}
-    <div class="row mt-3">
-        <div class="col">
-            <a class="btn btn-secondary float-right" href="{% url 'trade-home' %}"><i class="fa fa-times-circle"></i></a>
+        <div class="ds-card__body">
+          <div class="pl-row"><span class="pl-row__label">Number of Sales</span><span class="pl-row__value">{{ qs.count }} of 6 <small class="text-muted">(as at {{ qs.date|date:'d-m-y' }})</small></span></div>
+          <div class="pl-row"><span class="pl-row__label">Sales</span><span class="pl-row__value">{{ qs.sales|floatformat:2 }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Net Profit</span><span class="pl-row__value">{{ qs.net_profit|floatformat:2 }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Expenses</span><span class="pl-row__value">{{ qs.direct_expenses|add:qs.indirect_expenses|floatformat:2 }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Margin Ratio</span><span class="pl-row__value">{{ 100|multiply:qs.net_profit|div:qs.sales|floatformat:2 }}%</span></div>
+          {% if qs.purchase != 0 %}
+          <div class="pl-row"><span class="pl-row__label">Delivery Expense Ratio</span><span class="pl-row__value">{{ 100|multiply:qs.direct_expenses|div:qs.purchase|floatformat:2 }}%</span></div>
+          {% endif %}
+          <div class="pl-row"><span class="pl-row__label">Admin Expense Ratio</span><span class="pl-row__value">{{ 100|multiply:qs.indirect_expenses|div:qs.sales|floatformat:2 }}%</span></div>
+          <div class="pl-row"><span class="pl-row__label">Growth Ratio</span><span class="pl-row__value">{{ qs.growth_ratio }}%</span></div>
+          <div class="pl-row"><span class="pl-row__label">Debt to Equity Ratio</span><span class="pl-row__value">{{ qs.debt_to_equity_ratio }}%</span></div>
+          <div class="pl-row"><span class="pl-row__label">Current Ratio</span><span class="pl-row__value">{{ qs.current_ratio }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Quick Ratio</span><span class="pl-row__value">{{ qs.quick_ratio }}</span></div>
+
+          <div class="report-actions border-top d-flex">
+            <a href="#" class="text-muted"><i class="fa fa-file-pdf-o fa-2x"></i></a>
+            <a href="#" class="text-muted"><i class="fa fa-envelope-o fa-2x"></i></a>
+          </div>
         </div>
+      </div>
     </div>
+
+    <!-- Monthly -->
+    <div class="col-lg-6 mb-5">
+      <div class="ds-card h-100">
+        <div class="ds-card__header d-flex justify-content-between align-items-center">
+          <span><i class="fa fa-calendar-o mr-2"></i>Monthly</span>
+          <small>As at {{ qsm.date|date:'d-m-y' }}</small>
+        </div>
+        <div class="ds-card__body">
+          <div class="pl-row"><span class="pl-row__label">Number of Sales</span><span class="pl-row__value">{{ qsm.count }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Sales</span><span class="pl-row__value">{{ qsm.sales|floatformat:2 }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Net Profit</span><span class="pl-row__value">{{ qsm.net_profit|floatformat:2 }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Expenses</span><span class="pl-row__value">{{ qsm.direct_expenses|add:qsm.indirect_expenses|floatformat:2 }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Margin Ratio</span><span class="pl-row__value">{{ 100|multiply:qsm.net_profit|div:qsm.sales|floatformat:2 }}%</span></div>
+          {% if qsm.purchase != 0 %}
+          <div class="pl-row"><span class="pl-row__label">Delivery Expense Ratio</span><span class="pl-row__value">{{ 100|multiply:qsm.direct_expenses|div:qsm.purchase|floatformat:2 }}%</span></div>
+          {% endif %}
+          <div class="pl-row"><span class="pl-row__label">Admin Expense Ratio</span><span class="pl-row__value">{{ 100|multiply:qsm.indirect_expenses|div:qsm.sales|floatformat:2 }}%</span></div>
+          <div class="pl-row"><span class="pl-row__label">Growth Ratio</span><span class="pl-row__value">{{ qsm.growth_ratio }}%</span></div>
+          <div class="pl-row"><span class="pl-row__label">Debt to Equity Ratio</span><span class="pl-row__value">{{ qsm.debt_to_equity_ratio }}%</span></div>
+          <div class="pl-row"><span class="pl-row__label">Current Ratio</span><span class="pl-row__value">{{ qsm.current_ratio }}</span></div>
+          <div class="pl-row"><span class="pl-row__label">Quick Ratio</span><span class="pl-row__value">{{ qsm.quick_ratio }}</span></div>
+
+          <div class="report-actions border-top d-flex">
+            <a href="#" class="text-muted"><i class="fa fa-file-pdf-o fa-2x"></i></a>
+            <a href="#" class="text-muted"><i class="fa fa-envelope-o fa-2x"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% else %}
+  <div class="ds-card">
+    <div class="ds-card__body text-center py-5">
+      <i class="fa fa-line-chart fa-3x text-muted mb-3"></i>
+      <h5>No sales yet</h5>
+    </div>
+  </div>
+  {% endif %}
+
 </div>
-{% endblock content%}
+{% endblock content %}
