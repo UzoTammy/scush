@@ -202,27 +202,16 @@ LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'index'
 
 # Email Server
-# Production sends through Amazon SES. django-ses reuses the AWS_ACCESS_KEY_ID/
-# AWS_SECRET_ACCESS_KEY credentials configured above for S3 (falls back to them
-# when AWS_SES_ACCESS_KEY_ID isn't set) — that IAM user/role also needs
-# ses:SendEmail + ses:SendRawEmail permission, and DEFAULT_FROM_EMAIL must be a
-# verified identity in that SES account/region.
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend' if DEBUG else 'django_ses.SESBackend'
+# AWS SES (django-ses) was removed: the account was inaccessible and the
+# ses:GetSendQuota IAM gap was crashing every send in production regardless
+# (see the trade P&L/Balance Sheet 500 investigation). Production now uses
+# Django's dummy backend — sending is a silent no-op — until a replacement
+# provider is wired in. Swap EMAIL_BACKEND to that provider's backend
+# (SMTP, SendGrid, Mailgun, Postmark, etc.) when ready.
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend' if DEBUG else 'django.core.mail.backends.dummy.EmailBackend'
 EMAIL_FILE_PATH = 'mail/sample'
 EMAIL_SUBJECT_PREFIX = 'Ozone: '
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='scush@ozonefl.com')
-
-AWS_SES_REGION_NAME = config('AWS_SES_REGION_NAME', default='us-east-1')
-AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
-
-# django-ses defaults this to 0.5 (client-side rate limiting via the SES
-# GetSendQuota API). This app's IAM user isn't granted ses:GetSendQuota, so
-# that call was raising AccessDenied on every single send — even with
-# fail_silently=True, since the throttle check happens before the send
-# attempt. Our send volume is low (a couple of recipients per notification)
-# and well under any real SES limit, so client-side throttling adds nothing;
-# 0 disables the GetSendQuota call entirely.
-AWS_SES_AUTO_THROTTLE = 0
 
 ADMINS = (('SCuSH', 'scush@ozonefl.com'),)
 
