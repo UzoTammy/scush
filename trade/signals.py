@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from django.dispatch import receiver
 from django.db.models import Sum
@@ -12,9 +13,22 @@ from core.tasks import send_email
 
 from .models import BalanceSheet, TradeDaily, BankBalance
 
+logger = logging.getLogger(__name__)
+
 
 @receiver(post_save, sender=TradeDaily)
 def trade_daily_create(sender, instance, created, **kwargs):
+    try:
+        _send_trade_daily_mail(instance, created)
+    except Exception:
+        logger.exception(
+            'Failed to build/send the P&L notification email for TradeDaily pk=%s; '
+            'the record itself was still saved successfully.',
+            instance.pk,
+        )
+
+
+def _send_trade_daily_mail(instance, created):
     if created:
         head_title = 'Created'
         qs = TradeDaily.objects.filter(date__year=instance.date.year, date__month=instance.date.month)
@@ -84,9 +98,19 @@ def trade_daily_create(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=BalanceSheet)
 def bs_mail_sender(sender, instance, created, **kwargs):
-    
+    try:
+        _send_bs_mail(instance, created)
+    except Exception:
+        logger.exception(
+            'Failed to build/send the Balance Sheet notification email for BalanceSheet pk=%s; '
+            'the record itself was still saved successfully.',
+            instance.pk,
+        )
+
+
+def _send_bs_mail(instance, created):
     head_title = 'Created' if created else 'Updated'
-    
+
     email = EmailMessage(
         subject=f'Balance Sheet As At {instance.date.strftime("%B, %Y")}',
         body = loader.render_to_string('trade/mail_bs.html', context={'object': instance, 'head_title': head_title, 'title': 'Balance Sheet'}),
