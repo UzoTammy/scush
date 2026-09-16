@@ -133,6 +133,12 @@
               <div class="form-group col-md-6 mb-0">{{ form.sundry_debtor|as_crispy_field }}</div>
             </div>
 
+            <div class="form-row mt-2">
+              <div class="form-group col-12 mb-0">
+                {{ form.confirm_anomaly|as_crispy_field }}
+              </div>
+            </div>
+
             <!-- Errors -->
             {% if form.non_field_errors %}
             <div class="alert alert-warning mt-3">

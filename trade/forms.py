@@ -42,6 +42,8 @@ def _validate_pl(form, cleaned_data):
     indirect_expenses= cleaned_data.get('indirect_expenses')
     opening_value    = cleaned_data.get('opening_value')
     closing_value    = cleaned_data.get('closing_value')
+    capital          = cleaned_data.get('capital')
+    liability        = cleaned_data.get('liability')
     confirm          = cleaned_data.get('confirm_anomaly', False)
 
     # --- Hard blocks ---
@@ -59,6 +61,10 @@ def _validate_pl(form, cleaned_data):
         form.add_error('indirect_expenses', 'Indirect expenses cannot be negative.')
     if opening_value is not None and opening_value < zero:
         form.add_error('opening_value', 'Opening stock value cannot be negative.')
+    if capital is not None and capital < zero:
+        form.add_error('capital', 'Capital cannot be negative.')
+    if liability is not None and liability < zero:
+        form.add_error('liability', 'Liability cannot be negative.')
     if closing_value is not None and closing_value < zero:
         form.add_error('closing_value', 'Closing stock value cannot be negative.')
 
@@ -68,6 +74,22 @@ def _validate_pl(form, cleaned_data):
 
     # --- Soft anomalies (require explicit acknowledgement) ---
     anomalies = []
+
+    if opening_value is not None and opening_value == zero:
+        anomalies.append(
+            'Opening stock value is zero. Confirm this is correct (e.g. no carried-over stock) '
+            'rather than an empty/blank entry.'
+        )
+
+    if capital is not None and capital == zero:
+        anomalies.append(
+            'Capital is zero. This will show as an undefined growth/debt-to-equity ratio.'
+        )
+
+    if liability is not None and liability == zero:
+        anomalies.append(
+            'Liability is zero. This will show as an undefined current/quick ratio.'
+        )
 
     if purchase is not None and sales is not None and purchase > sales:
         anomalies.append(
@@ -159,10 +181,17 @@ class TradeDailyForm(forms.ModelForm):
 class BSForm(forms.ModelForm):
 
     date = forms.DateField(widget=DateInput(attrs={'type':'date'}))
+    confirm_anomaly = forms.BooleanField(
+        required=False,
+        label='Confirm anomaly — I have reviewed the flagged figures and confirm they are correct.',
+    )
 
     class Meta:
         model = BalanceSheet
         fields = '__all__'
+
+    def clean(self):
+        return _validate_pl(self, super().clean())
 
 class BankAccountForm(forms.ModelForm):
     account_group = forms.ChoiceField(initial='Business', choices=[('Business', 'Business'), ('Admin', 'Admin')])
@@ -203,16 +232,23 @@ class CreditorAccountForm(forms.ModelForm):
 
 class FinancialForm(forms.ModelForm):
     date = forms.DateField(widget=DateInput(attrs={'type':'date'}))
+    confirm_anomaly = forms.BooleanField(
+        required=False,
+        label='Confirm anomaly — I have reviewed the flagged figures and confirm they are correct.',
+    )
 
     class Meta:
         model = TradeDaily
         exclude = ('direct_income', 'indirect_income')
-    
+
     profit = MoneyField(max_digits=13, decimal_places=2)
     liability = MoneyField(max_digits=13, decimal_places=2)
     current_asset = MoneyField(max_digits=13, decimal_places=2)
     sundry_debtor = MoneyField(max_digits=13, decimal_places=2)
-    
+
+    def clean(self):
+        return _validate_pl(self, super().clean())
+
     def save(self, commit=True):
         trade = TradeDaily.objects.latest('date')
         if trade:
