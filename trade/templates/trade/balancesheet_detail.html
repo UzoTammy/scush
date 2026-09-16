@@ -4,6 +4,24 @@
 
 {% block page_title %}Balance Sheet — {{ object.date|date:'d M Y' }}{% endblock %}
 
+{% block head %}
+<style>
+  /* Below ~360px a label + a long "NGN123,456.78 (12.34%)" value no longer
+     fit on one line and were rendering squished together with no gap.
+     Stack label above value instead of forcing them side by side. */
+  @media (max-width: 400px) {
+    .bs-breakdown-list .list-group-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .bs-breakdown-list .list-group-item > span:last-child {
+      align-self: flex-end;
+    }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container-fluid">
 
@@ -37,7 +55,7 @@
           <span><i class="fa fa-university mr-2"></i>Equity &amp; Liabilities</span>
         </div>
         <div class="ds-card__body p-0">
-          <div class="list-group list-group-flush">
+          <div class="list-group list-group-flush bs-breakdown-list">
             <div class="list-group-item d-flex justify-content-between">
               <span class="text-muted">Profit</span>
               <span>{{ object.profit }}</span>
@@ -70,7 +88,7 @@
           <span><i class="fa fa-cubes mr-2"></i>Assets</span>
         </div>
         <div class="ds-card__body p-0">
-          <div class="list-group list-group-flush">
+          <div class="list-group list-group-flush bs-breakdown-list">
             {% with object.fixed_asset|add:object.current_asset|add:object.investment|add:object.suspense as total %}
             <div class="list-group-item d-flex justify-content-between">
               <span class="text-muted">Fixed Asset</span>

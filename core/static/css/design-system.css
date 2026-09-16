@@ -619,7 +619,7 @@ button.staff-nav-link {
   color: #ffffff !important;
 }
 
-.staff-nav-bar { gap: 0.5rem; }
+.staff-nav-bar { gap: 0.5rem; flex-wrap: wrap; }
 .birthday-dot  { font-size: 0.5rem; }
 
 /* staff-nav-link inside a dark ds-card__header */
