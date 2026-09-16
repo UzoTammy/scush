@@ -215,6 +215,15 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='scush@ozonefl.com')
 AWS_SES_REGION_NAME = config('AWS_SES_REGION_NAME', default='us-east-1')
 AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
 
+# django-ses defaults this to 0.5 (client-side rate limiting via the SES
+# GetSendQuota API). This app's IAM user isn't granted ses:GetSendQuota, so
+# that call was raising AccessDenied on every single send — even with
+# fail_silently=True, since the throttle check happens before the send
+# attempt. Our send volume is low (a couple of recipients per notification)
+# and well under any real SES limit, so client-side throttling adds nothing;
+# 0 disables the GetSendQuota call entirely.
+AWS_SES_AUTO_THROTTLE = 0
+
 ADMINS = (('SCuSH', 'scush@ozonefl.com'),)
 
 # installed django_session_timeout
