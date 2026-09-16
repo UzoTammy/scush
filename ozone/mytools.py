@@ -436,6 +436,8 @@ class BalanceSheet:
     def source_of_fund(self):
         source = self.data[0]
         total = source['profit'] + source['equity'] + source['liability']
+        if total == 0:
+            return list((key, value, 0) for key, value in source.items())
         return list((key, value, round(100*value/total, 2)) for key, value in source.items())
 
     @property
@@ -446,30 +448,42 @@ class BalanceSheet:
         investment = resources['investment']
         suspense = resources['suspense']
         total = current_asset + fixed_asset + investment + suspense
+        if total == 0:
+            return list((key, value, 0) for key, value in resources.items())
         return list((key, value, round(100*value/total, 2)) for key, value in resources.items())
-    
 
-    @property   
+
+    @property
     def growth_ratio(self):
         profit = self.data[0]['profit']
         equity = self.data[0]['equity']
+        if equity == 0:
+            return 0
         return round(100*profit/equity, 2)
 
     @property
     def debt_to_equity_ratio(self):
         liability = self.data[0]['liability']
         equity = self.data[0]['equity']
+        if equity == 0:
+            return 0
         return round(100*liability/equity, 2)
 
     @property
     def current_ratio(self):
         """This is a measure of the company's capability to pay it's debt.
         x times capable of paying it's debt"""
-        return round(self.data[1]['current_asset']/ self.data[0]['liability'], 2)
+        liability = self.data[0]['liability']
+        if liability == 0:
+            return 0
+        return round(self.data[1]['current_asset']/liability, 2)
 
 
     def acit_test_ratio(self, inventory, sundry_debtors=0.0) -> float:
         """A liquidity ratio and also called quick ratio, defines how fast
         you can repay your debt. x times ready to pay it's debt"""
-        return round((self.data[1]['current_asset']-inventory-sundry_debtors)/self.data[0]['liability'], 2)
+        liability = self.data[0]['liability']
+        if liability == 0:
+            return 0
+        return round((self.data[1]['current_asset']-inventory-sundry_debtors)/liability, 2)
 
