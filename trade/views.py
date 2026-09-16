@@ -218,7 +218,10 @@ class TradeHome(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
             # The Sales Drive Ratio: Sales by opening stock
             dates = [x.date.strftime('%d-%m-%Y') for x in qs_for_chart]
-            sales_ratio = [round(100*y.sales/y.opening_value, 2) for y in qs_for_chart]
+            sales_ratio = [
+                round(100*y.sales/y.opening_value, 2) if y.opening_value != Money(0, 'NGN') else 0
+                for y in qs_for_chart
+            ]
             sales_amount = [round(float(y.sales.amount), 2) for y in qs_for_chart]
             dates.reverse()
             sales_ratio.reverse()
